@@ -1,23 +1,14 @@
 {
   "$schema": "https://json.schemastore.org/nest-cli",
   "collection": "@nestjs/schematics",
-  "sourceRoot": "apps/be_cocokitene/src",
+  "sourceRoot": "apps/api/src",
   "monorepo": true,
-  "root": "apps/be_cocokitene",
+  "root": "apps/api",
   "compilerOptions": {
     "webpack": true,
-    "tsConfigPath": "apps/be_cocokitene/tsconfig.app.json"
+    "tsConfigPath": "apps/api/tsconfig.app.json"
   },
   "projects": {
-    "be_cocokitene": {
-      "type": "application",
-      "root": "apps/be_cocokitene",
-      "entryFile": "main",
-      "sourceRoot": "apps/be_cocokitene/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/be_cocokitene/tsconfig.app.json"
-      }
-    },
     "api": {
       "type": "application",
       "root": "apps/api",

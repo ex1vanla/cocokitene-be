@@ -19,7 +19,9 @@
     "noFallthroughCasesInSwitch": false,
     "paths": {
       "@api/*": ["apps/api/src/*"],
-      "@shares/*": ["libs/shares/src/*"]
+      "@shares/*": ["libs/shares/src/*"],
+      "@database/*": ["libs/queries/src/database/*"],
+      "@entities/*": ["libs/queries/src/entities/*"]
     }
   }
 }
