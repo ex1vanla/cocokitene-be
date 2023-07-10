@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json.schemastore.org/nest-cli",
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "apps/be_cocokitene/src",
+  "monorepo": true,
+  "root": "apps/be_cocokitene",
+  "compilerOptions": {
+    "webpack": true,
+    "tsConfigPath": "apps/be_cocokitene/tsconfig.app.json"
+  },
+  "projects": {
+    "be_cocokitene": {
+      "type": "application",
+      "root": "apps/be_cocokitene",
+      "entryFile": "main",
+      "sourceRoot": "apps/be_cocokitene/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/be_cocokitene/tsconfig.app.json"
+      }
+    },
+    "api": {
+      "type": "application",
+      "root": "apps/api",
+      "entryFile": "main",
+      "sourceRoot": "apps/api/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/api/tsconfig.app.json"
+      }
+    },
+    "queries": {
+      "type": "library",
+      "root": "libs/queries",
+      "entryFile": "index",
+      "sourceRoot": "libs/queries/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/queries/tsconfig.lib.json"
+      }
+    },
+    "shares": {
+      "type": "library",
+      "root": "libs/shares",
+      "entryFile": "index",
+      "sourceRoot": "libs/shares/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/shares/tsconfig.lib.json"
+      }
+    }
+  }
+}
