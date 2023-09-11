@@ -21,7 +21,9 @@
       "@api/*": ["apps/api/src/*"],
       "@shares/*": ["libs/shares/src/*"],
       "@database/*": ["libs/queries/src/database/*"],
-      "@entities/*": ["libs/queries/src/entities/*"]
+      "@entities/*": ["libs/queries/src/entities/*"],
+      "@seeds/*": ["libs/queries/src/seeds/*"],
+      "@repositories/*": ["libs/queries/src/repositories/*"]
     }
   }
 }

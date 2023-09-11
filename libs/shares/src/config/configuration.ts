@@ -19,6 +19,8 @@ interface Configuration {
   api: {
     port: number;
     prefix: string;
+    adminWallets: string;
+    superAdminWallets: string;
   };
 }
 
@@ -32,7 +34,7 @@ export default (): Configuration => ({
     port: parseInt(process.env.DB_PORT, 10) || 3307,
     name: process.env.DB_NAME || 'exment_market',
     user: process.env.DB_USER || 'root',
-    pass: process.env.DB_PASS || '1',
+    pass: process.env.DB_PASS || '10703223',
     type: process.env.DB_TYPE || 'mysql',
     logging: process.env.DB_LOGGING === 'true',
     synchronize: process.env.DB_SYNC === 'true',
@@ -40,5 +42,7 @@ export default (): Configuration => ({
   api: {
     port: parseInt(process.env.API_PORT, 10) || 4000,
     prefix: process.env.API_PREFIX || 'api',
+    adminWallets: process.env.ADMIN_WALLETS || '',
+    superAdminWallets: process.env.SUPER_ADMIN_WALLETS || '',
   },
 });
