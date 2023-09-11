@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { CompanyStatusRepository } from '../../repositories/company-status.repository';
 import { InsertCompanyStatusDto, companyStatusesData } from './data';
 import { CompanyStatus } from '@entities/company-status.entity';
+import { CompanyStatusRepository } from '@repositories/company-status.repository';
 
 @Injectable()
 export class CompanyStatusSeederService {

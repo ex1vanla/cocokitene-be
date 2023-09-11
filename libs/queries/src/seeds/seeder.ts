@@ -6,6 +6,7 @@ import { PermissionSeederService } from '@seeds/permission/permission.seeder.ser
 import { RoleSeederService } from '@seeds/role/role.seeder.service';
 import { UserSeederService } from '@seeds/user/user.seeder.service';
 import { UserStatusSeederService } from '@seeds/user-status/user-status.seeder.service';
+import { usersSupperAdminData } from '@seeds/user/data';
 
 @Injectable()
 export class Seeder {
@@ -19,6 +20,7 @@ export class Seeder {
     private readonly userStatusSeederService: UserStatusSeederService,
   ) {}
   async seed() {
+    console.log(usersSupperAdminData);
     Logger.log('START_SEEDING__DATA');
     await this.seedPlan();
     await this.seedCompanyStatus();
