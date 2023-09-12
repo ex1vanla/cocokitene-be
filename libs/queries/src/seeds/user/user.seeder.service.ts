@@ -10,7 +10,7 @@ import {
   usersSupperAdminData,
 } from '@seeds/user/data';
 import { User } from '@entities/user.entity';
-import { UserRole, UserStatusEnum } from '@shares/constants';
+import { UserStatusEnum } from '@shares/constants';
 
 @Injectable()
 export class UserSeederService {
@@ -44,7 +44,7 @@ export class UserSeederService {
       this.userStatusRepository.getUserStatusByStatusType(
         UserStatusEnum.ACTIVE,
       ),
-      this.roleRepository.getRoleByName(UserRole.USER_SUPER_ADMIN),
+      this.roleRepository.getRoleByName('USER_SUPER_ADMIN'),
     ]);
     if (!userSupperAdminStatus) {
       Logger.error(
@@ -79,7 +79,7 @@ export class UserSeederService {
       this.userStatusRepository.getUserStatusByStatusType(
         UserStatusEnum.ACTIVE,
       ),
-      this.roleRepository.getRoleByName(UserRole.USER_ADMIN),
+      this.roleRepository.getRoleByName('USER_ADMIN'),
     ]);
     if (!userAdminStatus) {
       Logger.error(
@@ -111,7 +111,7 @@ export class UserSeederService {
       this.userStatusRepository.getUserStatusByStatusType(
         UserStatusEnum.ACTIVE,
       ),
-      this.roleRepository.getRoleByName(UserRole.USER_NORMALLY),
+      this.roleRepository.getRoleByName('USER_NORMALLY'),
     ]);
     if (!userNormallyStatus) {
       Logger.error(
@@ -142,7 +142,7 @@ export class UserSeederService {
       this.userStatusRepository.getUserStatusByStatusType(
         UserStatusEnum.ACTIVE,
       ),
-      this.roleRepository.getRoleByName(UserRole.USER_SHAREHOLDER),
+      this.roleRepository.getRoleByName('USER_SHAREHOLDER'),
     ]);
     if (!userShareholderStatus) {
       Logger.error(

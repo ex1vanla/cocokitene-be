@@ -10,6 +10,8 @@ import { PermissionSeederModule } from '@seeds/permission/permission.seeder.modu
 import { RoleSeederModule } from '@seeds/role/role.seeder.module';
 import { UserSeederModule } from '@seeds/user/user.seeder.module';
 import { UserStatusSeederModule } from '@seeds/user-status/user-status.seeder.module';
+import { RolePermissionSeederModule } from '@seeds/role-permission/role-permission.seeder.module';
+import { UserRoleSeederModule } from '@seeds/user-role/user-role.seeder.module';
 
 @Module({
   imports: [
@@ -24,6 +26,8 @@ import { UserStatusSeederModule } from '@seeds/user-status/user-status.seeder.mo
     RoleSeederModule,
     UserSeederModule,
     UserStatusSeederModule,
+    RolePermissionSeederModule,
+    UserRoleSeederModule,
   ],
   providers: [Seeder],
 })

@@ -14,7 +14,7 @@ import { Plan } from './plan.entity';
 @Entity('companys')
 export class Company extends BaseEntity {
   @PrimaryGeneratedColumn()
-  public id: number;
+  id: number;
 
   @Column({
     nullable: false,
@@ -31,7 +31,7 @@ export class Company extends BaseEntity {
     type: 'varchar',
     length: 255,
   })
-  company_shortName: string;
+  companyShortName: string;
 
   @Column({ name: 'description', type: 'varchar', length: 255, nullable: true })
   description: string;
@@ -79,7 +79,7 @@ export class Company extends BaseEntity {
   fax: string;
 
   @CreateDateColumn({ name: 'date_of_incorporation' })
-  public createdAt: Date;
+  createdAt: Date;
 
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;

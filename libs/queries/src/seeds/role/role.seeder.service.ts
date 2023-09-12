@@ -14,12 +14,12 @@ export class RoleSeederService {
   async saveOneRole(role: InsertRoleDto): Promise<Role> {
     const existedRole = await this.roleRepository.findOne({
       where: {
-        role: role.role,
+        roleName: role.roleName,
       },
     });
     if (existedRole) {
       Logger.error(
-        `Duplicate role with name: ${existedRole.role} role already exists`,
+        `Duplicate role with name: ${existedRole.roleName} role already exists`,
       );
       return;
     }

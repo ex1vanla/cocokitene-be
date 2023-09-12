@@ -8,6 +8,7 @@ import {
   RolePermission,
   SystemAdmin,
   User,
+  UserRole,
   UserStatus,
 } from '@entities/index';
 import { Module } from '@nestjs/common';
@@ -37,6 +38,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
             UserStatus,
             User,
             SystemAdmin,
+            UserRole,
           ],
           timezone: 'Z',
           synchronize: configService.get('database.synchronize'),

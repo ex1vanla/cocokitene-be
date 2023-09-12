@@ -5,33 +5,47 @@ import { PermissionEnum } from '@shares/constants/permission.const';
 export class InsertPermissionDto extends PartialType(Permission) {}
 export const permissionData: InsertPermissionDto[] = [
   {
-    key: PermissionEnum.MANAGE_USER,
-    description:
-      'the user with this right can manage and perform user-related tasks',
+    key: PermissionEnum.CREATE_ACCOUNT,
+    description: 'the user with this right can create account',
   },
   {
-    key: PermissionEnum.MANAGE_ROLES,
+    key: PermissionEnum.EDIT_ACCOUNT,
     description:
-      'the user with this right can manage and perform tasks related to roles and assign rights to users',
+      "the user with this right can edit the user's account information",
   },
   {
-    key: PermissionEnum.MANAGE_SYSTEM_SETTINGS,
-    description:
-      'the user with this right can manage basic system settings, such as configuration specification and database management',
+    key: PermissionEnum.DETAIL_ACCOUNT,
+    description: 'the user with this right can see information of user detail',
   },
   {
-    key: PermissionEnum.MANAGE_SYSTEM_RESOURCES,
-    description:
-      'the user with this right can manage system resources such as servers, storage and network',
+    key: PermissionEnum.LIST_ACCOUNT,
+    description: 'the user with this right can see a list users in the system',
   },
   {
-    key: PermissionEnum.MANAGE_DATABASE,
+    key: PermissionEnum.CREATE_MEETING,
     description:
-      'the user with this right can manage system database, including backing up, restoring and manage database data',
+      'the user with this right can create a meeting for the company',
   },
   {
-    key: PermissionEnum.ACCESS_AUDIT_LOGS,
+    key: PermissionEnum.EDIT_MEETING,
     description:
-      'the user with this right can to access and view system audit log to monitor activity and important events ',
+      "the user with this right can edit information of company's meeting",
+  },
+  {
+    key: PermissionEnum.DETAIL_MEETING,
+    description:
+      'the user with this right can see information of meeting detail',
+  },
+  {
+    key: PermissionEnum.LIST_MEETING,
+    description: 'the user with this right can see a list users in the system',
+  },
+  {
+    key: PermissionEnum.DELETE_MEETING,
+    description: 'the user with this right can delete a meeting of company',
+  },
+  {
+    key: PermissionEnum.SEND_MAIL_TO_SHAREHOLDER,
+    description: 'the user with this right can send email to shareholders',
   },
 ];

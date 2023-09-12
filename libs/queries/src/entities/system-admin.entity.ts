@@ -13,8 +13,10 @@ export class SystemAdmin extends BaseEntity {
 
   @Column({ name: 'username', type: 'varchar', length: 255, nullable: true })
   username: string;
+
   @Column({ name: 'email', type: 'varchar', length: 255, nullable: true })
   email: string;
+
   @Column({ name: 'password', type: 'varchar', length: 255, nullable: true })
   password: string;
 
@@ -25,11 +27,13 @@ export class SystemAdmin extends BaseEntity {
     nullable: true,
   })
   resetPasswordToken: string;
+
   @Column({
     nullable: true,
     name: 'reset_password_expire_time',
   })
   resetPasswordExpireTime: Date;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 

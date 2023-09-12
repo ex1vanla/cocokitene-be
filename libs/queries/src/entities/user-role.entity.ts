@@ -8,38 +8,31 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { User } from '@entities/user.entity';
 import { Role } from '@entities/role.entity';
-import { Permission } from '@entities/permission.entity';
 
-@Entity('role_permissions')
-export class RolePermission extends BaseEntity {
+@Entity('user_roles')
+export class UserRole extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @Column({ nullable: false, name: 'user_id', type: 'integer', width: 11 })
+  userId: number;
 
   @Column({ nullable: false, name: 'role_id', type: 'integer', width: 11 })
   roleId: number;
 
-  @Column({
-    nullable: false,
-    name: 'permission_id',
-    type: 'integer',
-    width: 11,
+  @ManyToOne(() => User)
+  @JoinColumn({
+    name: 'user_id',
   })
-  permissionId: number;
+  user: User;
 
   @ManyToOne(() => Role)
   @JoinColumn({
     name: 'role_id',
   })
   role: Role;
-
-  @ManyToOne(() => Permission)
-  @JoinColumn({
-    name: 'permission_id',
-  })
-  permission: Permission;
-  @Column({ name: 'description', type: 'varchar', length: 255, nullable: true })
-  description: string;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

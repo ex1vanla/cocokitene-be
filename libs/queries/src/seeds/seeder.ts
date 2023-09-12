@@ -1,12 +1,14 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { PlanSeederService } from './plan/plan.seeder.service';
-import { CompanyStatusSeederService } from './company-status/company-status.seeder.service';
-import { CompanySeederService } from './company/company.seeder.service';
+import { PlanSeederService } from '@seeds/plan/plan.seeder.service';
+import { CompanyStatusSeederService } from '@seeds/company-status/company-status.seeder.service';
+import { CompanySeederService } from '@seeds/company/company.seeder.service';
 import { PermissionSeederService } from '@seeds/permission/permission.seeder.service';
 import { RoleSeederService } from '@seeds/role/role.seeder.service';
 import { UserSeederService } from '@seeds/user/user.seeder.service';
 import { UserStatusSeederService } from '@seeds/user-status/user-status.seeder.service';
 import { usersSupperAdminData } from '@seeds/user/data';
+import { RolePermissionSeederService } from '@seeds/role-permission/role-permission.seeder.service';
+import { UserRoleSeederService } from '@seeds/user-role/user-role.seeder.service';
 
 @Injectable()
 export class Seeder {
@@ -18,6 +20,8 @@ export class Seeder {
     private readonly roleSeederService: RoleSeederService,
     private readonly userSeederService: UserSeederService,
     private readonly userStatusSeederService: UserStatusSeederService,
+    private readonly rolePermissionSeederService: RolePermissionSeederService,
+    private readonly userRoleSeederService: UserRoleSeederService,
   ) {}
   async seed() {
     console.log(usersSupperAdminData);
@@ -27,8 +31,10 @@ export class Seeder {
     await this.seedCompany();
     await this.seedPermission();
     await this.seedRole();
+    await this.seedRolePermission();
     await this.seedUserStatus();
     await this.seedUser();
+    await this.seedUserRole();
     Logger.log('END___SEEDING__DATA');
   }
 
@@ -52,5 +58,11 @@ export class Seeder {
   }
   async seedUser() {
     await this.userSeederService.seedUser();
+  }
+  async seedRolePermission() {
+    await this.rolePermissionSeederService.seedRolePermission();
+  }
+  async seedUserRole() {
+    await this.userRoleSeederService.seedUserRole();
   }
 }

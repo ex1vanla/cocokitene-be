@@ -1,10 +1,12 @@
 export enum PermissionEnum {
-  // admin'role:
-  MANAGE_USER = 'manage_user',
-  MANAGE_ROLES = 'manage_roles',
-  MANAGE_SYSTEM_SETTINGS = 'manage_systen_settings',
-  // super_admin'role is has admin rights and below rights:
-  MANAGE_SYSTEM_RESOURCES = 'manage_system_resources',
-  MANAGE_DATABASE = 'manage_database',
-  ACCESS_AUDIT_LOGS = 'access_audit_logs',
+  CREATE_ACCOUNT = 'create_account',
+  EDIT_ACCOUNT = 'edit_account',
+  DETAIL_ACCOUNT = 'detail_account',
+  LIST_ACCOUNT = 'list_account',
+  CREATE_MEETING = 'create_meeting',
+  EDIT_MEETING = 'edit_meeting',
+  DETAIL_MEETING = 'detail_meeting',
+  LIST_MEETING = 'list_meeting',
+  DELETE_MEETING = 'delete_meeting',
+  SEND_MAIL_TO_SHAREHOLDER = 'send_mail_to_shareholder',
 }

@@ -1,8 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmExModule } from '@shares/modules';
-import { PlanRepository } from '../../repositories/plan.repository';
 import { PlanSeederService } from './plan.seeder.service';
-
+import { PlanRepository } from '@repositories/plan.repository';
 const repositories = TypeOrmExModule.forCustomRepository([PlanRepository]);
 
 @Module({

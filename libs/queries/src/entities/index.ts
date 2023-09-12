@@ -8,3 +8,4 @@ export * from './role.entity';
 export * from './user-status.entity';
 export * from './user.entity';
 export * from './system-admin.entity';
+export * from './user-role.entity';

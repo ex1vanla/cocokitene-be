@@ -20,8 +20,10 @@ export class Permission extends BaseEntity {
     nullable: false,
   })
   key: PermissionEnum;
+
   @Column({ name: 'description', type: 'varchar', length: 255, nullable: true })
   description: string;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
