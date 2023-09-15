@@ -1,28 +1,8 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { User } from '@entities/user.entity';
-import configuration from '@shares/config/configuration';
 import { uuid } from '@shares/utils/uuid';
 
 export class InsertUserDto extends PartialType(User) {}
-
-const superAdminWalletAddress =
-  configuration().api.superAdminWallets.split('|') || [];
-const adminWalletAddress = configuration().api.adminWallets.split('|') || [];
-
-export const usersSupperAdminData: InsertUserDto[] =
-  superAdminWalletAddress.map((address, index) => ({
-    walletAddress: address.toLowerCase(),
-    username: 'super_admin ' + ++index,
-    nonce: uuid(),
-  }));
-
-export const usersAdminData: InsertUserDto[] = adminWalletAddress.map(
-  (address, index) => ({
-    walletAddress: address.toLowerCase(),
-    username: 'admin ' + ++index,
-    nonce: uuid(),
-  }),
-);
 
 export const userNomallyData: InsertUserDto[] = [
   {

@@ -19,8 +19,6 @@ interface Configuration {
   api: {
     port: number;
     prefix: string;
-    adminWallets: string;
-    superAdminWallets: string;
   };
 }
 
@@ -42,7 +40,5 @@ export default (): Configuration => ({
   api: {
     port: parseInt(process.env.API_PORT, 10) || 4000,
     prefix: process.env.API_PREFIX || 'api',
-    adminWallets: process.env.ADMIN_WALLETS || '',
-    superAdminWallets: process.env.SUPER_ADMIN_WALLETS || '',
   },
 });

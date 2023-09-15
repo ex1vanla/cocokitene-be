@@ -13,10 +13,10 @@ export const userRoleData: InsertUserRoleDto[] = [
   },
   {
     userId: 3,
-    roleId: 1,
+    roleId: 2,
   },
   {
     userId: 4,
-    roleId: 1,
+    roleId: 2,
   },
 ];
