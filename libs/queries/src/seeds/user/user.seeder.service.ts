@@ -4,8 +4,10 @@ import { RoleRepository } from '@repositories/role.repository';
 import { UserStatusRepository } from '@repositories/user-status.repository';
 import {
   InsertUserDto,
+  userAdminData,
   userNomallyData,
   userShareholderData,
+  userSuperAdminData,
 } from '@seeds/user/data';
 import { User } from '@entities/user.entity';
 import { UserStatusEnum } from '@shares/constants';
@@ -57,7 +59,7 @@ export class UserSeederService {
       return;
     }
 
-    const userSeedSupperAdminData: InsertUserDto[] = userNomallyData.map(
+    const userSeedSupperAdminData: InsertUserDto[] = userSuperAdminData.map(
       (user) => ({
         ...user,
         statusId: userSupperAdminStatus.id,
@@ -91,7 +93,7 @@ export class UserSeederService {
       );
       return;
     }
-    const userSeedAdminData: InsertUserDto[] = userNomallyData.map((user) => ({
+    const userSeedAdminData: InsertUserDto[] = userAdminData.map((user) => ({
       ...user,
       statusId: userAdminStatus.id,
       roleId: roleAdmin.id,

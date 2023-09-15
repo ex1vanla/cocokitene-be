@@ -9,7 +9,7 @@ export const userRoleData: InsertUserRoleDto[] = [
   },
   {
     userId: 2,
-    roleId: 4,
+    roleId: 1,
   },
   {
     userId: 3,
