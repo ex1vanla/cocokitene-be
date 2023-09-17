@@ -2,9 +2,10 @@ import { ApiModule } from '@api/modules/api.module'
 import { Logger, ValidationPipe } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { NestFactory, Reflector } from '@nestjs/core'
-import { HttpExceptionFilter } from '@shares/exception-filter'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
+import { HttpExceptionFilter } from '@shares/exception-filter'
 import { JwtAuthGuard } from '@shares/guards/jwt-auth.guard'
+// import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
     const app = await NestFactory.create(ApiModule)

@@ -34,6 +34,13 @@ interface Configuration {
             password: string
         }
     }
+    s3: {
+        accessKeyId: string
+        secretAccessKey: string
+        region: string
+        bucketName: string
+        expiresIn: number
+    }
 }
 
 export default (): Configuration => ({
@@ -46,7 +53,7 @@ export default (): Configuration => ({
         port: parseInt(process.env.DB_PORT, 10) || 3307,
         name: process.env.DB_NAME || 'exment_market',
         user: process.env.DB_USER || 'root',
-        pass: process.env.DB_PASS || 'kien123',
+        pass: process.env.DB_PASS || '10703223',
         type: process.env.DB_TYPE || 'mysql',
         logging: process.env.DB_LOGGING === 'true',
         synchronize: process.env.DB_SYNC === 'true',
@@ -73,5 +80,12 @@ export default (): Configuration => ({
             user: process.env.EMAIL_USER,
             password: process.env.EMAIL_PASSWORD,
         },
+    },
+    s3: {
+        accessKeyId: process.env.S3_ACCESS_KEY || '',
+        secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || '',
+        region: process.env.S3_REGION || '',
+        bucketName: process.env.S3_BUCKET_NAME || '',
+        expiresIn: parseInt(process.env.S3_URL_EXPIRES_IN_SEC, 10) || 300,
     },
 })

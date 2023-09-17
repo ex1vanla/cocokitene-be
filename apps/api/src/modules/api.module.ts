@@ -9,6 +9,7 @@ import { UserModule } from '@api/modules/users/user.module'
 import { AuthModule } from '@api/modules/auths/auth.module'
 import { MeetingModule } from '@api/modules/meetings/meeting.module'
 import { EmailModule } from '@api/modules/emails/email.module'
+import { S3Module } from '@api/modules/s3/s3.module'
 
 @Module({
     imports: [
@@ -22,6 +23,7 @@ import { EmailModule } from '@api/modules/emails/email.module'
         AuthModule,
         MeetingModule,
         EmailModule,
+        S3Module,
     ],
     controllers: [ApiController],
     providers: [ApiService],
