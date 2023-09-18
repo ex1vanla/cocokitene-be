@@ -1,19 +1,29 @@
-import { Module } from '@nestjs/common';
-import { ApiController } from './api.controller';
-import { ApiService } from './api.service';
-import { ConfigModule } from '@nestjs/config';
-import configuration from '@shares/config/configuration';
-import { DatabaseModule } from '@database/database.module';
+import { Module } from '@nestjs/common'
+import { ApiController } from './api.controller'
+import { ApiService } from './api.service'
+import { ConfigModule } from '@nestjs/config'
+import configuration from '@shares/config/configuration'
+import { DatabaseModule } from '@database/database.module'
+import { GlobalRepository } from '@api/modules/global-repositories/global-repository.module'
+import { UserModule } from '@api/modules/users/user.module'
+import { AuthModule } from '@api/modules/auths/auth.module'
+import { MeetingModule } from '@api/modules/meetings/meeting.module'
+import { EmailModule } from '@api/modules/emails/email.module'
 
 @Module({
-  imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-      load: [configuration],
-    }),
-    DatabaseModule,
-  ],
-  controllers: [ApiController],
-  providers: [ApiService],
+    imports: [
+        ConfigModule.forRoot({
+            isGlobal: true,
+            load: [configuration],
+        }),
+        DatabaseModule,
+        GlobalRepository,
+        UserModule,
+        AuthModule,
+        MeetingModule,
+        EmailModule,
+    ],
+    controllers: [ApiController],
+    providers: [ApiService],
 })
 export class ApiModule {}
