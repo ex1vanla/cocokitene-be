@@ -1,4 +1,8 @@
 export const httpErrors = {
+    COMMON: {
+        message: 'Unknown error',
+        code: 'COMMON_00000',
+    },
     // user error
     INVALID_SIGNATURE: {
         message: 'Invalid signature',
@@ -35,5 +39,5 @@ export const httpErrors = {
         message:
             'Meeting with userId and meetingId not found. Please try again',
         code: 'Meeting_00001',
-    },
+    }
 }

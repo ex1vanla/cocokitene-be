@@ -10,6 +10,7 @@ import { UserMeetingRepoisitory } from '@repositories/user-meeting.repoisitory'
 import { UserMeetingStatusEnum } from '@shares/constants/meeting.const'
 import {
     AttendMeetingDto,
+    CreateMeetingDto,
     GetAllMeetingDto,
 } from 'libs/queries/src/dtos/meeting.dto'
 import { httpErrors } from '@shares/exception-filter'
@@ -63,5 +64,9 @@ export class MeetingService {
         }
 
         return userMeeting
+    }
+
+    async createMeeting(createMeetingDto: CreateMeetingDto) {
+        return createMeetingDto
     }
 }

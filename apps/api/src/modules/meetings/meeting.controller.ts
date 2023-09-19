@@ -83,4 +83,13 @@ export class MeetingController {
             userMeetingData,
         }
     }
+
+    @Post()
+    @HttpCode(HttpStatus.CREATED)
+    async createMeeting(@Body() createMeetingDto: CreateMeetingDto) {
+        const meeting = await this.meetingService.createMeeting(
+            createMeetingDto,
+        )
+        return meeting
+    }
 }

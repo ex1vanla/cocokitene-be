@@ -5,6 +5,7 @@ import { NestFactory, Reflector } from '@nestjs/core'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import { HttpExceptionFilter } from '@shares/exception-filter'
 import { JwtAuthGuard } from '@shares/guards/jwt-auth.guard'
+import { ResponseTransformInterceptor } from '@shares/interceptors/response.interceptor'
 // import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
@@ -14,8 +15,9 @@ async function bootstrap() {
     const globalPrefix = config.get('api.prefix')
 
     app.enableCors()
-
     app.setGlobalPrefix(globalPrefix)
+    // app.useGlobalInterceptors(new SentryInterceptor())
+    app.useGlobalInterceptors(new ResponseTransformInterceptor())
     app.useGlobalPipes(
         new ValidationPipe({
             whitelist: true,
