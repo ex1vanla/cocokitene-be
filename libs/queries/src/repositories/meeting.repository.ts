@@ -6,11 +6,15 @@ import {
     Pagination,
 } from 'nestjs-typeorm-paginate'
 import { Meeting } from '@entities/meeting.entity'
+import { GetAllMeetingDto } from '../dtos'
 @CustomRepository(Meeting)
 export class MeetingRepository extends Repository<Meeting> {
     async getAllMeetings(
-        options: IPaginationOptions,
+        options: IPaginationOptions & GetAllMeetingDto,
     ): Promise<Pagination<Meeting>> {
+        const searchQuery = options.searchQuery || ''
+        const sortField = options.sortField
+        const sortOrder = options.sortOrder
         const queryBuilder = this.createQueryBuilder('meetings')
             .select([
                 'meetings.id',
@@ -21,7 +25,15 @@ export class MeetingRepository extends Repository<Meeting> {
                 'meetings.meetingReport',
                 'meetings.meetingInvitation',
             ])
+
             .leftJoinAndSelect('meetings.company', 'company')
+            .where('meetings.title LIKE :searchQuery', {
+                searchQuery: `%${searchQuery}%`,
+            })
+
+        if (sortField && sortOrder) {
+            queryBuilder.orderBy(`meetings.${sortField}`, sortOrder)
+        }
         return paginate(queryBuilder, options)
     }
 

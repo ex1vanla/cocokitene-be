@@ -46,7 +46,7 @@ export default (): Configuration => ({
         port: parseInt(process.env.DB_PORT, 10) || 3307,
         name: process.env.DB_NAME || 'exment_market',
         user: process.env.DB_USER || 'root',
-        pass: process.env.DB_PASS || '10703223',
+        pass: process.env.DB_PASS || 'kien123',
         type: process.env.DB_TYPE || 'mysql',
         logging: process.env.DB_LOGGING === 'true',
         synchronize: process.env.DB_SYNC === 'true',

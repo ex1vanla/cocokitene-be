@@ -22,6 +22,7 @@ async function bootstrap() {
             transform: true,
         }),
     )
+
     app.useGlobalFilters(new HttpExceptionFilter())
     app.useGlobalGuards(new JwtAuthGuard())
     app.useGlobalGuards(new RolesGuard(new Reflector()))

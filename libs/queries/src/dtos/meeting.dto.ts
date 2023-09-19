@@ -24,6 +24,30 @@ export class GetAllMeetingDto {
         example: 10,
     })
     limit: number
+
+    @IsString()
+    @IsOptional()
+    @ApiProperty({
+        required: false,
+        example: 'meeting daily',
+    })
+    searchQuery?: string
+
+    @IsOptional()
+    @ApiProperty({
+        required: false,
+        example: 'startTime',
+        enum: ['startTime', 'endTime'],
+    })
+    sortField?: string = 'startTime'
+
+    @IsOptional()
+    @ApiProperty({
+        required: false,
+        example: 'ASC',
+        enum: ['ASC', 'DESC'],
+    })
+    sortOrder?: 'ASC' | 'DESC' = 'ASC'
 }
 
 export class CreateMeetingDto {

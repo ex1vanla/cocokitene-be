@@ -40,7 +40,7 @@ export class AuthService {
         }
         // get message have to sign
         const signedMessage = getSignedMessage(user.nonce)
-        // verify signature
+        // // verify signature
         if (!isValidSignature(walletAddress, signature, signedMessage)) {
             throw new HttpException(
                 httpErrors.INVALID_SIGNATURE,
