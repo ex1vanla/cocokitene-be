@@ -44,7 +44,7 @@ export class UserSeederService {
             this.userStatusRepository.getUserStatusByStatusType(
                 UserStatusEnum.ACTIVE,
             ),
-            this.roleRepository.getRoleByName('USER_SUPER_ADMIN'),
+            this.roleRepository.getRoleByName('SUPER_ADMIN'),
         ])
         if (!userSupperAdminStatus) {
             Logger.error(
@@ -79,7 +79,7 @@ export class UserSeederService {
             this.userStatusRepository.getUserStatusByStatusType(
                 UserStatusEnum.ACTIVE,
             ),
-            this.roleRepository.getRoleByName('USER_ADMIN'),
+            this.roleRepository.getRoleByName('ADMIN'),
         ])
         if (!userAdminStatus) {
             Logger.error(
@@ -113,7 +113,7 @@ export class UserSeederService {
             this.userStatusRepository.getUserStatusByStatusType(
                 UserStatusEnum.ACTIVE,
             ),
-            this.roleRepository.getRoleByName('USER_NORMALLY'),
+            this.roleRepository.getRoleByName('USER'),
         ])
         if (!userNormallyStatus) {
             Logger.error(
@@ -147,7 +147,7 @@ export class UserSeederService {
                 this.userStatusRepository.getUserStatusByStatusType(
                     UserStatusEnum.ACTIVE,
                 ),
-                this.roleRepository.getRoleByName('USER_SHAREHOLDER'),
+                this.roleRepository.getRoleByName('SHAREHOLDER'),
             ])
         if (!userShareholderStatus) {
             Logger.error(

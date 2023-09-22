@@ -7,6 +7,7 @@ import { UserStatusRepository } from '@repositories/user-status.repository'
 import { RoleRepository } from '@repositories/role.repository'
 import { CreateUserDto } from 'libs/queries/src/dtos/user.dto'
 import { REGISTER_ACCOUNT_MESSAGE, UserStatusEnum } from '@shares/constants'
+import { IdDto } from 'libs/queries/src/dtos/base.dto'
 
 @Injectable()
 export class UserService {
@@ -17,10 +18,10 @@ export class UserService {
     ) {}
 
     async createUser(createUserDto: CreateUserDto): Promise<User> {
-        const { email, username, walletAddress, signature, roleName } =
+        const { email, username, walletAddress, signature, roleId } =
             createUserDto
 
-        //verify signature
+        // verify signature
         if (
             isValidSignature(walletAddress, signature, REGISTER_ACCOUNT_MESSAGE)
         ) {
@@ -57,9 +58,9 @@ export class UserService {
         //get unverified status and role user
         const [userStatus, role] = await Promise.all([
             this.userStatusRepository.getUserStatusByStatusType(
-                UserStatusEnum.UNVERIFIED,
+                UserStatusEnum.INACTIVE,
             ),
-            this.roleRepository.getRoleByName(roleName),
+            this.roleRepository.getRoleById(roleId),
         ])
         if (!userStatus) {
             throw new HttpException(
@@ -92,5 +93,14 @@ export class UserService {
             )
         }
         return createdUser
+    }
+    async getUserNonceByUserId(idDto: IdDto): Promise<string> {
+        const { id } = idDto
+        const user = await this.userRepository.findOne({
+            where: {
+                id: id,
+            },
+        })
+        return user.nonce
     }
 }

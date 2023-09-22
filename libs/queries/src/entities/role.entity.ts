@@ -5,10 +5,12 @@ import {
     Entity,
     JoinColumn,
     ManyToOne,
+    OneToMany,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm'
 import { Company } from '@entities/company.entity'
+import { RolePermission } from './role-permission.entity'
 
 @Entity('roles')
 export class Role extends BaseEntity {
@@ -45,4 +47,7 @@ export class Role extends BaseEntity {
 
     @UpdateDateColumn({ name: 'updated_at' })
     updatedAt: Date
+
+    @OneToMany(() => RolePermission, (rolePermission) => rolePermission.role)
+    rolePermissions: RolePermission[]
 }

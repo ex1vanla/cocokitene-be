@@ -13,8 +13,6 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import { JwtAuthGuard } from '@shares/guards/jwt-auth.guard'
 import { MeetingService } from '@api/modules/meetings/meeting.service'
 import { User } from '@entities/user.entity'
-import { Roles } from '@shares/decorators/role.decorator'
-import { RolesGuard } from '@shares/guards/role.guard'
 import { EmailService } from '@api/modules/emails/email.service'
 import {
     AttendMeetingDto,
@@ -34,11 +32,17 @@ export class MeetingController {
     @Get('')
     @HttpCode(HttpStatus.OK)
     @ApiBearerAuth()
-    @UseGuards(JwtAuthGuard)
-    async getAllMeetings(@Query() getAllMeetingDto: GetAllMeetingDto) {
-        console.log(getAllMeetingDto)
+    // @UseGuards(JwtAuthGuard)
+    // @Permission('list_meeting')
+    async getAllMeetings(
+        @Query() getAllMeetingDto: GetAllMeetingDto,
+        @UserScope() user: User,
+    ) {
+        console.log('user    ', user)
+        const companyId = user?.companyId
         const meetings = await this.meetingService.getAllMeetings(
             getAllMeetingDto,
+            companyId,
         )
         return {
             success: true,
@@ -47,8 +51,7 @@ export class MeetingController {
     }
 
     @Post('/send-email')
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles('USER_SUPER_ADMIN', 'USER_ADMIN')
+    @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.CREATED)
     @ApiBearerAuth()
     async sendEmailToShareHolder(
@@ -63,13 +66,17 @@ export class MeetingController {
     }
 
     @Post('/attendance-meeting')
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles('USER_SUPER_ADMIN', 'USER_ADMIN', 'USER_SHAREHOLDER')
+    @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.CREATED)
     @ApiBearerAuth()
-    async userAttendanceMeeting(@Body() attendMeetingDto: AttendMeetingDto) {
+    async userAttendanceMeeting(
+        @Body() attendMeetingDto: AttendMeetingDto,
+        @UserScope() user: User,
+    ) {
+        const userId = user.id
         const userMeetingData = await this.meetingService.attendanceMeeting(
             attendMeetingDto,
+            userId,
         )
         return {
             success: true,

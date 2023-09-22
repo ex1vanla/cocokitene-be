@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsString } from 'class-validator'
+import { IsEmail, IsInt, IsNotEmpty, IsString } from 'class-validator'
 import { ApiProperty } from '@nestjs/swagger'
 import { Transform } from 'class-transformer'
 
@@ -49,10 +49,10 @@ export class CreateUserDto {
     })
     signature: string
 
-    @IsString()
+    @IsInt()
     @IsNotEmpty()
     @ApiProperty({
-        example: 'USER_SUPER_ADMIN',
+        example: 1,
     })
-    roleName: string
+    roleId: number
 }

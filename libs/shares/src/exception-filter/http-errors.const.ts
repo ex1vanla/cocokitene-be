@@ -26,4 +26,9 @@ export const httpErrors = {
         message: 'Role not existed. Please try again',
         code: 'ROLE_00000',
     },
+    // meeting error
+    MEETING_NOT_EXISTED: {
+        message: 'Meeting not existed. Please try again',
+        code: 'Meeting_00000',
+    },
 }

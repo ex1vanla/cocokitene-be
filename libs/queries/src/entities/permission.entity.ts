@@ -3,10 +3,12 @@ import {
     Column,
     CreateDateColumn,
     Entity,
+    OneToMany,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm'
 import { PermissionEnum } from '@shares/constants/permission.const'
+import { RolePermission } from './role-permission.entity'
 
 @Entity('permissions')
 export class Permission extends BaseEntity {
@@ -34,4 +36,10 @@ export class Permission extends BaseEntity {
 
     @UpdateDateColumn({ name: 'updated_at' })
     updatedAt: Date
+
+    @OneToMany(
+        () => RolePermission,
+        (rolePermission) => rolePermission.permission,
+    )
+    rolePermissions: RolePermission[]
 }

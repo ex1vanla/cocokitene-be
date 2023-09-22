@@ -6,14 +6,8 @@ export class InsertUserStatusDto extends PartialType(UserStatus) {}
 
 export const userStatusesData: InsertUserStatusDto[] = [
     {
-        status: UserStatusEnum.UNVERIFIED,
-        description:
-            'User has unverified status that has been not verified through email yet',
-    },
-    {
-        status: UserStatusEnum.VERIFIED,
-        description:
-            'User has verified status that was verified through email, but user cannot login',
+        status: UserStatusEnum.INACTIVE,
+        description: 'User has inactive status that is not yet activated',
     },
     {
         status: UserStatusEnum.ACTIVE,

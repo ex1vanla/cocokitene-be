@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Injectable } from '@nestjs/common'
 
 import { UserRepository } from '@repositories/user.repository'
 import { ConfigService } from '@nestjs/config'
-import { MailerService } from '@nestjs-modules/mailer'
 import { In } from 'typeorm'
+import { MailerService } from '@nestjs-modules/mailer'
 import { MeetingRepository } from '@repositories/meeting.repository'
 import { IdMeetingDto } from 'libs/queries/src/dtos/meeting.dto'
 
@@ -24,7 +25,7 @@ export class EmailService {
             where: {
                 companyId,
                 role: {
-                    roleName: In(['USER_SHAREHOLDER', 'USER_ADMIN']),
+                    roleName: In(['SHAREHOLDER', 'ADMIN']),
                 },
             },
             select: ['email'],
@@ -45,15 +46,15 @@ export class EmailService {
       meetingInvitation: ${meeting.meetingInvitation}
     `
 
-        const recipientEmails = shareholders.map(
-            (shareholder) => shareholder.email,
-        )
-        for (const recipient of recipientEmails) {
-            await this.mailerService.sendMail({
-                to: recipient,
-                subject: 'Hello guys, this is meeting information',
-                text: emailContent,
-            })
-        }
+        // const recipientEmails = shareholders.map(
+        //     (shareholder) => shareholder.email,
+        // )
+        // for (const recipient of recipientEmails) {
+        //     await this.mailerService.sendMail({
+        //         to: recipient,
+        //         subject: 'Hello guys, this is meeting information',
+        //         text: emailContent,
+        //     })
+        // }
     }
 }

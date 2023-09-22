@@ -27,17 +27,20 @@ export class RolePermission extends BaseEntity {
     })
     permissionId: number
 
-    @ManyToOne(() => Role)
+    @ManyToOne(() => Role, (role) => role.rolePermissions)
     @JoinColumn({
         name: 'role_id',
     })
     role: Role
 
-    @ManyToOne(() => Permission)
+    @ManyToOne(() => Permission, (permission) => permission.rolePermissions, {
+        eager: true,
+    })
     @JoinColumn({
         name: 'permission_id',
     })
     permission: Permission
+
     @Column({
         name: 'description',
         type: 'varchar',

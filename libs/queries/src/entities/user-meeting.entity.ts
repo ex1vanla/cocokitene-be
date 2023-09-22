@@ -12,6 +12,7 @@ import { User } from '@entities/user.entity'
 import { Role } from '@entities/role.entity'
 import { Meeting } from '@entities/meeting.entity'
 import { UserMeetingStatusEnum } from '@shares/constants/meeting.const'
+
 @Entity('user_meetings')
 export class UserMeeting extends BaseEntity {
     @PrimaryGeneratedColumn()
@@ -28,7 +29,7 @@ export class UserMeeting extends BaseEntity {
         type: 'enum',
         enum: UserMeetingStatusEnum,
         nullable: false,
-        default: UserMeetingStatusEnum.TODO,
+        default: UserMeetingStatusEnum.ABSENCE,
     })
     status: UserMeetingStatusEnum
 

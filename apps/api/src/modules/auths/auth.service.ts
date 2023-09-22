@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { UserRepository } from '@repositories/user.repository'
 import { ConfigService } from '@nestjs/config'
@@ -17,12 +18,18 @@ import {
     verifyAccessTokenJWT,
 } from '@shares/utils/jwt'
 import { LoginDto, RefreshTokenDto } from 'libs/queries/src/dtos/auth.dto'
+import { UserRole } from '@entities/user-role.entity'
+import { RolePermission } from '@entities/role-permission.entity'
+import { Permission } from '@entities/permission.entity'
+import { Role } from '@entities/role.entity'
+import { RoleRepository } from '@repositories/role.repository'
 
 @Injectable()
 export class AuthService {
     constructor(
         private readonly userRepository: UserRepository,
         private readonly configService: ConfigService,
+        private readonly roleRepository: RoleRepository,
     ) {}
 
     async login(loginDto: LoginDto): Promise<LoginResponseData> {
@@ -32,6 +39,7 @@ export class AuthService {
             walletAddress,
             UserStatusEnum.ACTIVE,
         )
+
         if (!user) {
             throw new HttpException(
                 httpErrors.USER_NOT_FOUND,
@@ -64,19 +72,26 @@ export class AuthService {
         let accessToken
         let refreshToken
         let userData
+
         try {
+            const roleId = user.roleId
+            const permissionKeys =
+                await this.roleRepository.getPermissionsByRoleId(roleId)
             userData = {
                 id: user.id,
                 walletAddress: user.walletAddress,
                 username: user.username,
                 email: user.email,
-                role: user.role.roleName,
+                companyId: user.companyId,
+                permissionKeys,
             }
+
             accessToken = generateAccessJWT(userData, {
                 expiresIn: Number(
                     this.configService.get('api.accessTokenExpireInSec'),
                 ),
             })
+
             refreshToken = generateRefreshTokenJWT(userData, {
                 expiresIn: Number(
                     this.configService.get('api.refreshTokenExpireInSec'),
@@ -88,6 +103,7 @@ export class AuthService {
                 HttpStatus.INTERNAL_SERVER_ERROR,
             )
         }
+
         return {
             userData,
             accessToken,

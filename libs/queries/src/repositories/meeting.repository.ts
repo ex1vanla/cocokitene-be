@@ -10,6 +10,7 @@ import { GetAllMeetingDto } from '../dtos'
 @CustomRepository(Meeting)
 export class MeetingRepository extends Repository<Meeting> {
     async getAllMeetings(
+        companyId: number,
         options: IPaginationOptions & GetAllMeetingDto,
     ): Promise<Pagination<Meeting>> {
         const searchQuery = options.searchQuery || ''
@@ -25,18 +26,18 @@ export class MeetingRepository extends Repository<Meeting> {
                 'meetings.meetingReport',
                 'meetings.meetingInvitation',
             ])
-
             .leftJoinAndSelect('meetings.company', 'company')
-            .where('meetings.title LIKE :searchQuery', {
+            .where('meetings.companyId= :companyId', {
+                companyId: companyId,
+            })
+            .andWhere('meetings.title LIKE :searchQuery', {
                 searchQuery: `%${searchQuery}%`,
             })
-
         if (sortField && sortOrder) {
             queryBuilder.orderBy(`meetings.${sortField}`, sortOrder)
         }
         return paginate(queryBuilder, options)
     }
-
     async getMeetingById(id: number): Promise<Meeting> {
         const meeting = await this.findOne({
             where: {

@@ -5,7 +5,6 @@ import { NestFactory, Reflector } from '@nestjs/core'
 import { HttpExceptionFilter } from '@shares/exception-filter'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import { JwtAuthGuard } from '@shares/guards/jwt-auth.guard'
-import { RolesGuard } from '@shares/guards/role.guard'
 
 async function bootstrap() {
     const app = await NestFactory.create(ApiModule)
@@ -24,8 +23,9 @@ async function bootstrap() {
     )
 
     app.useGlobalFilters(new HttpExceptionFilter())
-    app.useGlobalGuards(new JwtAuthGuard())
-    app.useGlobalGuards(new RolesGuard(new Reflector()))
+    app.useGlobalGuards(new JwtAuthGuard(new Reflector()))
+    // app.useGlobalGuards(new JwtAuthGuard())
+    // app.useGlobalGuards(new RolesGuard(new Reflector()))
 
     const swaggerConfig = new DocumentBuilder()
         .setTitle('Cocokitene API docs')

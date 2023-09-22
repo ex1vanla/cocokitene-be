@@ -7,10 +7,7 @@ import { UserRepository } from '@repositories/user.repository'
 import { CompanyService } from '@api/modules/companys/company.service'
 import { UserMeeting } from '@entities/user-meeting.entity'
 import { httpErrors } from '@shares/exception-filter'
-import { uuid } from '@shares/utils/uuid'
 import { UserMeetingRepoisitory } from '@repositories/user-meeting.repoisitory'
-import { getSignedMessage, isValidSignature } from '@shares/utils/web3'
-import { UserStatusEnum } from '@shares/constants'
 import { UserMeetingStatusEnum } from '@shares/constants/meeting.const'
 import {
     AttendMeetingDto,
@@ -28,8 +25,10 @@ export class MeetingService {
 
     async getAllMeetings(
         getAllMeetingDto: GetAllMeetingDto,
+        companyId: number,
     ): Promise<Pagination<Meeting>> {
         const meetings = await this.meetingRepository.getAllMeetings(
+            companyId,
             getAllMeetingDto,
         )
         return meetings
@@ -37,57 +36,22 @@ export class MeetingService {
 
     async attendanceMeeting(
         attendMeetingDto: AttendMeetingDto,
+        userId: number,
     ): Promise<UserMeeting> {
-        const { meetingId, walletAddress, signature } = attendMeetingDto
-        // check user exist
-        const user = await this.userRepository.getUserByWalletAddress(
-            walletAddress,
-            UserStatusEnum.ACTIVE,
-        )
-        if (!user) {
+        const { meetingId } = attendMeetingDto
+        const userMeeting =
+            await this.userMeetingRepoisitory.getMeetingByMeetingId(
+                meetingId,
+                userId,
+            )
+
+        if (!userMeeting) {
             throw new HttpException(
-                httpErrors.USER_NOT_FOUND,
+                httpErrors.MEETING_NOT_EXISTED,
                 HttpStatus.NOT_FOUND,
             )
         }
-        // get message have to sign
-        const signedMessage = getSignedMessage(user.nonce)
-        // // verify signature
-        if (!isValidSignature(walletAddress, signature, signedMessage)) {
-            throw new HttpException(
-                httpErrors.INVALID_SIGNATURE,
-                HttpStatus.BAD_REQUEST,
-            )
-        }
-        //update nonce();
-        user.nonce = uuid()
-        await user.save()
-        let createdUserMeeting: UserMeeting
-        try {
-            createdUserMeeting = await this.userMeetingRepoisitory.create({
-                userId: user.id,
-                meetingId: meetingId,
-                status: UserMeetingStatusEnum.DOING,
-                createdAt: new Date(),
-                updatedAt: new Date(),
-            })
-            await createdUserMeeting.save()
-            const currentTime = Date.now()
-            const meeting = await this.meetingRepository.findOne({
-                where: {
-                    id: meetingId,
-                },
-            })
-            if (currentTime > meeting.endTime.getTime()) {
-                createdUserMeeting.status = UserMeetingStatusEnum.DONE
-            }
-            await createdUserMeeting.save()
-        } catch (error) {
-            throw new HttpException(
-                error.message,
-                HttpStatus.INTERNAL_SERVER_ERROR,
-            )
-        }
-        return createdUserMeeting
+        userMeeting.status = UserMeetingStatusEnum.PARTICIPATE
+        return userMeeting
     }
 }
