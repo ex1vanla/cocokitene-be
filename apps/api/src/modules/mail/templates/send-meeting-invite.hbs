@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        p { font-size: 14px; line-height: 17px; } a { font-size: 14px;}
+    </style>
+</head>
+<body>
+<h1>Please attend the meeting</h1>
+<p>Hello guys</p>
+<p>You are invited to attend the following meeting:</p>
+<p><strong>Name of meeting:</strong> {{ meetingTitle }}</p>
+<p><strong>Meeting start at  :</strong> {{ meetingStartTime }}</p>
+<p><strong> and end at:</strong> {{ meetingEndTime }}</p>
+<p>Below are links related to the meeting:</p>
+<a href="{{ meetingLink }}">Meeting link of the meeting</a>
+<a href="{{ meetingReport }}">Meeting report link of the meeting</a>
+<a href="{{ meetingInvitation }}">Meeting invitation link of the meeting</a>
+<p>Best regards</p>
+</body>
+</html>

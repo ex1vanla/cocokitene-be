@@ -36,16 +36,6 @@ export class EmailService {
                 id: meetingId,
             },
         })
-
-        const emailContent = `
-      meeting topic: ${meeting.title}
-      startTime: ${meeting.startTime}
-      endTime: ${meeting.endTime || 'unknown'}
-      meetingLink: ${meeting.meetingLink}
-      meetingReport: ${meeting.meetingReport}
-      meetingInvitation: ${meeting.meetingInvitation}
-    `
-
         const recipientEmails = shareholders.map(
             (shareholder) => shareholder.email,
         )
@@ -53,7 +43,15 @@ export class EmailService {
             await this.mailerService.sendMail({
                 to: recipient,
                 subject: 'Hello guys, this is meeting information',
-                text: emailContent,
+                template: 'send-meeting-invite',
+                context: {
+                    meetingTitle: meeting.title,
+                    meetingStartTime: meeting.startTime,
+                    meetingEndTime: meeting.endTime || 'unknown',
+                    meetingLink: meeting.meetingLink,
+                    meetingReport: meeting.meetingReport,
+                    meetingInvitation: meeting.meetingInvitation,
+                },
             })
         }
     }

@@ -13,13 +13,13 @@ export class LoginDto {
     })
     walletAddress: string
 
-    // @IsString()
-    // @IsNotEmpty()
-    // @ApiProperty({
-    //     example:
-    //         '0x7558dbb143dc091343a3f8244e815132a14243a4dae899a02b23716da839945f7e436876882f59a30c5a768c32fb512f68232626fc81d6f0053ebcda3de90d191b',
-    // })
-    // signature: string
+    @IsString()
+    @IsNotEmpty()
+    @ApiProperty({
+        example:
+            '0x7558dbb143dc091343a3f8244e815132a14243a4dae899a02b23716da839945f7e436876882f59a30c5a768c32fb512f68232626fc81d6f0053ebcda3de90d191b',
+    })
+    signature: string
 }
 export class RefreshTokenDto {
     @IsString()

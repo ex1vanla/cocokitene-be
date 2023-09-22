@@ -39,7 +39,6 @@ export class MeetingController {
         @Query() getAllMeetingDto: GetAllMeetingDto,
         @UserScope() user: User,
     ) {
-        console.log('user    ', user)
         const companyId = user?.companyId
         const meetings = await this.meetingService.getAllMeetings(
             getAllMeetingDto,

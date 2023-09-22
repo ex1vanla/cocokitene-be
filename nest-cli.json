@@ -6,7 +6,9 @@
   "root": "apps/api",
   "compilerOptions": {
     "webpack": true,
-    "tsConfigPath": "apps/api/tsconfig.app.json"
+    "tsConfigPath": "apps/api/tsconfig.app.json",
+    "assets": ["modules/mail/templates/**"],
+    "watchAssets": true
   },
   "projects": {
     "api": {

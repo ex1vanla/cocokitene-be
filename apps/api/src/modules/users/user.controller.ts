@@ -8,18 +8,6 @@ import { UserService } from './user.service'
 export class UserController {
     constructor(private readonly userService: UserService) {}
 
-    // @Post()
-    // @HttpCode(HttpStatus.CREATED)
-    // @UseGuards(JwtAuthGuard)
-    // @Permission('create_account')
-    // async createUser(@Body() createUserDto: CreateUserDto) {
-    //     const createdUser = await this.userService.createUser(createUserDto)
-    //     return {
-    //         success: true,
-    //         content: createdUser,
-    //     }
-    // }
-
     @Get('')
     @HttpCode(HttpStatus.OK)
     @ApiBearerAuth()
