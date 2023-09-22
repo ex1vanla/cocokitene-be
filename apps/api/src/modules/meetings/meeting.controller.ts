@@ -71,6 +71,7 @@ export class MeetingController {
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.CREATED)
     @ApiBearerAuth()
+    @Permission('paticipate_meeting')
     async userAttendanceMeeting(
         @Body() attendMeetingDto: AttendMeetingDto,
         @UserScope() user: User,

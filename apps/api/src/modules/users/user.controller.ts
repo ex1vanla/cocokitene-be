@@ -1,31 +1,24 @@
-import {
-    Body,
-    Controller,
-    Get,
-    HttpCode,
-    HttpStatus,
-    Post,
-    Query,
-} from '@nestjs/common'
-import { UserService } from '@api/modules/users/user.service'
+import { Controller, Get, HttpCode, HttpStatus, Query } from '@nestjs/common'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
-import { CreateUserDto } from 'libs/queries/src/dtos/user.dto'
 import { WalletAddressDto } from 'libs/queries/src/dtos/base.dto'
+import { UserService } from './user.service'
 
 @Controller('users')
 @ApiTags('users')
 export class UserController {
     constructor(private readonly userService: UserService) {}
 
-    @Post()
-    @HttpCode(HttpStatus.CREATED)
-    async createUser(@Body() createUserDto: CreateUserDto) {
-        const createdUser = await this.userService.createUser(createUserDto)
-        return {
-            success: true,
-            content: createdUser,
-        }
-    }
+    // @Post()
+    // @HttpCode(HttpStatus.CREATED)
+    // @UseGuards(JwtAuthGuard)
+    // @Permission('create_account')
+    // async createUser(@Body() createUserDto: CreateUserDto) {
+    //     const createdUser = await this.userService.createUser(createUserDto)
+    //     return {
+    //         success: true,
+    //         content: createdUser,
+    //     }
+    // }
 
     @Get('')
     @HttpCode(HttpStatus.OK)

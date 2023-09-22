@@ -1,4 +1,11 @@
-import { IsEmail, IsInt, IsNotEmpty, IsString } from 'class-validator'
+import {
+    ArrayMinSize,
+    IsArray,
+    IsEmail,
+    IsInt,
+    IsNotEmpty,
+    IsString,
+} from 'class-validator'
 import { ApiProperty } from '@nestjs/swagger'
 import { Transform } from 'class-transformer'
 
@@ -41,10 +48,12 @@ export class CreateUserDto {
     })
     walletAddress: string
 
-    @IsInt()
+    @IsArray()
     @IsNotEmpty()
+    @ArrayMinSize(1)
+    @IsInt({ each: true })
     @ApiProperty({
         example: 1,
     })
-    roleId: number
+    roleIds: number[]
 }

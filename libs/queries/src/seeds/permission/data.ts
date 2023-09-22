@@ -51,4 +51,9 @@ export const permissionData: InsertPermissionDto[] = [
         key: PermissionEnum.SEND_MAIL_TO_SHAREHOLDER,
         description: 'the user with this right can send email to shareholders',
     },
+    {
+        key: PermissionEnum.PARTICIPATE_MEETING,
+        description:
+            'the user with this right can participate in the meeting of company',
+    },
 ]

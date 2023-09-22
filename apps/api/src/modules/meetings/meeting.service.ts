@@ -6,7 +6,6 @@ import { Pagination } from 'nestjs-typeorm-paginate'
 import { UserRepository } from '@repositories/user.repository'
 import { CompanyService } from '@api/modules/companys/company.service'
 import { UserMeeting } from '@entities/user-meeting.entity'
-import { httpErrors } from '@shares/exception-filter'
 import { UserMeetingRepoisitory } from '@repositories/user-meeting.repoisitory'
 import { UserMeetingStatusEnum } from '@shares/constants/meeting.const'
 import {
@@ -39,19 +38,21 @@ export class MeetingService {
         userId: number,
     ): Promise<UserMeeting> {
         const { meetingId } = attendMeetingDto
-        const userMeeting =
-            await this.userMeetingRepoisitory.getMeetingByMeetingId(
-                meetingId,
-                userId,
-            )
-
-        if (!userMeeting) {
+        let createUserMeeting: UserMeeting
+        try {
+            createUserMeeting = await this.userMeetingRepoisitory.create({
+                userId: userId,
+                meetingId: meetingId,
+                status: UserMeetingStatusEnum.PARTICIPATE,
+            })
+            await createUserMeeting.save()
+        } catch (error) {
             throw new HttpException(
-                httpErrors.MEETING_NOT_EXISTED,
-                HttpStatus.NOT_FOUND,
+                error.message,
+                HttpStatus.INTERNAL_SERVER_ERROR,
             )
         }
-        userMeeting.status = UserMeetingStatusEnum.PARTICIPATE
-        return userMeeting
+
+        return createUserMeeting
     }
 }

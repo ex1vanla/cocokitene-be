@@ -22,13 +22,13 @@ export class UserRole extends BaseEntity {
     @Column({ nullable: false, name: 'role_id', type: 'integer', width: 11 })
     roleId: number
 
-    @ManyToOne(() => User)
+    @ManyToOne(() => User, (user) => user.userRole)
     @JoinColumn({
         name: 'user_id',
     })
     user: User
 
-    @ManyToOne(() => Role)
+    @ManyToOne(() => Role, (role) => role.userRole)
     @JoinColumn({
         name: 'role_id',
     })

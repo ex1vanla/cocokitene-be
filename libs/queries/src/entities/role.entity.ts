@@ -11,6 +11,7 @@ import {
 } from 'typeorm'
 import { Company } from '@entities/company.entity'
 import { RolePermission } from './role-permission.entity'
+import { UserRole } from '@entities/user-role.entity'
 
 @Entity('roles')
 export class Role extends BaseEntity {
@@ -50,4 +51,7 @@ export class Role extends BaseEntity {
 
     @OneToMany(() => RolePermission, (rolePermission) => rolePermission.role)
     rolePermissions: RolePermission[]
+
+    @OneToMany(() => UserRole, (userRole) => userRole.role)
+    userRole: UserRole[]
 }

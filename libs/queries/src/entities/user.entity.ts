@@ -5,12 +5,14 @@ import {
     Entity,
     JoinColumn,
     ManyToOne,
+    OneToMany,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm'
 import { UserStatus } from '@entities/user-status.entity'
 import { Role } from '@entities/role.entity'
 import { Company } from '@entities/company.entity'
+import { UserRole } from '@entities/user-role.entity'
 
 @Entity('users')
 export class User extends BaseEntity {
@@ -94,4 +96,7 @@ export class User extends BaseEntity {
         name: 'active_time',
     })
     activeTime: Date
+
+    @OneToMany(() => UserRole, (userRole) => userRole.user)
+    userRole: UserRole[]
 }

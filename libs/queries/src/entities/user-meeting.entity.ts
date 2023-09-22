@@ -41,7 +41,7 @@ export class UserMeeting extends BaseEntity {
 
     @ManyToOne(() => Role)
     @JoinColumn({
-        name: 'role_id',
+        name: 'meeting_id',
     })
     meeting: Meeting
 
