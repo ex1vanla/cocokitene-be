@@ -20,6 +20,7 @@ import {
     IdMeetingDto,
 } from 'libs/queries/src/dtos/meeting.dto'
 import { UserScope } from '@shares/decorators/user.decorator'
+import { Permission } from '@shares/decorators/permission.decorator'
 
 @Controller('meetings')
 @ApiTags('meetings')
@@ -32,8 +33,8 @@ export class MeetingController {
     @Get('')
     @HttpCode(HttpStatus.OK)
     @ApiBearerAuth()
-    // @UseGuards(JwtAuthGuard)
-    // @Permission('list_meeting')
+    @UseGuards(JwtAuthGuard)
+    @Permission('list_meeting')
     async getAllMeetings(
         @Query() getAllMeetingDto: GetAllMeetingDto,
         @UserScope() user: User,

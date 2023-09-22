@@ -9,6 +9,7 @@ import * as _ from 'lodash'
 import { verifyAccessTokenJWT } from '@shares/utils/jwt'
 import { Reflector } from '@nestjs/core'
 import { PERMISSION_KEY } from '@shares/decorators/permission.decorator'
+
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
     constructor(private readonly reflector: Reflector) {}
@@ -17,7 +18,7 @@ export class JwtAuthGuard implements CanActivate {
         try {
             const permissionKey = this.reflector.get<string>(
                 PERMISSION_KEY,
-                context.getHandler,
+                context.getHandler(),
             )
             if (!permissionKey) {
                 return true

@@ -1,12 +1,11 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { UserRepository } from '@repositories/user.repository'
 import { User } from '@entities/user.entity'
-import { isValidSignature } from '@shares/utils'
 import { httpErrors } from '@shares/exception-filter'
 import { UserStatusRepository } from '@repositories/user-status.repository'
 import { RoleRepository } from '@repositories/role.repository'
 import { CreateUserDto } from 'libs/queries/src/dtos/user.dto'
-import { REGISTER_ACCOUNT_MESSAGE, UserStatusEnum } from '@shares/constants'
+import { UserStatusEnum } from '@shares/constants'
 import { IdDto } from 'libs/queries/src/dtos/base.dto'
 
 @Injectable()
@@ -18,18 +17,7 @@ export class UserService {
     ) {}
 
     async createUser(createUserDto: CreateUserDto): Promise<User> {
-        const { email, username, walletAddress, signature, roleId } =
-            createUserDto
-
-        // verify signature
-        if (
-            isValidSignature(walletAddress, signature, REGISTER_ACCOUNT_MESSAGE)
-        ) {
-            throw new HttpException(
-                httpErrors.INVALID_SIGNATURE,
-                HttpStatus.BAD_REQUEST,
-            )
-        }
+        const { email, username, walletAddress, roleId } = createUserDto
 
         // check email existed
         const existedUserEmail = await this.userRepository.getActiveUserByEmail(
