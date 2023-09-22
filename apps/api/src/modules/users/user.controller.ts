@@ -4,16 +4,13 @@ import {
     Get,
     HttpCode,
     HttpStatus,
-    Param,
     Post,
-    UseGuards,
+    Query,
 } from '@nestjs/common'
 import { UserService } from '@api/modules/users/user.service'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import { CreateUserDto } from 'libs/queries/src/dtos/user.dto'
-import { JwtAuthGuard } from '@shares/guards/jwt-auth.guard'
-import { Permission } from '@shares/decorators/permission.decorator'
-import { IdDto } from 'libs/queries/src/dtos/base.dto'
+import { WalletAddressDto } from 'libs/queries/src/dtos/base.dto'
 
 @Controller('users')
 @ApiTags('users')
@@ -30,13 +27,16 @@ export class UserController {
         }
     }
 
-    @Get(':userId')
+    @Get('')
     @HttpCode(HttpStatus.OK)
     @ApiBearerAuth()
-    @UseGuards(JwtAuthGuard)
-    @Permission('detail_account')
-    async getNonceByUserId(@Param() userId: IdDto) {
-        const nonceValue = await this.userService.getUserNonceByUserId(userId)
+    async getNonceByUserWalletAddress(
+        @Query() walletAddressDto: WalletAddressDto,
+    ) {
+        const nonceValue =
+            await this.userService.getUserNonceByUserWalletAddress(
+                walletAddressDto,
+            )
         return {
             success: true,
             content: nonceValue,

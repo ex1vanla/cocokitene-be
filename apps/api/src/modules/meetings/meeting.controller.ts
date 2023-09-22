@@ -55,6 +55,7 @@ export class MeetingController {
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.CREATED)
     @ApiBearerAuth()
+    @Permission('send_mail_to_shareholder')
     async sendEmailToShareHolder(
         @Body() idMeetingDto: IdMeetingDto,
         @UserScope() user: User,

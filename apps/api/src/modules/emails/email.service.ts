@@ -46,15 +46,15 @@ export class EmailService {
       meetingInvitation: ${meeting.meetingInvitation}
     `
 
-        // const recipientEmails = shareholders.map(
-        //     (shareholder) => shareholder.email,
-        // )
-        // for (const recipient of recipientEmails) {
-        //     await this.mailerService.sendMail({
-        //         to: recipient,
-        //         subject: 'Hello guys, this is meeting information',
-        //         text: emailContent,
-        //     })
-        // }
+        const recipientEmails = shareholders.map(
+            (shareholder) => shareholder.email,
+        )
+        for (const recipient of recipientEmails) {
+            await this.mailerService.sendMail({
+                to: recipient,
+                subject: 'Hello guys, this is meeting information',
+                text: emailContent,
+            })
+        }
     }
 }

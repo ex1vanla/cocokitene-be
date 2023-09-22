@@ -6,7 +6,7 @@ import { UserStatusRepository } from '@repositories/user-status.repository'
 import { RoleRepository } from '@repositories/role.repository'
 import { CreateUserDto } from 'libs/queries/src/dtos/user.dto'
 import { UserStatusEnum } from '@shares/constants'
-import { IdDto } from 'libs/queries/src/dtos/base.dto'
+import { WalletAddressDto } from 'libs/queries/src/dtos/base.dto'
 
 @Injectable()
 export class UserService {
@@ -82,11 +82,13 @@ export class UserService {
         }
         return createdUser
     }
-    async getUserNonceByUserId(idDto: IdDto): Promise<string> {
-        const { id } = idDto
+    async getUserNonceByUserWalletAddress(
+        walletAddressDto: WalletAddressDto,
+    ): Promise<string> {
+        const { walletAddress } = walletAddressDto
         const user = await this.userRepository.findOne({
             where: {
-                id: id,
+                walletAddress: walletAddress,
             },
         })
         return user.nonce
