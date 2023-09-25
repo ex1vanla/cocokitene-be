@@ -7,6 +7,7 @@ import {
 } from 'nestjs-typeorm-paginate'
 import { Meeting } from '@entities/meeting.entity'
 import { GetAllMeetingDto } from '../dtos'
+import { MeetingType } from '@shares/constants/meeting.const'
 
 @CustomRepository(Meeting)
 export class MeetingRepository extends Repository<Meeting> {
@@ -17,6 +18,7 @@ export class MeetingRepository extends Repository<Meeting> {
         const searchQuery = options.searchQuery || ''
         const sortField = options.sortField
         const sortOrder = options.sortOrder
+        const type = options.type
         const queryBuilder = this.createQueryBuilder('meetings')
             .select([
                 'meetings.id',
@@ -34,11 +36,21 @@ export class MeetingRepository extends Repository<Meeting> {
             .andWhere('meetings.title LIKE :searchQuery', {
                 searchQuery: `%${searchQuery}%`,
             })
+        if (type == MeetingType.FUTURE) {
+            queryBuilder.andWhere('meetings.startTime >= :currentDateTime', {
+                currentDateTime: new Date(),
+            })
+        } else {
+            queryBuilder.andWhere('meetings.endTime <= :currentDateTime', {
+                currentDateTime: new Date(),
+            })
+        }
         if (sortField && sortOrder) {
             queryBuilder.orderBy(`meetings.${sortField}`, sortOrder)
         }
         return paginate(queryBuilder, options)
     }
+
     async getMeetingById(id: number): Promise<Meeting> {
         const meeting = await this.findOne({
             where: {

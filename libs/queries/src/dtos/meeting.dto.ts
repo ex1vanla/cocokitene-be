@@ -9,6 +9,7 @@ import {
 import { ApiProperty } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
 import { Sort_By_Field, Sort_By_Order } from '@shares/constants/base.const'
+import { MeetingType } from '@shares/constants/meeting.const'
 
 export class GetAllMeetingDto {
     @IsNumber()
@@ -54,6 +55,16 @@ export class GetAllMeetingDto {
         enum: Sort_By_Order,
     })
     sortOrder?: Sort_By_Order
+
+    @IsNotEmpty()
+    @IsEnum(MeetingType)
+    @ApiProperty({
+        required: false,
+        example: MeetingType.FUTURE,
+        default: MeetingType.FUTURE,
+        enum: MeetingType,
+    })
+    type: MeetingType
 }
 
 export class CreateMeetingDto {

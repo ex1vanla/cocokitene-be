@@ -33,7 +33,10 @@ export class AuthService {
     ) {}
 
     async login(loginDto: LoginDto): Promise<LoginResponseData> {
-        const { walletAddress, signature } = loginDto
+        const {
+            walletAddress,
+            // , signature
+        } = loginDto
         // check user exists
         const user = await this.userRepository.getUserByWalletAddress(
             walletAddress,
@@ -47,14 +50,14 @@ export class AuthService {
             )
         }
         // get message have to sign
-        const signedMessage = getSignedMessage(user.nonce)
+        // const signedMessage = getSignedMessage(user.nonce)
         // // verify signature
-        if (!isValidSignature(walletAddress, signature, signedMessage)) {
-            throw new HttpException(
-                httpErrors.INVALID_SIGNATURE,
-                HttpStatus.BAD_REQUEST,
-            )
-        }
+        // if (!isValidSignature(walletAddress, signature, signedMessage)) {
+        //     throw new HttpException(
+        //         httpErrors.INVALID_SIGNATURE,
+        //         HttpStatus.BAD_REQUEST,
+        //     )
+        // }
         //update nonce();
         user.nonce = uuid()
         await user.save()
