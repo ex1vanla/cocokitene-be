@@ -21,6 +21,7 @@ import {
 } from 'libs/queries/src/dtos/meeting.dto'
 import { UserScope } from '@shares/decorators/user.decorator'
 import { Permission } from '@shares/decorators/permission.decorator'
+import { PermissionEnum } from '@shares/constants/permission.const'
 
 @Controller('meetings')
 @ApiTags('meetings')
@@ -34,7 +35,7 @@ export class MeetingController {
     @HttpCode(HttpStatus.OK)
     @ApiBearerAuth()
     @UseGuards(JwtAuthGuard)
-    @Permission('list_meeting')
+    @Permission(PermissionEnum.LIST_MEETING)
     async getAllMeetings(
         @Query() getAllMeetingDto: GetAllMeetingDto,
         @UserScope() user: User,
@@ -45,8 +46,7 @@ export class MeetingController {
             companyId,
         )
         return {
-            success: true,
-            content: meetings,
+            meetings,
         }
     }
 
@@ -54,14 +54,13 @@ export class MeetingController {
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.CREATED)
     @ApiBearerAuth()
-    @Permission('send_mail_to_shareholder')
+    @Permission(PermissionEnum.SEND_MAIL_TO_SHAREHOLDER)
     async sendEmailToShareHolder(
         @Body() idMeetingDto: IdMeetingDto,
         @UserScope() user: User,
     ) {
         await this.emailService.sendEmail(idMeetingDto, user.companyId)
         return {
-            success: true,
             content: 'Emails sent successfully',
         }
     }
@@ -70,7 +69,7 @@ export class MeetingController {
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.CREATED)
     @ApiBearerAuth()
-    @Permission('paticipate_meeting')
+    @Permission(PermissionEnum.PARTICIPATE_MEETING)
     async userAttendanceMeeting(
         @Body() attendMeetingDto: AttendMeetingDto,
         @UserScope() user: User,
@@ -81,8 +80,7 @@ export class MeetingController {
             userId,
         )
         return {
-            success: true,
-            content: userMeetingData,
+            userMeetingData,
         }
     }
 }

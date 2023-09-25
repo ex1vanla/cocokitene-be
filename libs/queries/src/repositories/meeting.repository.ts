@@ -7,6 +7,7 @@ import {
 } from 'nestjs-typeorm-paginate'
 import { Meeting } from '@entities/meeting.entity'
 import { GetAllMeetingDto } from '../dtos'
+
 @CustomRepository(Meeting)
 export class MeetingRepository extends Repository<Meeting> {
     async getAllMeetings(

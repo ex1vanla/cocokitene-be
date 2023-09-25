@@ -19,8 +19,7 @@ export class UserController {
                 walletAddressDto,
             )
         return {
-            success: true,
-            content: nonceValue,
+            nonceValue,
         }
     }
 }

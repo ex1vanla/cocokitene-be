@@ -12,6 +12,7 @@ import {
     AttendMeetingDto,
     GetAllMeetingDto,
 } from 'libs/queries/src/dtos/meeting.dto'
+import { httpErrors } from '@shares/exception-filter'
 
 @Injectable()
 export class MeetingService {
@@ -38,14 +39,22 @@ export class MeetingService {
         userId: number,
     ): Promise<UserMeeting> {
         const { meetingId } = attendMeetingDto
-        let createUserMeeting: UserMeeting
+        let userMeeting: UserMeeting
         try {
-            createUserMeeting = await this.userMeetingRepoisitory.create({
-                userId: userId,
-                meetingId: meetingId,
-                status: UserMeetingStatusEnum.PARTICIPATE,
+            userMeeting = await this.userMeetingRepoisitory.findOne({
+                where: {
+                    userId: userId,
+                    meetingId: meetingId,
+                },
             })
-            await createUserMeeting.save()
+            if (!userMeeting) {
+                throw new HttpException(
+                    httpErrors.USER_MEETING_NOT_FOUND,
+                    HttpStatus.NOT_FOUND,
+                )
+            }
+            userMeeting.status = UserMeetingStatusEnum.PARTICIPATE
+            await userMeeting.save()
         } catch (error) {
             throw new HttpException(
                 error.message,
@@ -53,6 +62,6 @@ export class MeetingService {
             )
         }
 
-        return createUserMeeting
+        return userMeeting
     }
 }

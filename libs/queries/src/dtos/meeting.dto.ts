@@ -1,4 +1,5 @@
 import {
+    IsEnum,
     IsInt,
     IsNotEmpty,
     IsNumber,
@@ -7,6 +8,7 @@ import {
 } from 'class-validator'
 import { ApiProperty } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
+import { Sort_By_Field, Sort_By_Order } from '@shares/constants/base.const'
 
 export class GetAllMeetingDto {
     @IsNumber()
@@ -34,20 +36,24 @@ export class GetAllMeetingDto {
     searchQuery?: string
 
     @IsOptional()
+    @IsEnum(Sort_By_Field)
     @ApiProperty({
         required: false,
-        example: 'startTime',
-        enum: ['startTime', 'endTime'],
+        example: Sort_By_Field.START_TIME,
+        default: Sort_By_Field.START_TIME,
+        enum: Sort_By_Field,
     })
-    sortField?: string = 'startTime'
+    sortField?: Sort_By_Field
 
     @IsOptional()
+    @IsEnum(Sort_By_Order)
     @ApiProperty({
         required: false,
-        example: 'ASC',
-        enum: ['ASC', 'DESC'],
+        example: Sort_By_Order.ASC,
+        default: Sort_By_Order.ASC,
+        enum: Sort_By_Order,
     })
-    sortOrder?: 'ASC' | 'DESC' = 'ASC'
+    sortOrder?: Sort_By_Order
 }
 
 export class CreateMeetingDto {

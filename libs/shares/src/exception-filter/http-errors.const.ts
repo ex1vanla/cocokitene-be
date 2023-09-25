@@ -31,4 +31,9 @@ export const httpErrors = {
         message: 'Meeting not existed. Please try again',
         code: 'Meeting_00000',
     },
+    USER_MEETING_NOT_FOUND: {
+        message:
+            'Meeting with userId and meetingId not found. Please try again',
+        code: 'Meeting_00001',
+    },
 }

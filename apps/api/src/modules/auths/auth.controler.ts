@@ -21,8 +21,7 @@ export class AuthControler {
     async login(@Body() loginDto: LoginDto) {
         const loginData = await this.authService.login(loginDto)
         return {
-            success: true,
-            content: loginData,
+            loginData,
         }
     }
 
@@ -33,8 +32,7 @@ export class AuthControler {
             refreshTokenDto,
         )
         return {
-            success: true,
-            content: newAccessToken,
+            newAccessToken,
         }
     }
 }
