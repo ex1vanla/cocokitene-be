@@ -37,7 +37,7 @@ export class MeetingController {
     @ApiBearerAuth()
     @UseGuards(JwtAuthGuard)
     @Permission(PermissionEnum.LIST_MEETING)
-    async getAllMeetingsTypeFuture(
+    async getAllMeetings(
         @Query() getAllMeetingDto: GetAllMeetingDto,
         @UserScope() user: User,
     ) {
