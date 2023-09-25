@@ -4,10 +4,12 @@ import {
     Entity,
     JoinColumn,
     ManyToOne,
+    OneToMany,
     PrimaryGeneratedColumn,
 } from 'typeorm'
 import { Company } from '@entities/company.entity'
 import { User } from '@entities/user.entity'
+import { MeetingFile } from '@entities/meeting-file'
 @Entity('meetings')
 export class Meeting extends BaseEntity {
     @PrimaryGeneratedColumn()
@@ -17,16 +19,18 @@ export class Meeting extends BaseEntity {
     title: string
 
     @Column({
+        type: 'datetime',
         nullable: true,
         name: 'start_time',
     })
-    startTime: Date
+    startTime: string
 
     @Column({
+        type: 'datetime',
         nullable: true,
         name: 'end_time',
     })
-    endTime: Date
+    endTime: string
 
     @Column({
         nullable: true,
@@ -35,22 +39,6 @@ export class Meeting extends BaseEntity {
         length: 255,
     })
     meetingLink: string
-
-    @Column({
-        nullable: true,
-        name: 'meeting_report',
-        type: 'varchar',
-        length: 255,
-    })
-    meetingReport: string
-
-    @Column({
-        nullable: true,
-        name: 'meeting_invitation',
-        type: 'varchar',
-        length: 255,
-    })
-    meetingInvitation: string
 
     @Column({ nullable: false, name: 'company_id', type: 'integer', width: 11 })
     companyId: number
@@ -69,4 +57,7 @@ export class Meeting extends BaseEntity {
         name: 'creator_id',
     })
     creator: User
+
+    @OneToMany(() => MeetingFile, (meetingFile) => meetingFile.meeting)
+    meetingFiles: MeetingFile[]
 }

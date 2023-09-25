@@ -8,26 +8,34 @@ import {
 } from 'typeorm'
 import { User } from '@entities/user.entity'
 import { Meeting } from '@entities/meeting.entity'
+import { ProposalType } from '@shares/constants/proposal.const'
 @Entity('proposals')
 export class Proposal extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number
 
     @Column({
-        name: 'description',
+        name: 'title',
         type: 'varchar',
         length: 255,
+        nullable: false,
+    })
+    title: string
+
+    @Column({
+        name: 'description',
+        type: 'text',
         nullable: true,
     })
     description: string
 
     @Column({
-        nullable: true,
+        nullable: false,
+        type: 'enum',
         name: 'type',
-        type: 'varchar',
-        length: 255,
+        enum: ProposalType,
     })
-    type: string
+    type: ProposalType
 
     @Column({
         nullable: true,

@@ -49,8 +49,8 @@ export class EmailService {
                     meetingStartTime: meeting.startTime,
                     meetingEndTime: meeting.endTime || 'unknown',
                     meetingLink: meeting.meetingLink,
-                    meetingReport: meeting.meetingReport,
-                    meetingInvitation: meeting.meetingInvitation,
+                    // meetingReport: meeting.meetingReport,
+                    // meetingInvitation: meeting.meetingInvitation,
                 },
             })
         }

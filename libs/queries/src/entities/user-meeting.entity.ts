@@ -11,7 +11,10 @@ import {
 import { User } from '@entities/user.entity'
 import { Role } from '@entities/role.entity'
 import { Meeting } from '@entities/meeting.entity'
-import { UserMeetingStatusEnum } from '@shares/constants/meeting.const'
+import {
+    MeetingRole,
+    UserMeetingStatusEnum,
+} from '@shares/constants/meeting.const'
 
 @Entity('user_meetings')
 export class UserMeeting extends BaseEntity {
@@ -32,6 +35,14 @@ export class UserMeeting extends BaseEntity {
         default: UserMeetingStatusEnum.ABSENCE,
     })
     status: UserMeetingStatusEnum
+
+    @Column({
+        name: 'role',
+        type: 'enum',
+        enum: MeetingRole,
+        nullable: false,
+    })
+    role: MeetingRole
 
     @ManyToOne(() => User)
     @JoinColumn({

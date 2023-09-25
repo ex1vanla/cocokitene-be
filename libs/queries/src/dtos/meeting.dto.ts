@@ -1,15 +1,19 @@
 import {
+    IsArray,
     IsEnum,
     IsInt,
     IsNotEmpty,
     IsNumber,
     IsOptional,
     IsString,
+    ValidateNested,
 } from 'class-validator'
 import { ApiProperty } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
 import { Sort_By_Field, Sort_By_Order } from '@shares/constants/base.const'
 import { MeetingType } from '@shares/constants/meeting.const'
+import { MeetingFileDto } from '@dtos/meeting-file.dto'
+import { ProposalDto } from '@dtos/proposal.dto'
 
 export class GetAllMeetingDto {
     @IsNumber()
@@ -68,31 +72,117 @@ export class GetAllMeetingDto {
 }
 
 export class CreateMeetingDto {
-    @IsString()
     @IsNotEmpty()
+    @IsString()
     @ApiProperty({
-        example: 'Hop ban ve san choi',
+        example: '2nd Ordinary General Meeting of Shareholders',
         required: true,
     })
     title: string
 
     @IsNotEmpty()
-    startTime: Date
-
-    @IsOptional()
-    endTime: Date
-
     @IsString()
-    @IsNotEmpty()
+    @ApiProperty({
+        example: 'https://meet.google.com/mhu-gupg-oux',
+        required: true,
+    })
     meetingLink: string
 
-    @IsString()
     @IsNotEmpty()
-    meetingReport: string
+    @IsString()
+    @ApiProperty({
+        required: true,
+        example: '2023-12-20 15:00:00',
+    })
+    startTime: string
 
-    @IsString()
     @IsNotEmpty()
-    meetingInvitation: string
+    @IsString()
+    @ApiProperty({
+        required: true,
+        example: '2023-12-20 16:00:00',
+    })
+    endTime: string
+
+    @ApiProperty({
+        required: true,
+        type: [MeetingFileDto],
+    })
+    @ValidateNested({
+        each: true,
+    })
+    @Type(() => MeetingFileDto)
+    meetingReports: MeetingFileDto[]
+
+    @ApiProperty({
+        required: true,
+        type: [MeetingFileDto],
+    })
+    @ValidateNested({
+        each: true,
+    })
+    @Type(() => MeetingFileDto)
+    meetingInvitations: MeetingFileDto[]
+
+    @ApiProperty({
+        required: true,
+        type: [ProposalDto],
+    })
+    @ValidateNested({
+        each: true,
+    })
+    @Type(() => ProposalDto)
+    resolutions: ProposalDto[]
+
+    @ApiProperty({
+        required: true,
+        type: [ProposalDto],
+    })
+    @ValidateNested({
+        each: true,
+    })
+    @Type(() => ProposalDto)
+    amendmentResolutions: ProposalDto[]
+
+    @IsArray()
+    @IsNumber({}, { each: true })
+    @ApiProperty({
+        required: true,
+        example: [1, 2],
+    })
+    hosts: number[]
+
+    @IsArray()
+    @IsNumber({}, { each: true })
+    @ApiProperty({
+        required: true,
+        example: [1, 2],
+    })
+    controlBoards: number[]
+
+    @IsArray()
+    @IsNumber({}, { each: true })
+    @ApiProperty({
+        required: true,
+        example: [1, 2, 10],
+    })
+    directors: number[]
+
+    @IsArray()
+    @IsNumber({}, { each: true })
+    @ApiProperty({
+        required: true,
+        example: [1, 2, 3, 4, 5],
+    })
+    administrativeCouncils: number[]
+
+    @IsArray()
+    @IsNumber({}, { each: true })
+    @ApiProperty({
+        required: true,
+        example: [1, 2, 3, 4],
+    })
+    shareholders: number[]
 }
 
 export class IdMeetingDto {

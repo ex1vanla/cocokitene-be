@@ -66,7 +66,19 @@ export class MeetingService {
         return userMeeting
     }
 
-    async createMeeting(createMeetingDto: CreateMeetingDto) {
+    async createMeeting(
+        createMeetingDto: CreateMeetingDto,
+        creatorId: number,
+        companyId: number,
+    ) {
+        console.log(creatorId, companyId)
         return createMeetingDto
+        // create meeting
+
+        // create reports and invitations
+
+        // create proposal
+
+        // create user meeting
     }
 }
