@@ -8,7 +8,7 @@ import { UserService } from './user.service'
 export class UserController {
     constructor(private readonly userService: UserService) {}
 
-    @Get('')
+    @Get('get-nonce')
     @HttpCode(HttpStatus.OK)
     @ApiBearerAuth()
     async getNonceByUserWalletAddress(
@@ -18,8 +18,6 @@ export class UserController {
             await this.userService.getUserNonceByUserWalletAddress(
                 walletAddressDto,
             )
-        return {
-            nonceValue,
-        }
+        return nonceValue
     }
 }

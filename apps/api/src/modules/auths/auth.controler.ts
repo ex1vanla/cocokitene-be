@@ -20,9 +20,7 @@ export class AuthControler {
     @HttpCode(HttpStatus.OK)
     async login(@Body() loginDto: LoginDto) {
         const loginData = await this.authService.login(loginDto)
-        return {
-            loginData,
-        }
+        return loginData
     }
 
     @Get('refresh-token')
@@ -31,8 +29,6 @@ export class AuthControler {
         const newAccessToken = await this.authService.generateNewAccessJWT(
             refreshTokenDto,
         )
-        return {
-            newAccessToken,
-        }
+        return newAccessToken
     }
 }

@@ -25,9 +25,6 @@ export class S3Controller {
             getPresignedUrlDto,
         )
 
-        return {
-            success: true,
-            content: presignedUrl,
-        }
+        return presignedUrl
     }
 }

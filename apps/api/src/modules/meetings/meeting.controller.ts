@@ -16,6 +16,7 @@ import { User } from '@entities/user.entity'
 import { EmailService } from '@api/modules/emails/email.service'
 import {
     AttendMeetingDto,
+    CreateMeetingDto,
     GetAllMeetingDto,
     IdMeetingDto,
 } from 'libs/queries/src/dtos/meeting.dto'
@@ -45,9 +46,7 @@ export class MeetingController {
             getAllMeetingDto,
             companyId,
         )
-        return {
-            meetings,
-        }
+        return meetings
     }
 
     @Post('/send-email')
@@ -60,9 +59,7 @@ export class MeetingController {
         @UserScope() user: User,
     ) {
         await this.emailService.sendEmail(idMeetingDto, user.companyId)
-        return {
-            content: 'Emails sent successfully',
-        }
+        return 'Emails sent successfully'
     }
 
     @Post('/attendance-meeting')
@@ -79,9 +76,7 @@ export class MeetingController {
             attendMeetingDto,
             userId,
         )
-        return {
-            userMeetingData,
-        }
+        return userMeetingData
     }
 
     @Post()
