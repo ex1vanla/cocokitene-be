@@ -32,6 +32,13 @@ export class CreateProposalDto {
     })
     meetingId: number
 
+    @IsNumber()
+    @ApiProperty({
+        required: true,
+        example: 1,
+    })
+    creatorId: number
+
     @IsEnum(ProposalType)
     @ApiProperty({
         required: true,
@@ -40,4 +47,7 @@ export class CreateProposalDto {
     type: ProposalType
 }
 
-export class ProposalDto extends OmitType(CreateProposalDto, ['meetingId']) {}
+export class ProposalDto extends OmitType(CreateProposalDto, [
+    'meetingId',
+    'creatorId',
+]) {}

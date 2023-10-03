@@ -61,6 +61,9 @@ export class Proposal extends BaseEntity {
     })
     notVoteYetQuantity: number
 
+    @Column({ nullable: false, name: 'meeting_id', type: 'integer', width: 11 })
+    meetingId: number
+
     @Column({ nullable: false, name: 'creator_id', type: 'integer', width: 11 })
     creatorId: number
 

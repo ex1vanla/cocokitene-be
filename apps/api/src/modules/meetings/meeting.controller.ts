@@ -80,13 +80,16 @@ export class MeetingController {
     }
 
     @Post()
+    @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.CREATED)
+    @ApiBearerAuth()
+    @Permission(PermissionEnum.CREATE_MEETING)
     async createMeeting(
         @Body() createMeetingDto: CreateMeetingDto,
         @UserScope() user: User,
     ) {
-        const userId = user.id
-        const companyId = user.companyId
+        const userId = user?.id
+        const companyId = user?.companyId
 
         const meeting = await this.meetingService.createMeeting(
             createMeetingDto,

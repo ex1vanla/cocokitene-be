@@ -4,14 +4,18 @@ import { RoleRepository } from '@repositories/role.repository'
 import { Global, Module } from '@nestjs/common'
 import { TypeOrmExModule } from '@shares/modules'
 import { MeetingRepository } from '@repositories/meeting.repository'
-import { UserMeetingRepoisitory } from '@repositories/user-meeting.repoisitory'
+import { UserMeetingRepository } from '@repositories/user-meeting.repository'
+import { MeetingFileRepository } from '@repositories/meeting-file.repository'
+import { ProposalRepository } from '@repositories/proposal.repository'
 
 const commonRepositories = [
     UserRepository,
     UserStatusRepository,
     RoleRepository,
     MeetingRepository,
-    UserMeetingRepoisitory,
+    UserMeetingRepository,
+    MeetingFileRepository,
+    ProposalRepository,
 ]
 
 @Global()

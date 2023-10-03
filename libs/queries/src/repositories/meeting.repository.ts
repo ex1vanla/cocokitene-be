@@ -6,7 +6,7 @@ import {
     Pagination,
 } from 'nestjs-typeorm-paginate'
 import { Meeting } from '@entities/meeting.entity'
-import { GetAllMeetingDto } from '../dtos'
+import { CreateMeetingDto, GetAllMeetingDto } from '../dtos'
 import { MeetingType } from '@shares/constants/meeting.const'
 
 @CustomRepository(Meeting)
@@ -58,6 +58,20 @@ export class MeetingRepository extends Repository<Meeting> {
             },
             relations: ['company', 'creator'],
         })
+        return meeting
+    }
+
+    async createMeeting(
+        createMeetingDto: CreateMeetingDto,
+        creatorId: number,
+        companyId: number,
+    ): Promise<Meeting> {
+        const meeting = await this.create({
+            ...createMeetingDto,
+            creatorId,
+            companyId,
+        })
+        await meeting.save()
         return meeting
     }
 }

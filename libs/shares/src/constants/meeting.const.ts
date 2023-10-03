@@ -6,6 +6,7 @@ export enum UserMeetingStatusEnum {
 export enum MeetingFileType {
     MEETING_INVITATION = 'invitations',
     MEETING_MINUTES = 'minutes',
+    REPORTS = 'reports',
 }
 export enum MeetingType {
     FUTURE = 'future',

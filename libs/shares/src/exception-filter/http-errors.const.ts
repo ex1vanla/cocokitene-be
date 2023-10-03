@@ -33,11 +33,35 @@ export const httpErrors = {
     // meeting error
     MEETING_NOT_EXISTED: {
         message: 'Meeting not existed. Please try again',
-        code: 'Meeting_00000',
+        code: 'MEETING_00000',
+    },
+    MEETING_CREATE_FAILED: {
+        message: 'Create meeting failed. Please try again',
+        code: 'MEETING_00001',
+    },
+    // company error
+    COMPANY_NOT_FOUND: {
+        message: 'Company not found. Please try again',
+        code: 'COMPANY_00000',
+    },
+    // meeting file error
+    MEETING_FILE_CREATE_FAILED: {
+        message: 'Create meeting file failed. Please try again',
+        code: 'MEETING_FILE_00000',
+    },
+    // proposal error
+    PROPOSAL_CREATE_FAILED: {
+        message: 'Proposal file failed. Please try again',
+        code: 'PROPOSAL_00000',
+    },
+    // user meeting error
+    USER_MEETING_CREATE_FAILED: {
+        message: 'User meeting failed. Please try again',
+        code: 'USER_MEETING_00000',
     },
     USER_MEETING_NOT_FOUND: {
         message:
             'Meeting with userId and meetingId not found. Please try again',
-        code: 'Meeting_00001',
+        code: 'MEETING_00001',
     },
 }

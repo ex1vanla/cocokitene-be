@@ -23,14 +23,14 @@ export class Meeting extends BaseEntity {
         nullable: true,
         name: 'start_time',
     })
-    startTime: string
+    startTime: Date
 
     @Column({
         type: 'datetime',
         nullable: true,
         name: 'end_time',
     })
-    endTime: string
+    endTime: Date
 
     @Column({
         nullable: true,
