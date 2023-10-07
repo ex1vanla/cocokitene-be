@@ -5,6 +5,15 @@ import { Repository } from 'typeorm'
 
 @CustomRepository(Role)
 export class RoleRepository extends Repository<Role> {
+    async getRoleByName(roleName: string): Promise<Role> {
+        const role = await this.findOne({
+            where: {
+                roleName,
+            },
+        })
+        return role
+    }
+
     async getRoleById(roleId: number): Promise<Role> {
         const role = await this.findOne({
             where: {
