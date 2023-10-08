@@ -2,6 +2,8 @@ import { CustomRepository } from '@shares/decorators'
 import { User } from '@entities/user.entity'
 import { Repository } from 'typeorm'
 import { UserStatusEnum } from '@shares/constants/user.const'
+import { GetAllUsersDto } from '@dtos/user.dto'
+import { Pagination, paginate } from 'nestjs-typeorm-paginate'
 
 @CustomRepository(User)
 export class UserRepository extends Repository<User> {
@@ -44,5 +46,29 @@ export class UserRepository extends Repository<User> {
         }
         const user = await queryBuilder.getOne()
         return user
+    }
+
+    async getAllUsersCompany(
+        options: GetAllUsersDto,
+        companyId: number,
+    ): Promise<Pagination<User>> {
+        console.log('companyId', companyId)
+        const { page, limit } = options
+
+        const queryBuilder = this.createQueryBuilder('users')
+            .select([
+                'users.id',
+                'users.username',
+                'users.email',
+                'users.avatar',
+                'users.companyId',
+                'users.defaultAvatarHashColor',
+                'users.createdAt',
+                'users.updatedAt',
+            ])
+            .where('users.companyId = :companyId', {
+                companyId,
+            })
+        return paginate(queryBuilder, { page, limit })
     }
 }

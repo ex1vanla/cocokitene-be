@@ -8,6 +8,7 @@ import {
 } from 'class-validator'
 import { ApiProperty } from '@nestjs/swagger'
 import { Transform } from 'class-transformer'
+import { GetAllDto } from '@dtos/base.dto'
 
 export class GetUserByWalletAddressDto {
     @IsString()
@@ -57,3 +58,5 @@ export class CreateUserDto {
     })
     roleIds: number[]
 }
+
+export class GetAllUsersDto extends GetAllDto {}

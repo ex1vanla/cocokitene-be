@@ -21,3 +21,21 @@ export class WalletAddressDto {
     })
     walletAddress: string
 }
+
+export class GetAllDto {
+    @IsNumber()
+    @IsNotEmpty()
+    @Type(() => Number)
+    @ApiProperty({
+        example: 1,
+    })
+    page: number
+
+    @IsNumber()
+    @IsNotEmpty()
+    @Type(() => Number)
+    @ApiProperty({
+        example: 10,
+    })
+    limit: number
+}
