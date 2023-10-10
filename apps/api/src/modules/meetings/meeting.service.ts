@@ -118,75 +118,82 @@ export class MeetingService {
             shareholders,
         } = createMeetingDto
 
-        await Promise.all([
-            ...meetingReports.map((report) =>
-                this.meetingFileService.createMeetingFile({
-                    url: report.url,
-                    meetingId: createdMeeting.id,
-                    fileType: report.fileType,
-                }),
-            ),
-            ...meetingInvitations.map((invitation) =>
-                this.meetingFileService.createMeetingFile({
-                    url: invitation.url,
-                    meetingId: createdMeeting.id,
-                    fileType: invitation.fileType,
-                }),
-            ),
-            ...resolutions.map((resolution) =>
-                this.proposalService.createProposal({
-                    title: resolution.title,
-                    description: resolution.description,
-                    type: resolution.type,
-                    meetingId: createdMeeting.id,
-                    creatorId: creatorId,
-                }),
-            ),
-            ...amendmentResolutions.map((amendmentResolution) =>
-                this.proposalService.createProposal({
-                    title: amendmentResolution.title,
-                    description: amendmentResolution.description,
-                    type: amendmentResolution.type,
-                    meetingId: createdMeeting.id,
-                    creatorId: creatorId,
-                }),
-            ),
-            ...hosts.map((host) =>
-                this.userMeetingService.createUserMeeting({
-                    userId: host,
-                    meetingId: createdMeeting.id,
-                    role: MeetingRole.HOST,
-                }),
-            ),
-            ...controlBoards.map((controlBoard) =>
-                this.userMeetingService.createUserMeeting({
-                    userId: controlBoard,
-                    meetingId: createdMeeting.id,
-                    role: MeetingRole.CONTROL_BOARD,
-                }),
-            ),
-            ...directors.map((director) =>
-                this.userMeetingService.createUserMeeting({
-                    userId: director,
-                    meetingId: createdMeeting.id,
-                    role: MeetingRole.DIRECTOR,
-                }),
-            ),
-            ...administrativeCouncils.map((administrativeCouncil) =>
-                this.userMeetingService.createUserMeeting({
-                    userId: administrativeCouncil,
-                    meetingId: createdMeeting.id,
-                    role: MeetingRole.ADMINISTRATIVE_COUNCIL,
-                }),
-            ),
-            ...shareholders.map((shareholder) =>
-                this.userMeetingService.createUserMeeting({
-                    userId: shareholder,
-                    meetingId: createdMeeting.id,
-                    role: MeetingRole.SHAREHOLDER,
-                }),
-            ),
-        ])
+        try {
+            await Promise.all([
+                ...meetingReports.map((report) =>
+                    this.meetingFileService.createMeetingFile({
+                        url: report.url,
+                        meetingId: createdMeeting.id,
+                        fileType: report.fileType,
+                    }),
+                ),
+                ...meetingInvitations.map((invitation) =>
+                    this.meetingFileService.createMeetingFile({
+                        url: invitation.url,
+                        meetingId: createdMeeting.id,
+                        fileType: invitation.fileType,
+                    }),
+                ),
+                ...resolutions.map((resolution) =>
+                    this.proposalService.createProposal({
+                        title: resolution.title,
+                        description: resolution.description,
+                        type: resolution.type,
+                        meetingId: createdMeeting.id,
+                        creatorId: creatorId,
+                    }),
+                ),
+                ...amendmentResolutions.map((amendmentResolution) =>
+                    this.proposalService.createProposal({
+                        title: amendmentResolution.title,
+                        description: amendmentResolution.description,
+                        type: amendmentResolution.type,
+                        meetingId: createdMeeting.id,
+                        creatorId: creatorId,
+                    }),
+                ),
+                ...hosts.map((host) =>
+                    this.userMeetingService.createUserMeeting({
+                        userId: host,
+                        meetingId: createdMeeting.id,
+                        role: MeetingRole.HOST,
+                    }),
+                ),
+                ...controlBoards.map((controlBoard) =>
+                    this.userMeetingService.createUserMeeting({
+                        userId: controlBoard,
+                        meetingId: createdMeeting.id,
+                        role: MeetingRole.CONTROL_BOARD,
+                    }),
+                ),
+                ...directors.map((director) =>
+                    this.userMeetingService.createUserMeeting({
+                        userId: director,
+                        meetingId: createdMeeting.id,
+                        role: MeetingRole.DIRECTOR,
+                    }),
+                ),
+                ...administrativeCouncils.map((administrativeCouncil) =>
+                    this.userMeetingService.createUserMeeting({
+                        userId: administrativeCouncil,
+                        meetingId: createdMeeting.id,
+                        role: MeetingRole.ADMINISTRATIVE_COUNCIL,
+                    }),
+                ),
+                ...shareholders.map((shareholder) =>
+                    this.userMeetingService.createUserMeeting({
+                        userId: shareholder,
+                        meetingId: createdMeeting.id,
+                        role: MeetingRole.SHAREHOLDER,
+                    }),
+                ),
+            ])
+        } catch (error) {
+            throw new HttpException(
+                error.message,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            )
+        }
 
         return createdMeeting
     }
