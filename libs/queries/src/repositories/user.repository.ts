@@ -53,7 +53,7 @@ export class UserRepository extends Repository<User> {
         companyId: number,
     ): Promise<Pagination<User>> {
         console.log('companyId', companyId)
-        const { page, limit } = options
+        const { page, limit, searchQuery } = options
 
         const queryBuilder = this.createQueryBuilder('users')
             .select([
@@ -69,6 +69,17 @@ export class UserRepository extends Repository<User> {
             .where('users.companyId = :companyId', {
                 companyId,
             })
+
+        if (searchQuery) {
+            queryBuilder
+                .andWhere('(users.username like :username', {
+                    username: `%${searchQuery}%`,
+                })
+                .orWhere('users.email like :email)', {
+                    email: `%${searchQuery}%`,
+                })
+        }
+
         return paginate(queryBuilder, { page, limit })
     }
 }

@@ -14,32 +14,9 @@ import { Sort_By_Field, Sort_By_Order } from '@shares/constants/base.const'
 import { MeetingType } from '@shares/constants/meeting.const'
 import { MeetingFileDto } from '@dtos/meeting-file.dto'
 import { ProposalDto } from '@dtos/proposal.dto'
+import { GetAllDto } from '@dtos/base.dto'
 
-export class GetAllMeetingDto {
-    @IsNumber()
-    @IsNotEmpty()
-    @Type(() => Number)
-    @ApiProperty({
-        example: 1,
-    })
-    page: number
-
-    @IsNumber()
-    @IsNotEmpty()
-    @Type(() => Number)
-    @ApiProperty({
-        example: 10,
-    })
-    limit: number
-
-    @IsString()
-    @IsOptional()
-    @ApiProperty({
-        required: false,
-        example: 'meeting daily',
-    })
-    searchQuery?: string
-
+export class GetAllMeetingDto extends GetAllDto {
     @IsOptional()
     @IsEnum(Sort_By_Field)
     @ApiProperty({

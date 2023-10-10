@@ -9,6 +9,7 @@ import * as _ from 'lodash'
 import { verifyAccessTokenJWT } from '@shares/utils/jwt'
 import { Reflector } from '@nestjs/core'
 import { PERMISSION_KEY } from '@shares/decorators/permission.decorator'
+import { httpErrors } from '@shares/exception-filter'
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
@@ -27,7 +28,7 @@ export class JwtAuthGuard implements CanActivate {
             const bearerHeader = request.headers.authorization
             if (!bearerHeader) {
                 throw new HttpException(
-                    'Unauthorization',
+                    httpErrors.UNAUTHORIZED,
                     HttpStatus.UNAUTHORIZED,
                 )
             }

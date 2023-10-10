@@ -6,7 +6,7 @@ export class LoginDto {
     @IsString()
     @IsNotEmpty()
     @ApiProperty({
-        example: '0x9b500a4B354914d420c3D1497AEe4Ba9d45b7Df0',
+        example: '0xB0C6abf8BAC799F27FE4D46ab2Ffb683129f59b1',
     })
     @Transform(({ value }) => {
         return value?.toLowerCase()

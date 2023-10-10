@@ -3,6 +3,10 @@ export const httpErrors = {
         message: 'Unknown error',
         code: 'COMMON_00000',
     },
+    UNAUTHORIZED: {
+        code: 'AUTH_00000',
+        message: 'Unauthorized',
+    },
     // user error
     INVALID_SIGNATURE: {
         message: 'Invalid signature',

@@ -1,6 +1,7 @@
 import { IsNotEmpty, IsNumber } from 'class-validator'
 import { Type } from 'class-transformer'
 import { ApiProperty } from '@nestjs/swagger'
+import { GetAllDto } from '@dtos/base.dto'
 
 export class ActiveUserDto {
     @IsNumber()
@@ -12,20 +13,4 @@ export class ActiveUserDto {
     id: number
 }
 
-export class GetAllNormalRolesDto {
-    @IsNumber()
-    @IsNotEmpty()
-    @Type(() => Number)
-    @ApiProperty({
-        example: 1,
-    })
-    page: number
-
-    @IsNumber()
-    @IsNotEmpty()
-    @Type(() => Number)
-    @ApiProperty({
-        example: 10,
-    })
-    limit: number
-}
+export class GetAllNormalRolesDto extends GetAllDto {}
