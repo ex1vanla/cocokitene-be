@@ -63,7 +63,10 @@ export class MeetingService {
             await userMeeting.save()
         } catch (error) {
             throw new HttpException(
-                error.message,
+                {
+                    code: httpErrors.MEETING_CREATE_FAILED.code,
+                    message: error.message,
+                },
                 HttpStatus.INTERNAL_SERVER_ERROR,
             )
         }

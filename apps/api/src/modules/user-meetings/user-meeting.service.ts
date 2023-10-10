@@ -2,6 +2,7 @@ import { CreateUserMeetingDto } from '@dtos/user-meeting.dto'
 import { UserMeeting } from '@entities/user-meeting.entity'
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { UserMeetingRepository } from '@repositories/user-meeting.repository'
+import { httpErrors } from '@shares/exception-filter'
 
 @Injectable()
 export class UserMeetingService {
@@ -24,7 +25,10 @@ export class UserMeetingService {
             return createdUserMeeting
         } catch (error) {
             throw new HttpException(
-                error.message,
+                {
+                    code: httpErrors.USER_MEETING_CREATE_FAILED.code,
+                    message: error.message,
+                },
                 HttpStatus.INTERNAL_SERVER_ERROR,
             )
         }
