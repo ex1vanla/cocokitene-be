@@ -20,7 +20,7 @@ export class UserMeetingService {
                     meetingId,
                     role,
                 })
-            await createdUserMeeting.save()
+            // return await createdUserMeeting.save()
             return createdUserMeeting
         } catch (error) {
             throw new HttpException(

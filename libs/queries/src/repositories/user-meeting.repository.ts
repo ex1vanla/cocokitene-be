@@ -14,7 +14,7 @@ export class UserMeetingRepository extends Repository<UserMeeting> {
             meetingId,
             role,
         })
-        await createdUserMeeting.save()
-        return createdUserMeeting
+        return await createdUserMeeting.save()
+        // return createdUserMeeting
     }
 }
