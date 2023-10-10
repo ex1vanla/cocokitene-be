@@ -1,9 +1,9 @@
-import { CustomRepository } from '@shares/decorators'
-import { User } from '@entities/user.entity'
-import { Repository } from 'typeorm'
-import { UserStatusEnum } from '@shares/constants/user.const'
 import { GetAllUsersDto } from '@dtos/user.dto'
+import { User } from '@entities/user.entity'
+import { UserStatusEnum } from '@shares/constants/user.const'
+import { CustomRepository } from '@shares/decorators'
 import { Pagination, paginate } from 'nestjs-typeorm-paginate'
+import { Repository } from 'typeorm'
 
 @CustomRepository(User)
 export class UserRepository extends Repository<User> {
@@ -82,4 +82,29 @@ export class UserRepository extends Repository<User> {
 
         return paginate(queryBuilder, { page, limit })
     }
+
+    // async getUserByMeetingIdAndRole(
+    //     meetingId: number,
+    //     role: MeetingRole,
+    // ): Promise<User[]> {
+    //     const users = await this.createQueryBuilder('users')
+    //         .select([
+    //             'users.id',
+    //             'users.username',
+    //             'users.email',
+    //             'users.avatar',
+    //             'users.defaultAvatarHashColor',
+    //         ])
+    //         .leftJoinAndSelect('users.userMeeting', 'userMeeting')
+    //         .where(
+    //             'userMeeting.meetingId = :meetingId AND userMeeting.role  = :role',
+    //             {
+    //                 meetingId,
+    //                 role,
+    //             },
+    //         )
+    //         .getMany()
+
+    //     return users
+    // }
 }

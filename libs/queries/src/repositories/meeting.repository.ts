@@ -51,13 +51,29 @@ export class MeetingRepository extends Repository<Meeting> {
         return paginate(queryBuilder, options)
     }
 
-    async getMeetingById(id: number): Promise<Meeting> {
-        const meeting = await this.findOne({
-            where: {
+    async getMeetingByIdAndCompanyId(
+        id: number,
+        companyId: number,
+    ): Promise<Meeting> {
+        // const meeting = await this.findOne({
+        //     where: {
+        //         id,
+        //         companyId,
+        //     },
+        //     relations: ['creator', 'meetingFiles', 'proposals'],
+        // })
+
+        const meeting = await this.createQueryBuilder('meeting')
+            .select()
+            .where('meeting.id = :id', {
                 id,
-            },
-            relations: ['company', 'creator'],
-        })
+            })
+            .andWhere('meeting.companyId = :companyId', {
+                companyId,
+            })
+            .leftJoinAndSelect('meeting.meetingFiles', 'meetingFiles')
+            .getOne()
+
         return meeting
     }
 

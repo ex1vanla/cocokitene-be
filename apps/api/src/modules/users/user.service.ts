@@ -32,4 +32,16 @@ export class UserService {
 
         return users
     }
+
+    // async getUserByMeetingIdAndRole(
+    //     meetingId: number,
+    //     role: MeetingRole,
+    // ): Promise<User[]> {
+    //     const users = this.userRepository.getUserByMeetingIdAndRole(
+    //         meetingId,
+    //         role,
+    //     )
+
+    //     return users
+    // }
 }

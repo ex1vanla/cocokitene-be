@@ -1,6 +1,10 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { MeetingRepository } from '@repositories/meeting.repository'
 
+import { MeetingFileService } from '@api/modules/meeting-files/meeting-file.service'
+import { DetailMeetingResponse } from '@api/modules/meetings/meeting.interface'
+import { ProposalService } from '@api/modules/proposals/proposal.service'
+import { UserMeetingService } from '@api/modules/user-meetings/user-meeting.service'
 import { Meeting } from '@entities/meeting.entity'
 import { UserMeeting } from '@entities/user-meeting.entity'
 import { UserMeetingRepository } from '@repositories/user-meeting.repository'
@@ -9,15 +13,13 @@ import {
     UserMeetingStatusEnum,
 } from '@shares/constants/meeting.const'
 import { httpErrors } from '@shares/exception-filter'
+import { enumToArray } from '@shares/utils/enum'
 import {
     AttendMeetingDto,
     CreateMeetingDto,
     GetAllMeetingDto,
 } from 'libs/queries/src/dtos/meeting.dto'
 import { Pagination } from 'nestjs-typeorm-paginate'
-import { MeetingFileService } from '@api/modules/meeting-files/meeting-file.service'
-import { ProposalService } from '@api/modules/proposals/proposal.service'
-import { UserMeetingService } from '@api/modules/user-meetings/user-meeting.service'
 
 @Injectable()
 export class MeetingService {
@@ -199,5 +201,59 @@ export class MeetingService {
         }
 
         return createdMeeting
+    }
+
+    async getMeetingById(
+        meetingId: number,
+        companyId: number,
+    ): Promise<DetailMeetingResponse> {
+        const meeting = await this.meetingRepository.getMeetingByIdAndCompanyId(
+            meetingId,
+            companyId,
+        )
+        if (!meeting) {
+            throw new HttpException(
+                httpErrors.MEETING_NOT_FOUND,
+                HttpStatus.NOT_FOUND,
+            )
+        }
+
+        const [
+            hosts,
+            controlBoards,
+            directors,
+            administrativeCouncils,
+            shareholders,
+        ] = await Promise.all(
+            enumToArray(MeetingRole).map((role) =>
+                this.userMeetingService.getUserMeetingByMeetingIdAndRole(
+                    meetingId,
+                    role,
+                ),
+            ),
+        )
+
+        const shareholdersTotal = shareholders.length
+        const shareholdersJoined = shareholders.reduce(
+            (accumulator, currentValue) => {
+                accumulator =
+                    currentValue.status === UserMeetingStatusEnum.PARTICIPATE
+                        ? accumulator + 1
+                        : accumulator
+                return accumulator
+            },
+            0,
+        )
+
+        return {
+            ...meeting,
+            hosts,
+            controlBoards,
+            directors,
+            administrativeCouncils,
+            shareholders,
+            shareholdersTotal,
+            shareholdersJoined,
+        }
     }
 }

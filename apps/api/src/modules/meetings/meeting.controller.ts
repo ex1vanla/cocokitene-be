@@ -4,6 +4,7 @@ import {
     Get,
     HttpCode,
     HttpStatus,
+    Param,
     Post,
     Query,
     UseGuards,
@@ -94,6 +95,24 @@ export class MeetingController {
         const meeting = await this.meetingService.createMeeting(
             createMeetingDto,
             userId,
+            companyId,
+        )
+        return meeting
+    }
+
+    @Get('/:id')
+    @UseGuards(JwtAuthGuard)
+    @Permission(PermissionEnum.DETAIL_MEETING)
+    @HttpCode(HttpStatus.OK)
+    @ApiBearerAuth()
+    async getMeetingById(
+        @Param('id') meetingId: number,
+        @UserScope() user: User,
+    ) {
+        const companyId = user?.companyId
+
+        const meeting = await this.meetingService.getMeetingById(
+            meetingId,
             companyId,
         )
         return meeting

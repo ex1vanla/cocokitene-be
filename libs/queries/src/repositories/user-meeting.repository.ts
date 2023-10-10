@@ -2,6 +2,7 @@ import { Repository } from 'typeorm'
 import { CustomRepository } from '@shares/decorators'
 import { UserMeeting } from '@entities/user-meeting.entity'
 import { CreateUserMeetingDto } from '@dtos/user-meeting.dto'
+import { MeetingRole } from '@shares/constants/meeting.const'
 @CustomRepository(UserMeeting)
 export class UserMeetingRepository extends Repository<UserMeeting> {
     async createUserMeeting(
@@ -16,5 +17,31 @@ export class UserMeetingRepository extends Repository<UserMeeting> {
         })
         return await createdUserMeeting.save()
         // return createdUserMeeting
+    }
+
+    async getUserMeetingByMeetingIdAndRole(
+        meetingId: number,
+        role: MeetingRole,
+    ): Promise<UserMeeting[]> {
+        const userMeetingList = await this.find({
+            where: {
+                meetingId,
+                role,
+            },
+            select: {
+                id: true,
+                status: true,
+                user: {
+                    id: true,
+                    username: true,
+                    email: true,
+                    avatar: true,
+                    defaultAvatarHashColor: true,
+                },
+            },
+            relations: ['user'],
+        })
+
+        return userMeetingList
     }
 }

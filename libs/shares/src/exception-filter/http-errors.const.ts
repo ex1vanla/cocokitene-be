@@ -43,6 +43,10 @@ export const httpErrors = {
         message: 'Create meeting failed. Please try again',
         code: 'MEETING_00001',
     },
+    MEETING_NOT_FOUND: {
+        message: 'Meeting not found. Please try again',
+        code: 'MEETING_00002',
+    },
     // company error
     COMPANY_NOT_FOUND: {
         message: 'Company not found. Please try again',

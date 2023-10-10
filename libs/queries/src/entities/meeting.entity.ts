@@ -10,6 +10,7 @@ import {
 import { Company } from '@entities/company.entity'
 import { User } from '@entities/user.entity'
 import { MeetingFile } from '@entities/meeting-file'
+import { Proposal } from '@entities/proposal.entity'
 @Entity('meetings')
 export class Meeting extends BaseEntity {
     @PrimaryGeneratedColumn()
@@ -60,4 +61,7 @@ export class Meeting extends BaseEntity {
 
     @OneToMany(() => MeetingFile, (meetingFile) => meetingFile.meeting)
     meetingFiles: MeetingFile[]
+
+    @OneToMany(() => Proposal, (proposal) => proposal.meeting)
+    proposals: Proposal[]
 }

@@ -2,6 +2,7 @@ import { CreateUserMeetingDto } from '@dtos/user-meeting.dto'
 import { UserMeeting } from '@entities/user-meeting.entity'
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { UserMeetingRepository } from '@repositories/user-meeting.repository'
+import { MeetingRole } from '@shares/constants/meeting.const'
 import { httpErrors } from '@shares/exception-filter'
 
 @Injectable()
@@ -32,5 +33,18 @@ export class UserMeetingService {
                 HttpStatus.INTERNAL_SERVER_ERROR,
             )
         }
+    }
+
+    async getUserMeetingByMeetingIdAndRole(
+        meetingId: number,
+        role: MeetingRole,
+    ): Promise<UserMeeting[]> {
+        const userMeetings =
+            await this.userMeetingRepository.getUserMeetingByMeetingIdAndRole(
+                meetingId,
+                role,
+            )
+
+        return userMeetings
     }
 }
