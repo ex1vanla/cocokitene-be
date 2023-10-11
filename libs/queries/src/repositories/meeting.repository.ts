@@ -2,7 +2,7 @@ import { Repository } from 'typeorm'
 import { CustomRepository } from '@shares/decorators'
 import {
     IPaginationOptions,
-    paginate,
+    paginateRaw,
     Pagination,
 } from 'nestjs-typeorm-paginate'
 import { Meeting } from '@entities/meeting.entity'
@@ -13,6 +13,7 @@ import { MeetingType } from '@shares/constants/meeting.const'
 export class MeetingRepository extends Repository<Meeting> {
     async getAllMeetings(
         companyId: number,
+        userId: number,
         options: IPaginationOptions & GetAllMeetingDto,
     ): Promise<Pagination<Meeting>> {
         const searchQuery = options.searchQuery || ''
@@ -26,10 +27,21 @@ export class MeetingRepository extends Repository<Meeting> {
                 'meetings.startTime',
                 'meetings.endTime',
                 'meetings.meetingLink',
-                'meetings.meetingReport',
-                'meetings.meetingInvitation',
+                'meetings.status',
             ])
-            .leftJoinAndSelect('meetings.company', 'company')
+            .addSelect(
+                `(CASE 
+                WHEN userMeeting.status = 'participate' THEN true
+                ELSE false 
+            END)`,
+                'isJoined',
+            )
+            .leftJoin(
+                'user_meetings',
+                'userMeeting',
+                'userMeeting.meetingId = meetings.id AND userMeeting.userId = :userId',
+                { userId },
+            )
             .where('meetings.companyId= :companyId', {
                 companyId: companyId,
             })
@@ -37,9 +49,12 @@ export class MeetingRepository extends Repository<Meeting> {
                 searchQuery: `%${searchQuery}%`,
             })
         if (type == MeetingType.FUTURE) {
-            queryBuilder.andWhere('meetings.startTime >= :currentDateTime', {
-                currentDateTime: new Date(),
-            })
+            queryBuilder.andWhere(
+                'meetings.startTime >= :currentDateTime OR (meetings.startTime <= :currentDateTime AND meetings.endTime >= :currentDateTime)',
+                {
+                    currentDateTime: new Date(),
+                },
+            )
         } else {
             queryBuilder.andWhere('meetings.endTime <= :currentDateTime', {
                 currentDateTime: new Date(),
@@ -48,7 +63,7 @@ export class MeetingRepository extends Repository<Meeting> {
         if (sortField && sortOrder) {
             queryBuilder.orderBy(`meetings.${sortField}`, sortOrder)
         }
-        return paginate(queryBuilder, options)
+        return paginateRaw(queryBuilder, options)
     }
 
     async getMeetingByIdAndCompanyId(
