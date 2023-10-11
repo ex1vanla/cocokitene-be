@@ -1,6 +1,7 @@
 import {
     BaseEntity,
     Column,
+    DeleteDateColumn,
     Entity,
     JoinColumn,
     ManyToOne,
@@ -66,6 +67,9 @@ export class Proposal extends BaseEntity {
 
     @Column({ nullable: false, name: 'creator_id', type: 'integer', width: 11 })
     creatorId: number
+
+    @DeleteDateColumn()
+    deletedAt: Date
 
     @ManyToOne(() => Meeting)
     @JoinColumn({
