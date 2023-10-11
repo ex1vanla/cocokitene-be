@@ -10,6 +10,8 @@ import { UserMeeting } from '@entities/user-meeting.entity'
 import { UserMeetingRepository } from '@repositories/user-meeting.repository'
 import {
     MeetingRole,
+    StatusMeeting,
+    UserJoinMeetingStatusEnum,
     UserMeetingStatusEnum,
 } from '@shares/constants/meeting.const'
 import { httpErrors } from '@shares/exception-filter'
@@ -48,12 +50,14 @@ export class MeetingService {
     ): Promise<UserMeeting> {
         const { meetingId } = attendMeetingDto
         let userMeeting: UserMeeting
+        let userJoinMeetingStatus
         try {
             userMeeting = await this.userMeetingRepository.findOne({
                 where: {
                     userId: userId,
                     meetingId: meetingId,
                 },
+                relations: ['meeting'],
             })
             if (!userMeeting) {
                 throw new HttpException(
@@ -61,7 +65,36 @@ export class MeetingService {
                     HttpStatus.NOT_FOUND,
                 )
             }
-            userMeeting.status = UserMeetingStatusEnum.PARTICIPATE
+            const currentDate = new Date()
+            const startTimeMeeting = new Date(userMeeting.meeting.startTime)
+            const endTimeMeeting = new Date(userMeeting.meeting.endTime)
+
+            if (userMeeting.meeting.status == StatusMeeting.CANCELED) {
+                throw new HttpException(
+                    httpErrors.MEETING_HAS_CANCELED,
+                    HttpStatus.BAD_REQUEST,
+                )
+
+            } else if (userMeeting.meeting.status == StatusMeeting.DELAYED) {
+                throw new HttpException(
+                    httpErrors.MEETING_HAS_DELAYED,
+                    HttpStatus.BAD_REQUEST,
+                )
+
+            } else if (currentDate <= startTimeMeeting) {
+                throw new HttpException(
+                    httpErrors.MEETING_NOT_START,
+                    HttpStatus.BAD_REQUEST,
+                )
+
+            } else if (
+                currentDate >= startTimeMeeting &&
+                currentDate <= endTimeMeeting
+            ) {
+                userMeeting.status = UserMeetingStatusEnum.PARTICIPATE
+                userJoinMeetingStatus =
+                    UserJoinMeetingStatusEnum.USER_JOIN_MEETING_WHEN_MEETING_START_A_LITTLE
+            }
             await userMeeting.save()
         } catch (error) {
             throw new HttpException(
@@ -73,7 +106,7 @@ export class MeetingService {
             )
         }
 
-        return userMeeting
+        return userJoinMeetingStatus
     }
 
     async createMeeting(
