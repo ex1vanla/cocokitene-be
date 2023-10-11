@@ -5,6 +5,7 @@ import {
     HttpCode,
     HttpStatus,
     Param,
+    Patch,
     Post,
     Query,
     UseGuards,
@@ -20,6 +21,7 @@ import {
     CreateMeetingDto,
     GetAllMeetingDto,
     IdMeetingDto,
+    UpdateMeetingDto,
 } from 'libs/queries/src/dtos/meeting.dto'
 import { UserScope } from '@shares/decorators/user.decorator'
 import { Permission } from '@shares/decorators/permission.decorator'
@@ -115,6 +117,27 @@ export class MeetingController {
 
         const meeting = await this.meetingService.getMeetingById(
             meetingId,
+            companyId,
+        )
+        return meeting
+    }
+
+    @Patch('/edit-meeting/:meetingId')
+    @UseGuards(JwtAuthGuard)
+    @Permission(PermissionEnum.EDIT_MEETING)
+    @ApiBearerAuth()
+    @HttpCode(HttpStatus.OK)
+    async updateMeeting(
+        @Param() idMeetingDto: IdMeetingDto,
+        @Body() updateMeetingDto: UpdateMeetingDto,
+        @UserScope() user: User,
+    ) {
+        const userId = user?.id
+        const companyId = user?.companyId
+        const meeting = await this.meetingService.updateMeeting(
+            idMeetingDto,
+            updateMeetingDto,
+            userId,
             companyId,
         )
         return meeting
