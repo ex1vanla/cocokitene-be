@@ -7,6 +7,7 @@ import { MeetingRepository } from '@repositories/meeting.repository'
 import { UserMeetingRepository } from '@repositories/user-meeting.repository'
 import { MeetingFileRepository } from '@repositories/meeting-file.repository'
 import { ProposalRepository } from '@repositories/proposal.repository'
+import { VotingRepository } from '@repositories/voting.repository'
 
 const commonRepositories = [
     UserRepository,
@@ -16,6 +17,7 @@ const commonRepositories = [
     UserMeetingRepository,
     MeetingFileRepository,
     ProposalRepository,
+    VotingRepository,
 ]
 
 @Global()
