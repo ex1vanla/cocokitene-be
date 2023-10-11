@@ -2,4 +2,13 @@ import { CustomRepository } from '@shares/decorators'
 import { UserRole } from '@entities/user-role.entity'
 import { Repository } from 'typeorm'
 @CustomRepository(UserRole)
-export class UserRoleRepository extends Repository<UserRole> {}
+export class UserRoleRepository extends Repository<UserRole> {
+    async getRoleIdsByUserId(userId: number): Promise<number[]> {
+        const userRoles = await this.createQueryBuilder('user_roles')
+            .select(['user_roles.roleId'])
+            .where('user_roles.userId = :userId', { userId })
+            .getMany()
+        const roleIds: number[] = userRoles.map((userRole) => userRole.roleId)
+        return roleIds
+    }
+}

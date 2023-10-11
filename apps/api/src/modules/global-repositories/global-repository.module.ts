@@ -8,11 +8,13 @@ import { UserMeetingRepository } from '@repositories/user-meeting.repository'
 import { MeetingFileRepository } from '@repositories/meeting-file.repository'
 import { ProposalRepository } from '@repositories/proposal.repository'
 import { VotingRepository } from '@repositories/voting.repository'
+import { UserRoleRepository } from '@repositories/user-role.repository'
 
 const commonRepositories = [
     UserRepository,
     UserStatusRepository,
     RoleRepository,
+    UserRoleRepository,
     MeetingRepository,
     UserMeetingRepository,
     MeetingFileRepository,

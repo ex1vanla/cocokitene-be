@@ -54,18 +54,18 @@ export class MeetingController {
         return meetings
     }
 
-    @Post('/send-email')
-    @UseGuards(JwtAuthGuard)
-    @HttpCode(HttpStatus.CREATED)
-    @ApiBearerAuth()
-    @Permission(PermissionEnum.SEND_MAIL_TO_SHAREHOLDER)
-    async sendEmailToShareHolder(
-        @Body() idMeetingDto: IdMeetingDto,
-        @UserScope() user: User,
-    ) {
-        await this.emailService.sendEmail(idMeetingDto, user.companyId)
-        return 'Emails sent successfully'
-    }
+    // @Post('/send-email')
+    // @UseGuards(JwtAuthGuard)
+    // @HttpCode(HttpStatus.CREATED)
+    // @ApiBearerAuth()
+    // @Permission(PermissionEnum.SEND_MAIL_TO_SHAREHOLDER)
+    // async sendEmailToShareHolder(
+    //     @Body() idMeetingDto: IdMeetingDto,
+    //     @UserScope() user: User,
+    // ) {
+    //     await this.emailService.sendEmail(idMeetingDto, user.companyId)
+    //     return 'Emails sent successfully'
+    // }
 
     @Post('/attendance-meeting')
     @UseGuards(JwtAuthGuard)
