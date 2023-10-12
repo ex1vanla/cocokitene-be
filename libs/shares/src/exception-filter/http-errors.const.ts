@@ -55,10 +55,9 @@ export const httpErrors = {
         message: 'Meeting is not start. Please try again',
         code: 'MEETING_00004',
     },
-
     MEETING_NOT_FOUND: {
-        message: 'Meeting not found. Please try again',
-        code: 'MEETING_00002',
+        message: 'Meeting not existed. Please try again',
+        code: 'MEETING_00005',
     },
     // company error
     COMPANY_NOT_FOUND: {

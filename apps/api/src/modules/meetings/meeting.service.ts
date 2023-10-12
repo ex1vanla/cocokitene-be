@@ -74,19 +74,16 @@ export class MeetingService {
                     httpErrors.MEETING_HAS_CANCELED,
                     HttpStatus.BAD_REQUEST,
                 )
-
             } else if (userMeeting.meeting.status == StatusMeeting.DELAYED) {
                 throw new HttpException(
                     httpErrors.MEETING_HAS_DELAYED,
                     HttpStatus.BAD_REQUEST,
                 )
-
-            } else if (currentDate <= startTimeMeeting) {
+            } else if (currentDate < startTimeMeeting) {
                 throw new HttpException(
                     httpErrors.MEETING_NOT_START,
                     HttpStatus.BAD_REQUEST,
                 )
-
             } else if (
                 currentDate >= startTimeMeeting &&
                 currentDate <= endTimeMeeting
