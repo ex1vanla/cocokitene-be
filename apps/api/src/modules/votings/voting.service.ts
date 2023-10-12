@@ -6,6 +6,7 @@ import { Voting } from '@entities/voting.entity'
 import { VoteProposalDto } from '@dtos/voting.dto'
 import { httpErrors } from '@shares/exception-filter'
 import { VoteProposalResult } from '@shares/constants/proposal.const'
+import { Proposal } from '@entities/proposal.entity'
 
 @Injectable()
 export class VotingService {
@@ -28,64 +29,49 @@ export class VotingService {
         return existedVoting
     }
 
-    async userVotingProposal(
-        meetingId: number,
+    async voteProposal(
         companyId: number,
         userId: number,
         proposalId: number,
         voteProposalDto: VoteProposalDto,
     ): Promise<Voting> {
         const { result } = voteProposalDto
-        const existedProposal =
-            await this.proposalRepository.getProposalByIdAndMeetingId(
-                proposalId,
-                meetingId,
-            )
-        if (!existedProposal) {
+
+        const meetingId =
+            await this.proposalRepository.getIdMeetingByProposalId(proposalId)
+        const meeting = await this.meetingRepository.findOne({
+            where: {
+                id: meetingId,
+            },
+        })
+        if (!meeting) {
             throw new HttpException(
-                httpErrors.PROPOSAL_NOT_FOUND,
-                HttpStatus.NOT_FOUND,
+                httpErrors.MEETING_NOT_EXISTED,
+                HttpStatus.BAD_REQUEST,
             )
         }
+        if (meeting.companyId !== companyId) {
+            throw new HttpException(
+                httpErrors.MEETING_NOT_IN_THIS_COMPANY,
+                HttpStatus.BAD_REQUEST,
+            )
+        }
+
+        const existedProposal = await this.proposalRepository.getProposalById(
+            proposalId,
+        )
+
         try {
             const checkExistedVoting =
                 await this.findVotingByUserIdAndProposalId(userId, proposalId)
 
             if (checkExistedVoting) {
-                const resultOld = checkExistedVoting.result
-                if (result !== resultOld) {
-                    switch (resultOld) {
-                        case VoteProposalResult.VOTE:
-                            existedProposal.votedQuantity--
-                            break
-                        case VoteProposalResult.UNVOTE:
-                            existedProposal.unVotedQuantity--
-                            break
-                        case VoteProposalResult.NO_IDEA:
-                            existedProposal.notVoteYetQuantity--
-                            break
-                    }
-                    switch (result) {
-                        case VoteProposalResult.VOTE:
-                            existedProposal.votedQuantity++
-                            break
-                        case VoteProposalResult.UNVOTE:
-                            existedProposal.unVotedQuantity++
-                            break
-                        case VoteProposalResult.NO_IDEA:
-                            existedProposal.notVoteYetQuantity++
-                            break
-                    }
-                    checkExistedVoting.result = result
-                    await checkExistedVoting.save()
-                    await existedProposal.save()
-                    return checkExistedVoting
-                } else {
-                    throw new HttpException(
-                        httpErrors.VOTING_FAILED,
-                        HttpStatus.BAD_REQUEST,
-                    )
-                }
+                const updateResultVote = await this.updateVoteCount(
+                    existedProposal,
+                    checkExistedVoting,
+                    voteProposalDto,
+                )
+                return updateResultVote
             } else {
                 let createdVoting: Voting
                 try {
@@ -125,5 +111,47 @@ export class VotingService {
 
     async deleteVoting(proposalId: number) {
         await this.votingRepository.softDelete({ proposalId })
+    }
+
+    async updateVoteCount(
+        existedProposal: Proposal,
+        existedVoting: Voting,
+        voteProposalDto: VoteProposalDto,
+    ): Promise<Voting> {
+        const { result } = voteProposalDto
+        const resultOld = existedVoting.result
+        if (result !== resultOld) {
+            switch (resultOld) {
+                case VoteProposalResult.VOTE:
+                    existedProposal.votedQuantity--
+                    break
+                case VoteProposalResult.UNVOTE:
+                    existedProposal.unVotedQuantity--
+                    break
+                case VoteProposalResult.NO_IDEA:
+                    existedProposal.notVoteYetQuantity--
+                    break
+            }
+            switch (result) {
+                case VoteProposalResult.VOTE:
+                    existedProposal.votedQuantity++
+                    break
+                case VoteProposalResult.UNVOTE:
+                    existedProposal.unVotedQuantity++
+                    break
+                case VoteProposalResult.NO_IDEA:
+                    existedProposal.notVoteYetQuantity++
+                    break
+            }
+            existedVoting.result = result
+            await existedVoting.save()
+            await existedProposal.save()
+            return existedVoting
+        } else {
+            throw new HttpException(
+                httpErrors.VOTING_FAILED,
+                HttpStatus.BAD_REQUEST,
+            )
+        }
     }
 }

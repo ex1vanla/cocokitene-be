@@ -45,25 +45,34 @@ export class ProposalService {
 
     async updateProposal(
         userId: number,
-        meetingId: number,
+        companyId: number,
         proposalId: number,
         proposalDtoUpdate: ProposalDtoUpdate,
     ): Promise<Proposal> {
-        const { type } = proposalDtoUpdate
         try {
-            const existedProposal = await this.proposalRepository.findOne({
+            // check existed of meeting and proposal
+            const meetingId =
+                await this.proposalRepository.getIdMeetingByProposalId(
+                    proposalId,
+                )
+            const meeting = await this.meetingRepository.findOne({
                 where: {
-                    id: proposalId,
-                    type: type,
-                    meetingId: meetingId,
+                    id: meetingId,
                 },
             })
-            if (!existedProposal) {
+            if (!meeting) {
                 throw new HttpException(
-                    httpErrors.PROPOSAL_NOT_FOUND,
-                    HttpStatus.NOT_FOUND,
+                    httpErrors.MEETING_NOT_EXISTED,
+                    HttpStatus.BAD_REQUEST,
                 )
             }
+            if (meeting.companyId !== companyId) {
+                throw new HttpException(
+                    httpErrors.MEETING_NOT_IN_THIS_COMPANY,
+                    HttpStatus.BAD_REQUEST,
+                )
+            }
+
             const updateProposal = await this.proposalRepository.updateProposal(
                 userId,
                 proposalId,
@@ -80,22 +89,29 @@ export class ProposalService {
 
     async deleteProposal(
         userId: number,
-        meetingId: number,
+        companyId: number,
         proposalId: number,
         typeProposalDto: TypeProposalDto,
     ) {
         const { type } = typeProposalDto
-        const existedProposal = await this.proposalRepository.findOne({
+        // check existed of meeting and proposal
+        const meetingId =
+            await this.proposalRepository.getIdMeetingByProposalId(proposalId)
+        const meeting = await this.meetingRepository.findOne({
             where: {
-                id: proposalId,
-                meetingId: meetingId,
-                type: type,
+                id: meetingId,
             },
         })
-        if (!existedProposal) {
+        if (!meeting) {
             throw new HttpException(
-                httpErrors.PROPOSAL_NOT_FOUND,
-                HttpStatus.NOT_FOUND,
+                httpErrors.MEETING_NOT_EXISTED,
+                HttpStatus.BAD_REQUEST,
+            )
+        }
+        if (meeting.companyId !== companyId) {
+            throw new HttpException(
+                httpErrors.MEETING_NOT_IN_THIS_COMPANY,
+                HttpStatus.BAD_REQUEST,
             )
         }
 
@@ -104,6 +120,7 @@ export class ProposalService {
             await this.proposalRepository.softDelete({
                 meetingId,
                 id: proposalId,
+                type: type,
             })
             //join voting and delete relate idProposal
             await this.votingService.deleteVoting(proposalId)

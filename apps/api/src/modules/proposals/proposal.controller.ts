@@ -26,7 +26,7 @@ import { User } from '@entities/user.entity'
 import { VotingService } from '@api/modules/votings/voting.service'
 import { VoteProposalDto } from '@dtos/voting.dto'
 
-@Controller('meetings/:meetingId/proposals')
+@Controller('proposals')
 @ApiTags('proposals')
 export class ProposalController {
     constructor(
@@ -39,15 +39,15 @@ export class ProposalController {
     @ApiBearerAuth()
     @HttpCode(HttpStatus.OK)
     async updateProposal(
-        @Param('meetingId') meetingId: number,
         @Param('proposalId') proposalId: number,
         @Body() proposalDtoUpdate: ProposalDtoUpdate,
         @UserScope() user: User,
     ) {
-        const userId = user?.id
+        const userId = user?.id,
+            companyId = user?.companyId
         const updatedProposal = await this.proposalService.updateProposal(
             userId,
-            meetingId,
+            companyId,
             proposalId,
             proposalDtoUpdate,
         )
@@ -60,15 +60,13 @@ export class ProposalController {
     @ApiBearerAuth()
     @HttpCode(HttpStatus.OK)
     async voteProposal(
-        @Param('meetingId') meetingId: number,
         @Param('proposalId') proposalId: number,
         @Query() voteProposalDto: VoteProposalDto,
         @UserScope() user: User,
     ) {
         const userId = user?.id
         const companyId = user?.companyId
-        const proposal = await this.votingService.userVotingProposal(
-            meetingId,
+        const proposal = await this.votingService.voteProposal(
             companyId,
             userId,
             proposalId,
@@ -84,22 +82,22 @@ export class ProposalController {
     @ApiBearerAuth()
     @HttpCode(HttpStatus.OK)
     async deleteProposal(
-        @Param('meetingId') meetingId: number,
         @Param('proposalId') proposalId: number,
         @Query() typeProposalDto: TypeProposalDto,
         @UserScope() user: User,
     ) {
-        const userId = user?.id
+        const userId = user?.id,
+            companyId = user?.companyId
         const result = await this.proposalService.deleteProposal(
             userId,
-            meetingId,
+            companyId,
             proposalId,
             typeProposalDto,
         )
         return result
     }
 
-    @Get('')
+    @Get(':meetingId')
     @HttpCode(HttpStatus.OK)
     @ApiBearerAuth()
     @UseGuards(JwtAuthGuard)

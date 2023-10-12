@@ -63,6 +63,10 @@ export const httpErrors = {
         message: 'Meeting not existed. Please try again',
         code: 'MEETING_00005',
     },
+    MEETING_NOT_IN_THIS_COMPANY: {
+        message: ' this meeting in not of this company. Please try again',
+        code: 'MEETING_00003',
+    },
     // company error
     COMPANY_NOT_FOUND: {
         message: 'Company not found. Please try again',

@@ -12,6 +12,8 @@ import {
     Pagination,
 } from 'nestjs-typeorm-paginate'
 import { ProposalType } from '@shares/constants/proposal.const'
+import { HttpException, HttpStatus } from '@nestjs/common'
+import { httpErrors } from '@shares/exception-filter'
 
 @CustomRepository(Proposal)
 export class ProposalRepository extends Repository<Proposal> {
@@ -66,14 +68,10 @@ export class ProposalRepository extends Repository<Proposal> {
         return proposal
     }
 
-    async getProposalByIdAndMeetingId(
-        proposalId: number,
-        meetingId: number,
-    ): Promise<Proposal> {
+    async getProposalById(proposalId: number): Promise<Proposal> {
         const proposal = await this.findOne({
             where: {
                 id: proposalId,
-                meetingId: meetingId,
             },
         })
         return proposal
@@ -95,6 +93,12 @@ export class ProposalRepository extends Repository<Proposal> {
                 'proposals.unVotedQuantity',
                 'proposals.notVoteYetQuantity',
             ])
+            .leftJoin(
+                'votings',
+                'voting',
+                'proposals.id = voting.proposalId AND voting.userId = :userId',
+                { userId },
+            )
             .addSelect(
                 `(
             CASE
@@ -106,12 +110,7 @@ export class ProposalRepository extends Repository<Proposal> {
           END)`,
                 'resultActionVote',
             )
-            .leftJoin(
-                'votings',
-                'voting',
-                'proposals.id = voting.proposalId AND voting.userId = :userId',
-                { userId },
-            )
+
             .where('proposals.type = :type', {
                 type: typeQuery,
             })
@@ -119,5 +118,21 @@ export class ProposalRepository extends Repository<Proposal> {
                 meetingId: meetingId,
             })
         return paginateRaw(queryBuilder, options)
+    }
+
+    async getIdMeetingByProposalId(proposalId: number): Promise<number> {
+        const proposal = await this.findOne({
+            where: {
+                id: proposalId,
+            },
+        })
+        if (!proposal) {
+            throw new HttpException(
+                httpErrors.PROPOSAL_NOT_FOUND,
+                HttpStatus.NOT_FOUND,
+            )
+        }
+        const meetingId = proposal.meetingId
+        return meetingId
     }
 }
