@@ -93,7 +93,6 @@ export class MeetingService {
         } catch (error) {
             throw new HttpException(
                 {
-                    code: 400,
                     message: error.message,
                 },
                 HttpStatus.BAD_REQUEST,

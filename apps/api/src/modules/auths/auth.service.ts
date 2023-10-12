@@ -103,7 +103,6 @@ export class AuthService {
         } catch (error) {
             throw new HttpException(
                 {
-                    code: 500,
                     message: error.message,
                 },
                 HttpStatus.INTERNAL_SERVER_ERROR,
@@ -127,7 +126,6 @@ export class AuthService {
         } catch (error) {
             throw new HttpException(
                 {
-                    code: 203,
                     message: error.message,
                 },
                 HttpStatus.UNAUTHORIZED,
