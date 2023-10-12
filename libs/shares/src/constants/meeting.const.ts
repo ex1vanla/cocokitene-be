@@ -24,7 +24,7 @@ export enum StatusMeeting {
     NOT_HAPPEN = '0',
     HAPPENING = '1',
     HAPPENED = '2',
-    CANCELD = '3',
+    CANCELED = '3',
     DELAYED = '4',
 }
 
