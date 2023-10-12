@@ -55,9 +55,17 @@ export const httpErrors = {
         message: 'Meeting is not start. Please try again',
         code: 'MEETING_00004',
     },
+    MEETING_UPDATE_FAILED: {
+        message: 'Update meeting failed. Please try again',
+        code: 'MEETING_00006',
+    },
     MEETING_NOT_FOUND: {
         message: 'Meeting not existed. Please try again',
         code: 'MEETING_00005',
+    },
+    MEETING_NOT_IN_THIS_COMPANY: {
+        message: ' this meeting in not of this company. Please try again',
+        code: 'MEETING_00003',
     },
     // company error
     COMPANY_NOT_FOUND: {
@@ -74,6 +82,15 @@ export const httpErrors = {
         message: 'Proposal file failed. Please try again',
         code: 'PROPOSAL_00000',
     },
+    PROPOSAL_NOT_FOUND: {
+        message: 'Proposal with meetingId and id not found. Please try again',
+        code: 'PROPOSAL_000001',
+    },
+    PROPOSAL_VOTE_FAILED: {
+        message:
+            'Proposal with meetingId and type vote failed. Please try again',
+        code: 'PROPOSAL_000002',
+    },
     // user meeting error
     USER_MEETING_CREATE_FAILED: {
         message: 'User meeting failed. Please try again',
@@ -83,5 +100,21 @@ export const httpErrors = {
         message:
             'Meeting with userId and meetingId not found. Please try again',
         code: 'MEETING_00001',
+    },
+    //attendance
+    USER_ATTENDANCE_FAILED: {
+        message:
+            'At now, you can not  attendance this meeting anymore because it finished. Please try again',
+        code: 'USER_ATTENDANCE_00000',
+    },
+    //voting
+    VOTING_FAILED: {
+        message:
+            'At proposal, you sended  this result was duplicate with result saved in database. Please send result diffirence.',
+        code: 'VOTING_00000',
+    },
+    VOTING_CREATED_FAILED: {
+        message: 'Create voting failded. Please send result diffirence.',
+        code: 'VOTING_00001',
     },
 }

@@ -10,6 +10,8 @@ import { AuthModule } from '@api/modules/auths/auth.module'
 import { MeetingModule } from '@api/modules/meetings/meeting.module'
 import { EmailModule } from '@api/modules/emails/email.module'
 import { S3Module } from '@api/modules/s3/s3.module'
+import { ProposalModule } from '@api/modules/proposals/proposal.module'
+import { VotingModule } from '@api/modules/votings/voting.module'
 
 @Module({
     imports: [
@@ -24,6 +26,8 @@ import { S3Module } from '@api/modules/s3/s3.module'
         MeetingModule,
         EmailModule,
         S3Module,
+        ProposalModule,
+        VotingModule,
     ],
     controllers: [ApiController],
     providers: [ApiService],

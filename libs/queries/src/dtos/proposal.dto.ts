@@ -7,6 +7,41 @@ import {
     IsOptional,
     IsString,
 } from 'class-validator'
+import { Type } from 'class-transformer'
+
+export class TypeProposalDto {
+    @IsEnum(ProposalType)
+    @ApiProperty({
+        required: true,
+        enum: ProposalType,
+    })
+    type: ProposalType
+}
+
+export class GetAllProposalDto {
+    @IsNumber()
+    @IsNotEmpty()
+    @Type(() => Number)
+    @ApiProperty({
+        example: 1,
+    })
+    page: number
+
+    @IsNumber()
+    @IsNotEmpty()
+    @Type(() => Number)
+    @ApiProperty({
+        example: 10,
+    })
+    limit: number
+
+    @IsEnum(ProposalType)
+    @ApiProperty({
+        required: true,
+        enum: ProposalType,
+    })
+    type: ProposalType
+}
 
 export class CreateProposalDto {
     @IsNotEmpty()
@@ -51,3 +86,28 @@ export class ProposalDto extends OmitType(CreateProposalDto, [
     'meetingId',
     'creatorId',
 ]) {}
+
+export class ProposalDtoUpdate {
+    @IsOptional()
+    @IsString()
+    @ApiProperty({
+        required: false,
+        example: 'Approve the final budget',
+    })
+    title: string
+
+    @IsOptional()
+    @IsString()
+    @ApiProperty({
+        required: false,
+        example: 'Approve the final budget description',
+    })
+    description: string
+
+    @IsEnum(ProposalType)
+    @ApiProperty({
+        required: true,
+        enum: ProposalType,
+    })
+    type: ProposalType
+}
