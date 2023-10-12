@@ -29,6 +29,12 @@ export class MeetingRepository extends Repository<Meeting> {
                 'meetings.meetingLink',
                 'meetings.status',
             ])
+            .leftJoin(
+                'user_meetings',
+                'userMeeting',
+                'userMeeting.meetingId = meetings.id AND userMeeting.userId = :userId',
+                { userId },
+            )
             .addSelect(
                 `(CASE 
                 WHEN userMeeting.status = 'participate' THEN true
@@ -36,12 +42,7 @@ export class MeetingRepository extends Repository<Meeting> {
             END)`,
                 'isJoined',
             )
-            .leftJoin(
-                'user_meetings',
-                'userMeeting',
-                'userMeeting.meetingId = meetings.id AND userMeeting.userId = :userId',
-                { userId },
-            )
+
             .where('meetings.companyId= :companyId', {
                 companyId: companyId,
             })
