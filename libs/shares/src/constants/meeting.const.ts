@@ -3,13 +3,6 @@ export enum UserMeetingStatusEnum {
     ABSENCE = 'absence',
 }
 
-export enum StatusMeeting {
-    NOT_HAPPEN = '0',
-    HAPPENING = '1',
-    HAPPENED = '2',
-    CANCELED = '3',
-    DELAYED = '4',
-}
 export enum MeetingFileType {
     MEETING_INVITATION = 'invitations',
     MEETING_MINUTES = 'minutes',

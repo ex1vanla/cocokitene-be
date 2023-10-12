@@ -57,15 +57,11 @@ export class Meeting extends BaseEntity {
     @Column({ nullable: false, name: 'creator_id', type: 'integer', width: 11 })
     creatorId: number
 
-    
-
     @ManyToOne(() => Company)
     @JoinColumn({
         name: 'company_id',
     })
     company: Company
-
-    
 
     @ManyToOne(() => User)
     @JoinColumn({

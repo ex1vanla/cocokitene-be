@@ -43,9 +43,6 @@ export const httpErrors = {
         message: 'Create meeting failed. Please try again',
         code: 'MEETING_00001',
     },
-    MEETING_HAS_CANCELED: {
-        message: 'Meeting has canceled. Please try again',
-    
     MEETING_UPDATE_FAILED: {
         message: 'Update meeting failed. Please try again',
         code: 'MEETING_00002',
@@ -58,11 +55,15 @@ export const httpErrors = {
         message: 'Meeting is not start. Please try again',
         code: 'MEETING_00004',
     },
-    
     MEETING_NOT_FOUND: {
         message: 'Meeting not existed. Please try again',
         code: 'MEETING_00005',
     },
+    MEETING_HAS_CANCELED: {
+        message: 'Meeting has canceled. Please try again',
+        code: 'MEETING_00006',
+    },
+
     MEETING_NOT_IN_THIS_COMPANY: {
         message: ' this meeting in not of this company. Please try again',
         code: 'MEETING_00003',
@@ -116,6 +117,5 @@ export const httpErrors = {
     VOTING_CREATED_FAILED: {
         message: 'Create voting failded. Please send result diffirence.',
         code: 'VOTING_00001',
-    }
-}
+    },
 }
