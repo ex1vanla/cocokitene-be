@@ -12,6 +12,8 @@ import { EmailModule } from '@api/modules/emails/email.module'
 import { S3Module } from '@api/modules/s3/s3.module'
 import { ProposalModule } from '@api/modules/proposals/proposal.module'
 import { VotingModule } from '@api/modules/votings/voting.module'
+import { RoleModule } from '@api/modules/roles/role.module'
+import { UserRoleModule } from '@api/modules/user-roles/user-role.module'
 
 @Module({
     imports: [
@@ -28,6 +30,8 @@ import { VotingModule } from '@api/modules/votings/voting.module'
         S3Module,
         ProposalModule,
         VotingModule,
+        UserRoleModule,
+        RoleModule,
     ],
     controllers: [ApiController],
     providers: [ApiService],

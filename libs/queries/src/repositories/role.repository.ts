@@ -22,21 +22,28 @@ export class RoleRepository extends Repository<Role> {
         })
         return role
     }
-    async getPermissionsByRoleId(id: number): Promise<string[]> {
-        const role = await this.findOne({
-            where: {
-                id: id,
-            },
-            relations: ['rolePermissions'],
-        })
-        const permissionKeysAsString =
-            role?.rolePermissions?.map(
-                (rolePermission) =>
-                    rolePermission?.permission?.key as PermissionEnum,
-            ) || []
-        const permission_keys = permissionKeysAsString.map((key) =>
-            key.toString(),
-        )
-        return permission_keys
+
+    async getPermissionsByRoleId(ids: number[]): Promise<string[]> {
+        const permissionKeys: string[] = []
+        for (const id of ids) {
+            const role = await this.findOne({
+                where: {
+                    id: id,
+                },
+                relations: ['rolePermissions'],
+            })
+            if (role) {
+                const permissionKeysAsString =
+                    role?.rolePermissions?.map(
+                        (rolePermission) =>
+                            rolePermission?.permission?.key as PermissionEnum,
+                    ) || []
+                const permission_keys = permissionKeysAsString.map((key) =>
+                    key.toString(),
+                )
+                permissionKeys.push(...permission_keys)
+            }
+        }
+        return permissionKeys
     }
 }

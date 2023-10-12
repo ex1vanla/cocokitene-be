@@ -10,7 +10,6 @@ import {
     UpdateDateColumn,
 } from 'typeorm'
 import { UserStatus } from '@entities/user-status.entity'
-import { Role } from '@entities/role.entity'
 import { Company } from '@entities/company.entity'
 import { UserRole } from '@entities/user-role.entity'
 
@@ -35,9 +34,6 @@ export class User extends BaseEntity {
 
     @Column({ name: 'avartar', type: 'varchar', length: 255, nullable: true })
     avatar: string
-
-    @Column({ nullable: false, name: 'role_id', type: 'integer', width: 11 })
-    roleId: number
 
     @Column({ nullable: false, name: 'status_id', type: 'integer', width: 11 })
     statusId: number
@@ -64,12 +60,6 @@ export class User extends BaseEntity {
 
     @UpdateDateColumn({ name: 'updated_at' })
     updatedAt: Date
-
-    @ManyToOne(() => Role)
-    @JoinColumn({
-        name: 'role_id',
-    })
-    role: Role[]
 
     @ManyToOne(() => UserStatus)
     @JoinColumn({

@@ -23,13 +23,17 @@ import { RolePermission } from '@entities/role-permission.entity'
 import { Permission } from '@entities/permission.entity'
 import { Role } from '@entities/role.entity'
 import { RoleRepository } from '@repositories/role.repository'
+import { UserRoleRepository } from '@repositories/user-role.repository'
+import { RoleService } from '@api/modules/roles/role.service'
+import { UserRoleService } from '@api/modules/user-roles/user-role.service'
 
 @Injectable()
 export class AuthService {
     constructor(
         private readonly userRepository: UserRepository,
         private readonly configService: ConfigService,
-        private readonly roleRepository: RoleRepository,
+        private readonly roleService: RoleService,
+        private readonly userRoleService: UserRoleService,
     ) {}
 
     async login(loginDto: LoginDto): Promise<LoginResponseData> {
@@ -77,9 +81,12 @@ export class AuthService {
         let userData
 
         try {
-            const roleId = user.roleId
+            const roleIds = await this.userRoleService.getRoleIdsByUserId(
+                user.id,
+            )
             const permissionKeys =
-                await this.roleRepository.getPermissionsByRoleId(roleId)
+                await this.roleService.getPermissionsByRoleId(roleIds)
+
             userData = {
                 id: user.id,
                 walletAddress: user.walletAddress,
