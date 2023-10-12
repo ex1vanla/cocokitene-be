@@ -34,10 +34,12 @@ export class MeetingService {
 
     async getAllMeetings(
         getAllMeetingDto: GetAllMeetingDto,
+        userId: number,
         companyId: number,
     ): Promise<Pagination<Meeting>> {
         const meetings = await this.meetingRepository.getAllMeetings(
             companyId,
+            userId,
             getAllMeetingDto,
         )
         return meetings

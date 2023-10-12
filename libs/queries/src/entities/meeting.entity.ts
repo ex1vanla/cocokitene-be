@@ -63,6 +63,8 @@ export class Meeting extends BaseEntity {
     })
     company: Company
 
+    
+
     @ManyToOne(() => User)
     @JoinColumn({
         name: 'creator_id',
