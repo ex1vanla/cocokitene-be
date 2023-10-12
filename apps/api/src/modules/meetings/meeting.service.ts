@@ -11,7 +11,6 @@ import { UserMeetingRepository } from '@repositories/user-meeting.repository'
 import {
     MeetingRole,
     StatusMeeting,
-    UserJoinMeetingStatusEnum,
     UserMeetingStatusEnum,
 } from '@shares/constants/meeting.const'
 import { httpErrors } from '@shares/exception-filter'
@@ -50,7 +49,6 @@ export class MeetingService {
     ): Promise<UserMeeting> {
         const { meetingId } = attendMeetingDto
         let userMeeting: UserMeeting
-        let userJoinMeetingStatus
         try {
             userMeeting = await this.userMeetingRepository.findOne({
                 where: {
@@ -89,21 +87,12 @@ export class MeetingService {
                 currentDate <= endTimeMeeting
             ) {
                 userMeeting.status = UserMeetingStatusEnum.PARTICIPATE
-                userJoinMeetingStatus =
-                    UserJoinMeetingStatusEnum.USER_JOIN_MEETING_WHEN_MEETING_START_A_LITTLE
             }
             await userMeeting.save()
+            return userMeeting
         } catch (error) {
-            throw new HttpException(
-                {
-                    code: httpErrors.MEETING_CREATE_FAILED.code,
-                    message: error.message,
-                },
-                HttpStatus.INTERNAL_SERVER_ERROR,
-            )
+            throw new HttpException(error.message, HttpStatus.BAD_REQUEST)
         }
-
-        return userJoinMeetingStatus
     }
 
     async createMeeting(
