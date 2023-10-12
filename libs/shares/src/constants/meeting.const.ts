@@ -20,6 +20,14 @@ export enum MeetingType {
     PASS = 'pass',
 }
 
+export enum StatusMeeting {
+    NOT_HAPPEN = '0',
+    HAPPENING = '1',
+    HAPPENED = '2',
+    CANCELED = '3',
+    DELAYED = '4',
+}
+
 export enum MeetingRole {
     HOST = 'host',
     CONTROL_BOARD = 'control_board',

@@ -47,4 +47,46 @@ export class UserMeetingService {
 
         return userMeetings
     }
+    async updateUserMeeting(
+        meetingId: number,
+        meetingRole: MeetingRole,
+        newIdPaticipants: number[],
+    ): Promise<number[]> {
+        const currentRoles =
+            await this.userMeetingRepository.getListUserIdPaticipantsByMeetingId(
+                meetingId,
+                meetingRole,
+            )
+
+        // ids just add from dto
+        const usersToAdds = newIdPaticipants.filter(
+            (userId) => !currentRoles.includes(userId),
+        )
+        const addedUsersFollowRole: number[] = []
+        addedUsersFollowRole.push(...usersToAdds)
+
+        //ids need to delete when it not appear in newIdPaticipant
+        const usersToRemoves = currentRoles.filter(
+            (userId) => !newIdPaticipants.includes(userId),
+        )
+
+        await Promise.all([
+            ...usersToRemoves.map((usersToRemove) =>
+                this.userMeetingRepository.removeUserFromMeeting(
+                    usersToRemove,
+                    meetingId,
+                    meetingRole,
+                ),
+            ),
+            ...usersToAdds.map((usersToAdd) =>
+                this.createUserMeeting({
+                    userId: usersToAdd,
+                    meetingId: meetingId,
+                    role: meetingRole,
+                }),
+            ),
+        ])
+
+        return addedUsersFollowRole
+    }
 }

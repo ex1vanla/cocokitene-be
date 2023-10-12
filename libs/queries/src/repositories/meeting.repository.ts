@@ -6,7 +6,7 @@ import {
     Pagination,
 } from 'nestjs-typeorm-paginate'
 import { Meeting } from '@entities/meeting.entity'
-import { CreateMeetingDto, GetAllMeetingDto } from '../dtos'
+import { CreateMeetingDto, GetAllMeetingDto, UpdateMeetingDto } from '../dtos'
 import { MeetingType } from '@shares/constants/meeting.const'
 
 @CustomRepository(Meeting)
@@ -92,7 +92,18 @@ export class MeetingRepository extends Repository<Meeting> {
 
         return meeting
     }
-
+    async getMeetingByMeetingIdAndCompanyId(
+        id: number,
+        companyId: number,
+    ): Promise<Meeting> {
+        const meeting = await this.findOne({
+            where: {
+                id,
+                companyId,
+            },
+        })
+        return meeting
+    }
     async createMeeting(
         createMeetingDto: CreateMeetingDto,
         creatorId: number,
@@ -104,6 +115,30 @@ export class MeetingRepository extends Repository<Meeting> {
             companyId,
         })
         await meeting.save()
+        return meeting
+    }
+
+    async updateMeeting(
+        meetingId: number,
+        updateMeetingDto: UpdateMeetingDto,
+        creatorId: number,
+        companyId: number,
+    ): Promise<Meeting> {
+        await this.createQueryBuilder('meetings')
+            .update(Meeting)
+            .set({
+                title: updateMeetingDto.title,
+                startTime: updateMeetingDto.startTime,
+                endTime: updateMeetingDto.endTime,
+                meetingLink: updateMeetingDto.meetingLink,
+                status: updateMeetingDto.status,
+            })
+            .where('meetings.id = :meetingId', { meetingId })
+            .execute()
+        const meeting = await this.getMeetingByMeetingIdAndCompanyId(
+            meetingId,
+            companyId,
+        )
         return meeting
     }
 }

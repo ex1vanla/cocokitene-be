@@ -42,12 +42,6 @@ export class Meeting extends BaseEntity {
     })
     meetingLink: string
 
-    @Column({ nullable: false, name: 'company_id', type: 'integer', width: 11 })
-    companyId: number
-
-    @Column({ nullable: false, name: 'creator_id', type: 'integer', width: 11 })
-    creatorId: number
-
     @Column({
         nullable: false,
         name: 'status',
@@ -56,6 +50,14 @@ export class Meeting extends BaseEntity {
         default: StatusMeeting.NOT_HAPPEN,
     })
     status: StatusMeeting
+
+    @Column({ nullable: false, name: 'company_id', type: 'integer', width: 11 })
+    companyId: number
+
+    @Column({ nullable: false, name: 'creator_id', type: 'integer', width: 11 })
+    creatorId: number
+
+    
 
     @ManyToOne(() => Company)
     @JoinColumn({

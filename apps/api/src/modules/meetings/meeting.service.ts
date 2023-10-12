@@ -19,6 +19,8 @@ import {
     AttendMeetingDto,
     CreateMeetingDto,
     GetAllMeetingDto,
+    IdMeetingDto,
+    UpdateMeetingDto,
 } from 'libs/queries/src/dtos/meeting.dto'
 import { Pagination } from 'nestjs-typeorm-paginate'
 
@@ -281,5 +283,130 @@ export class MeetingService {
             shareholdersTotal,
             shareholdersJoined,
         }
+    }
+
+    async updateMeeting(
+        idMeetingDto: IdMeetingDto,
+        updateMeetingDto: UpdateMeetingDto,
+        userId: number,
+        companyId: number,
+    ) {
+        const { meetingId } = idMeetingDto
+
+        if (!userId) {
+            throw new HttpException(
+                httpErrors.USER_NOT_FOUND,
+                HttpStatus.BAD_REQUEST,
+            )
+        }
+        if (!companyId) {
+            throw new HttpException(
+                httpErrors.COMPANY_NOT_FOUND,
+                HttpStatus.BAD_REQUEST,
+            )
+        }
+        let existedMeeting =
+            await this.meetingRepository.getMeetingByMeetingIdAndCompanyId(
+                meetingId,
+                companyId,
+            )
+        if (!existedMeeting) {
+            throw new HttpException(
+                httpErrors.MEETING_NOT_EXISTED,
+                HttpStatus.BAD_REQUEST,
+            )
+        }
+        // update meeting
+        try {
+            existedMeeting = await this.meetingRepository.updateMeeting(
+                meetingId,
+                updateMeetingDto,
+                userId,
+                companyId,
+            )
+        } catch (error) {
+            throw new HttpException(
+                httpErrors.MEETING_UPDATE_FAILED,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            )
+        }
+
+        const {
+            meetingReports,
+            meetingInvitations,
+            resolutions,
+            amendmentResolutions,
+            hosts,
+            controlBoards,
+            directors,
+            administrativeCouncils,
+            shareholders,
+        } = updateMeetingDto
+
+        await Promise.all([
+            ...meetingReports.map((report) =>
+                this.meetingFileService.createMeetingFile({
+                    url: report.url,
+                    meetingId: meetingId,
+                    fileType: report.fileType,
+                }),
+            ),
+            ...meetingInvitations.map((invitation) =>
+                this.meetingFileService.createMeetingFile({
+                    url: invitation.url,
+                    meetingId: meetingId,
+                    fileType: invitation.fileType,
+                }),
+            ),
+
+            ...resolutions.map((resolution) =>
+                this.proposalService.createProposal({
+                    title: resolution.title,
+                    description: resolution.description,
+                    type: resolution.type,
+                    meetingId: meetingId,
+                    creatorId: userId,
+                }),
+            ),
+
+            ...amendmentResolutions.map((amendmentResolution) =>
+                this.proposalService.createProposal({
+                    title: amendmentResolution.title,
+                    description: amendmentResolution.description,
+                    type: amendmentResolution.type,
+                    meetingId: meetingId,
+                    creatorId: userId,
+                }),
+            ),
+
+            await Promise.all([
+                await this.userMeetingService.updateUserMeeting(
+                    meetingId,
+                    MeetingRole.HOST,
+                    hosts,
+                ),
+                await this.userMeetingService.updateUserMeeting(
+                    meetingId,
+                    MeetingRole.CONTROL_BOARD,
+                    controlBoards,
+                ),
+                await this.userMeetingService.updateUserMeeting(
+                    meetingId,
+                    MeetingRole.DIRECTOR,
+                    directors,
+                ),
+                await this.userMeetingService.updateUserMeeting(
+                    meetingId,
+                    MeetingRole.ADMINISTRATIVE_COUNCIL,
+                    administrativeCouncils,
+                ),
+                await this.userMeetingService.updateUserMeeting(
+                    meetingId,
+                    MeetingRole.SHAREHOLDER,
+                    shareholders,
+                ),
+            ]),
+        ])
+        return existedMeeting
     }
 }

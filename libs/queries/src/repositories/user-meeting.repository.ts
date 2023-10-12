@@ -44,4 +44,38 @@ export class UserMeetingRepository extends Repository<UserMeeting> {
 
         return userMeetingList
     }
+
+    async getListUserIdPaticipantsByMeetingId(
+        meetingId: number,
+        meetingRole: MeetingRole,
+    ): Promise<number[]> {
+        const listUserMeetingFollowRoles = await this.find({
+            where: {
+                meetingId: meetingId,
+                role: meetingRole,
+            },
+        })
+        const listIdUserMeetingFollowRoles = listUserMeetingFollowRoles.map(
+            (listUserMeetingFollowRole) => listUserMeetingFollowRole.userId,
+        )
+        return listIdUserMeetingFollowRoles
+    }
+
+    async removeUserFromMeeting(
+        userId: number,
+        meetingId: number,
+        meetingRole: MeetingRole,
+    ) {
+        const existeduserMeeting = await this.findOne({
+            where: {
+                userId: userId,
+                meetingId: meetingId,
+                role: meetingRole,
+            },
+        })
+
+        if (existeduserMeeting) {
+            await this.remove(existeduserMeeting)
+        }
+    }
 }
