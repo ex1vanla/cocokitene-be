@@ -91,7 +91,13 @@ export class MeetingService {
             await userMeeting.save()
             return userMeeting
         } catch (error) {
-            throw new HttpException(error.message, HttpStatus.BAD_REQUEST)
+            throw new HttpException(
+                {
+                    code: 400,
+                    message: error.message,
+                },
+                HttpStatus.BAD_REQUEST,
+            )
         }
     }
 
