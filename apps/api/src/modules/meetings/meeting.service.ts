@@ -10,6 +10,7 @@ import { UserMeeting } from '@entities/user-meeting.entity'
 import { UserMeetingRepository } from '@repositories/user-meeting.repository'
 import {
     MeetingRole,
+    StatusMeeting,
     UserMeetingStatusEnum,
 } from '@shares/constants/meeting.const'
 import { httpErrors } from '@shares/exception-filter'
@@ -54,6 +55,7 @@ export class MeetingService {
                     userId: userId,
                     meetingId: meetingId,
                 },
+                relations: ['meeting'],
             })
             if (!userMeeting) {
                 throw new HttpException(
@@ -61,19 +63,41 @@ export class MeetingService {
                     HttpStatus.NOT_FOUND,
                 )
             }
-            userMeeting.status = UserMeetingStatusEnum.PARTICIPATE
+            const currentDate = new Date()
+            const startTimeMeeting = new Date(userMeeting.meeting.startTime)
+            const endTimeMeeting = new Date(userMeeting.meeting.endTime)
+
+            if (userMeeting.meeting.status == StatusMeeting.CANCELED) {
+                throw new HttpException(
+                    httpErrors.MEETING_HAS_CANCELED,
+                    HttpStatus.BAD_REQUEST,
+                )
+            } else if (userMeeting.meeting.status == StatusMeeting.DELAYED) {
+                throw new HttpException(
+                    httpErrors.MEETING_HAS_DELAYED,
+                    HttpStatus.BAD_REQUEST,
+                )
+            } else if (currentDate < startTimeMeeting) {
+                throw new HttpException(
+                    httpErrors.MEETING_NOT_START,
+                    HttpStatus.BAD_REQUEST,
+                )
+            } else if (
+                currentDate >= startTimeMeeting &&
+                currentDate <= endTimeMeeting
+            ) {
+                userMeeting.status = UserMeetingStatusEnum.PARTICIPATE
+            }
             await userMeeting.save()
+            return userMeeting
         } catch (error) {
             throw new HttpException(
                 {
-                    code: httpErrors.MEETING_CREATE_FAILED.code,
                     message: error.message,
                 },
-                HttpStatus.INTERNAL_SERVER_ERROR,
+                HttpStatus.BAD_REQUEST,
             )
         }
-
-        return userMeeting
     }
 
     async createMeeting(

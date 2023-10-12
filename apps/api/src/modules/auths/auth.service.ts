@@ -102,7 +102,9 @@ export class AuthService {
             })
         } catch (error) {
             throw new HttpException(
-                error.message,
+                {
+                    message: error.message,
+                },
                 HttpStatus.INTERNAL_SERVER_ERROR,
             )
         }
@@ -122,7 +124,12 @@ export class AuthService {
         try {
             payload = await verifyAccessTokenJWT(refreshToken)
         } catch (error) {
-            throw new HttpException(error.message, HttpStatus.UNAUTHORIZED)
+            throw new HttpException(
+                {
+                    message: error.message,
+                },
+                HttpStatus.UNAUTHORIZED,
+            )
         }
         const accessToken = generateAccessJWT(payload)
         return { accessToken }

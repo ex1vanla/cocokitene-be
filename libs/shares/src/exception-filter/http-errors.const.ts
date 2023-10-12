@@ -43,9 +43,21 @@ export const httpErrors = {
         message: 'Create meeting failed. Please try again',
         code: 'MEETING_00001',
     },
-    MEETING_NOT_FOUND: {
-        message: 'Meeting not found. Please try again',
+    MEETING_HAS_CANCELED: {
+        message: 'Meeting has canceled. Please try again',
         code: 'MEETING_00002',
+    },
+    MEETING_HAS_DELAYED: {
+        message: 'Meeting has delayed. Please try again',
+        code: 'MEETING_00003',
+    },
+    MEETING_NOT_START: {
+        message: 'Meeting is not start. Please try again',
+        code: 'MEETING_00004',
+    },
+    MEETING_NOT_FOUND: {
+        message: 'Meeting not existed. Please try again',
+        code: 'MEETING_00005',
     },
     // company error
     COMPANY_NOT_FOUND: {
