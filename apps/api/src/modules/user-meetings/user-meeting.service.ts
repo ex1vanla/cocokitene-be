@@ -63,26 +63,29 @@ export class UserMeetingService {
             (userId) => !currentRoles.includes(userId),
         )
         const addedUsersFollowRole: number[] = []
+        addedUsersFollowRole.push(...usersToAdds)
 
         //ids need to delete when it not appear in newIdPaticipant
         const usersToRemoves = currentRoles.filter(
             (userId) => !newIdPaticipants.includes(userId),
         )
-        for (const userId of usersToRemoves) {
-            await this.userMeetingRepository.removeUserFromMeeting(
-                userId,
-                meetingId,
-                meetingRole,
-            )
-        }
-        for (const userId of usersToAdds) {
-            await this.createUserMeeting({
-                userId,
-                meetingId,
-                role: meetingRole,
-            })
-            addedUsersFollowRole.push(userId)
-        }
+
+        await Promise.all([
+            ...usersToRemoves.map((usersToRemove) =>
+                this.userMeetingRepository.removeUserFromMeeting(
+                    usersToRemove,
+                    meetingId,
+                    meetingRole,
+                ),
+            ),
+            ...usersToAdds.map((usersToAdd) =>
+                this.createUserMeeting({
+                    userId: usersToAdd,
+                    meetingId: meetingId,
+                    role: meetingRole,
+                }),
+            ),
+        ])
 
         return addedUsersFollowRole
     }
