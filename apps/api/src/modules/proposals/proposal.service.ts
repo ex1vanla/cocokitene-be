@@ -127,7 +127,10 @@ export class ProposalService {
 
             return `proposal with Id ${proposalId} deleted successfully`
         } catch (error) {
-            throw new HttpException(error.message, HttpStatus.BAD_REQUEST)
+            throw new HttpException(
+                { message: error.message },
+                HttpStatus.BAD_REQUEST,
+            )
         }
     }
 

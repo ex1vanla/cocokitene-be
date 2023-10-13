@@ -4,6 +4,7 @@ import {
     BaseEntity,
     Column,
     CreateDateColumn,
+    DeleteDateColumn,
     Entity,
     JoinColumn,
     ManyToOne,
@@ -28,6 +29,9 @@ export class MeetingFile extends BaseEntity {
         enum: MeetingFileType,
     })
     fileType: MeetingFileType
+
+    @DeleteDateColumn()
+    deletedAt: Date
 
     @CreateDateColumn({ name: 'created_at' })
     createdAt: Date
