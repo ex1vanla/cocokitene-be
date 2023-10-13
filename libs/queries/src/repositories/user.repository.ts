@@ -23,12 +23,9 @@ export class UserRepository extends Repository<User> {
     async getUserByWalletAddress(
         walletAddress: string,
         status?: UserStatusEnum,
-        isNormalRole?: boolean,
+        // isNormalRole?: boolean,
     ): Promise<User> {
-        const queryBuilder = this.createQueryBuilder('users').leftJoinAndSelect(
-            'users.role',
-            'role',
-        )
+        const queryBuilder = this.createQueryBuilder('users')
         if (status) {
             queryBuilder
                 .leftJoinAndSelect('users.userStatus', 'userStatus')
@@ -39,11 +36,6 @@ export class UserRepository extends Repository<User> {
         queryBuilder.andWhere('users.walletAddress= :walletAddress', {
             walletAddress,
         })
-        if (isNormalRole) {
-            queryBuilder.andWhere('role.roleName != :roleName', {
-                roleName: 'USER_SYSTEM_ADMIN',
-            })
-        }
         const user = await queryBuilder.getOne()
         return user
     }
