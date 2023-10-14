@@ -11,10 +11,22 @@ export class SystemAdmin extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column({ name: 'username', type: 'varchar', length: 255, nullable: true })
+    @Column({
+        name: 'username',
+        type: 'varchar',
+        length: 255,
+        nullable: true,
+        unique: true,
+    })
     username: string
 
-    @Column({ name: 'email', type: 'varchar', length: 255, nullable: true })
+    @Column({
+        name: 'email',
+        type: 'varchar',
+        length: 255,
+        nullable: true,
+        unique: true,
+    })
     email: string
 
     @Column({ name: 'password', type: 'varchar', length: 255, nullable: true })
