@@ -12,6 +12,7 @@ import { UserSeederModule } from '@seeds/user/user.seeder.module'
 import { UserStatusSeederModule } from '@seeds/user-status/user-status.seeder.module'
 import { RolePermissionSeederModule } from '@seeds/role-permission/role-permission.seeder.module'
 import { UserRoleSeederModule } from '@seeds/user-role/user-role.seeder.module'
+import { SystemAdminSeederModule } from '@seeds/system-admin/system-admin.seeder.module'
 
 @Module({
     imports: [
@@ -28,6 +29,7 @@ import { UserRoleSeederModule } from '@seeds/user-role/user-role.seeder.module'
         UserStatusSeederModule,
         RolePermissionSeederModule,
         UserRoleSeederModule,
+        SystemAdminSeederModule,
     ],
     providers: [Seeder],
 })
