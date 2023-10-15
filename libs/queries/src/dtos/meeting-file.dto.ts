@@ -26,15 +26,6 @@ export class CreateMeetingFileDto {
     fileType: MeetingFileType
 }
 
-export class TypeMeetingFileDto {
-    @IsEnum(MeetingFileType)
-    @ApiProperty({
-        required: true,
-        enum: MeetingFileType,
-    })
-    type: MeetingFileType
-}
-
 export class MeetingFileDto extends OmitType(CreateMeetingFileDto, [
     'meetingId',
 ]) {}

@@ -1,7 +1,4 @@
-import {
-    CreateMeetingFileDto,
-    TypeMeetingFileDto,
-} from '@dtos/meeting-file.dto'
+import { CreateMeetingFileDto } from '@dtos/meeting-file.dto'
 import { MeetingFile } from '@entities/meeting-file'
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { MeetingFileRepository } from '@repositories/meeting-file.repository'
@@ -40,27 +37,20 @@ export class MeetingFileService {
         userId: number,
         companyId: number,
         meetingFileId: number,
-        typeMeetingFileDto: TypeMeetingFileDto,
     ) {
-        const { type } = typeMeetingFileDto
         // check existed of meeting and meetingFile
 
-        const meetingId =
-            await this.meetingFileRepository.getIdMeetingByMeetingFileId(
-                meetingFileId,
-            )
-        const meeting = await this.meetingRepository.findOne({
-            where: {
-                id: meetingId,
-            },
-        })
-        if (!meeting) {
+        const meetingFile = await this.meetingFileRepository.getMeetingFileById(
+            meetingFileId,
+        )
+
+        if (!meetingFile) {
             throw new HttpException(
-                httpErrors.MEETING_NOT_EXISTED,
-                HttpStatus.BAD_REQUEST,
+                httpErrors.MEETING_FILE_NOT_FOUND,
+                HttpStatus.NOT_FOUND,
             )
         }
-        if (meeting.companyId !== companyId) {
+        if (meetingFile.meeting.companyId !== companyId) {
             throw new HttpException(
                 httpErrors.MEETING_NOT_IN_THIS_COMPANY,
                 HttpStatus.BAD_REQUEST,
@@ -68,10 +58,10 @@ export class MeetingFileService {
         }
         try {
             //delete meeting-file
+            const meetingId = meetingFile.meeting.id
             await this.meetingFileRepository.softDelete({
                 meetingId,
                 id: meetingFileId,
-                fileType: type,
             })
             return `meeting-file with Id ${meetingFileId} deleted successfully`
         } catch (error) {

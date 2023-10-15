@@ -15,11 +15,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import { JwtAuthGuard } from '@shares/guards/jwt-auth.guard'
 import { PermissionEnum } from '@shares/constants'
 import { Permission } from '@shares/decorators/permission.decorator'
-import {
-    GetAllProposalDto,
-    ProposalDtoUpdate,
-    TypeProposalDto,
-} from '@dtos/proposal.dto'
+import { GetAllProposalDto, ProposalDtoUpdate } from '@dtos/proposal.dto'
 import { ProposalService } from '@api/modules/proposals/proposal.service'
 import { UserScope } from '@shares/decorators/user.decorator'
 import { User } from '@entities/user.entity'
@@ -75,7 +71,7 @@ export class ProposalController {
         return proposal
     }
 
-    @Delete('/delete/:proposalId')
+    @Delete(':proposalId')
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.OK)
     @Permission(PermissionEnum.DELETE_PROPOSAL)
@@ -83,7 +79,6 @@ export class ProposalController {
     @HttpCode(HttpStatus.OK)
     async deleteProposal(
         @Param('proposalId') proposalId: number,
-        @Query() typeProposalDto: TypeProposalDto,
         @UserScope() user: User,
     ) {
         const userId = user?.id,
@@ -92,7 +87,6 @@ export class ProposalController {
             userId,
             companyId,
             proposalId,
-            typeProposalDto,
         )
         return result
     }

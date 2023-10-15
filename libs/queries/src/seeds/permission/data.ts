@@ -76,9 +76,4 @@ export const permissionData: InsertPermissionDto[] = [
         description:
             'the user with this right can see list proposal in the meeting of company',
     },
-    {
-        key: PermissionEnum.DELETE_MEETING_FILE,
-        description:
-            'the user with this right can delete files with typeFile in the meeting of company',
-    },
 ]
