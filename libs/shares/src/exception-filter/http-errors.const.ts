@@ -78,6 +78,10 @@ export const httpErrors = {
         message: 'Create meeting file failed. Please try again',
         code: 'MEETING_FILE_00000',
     },
+    MEETING_FILE_NOT_FOUND: {
+        message: 'meeting file not found. Please try again',
+        code: 'MEETING_FILE_00001',
+    },
     // proposal error
     PROPOSAL_CREATE_FAILED: {
         message: 'Proposal file failed. Please try again',

@@ -9,15 +9,6 @@ import {
 } from 'class-validator'
 import { Type } from 'class-transformer'
 
-export class TypeProposalDto {
-    @IsEnum(ProposalType)
-    @ApiProperty({
-        required: true,
-        enum: ProposalType,
-    })
-    type: ProposalType
-}
-
 export class GetAllProposalDto {
     @IsNumber()
     @IsNotEmpty()

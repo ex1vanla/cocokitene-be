@@ -17,4 +17,14 @@ export class MeetingFileRepository extends Repository<MeetingFile> {
         await createdMeetingFile.save()
         return createdMeetingFile
     }
+
+    async getMeetingFileById(meetingFileId: number): Promise<MeetingFile> {
+        const meetingFile = await this.findOne({
+            where: {
+                id: meetingFileId,
+            },
+            relations: ['meeting'],
+        })
+        return meetingFile
+    }
 }

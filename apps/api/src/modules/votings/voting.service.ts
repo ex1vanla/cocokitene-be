@@ -37,20 +37,17 @@ export class VotingService {
     ): Promise<Voting> {
         const { result } = voteProposalDto
 
-        const meetingId =
-            await this.proposalRepository.getIdMeetingByProposalId(proposalId)
-        const meeting = await this.meetingRepository.findOne({
-            where: {
-                id: meetingId,
-            },
-        })
-        if (!meeting) {
+        const proposal = await this.proposalRepository.getProposalById(
+            proposalId,
+        )
+        if (!proposal) {
             throw new HttpException(
-                httpErrors.MEETING_NOT_EXISTED,
-                HttpStatus.BAD_REQUEST,
+                httpErrors.PROPOSAL_NOT_FOUND,
+                HttpStatus.NOT_FOUND,
             )
         }
-        if (meeting.companyId !== companyId) {
+
+        if (proposal.meeting.companyId !== companyId) {
             throw new HttpException(
                 httpErrors.MEETING_NOT_IN_THIS_COMPANY,
                 HttpStatus.BAD_REQUEST,

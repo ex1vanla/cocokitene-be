@@ -12,8 +12,6 @@ import {
     Pagination,
 } from 'nestjs-typeorm-paginate'
 import { ProposalType } from '@shares/constants/proposal.const'
-import { HttpException, HttpStatus } from '@nestjs/common'
-import { httpErrors } from '@shares/exception-filter'
 
 @CustomRepository(Proposal)
 export class ProposalRepository extends Repository<Proposal> {
@@ -73,6 +71,7 @@ export class ProposalRepository extends Repository<Proposal> {
             where: {
                 id: proposalId,
             },
+            relations: ['meeting'],
         })
         return proposal
     }
@@ -118,21 +117,5 @@ export class ProposalRepository extends Repository<Proposal> {
                 meetingId: meetingId,
             })
         return paginateRaw(queryBuilder, options)
-    }
-
-    async getIdMeetingByProposalId(proposalId: number): Promise<number> {
-        const proposal = await this.findOne({
-            where: {
-                id: proposalId,
-            },
-        })
-        if (!proposal) {
-            throw new HttpException(
-                httpErrors.PROPOSAL_NOT_FOUND,
-                HttpStatus.NOT_FOUND,
-            )
-        }
-        const meetingId = proposal.meetingId
-        return meetingId
     }
 }
