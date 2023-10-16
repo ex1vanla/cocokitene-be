@@ -5,7 +5,7 @@ import {
     HttpStatus,
     Injectable,
 } from '@nestjs/common'
-import { verifyAccessTokenJWT } from '@shares/utils/jwt'
+import { verifySystemAdminAccessTokenJWT } from '@shares/utils/jwt'
 import { httpErrors } from '@shares/exception-filter'
 @Injectable()
 export class SystemadminGuard implements CanActivate {
@@ -24,7 +24,7 @@ export class SystemadminGuard implements CanActivate {
             const bearer = bearerHeader.split(' ')
             const token = bearer[1]
 
-            const payload = await verifyAccessTokenJWT(token)
+            const payload = await verifySystemAdminAccessTokenJWT(token)
 
             if (payload) {
                 request.user = payload

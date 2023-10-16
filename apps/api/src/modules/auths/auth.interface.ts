@@ -16,3 +16,7 @@ export interface SystemAdminLoginResponseData {
 export interface GenerateAccessJWTData {
     accessToken: string
 }
+
+export interface GenerateAccessJWTSystemAdminData {
+    systemAdminAccessToken: string
+}

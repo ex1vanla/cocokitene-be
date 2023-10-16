@@ -12,6 +12,7 @@ import {
     LoginByPassword,
     LoginDto,
     RefreshTokenDto,
+    SystemAdminRefreshTokenDto,
 } from 'libs/queries/src/dtos/auth.dto'
 
 @Controller('auths')
@@ -35,12 +36,25 @@ export class AuthControler {
         )
         return loginByPasswordData
     }
-    @Post('refresh-token')
+    //refresh token user
+    @Post('/user/refresh-token')
     @HttpCode(HttpStatus.CREATED)
     async generateNewAccessJWT(@Query() refreshTokenDto: RefreshTokenDto) {
         const newAccessToken = await this.authService.generateNewAccessJWT(
             refreshTokenDto,
         )
         return newAccessToken
+    }
+
+    @Post('/system-admin/refresh-token')
+    @HttpCode(HttpStatus.CREATED)
+    async generateNewAccessJWTSystemAdmin(
+        @Query() systemAdminRefreshTokenDto: SystemAdminRefreshTokenDto,
+    ) {
+        const newAccessTokenSystemAdmin =
+            await this.authService.generateNewAccessJWTSystemAdmin(
+                systemAdminRefreshTokenDto,
+            )
+        return newAccessTokenSystemAdmin
     }
 }

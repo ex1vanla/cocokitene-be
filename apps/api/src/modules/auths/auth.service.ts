@@ -5,6 +5,7 @@ import { ConfigService } from '@nestjs/config'
 
 import {
     GenerateAccessJWTData,
+    GenerateAccessJWTSystemAdminData,
     LoginResponseData,
     SystemAdminLoginResponseData,
 } from '@api/modules/auths/auth.interface'
@@ -20,13 +21,17 @@ import { User } from '@entities/user.entity'
 import {
     generateAccessJWT,
     generateRefreshTokenJWT,
+    generateSystemAdminAccessJWT,
+    generateSystemAdminRefreshJWT,
     verifyAccessTokenJWT,
     verifyRefreshJWT,
+    verifySystemAdminRefreshTokenJWT,
 } from '@shares/utils/jwt'
 import {
     LoginByPassword,
     LoginDto,
     RefreshTokenDto,
+    SystemAdminRefreshTokenDto,
 } from 'libs/queries/src/dtos/auth.dto'
 import { UserRole } from '@entities/user-role.entity'
 import { RolePermission } from '@entities/role-permission.entity'
@@ -196,15 +201,19 @@ export class AuthService {
         try {
             systemAdminData = { ...systemAdmin }
             delete systemAdminData.password
-            accessToken = generateAccessJWT(systemAdminData, {
+            accessToken = generateSystemAdminAccessJWT(systemAdminData, {
                 expiresIn: Number(
-                    this.configService.get('api.accessTokenExpireInSec'),
+                    this.configService.get(
+                        'api.systemAdminAccessTokenExpireInSec',
+                    ),
                 ),
             })
 
-            refreshToken = generateRefreshTokenJWT(systemAdminData, {
+            refreshToken = generateSystemAdminRefreshJWT(systemAdminData, {
                 expiresIn: Number(
-                    this.configService.get('api.refreshTokenExpireInSec'),
+                    this.configService.get(
+                        'api.systemAdminRefreshTokenExpireInSec',
+                    ),
                 ),
             })
         } catch (error) {
@@ -219,5 +228,25 @@ export class AuthService {
             accessToken,
             refreshToken,
         }
+    }
+
+    async generateNewAccessJWTSystemAdmin(
+        systemAdminRefreshTokenDto: SystemAdminRefreshTokenDto,
+    ): Promise<GenerateAccessJWTSystemAdminData> {
+        const systemAdminRefreshToken =
+            systemAdminRefreshTokenDto.systemAdminRefreshToken
+        let payload
+        try {
+            payload = await verifySystemAdminRefreshTokenJWT(
+                systemAdminRefreshToken,
+            )
+        } catch (error) {
+            throw new HttpException(
+                { message: error.message },
+                HttpStatus.UNAUTHORIZED,
+            )
+        }
+        const systemAdminAccessToken = generateSystemAdminAccessJWT(payload)
+        return systemAdminAccessToken
     }
 }
