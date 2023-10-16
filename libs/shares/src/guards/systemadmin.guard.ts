@@ -6,6 +6,7 @@ import {
     Injectable,
 } from '@nestjs/common'
 import { verifyAccessTokenJWT } from '@shares/utils/jwt'
+import { httpErrors } from '@shares/exception-filter'
 @Injectable()
 export class SystemadminGuard implements CanActivate {
     async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -14,7 +15,10 @@ export class SystemadminGuard implements CanActivate {
             const bearerHeader = request.headers.authorization
 
             if (!bearerHeader) {
-                throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED)
+                throw new HttpException(
+                    httpErrors.UNAUTHORIZED,
+                    HttpStatus.UNAUTHORIZED,
+                )
             }
 
             const bearer = bearerHeader.split(' ')
