@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator'
+import { IsEmail, IsNotEmpty, IsString } from 'class-validator'
 import { ApiProperty } from '@nestjs/swagger'
 import { Transform } from 'class-transformer'
 
@@ -40,4 +40,20 @@ export class GetSignedMessageDto {
         return value?.toLowerCase()
     })
     walletAddress: string
+}
+
+export class LoginByPassword {
+    @IsEmail()
+    @IsNotEmpty()
+    @ApiProperty({
+        example: 'nguyenkien123ns@gmail.com',
+    })
+    email: string
+
+    @IsString()
+    @IsNotEmpty()
+    @ApiProperty({
+        example: 'nguyenkien@#$%@hgdd',
+    })
+    password: string
 }

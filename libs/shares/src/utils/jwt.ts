@@ -14,6 +14,11 @@ export const verifyAccessTokenJWT = async (token, options = {}) => {
     const key = configuration().api.accessJwtSecretKey
     return await jwt.verify(token, key, options)
 }
+
+export const verifyRefreshJWT = async (token, options = {}) => {
+    const key = configuration().api.refreshJwtSecretKey
+    return await jwt.verify(token, key, options)
+}
 export const generateRefreshTokenJWT = (data, options = {}) => {
     const key = configuration().api.refreshJwtSecretKey
     return jwt.sign(data, key, options)

@@ -1,5 +1,6 @@
 import * as dotenv from 'dotenv'
 import { isBoolean } from 'class-validator'
+import * as process from 'process'
 dotenv.config()
 
 interface Configuration {
@@ -40,6 +41,9 @@ interface Configuration {
         region: string
         bucketName: string
         expiresIn: number
+    }
+    secretPasswordKey: {
+        secretKey: string
     }
 }
 
@@ -87,5 +91,8 @@ export default (): Configuration => ({
         region: process.env.S3_REGION || '',
         bucketName: process.env.S3_BUCKET_NAME || '',
         expiresIn: parseInt(process.env.S3_URL_EXPIRES_IN_SEC, 10) || 300,
+    },
+    secretPasswordKey: {
+        secretKey: process.env.PASSWORD_SECRET_KEY,
     },
 })

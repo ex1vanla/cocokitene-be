@@ -122,4 +122,14 @@ export const httpErrors = {
         message: 'Create voting failded. Please send result diffirence.',
         code: 'VOTING_00001',
     },
+    //system-admin
+    SYSTEM_ADMIN_NOT_FOUND: {
+        message: 'System admin does not exist. Please try again',
+        code: 'SYSTEM_ADMIN_00000',
+    },
+    SYSTEM_ADMIN_INVALID_PASSWORD: {
+        message:
+            'Password of system admin invalid credentials. Please try again',
+        code: 'SYSTEM_ADMIN_00001',
+    },
 }

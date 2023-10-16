@@ -6,18 +6,28 @@ import { ConfigService } from '@nestjs/config'
 import {
     GenerateAccessJWTData,
     LoginResponseData,
+    SystemAdminLoginResponseData,
 } from '@api/modules/auths/auth.interface'
 import { UserStatusEnum } from '@shares/constants'
 import { httpErrors } from '@shares/exception-filter'
-import { getSignedMessage, isValidSignature } from '@shares/utils'
+import {
+    comparePassword,
+    getSignedMessage,
+    isValidSignature,
+} from '@shares/utils'
 import { uuid } from '@shares/utils/uuid'
 import { User } from '@entities/user.entity'
 import {
     generateAccessJWT,
     generateRefreshTokenJWT,
     verifyAccessTokenJWT,
+    verifyRefreshJWT,
 } from '@shares/utils/jwt'
-import { LoginDto, RefreshTokenDto } from 'libs/queries/src/dtos/auth.dto'
+import {
+    LoginByPassword,
+    LoginDto,
+    RefreshTokenDto,
+} from 'libs/queries/src/dtos/auth.dto'
 import { UserRole } from '@entities/user-role.entity'
 import { RolePermission } from '@entities/role-permission.entity'
 import { Permission } from '@entities/permission.entity'
@@ -26,6 +36,8 @@ import { RoleRepository } from '@repositories/role.repository'
 import { UserRoleRepository } from '@repositories/user-role.repository'
 import { RoleService } from '@api/modules/roles/role.service'
 import { UserRoleService } from '@api/modules/user-roles/user-role.service'
+import { SystemAdminRepository } from '@repositories/system-admin.repository'
+import { SystemAdmin } from '@entities/system-admin.entity'
 
 @Injectable()
 export class AuthService {
@@ -34,6 +46,7 @@ export class AuthService {
         private readonly configService: ConfigService,
         private readonly roleService: RoleService,
         private readonly userRoleService: UserRoleService,
+        private readonly systemAdminRepository: SystemAdminRepository,
     ) {}
 
     async login(loginDto: LoginDto): Promise<LoginResponseData> {
@@ -129,7 +142,7 @@ export class AuthService {
         const refreshToken = refreshTokenDto.refreshToken
         let payload
         try {
-            payload = await verifyAccessTokenJWT(refreshToken)
+            payload = await verifyRefreshJWT(refreshToken)
         } catch (error) {
             throw new HttpException(
                 {
@@ -139,6 +152,72 @@ export class AuthService {
             )
         }
         const accessToken = generateAccessJWT(payload)
-        return { accessToken }
+        return accessToken
+    }
+
+    async loginByPassword(
+        loginByPassword: LoginByPassword,
+    ): Promise<SystemAdminLoginResponseData> {
+        const { email } = loginByPassword
+        const systemAdmin =
+            await this.systemAdminRepository.findSystemAdminByEmail(email)
+        if (!systemAdmin) {
+            throw new HttpException(
+                httpErrors.SYSTEM_ADMIN_NOT_FOUND,
+                HttpStatus.NOT_FOUND,
+            )
+        }
+        const checkPassword = await comparePassword(
+            loginByPassword.password,
+            systemAdmin.password,
+        )
+        if (!checkPassword) {
+            throw new HttpException(
+                httpErrors.SYSTEM_ADMIN_INVALID_PASSWORD,
+                HttpStatus.FORBIDDEN,
+            )
+        }
+        const { systemAdminData, accessToken, refreshToken } =
+            await this.generateResponseSystemAdminLoginData(systemAdmin)
+        return {
+            systemAdminData,
+            accessToken,
+            refreshToken,
+        }
+    }
+
+    async generateResponseSystemAdminLoginData(
+        systemAdmin: SystemAdmin,
+    ): Promise<SystemAdminLoginResponseData> {
+        let accessToken
+        let refreshToken
+        let systemAdminData
+
+        try {
+            systemAdminData = { ...systemAdmin }
+            delete systemAdminData.password
+            accessToken = generateAccessJWT(systemAdminData, {
+                expiresIn: Number(
+                    this.configService.get('api.accessTokenExpireInSec'),
+                ),
+            })
+
+            refreshToken = generateRefreshTokenJWT(systemAdminData, {
+                expiresIn: Number(
+                    this.configService.get('api.refreshTokenExpireInSec'),
+                ),
+            })
+        } catch (error) {
+            throw new HttpException(
+                { message: error.message },
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            )
+        }
+
+        return {
+            systemAdminData,
+            accessToken,
+            refreshToken,
+        }
     }
 }
