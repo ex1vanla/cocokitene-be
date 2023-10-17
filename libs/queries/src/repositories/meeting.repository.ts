@@ -46,9 +46,11 @@ export class MeetingRepository extends Repository<Meeting> {
             .where('meetings.companyId= :companyId', {
                 companyId: companyId,
             })
-            .andWhere('meetings.title LIKE :searchQuery', {
+        if (searchQuery) {
+            queryBuilder.andWhere('(meetings.title like :searchQuery)', {
                 searchQuery: `%${searchQuery}%`,
             })
+        }
         if (type == MeetingType.FUTURE) {
             queryBuilder.andWhere(
                 'meetings.startTime >= :currentDateTime OR (meetings.startTime <= :currentDateTime AND meetings.endTime >= :currentDateTime)',
