@@ -1,7 +1,8 @@
 import { GetAllUsersDto } from '@dtos/user.dto'
 import { User } from '@entities/user.entity'
-import { Injectable } from '@nestjs/common'
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { UserRepository } from '@repositories/user.repository'
+import { httpErrors } from '@shares/exception-filter'
 import { WalletAddressDto } from 'libs/queries/src/dtos/base.dto'
 import { Pagination } from 'nestjs-typeorm-paginate'
 
@@ -18,6 +19,12 @@ export class UserService {
                 walletAddress: walletAddress,
             },
         })
+        if (!user) {
+            throw new HttpException(
+                httpErrors.USER_NOT_FOUND,
+                HttpStatus.BAD_REQUEST,
+            )
+        }
         return user.nonce
     }
 

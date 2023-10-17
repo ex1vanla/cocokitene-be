@@ -2,7 +2,10 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { MeetingRepository } from '@repositories/meeting.repository'
 
 import { MeetingFileService } from '@api/modules/meeting-files/meeting-file.service'
-import { DetailMeetingResponse } from '@api/modules/meetings/meeting.interface'
+import {
+    DetailMeetingResponse,
+    ProposalItemDetailMeeting,
+} from '@api/modules/meetings/meeting.interface'
 import { ProposalService } from '@api/modules/proposals/proposal.service'
 import { UserMeetingService } from '@api/modules/user-meetings/user-meeting.service'
 import { Meeting } from '@entities/meeting.entity'
@@ -23,6 +26,8 @@ import {
     UpdateMeetingDto,
 } from 'libs/queries/src/dtos/meeting.dto'
 import { Pagination } from 'nestjs-typeorm-paginate'
+import { VotingService } from '@api/modules/votings/voting.service'
+import { VoteProposalResult } from '@shares/constants/proposal.const'
 
 @Injectable()
 export class MeetingService {
@@ -32,6 +37,7 @@ export class MeetingService {
         private readonly meetingFileService: MeetingFileService,
         private readonly proposalService: ProposalService,
         private readonly userMeetingService: UserMeetingService,
+        private readonly votingService: VotingService,
     ) {}
 
     async getAllMeetings(
@@ -174,6 +180,7 @@ export class MeetingService {
                         type: resolution.type,
                         meetingId: createdMeeting.id,
                         creatorId: creatorId,
+                        notVoteYetQuantity: shareholders.length,
                     }),
                 ),
                 ...amendmentResolutions.map((amendmentResolution) =>
@@ -183,6 +190,7 @@ export class MeetingService {
                         type: amendmentResolution.type,
                         meetingId: createdMeeting.id,
                         creatorId: creatorId,
+                        notVoteYetQuantity: shareholders.length,
                     }),
                 ),
                 ...hosts.map((host) =>
@@ -234,6 +242,7 @@ export class MeetingService {
     async getMeetingById(
         meetingId: number,
         companyId: number,
+        userId: number,
     ): Promise<DetailMeetingResponse> {
         const meeting = await this.meetingRepository.getMeetingByIdAndCompanyId(
             meetingId,
@@ -272,6 +281,50 @@ export class MeetingService {
             },
             0,
         )
+        const totalMeetingShares = shareholders.reduce(
+            (accumulator, currentValue) => {
+                accumulator += Number(currentValue.user.shareQuantity)
+                return accumulator
+            },
+            0,
+        )
+
+        const votedMeetingShares = shareholders.reduce(
+            (accumulator, currentValue) => {
+                accumulator =
+                    currentValue.status === UserMeetingStatusEnum.PARTICIPATE
+                        ? accumulator + Number(currentValue.user.shareQuantity)
+                        : accumulator
+                return accumulator
+            },
+            0,
+        )
+
+        // handle vote result with current user
+        const listProposals: ProposalItemDetailMeeting[] = []
+        for (const proposal of meeting.proposals) {
+            const existedVoting =
+                await this.votingService.findVotingByUserIdAndProposalId(
+                    userId,
+                    proposal.id,
+                )
+            if (!existedVoting) {
+                listProposals.push({
+                    ...proposal,
+                    voteResult: VoteProposalResult.NO_IDEA,
+                } as ProposalItemDetailMeeting)
+            } else if (existedVoting.result === VoteProposalResult.VOTE) {
+                listProposals.push({
+                    ...proposal,
+                    voteResult: VoteProposalResult.VOTE,
+                } as ProposalItemDetailMeeting)
+            } else {
+                listProposals.push({
+                    ...proposal,
+                    voteResult: VoteProposalResult.UNVOTE,
+                } as ProposalItemDetailMeeting)
+            }
+        }
 
         return {
             ...meeting,
@@ -282,6 +335,9 @@ export class MeetingService {
             shareholders,
             shareholdersTotal,
             shareholdersJoined,
+            votedMeetingShares,
+            totalMeetingShares,
+            proposals: listProposals,
         }
     }
 
@@ -366,6 +422,7 @@ export class MeetingService {
                     type: resolution.type,
                     meetingId: meetingId,
                     creatorId: userId,
+                    notVoteYetQuantity: shareholders.length,
                 }),
             ),
 
@@ -376,6 +433,7 @@ export class MeetingService {
                     type: amendmentResolution.type,
                     meetingId: meetingId,
                     creatorId: userId,
+                    notVoteYetQuantity: shareholders.length,
                 }),
             ),
 

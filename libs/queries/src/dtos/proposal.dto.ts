@@ -71,6 +71,13 @@ export class CreateProposalDto {
         enum: ProposalType,
     })
     type: ProposalType
+
+    @IsNumber()
+    @ApiProperty({
+        required: true,
+        example: 100,
+    })
+    notVoteYetQuantity: number
 }
 
 export class ProposalDto extends OmitType(CreateProposalDto, [

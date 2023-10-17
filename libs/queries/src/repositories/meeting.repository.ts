@@ -90,6 +90,7 @@ export class MeetingRepository extends Repository<Meeting> {
                 companyId,
             })
             .leftJoinAndSelect('meeting.meetingFiles', 'meetingFiles')
+            .leftJoinAndSelect('meeting.proposals', 'proposals')
             .getOne()
 
         return meeting

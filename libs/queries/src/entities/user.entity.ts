@@ -55,6 +55,14 @@ export class User extends BaseEntity {
 
     @Column({
         nullable: true,
+        name: 'share_quantity',
+        type: 'integer',
+        width: 11,
+    })
+    shareQuantity: number
+
+    @Column({
+        nullable: true,
         type: 'varchar',
         length: 50,
     })

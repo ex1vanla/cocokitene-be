@@ -18,14 +18,21 @@ export class ProposalRepository extends Repository<Proposal> {
     async createProposal(
         createProposalDto: CreateProposalDto,
     ): Promise<Proposal> {
-        const { title, description, type, meetingId, creatorId } =
-            createProposalDto
+        const {
+            title,
+            description,
+            type,
+            meetingId,
+            creatorId,
+            notVoteYetQuantity,
+        } = createProposalDto
         const createdProposal = await this.create({
             title,
             description,
             type,
             meetingId,
             creatorId,
+            notVoteYetQuantity,
         })
         await createdProposal.save()
         return createdProposal

@@ -21,8 +21,14 @@ export class ProposalService {
     async createProposal(
         createProposalDto: CreateProposalDto,
     ): Promise<Proposal> {
-        const { title, description, type, creatorId, meetingId } =
-            createProposalDto
+        const {
+            title,
+            description,
+            type,
+            creatorId,
+            meetingId,
+            notVoteYetQuantity,
+        } = createProposalDto
         try {
             const createdProposal =
                 await this.proposalRepository.createProposal({
@@ -31,6 +37,7 @@ export class ProposalService {
                     type,
                     creatorId,
                     meetingId,
+                    notVoteYetQuantity,
                 })
             await createdProposal.save()
             return createdProposal

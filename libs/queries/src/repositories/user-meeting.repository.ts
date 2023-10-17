@@ -37,6 +37,7 @@ export class UserMeetingRepository extends Repository<UserMeeting> {
                     email: true,
                     avatar: true,
                     defaultAvatarHashColor: true,
+                    shareQuantity: true,
                 },
             },
             relations: ['user'],

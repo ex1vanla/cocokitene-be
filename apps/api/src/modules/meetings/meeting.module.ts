@@ -7,6 +7,7 @@ import { MeetingFileModule } from '@api/modules/meeting-files/meeting-file.modul
 import { ProposalModule } from '@api/modules/proposals/proposal.module'
 import { UserMeetingModule } from '@api/modules/user-meetings/user-meeting.module'
 import { UserModule } from '@api/modules/users/user.module'
+import { VotingModule } from '@api/modules/votings/voting.module'
 
 @Module({
     imports: [
@@ -16,6 +17,7 @@ import { UserModule } from '@api/modules/users/user.module'
         ProposalModule,
         UserMeetingModule,
         UserModule,
+        VotingModule,
     ],
     controllers: [MeetingController],
     providers: [MeetingService],

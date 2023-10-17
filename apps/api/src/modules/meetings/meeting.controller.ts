@@ -114,10 +114,12 @@ export class MeetingController {
         @UserScope() user: User,
     ) {
         const companyId = user?.companyId
+        const userId = user?.id
 
         const meeting = await this.meetingService.getMeetingById(
             meetingId,
             companyId,
+            userId,
         )
         return meeting
     }
