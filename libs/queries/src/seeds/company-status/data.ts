@@ -6,11 +6,6 @@ export class InsertCompanyStatusDto extends PartialType(CompanyStatus) {}
 
 export const companyStatusesData: InsertCompanyStatusDto[] = [
     {
-        status: CompanyStatusEnum.ACQUIRED,
-        description:
-            'Company has acquire status that was approved by admin. The company is now owned by Mr. Nguyen Anh Phuong',
-    },
-    {
         status: CompanyStatusEnum.ACTIVE,
         description:
             'Company has active status that was approved by admin. The company can buy and sell products from now on.',
