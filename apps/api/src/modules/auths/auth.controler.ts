@@ -1,7 +1,6 @@
 import {
     Body,
     Controller,
-    Get,
     HttpCode,
     HttpStatus,
     Post,
@@ -9,7 +8,12 @@ import {
 } from '@nestjs/common'
 import { ApiTags } from '@nestjs/swagger'
 import { AuthService } from '@api/modules/auths/auth.service'
-import { LoginDto, RefreshTokenDto } from 'libs/queries/src/dtos/auth.dto'
+import {
+    LoginByPassword,
+    LoginDto,
+    RefreshTokenDto,
+    SystemAdminRefreshTokenDto,
+} from 'libs/queries/src/dtos/auth.dto'
 
 @Controller('auths')
 @ApiTags('auths')
@@ -23,12 +27,34 @@ export class AuthControler {
         return loginData
     }
 
-    @Get('refresh-token')
+    //start system admin
+    @Post('/system-admin/login-by-password')
     @HttpCode(HttpStatus.OK)
+    async loginByPassword(@Body() loginByPassword: LoginByPassword) {
+        const loginByPasswordData = await this.authService.loginByPassword(
+            loginByPassword,
+        )
+        return loginByPasswordData
+    }
+    //refresh token user
+    @Post('/user/refresh-token')
+    @HttpCode(HttpStatus.CREATED)
     async generateNewAccessJWT(@Query() refreshTokenDto: RefreshTokenDto) {
         const newAccessToken = await this.authService.generateNewAccessJWT(
             refreshTokenDto,
         )
         return newAccessToken
+    }
+
+    @Post('/system-admin/refresh-token')
+    @HttpCode(HttpStatus.CREATED)
+    async generateNewAccessJWTSystemAdmin(
+        @Query() systemAdminRefreshTokenDto: SystemAdminRefreshTokenDto,
+    ) {
+        const newAccessTokenSystemAdmin =
+            await this.authService.generateNewAccessJWTSystemAdmin(
+                systemAdminRefreshTokenDto,
+            )
+        return newAccessTokenSystemAdmin
     }
 }

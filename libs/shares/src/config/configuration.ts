@@ -1,5 +1,6 @@
 import * as dotenv from 'dotenv'
 import { isBoolean } from 'class-validator'
+import * as process from 'process'
 dotenv.config()
 
 interface Configuration {
@@ -24,6 +25,11 @@ interface Configuration {
         refreshJwtSecretKey: string
         accessTokenExpireInSec: number
         refreshTokenExpireInSec: number
+        secretSystemAdminPasswordKey: string
+        systemAdminAccessJwtSecretKey: string
+        systemAdminRefreshJwtSecretKey: string
+        systemAdminAccessTokenExpireInSec: number
+        systemAdminRefreshTokenExpireInSec: number
     }
     email: {
         host: string
@@ -69,6 +75,19 @@ export default (): Configuration => ({
         ),
         refreshTokenExpireInSec: parseInt(
             process.env.REFRESH_TOKEN_EXPIRE_IN_SEC,
+            10,
+        ),
+        secretSystemAdminPasswordKey: process.env.PASSWORD_SECRET_KEY,
+        systemAdminAccessJwtSecretKey:
+            process.env.SYSTEM_ADMIN_ACCESS_JWT_SECRET_KEY || '',
+        systemAdminRefreshJwtSecretKey:
+            process.env.SYSTEM_ADMIN_REFRESH_JWT_SECRET_KEY || '',
+        systemAdminAccessTokenExpireInSec: parseInt(
+            process.env.SYSTEM_ADMIN_ACCESS_TOKEN_EXPIRE_IN_SEC,
+            10,
+        ),
+        systemAdminRefreshTokenExpireInSec: parseInt(
+            process.env.SYSTEM_ADMIN_REFRESH_TOKEN_EXPIRE_IN_SEC,
             10,
         ),
     },
