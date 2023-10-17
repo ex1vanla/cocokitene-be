@@ -78,4 +78,18 @@ export class UserMeetingRepository extends Repository<UserMeeting> {
             await this.remove(existeduserMeeting)
         }
     }
+
+    async getAllIdsParticipantInMeeting(meetingId: number): Promise<number[]> {
+        const participants = await this.find({
+            where: {
+                meetingId: meetingId,
+            },
+        })
+
+        const idsParticipant = participants.map(
+            (participant) => participant.userId,
+        )
+        const specificIdsParticipant = Array.from(new Set(idsParticipant))
+        return specificIdsParticipant
+    }
 }

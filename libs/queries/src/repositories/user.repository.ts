@@ -44,7 +44,7 @@ export class UserRepository extends Repository<User> {
         options: GetAllUsersDto,
         companyId: number,
     ): Promise<Pagination<User>> {
-        console.log('companyId', companyId)
+        // console.log('companyId', companyId)
         const { page, limit, searchQuery } = options
 
         const queryBuilder = this.createQueryBuilder('users')

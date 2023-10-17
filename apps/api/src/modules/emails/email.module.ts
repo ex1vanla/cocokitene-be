@@ -4,6 +4,7 @@ import { MailerModule } from '@nestjs-modules/mailer'
 import { ConfigService } from '@nestjs/config'
 import { join } from 'path'
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter'
+import { UserMeetingModule } from '@api/modules/user-meetings/user-meeting.module'
 
 @Module({
     imports: [
@@ -19,7 +20,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
                     },
                 },
                 template: {
-                    dir: join(__dirname, 'mail/templates'),
+                    dir: join(__dirname, 'modules/emails/templates'),
                     adapter: new HandlebarsAdapter(),
                     options: {
                         strict: true,
@@ -28,7 +29,9 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
             }),
             inject: [ConfigService],
         }),
+        UserMeetingModule,
     ],
+
     providers: [EmailService],
     exports: [EmailService],
 })
