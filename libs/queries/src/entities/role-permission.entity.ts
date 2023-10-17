@@ -6,12 +6,14 @@ import {
     JoinColumn,
     ManyToOne,
     PrimaryGeneratedColumn,
+    Unique,
     UpdateDateColumn,
 } from 'typeorm'
 import { Role } from '@entities/role.entity'
 import { Permission } from '@entities/permission.entity'
 
 @Entity('role_permissions')
+@Unique(['roleId', 'permissionId'])
 export class RolePermission extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number
