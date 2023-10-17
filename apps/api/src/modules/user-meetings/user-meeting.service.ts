@@ -89,4 +89,12 @@ export class UserMeetingService {
 
         return addedUsersFollowRole
     }
+
+    async getAllIdsParticipantsInMeeting(meetingId: number): Promise<number[]> {
+        const idsParticipants =
+            await this.userMeetingRepository.getAllIdsParticipantInMeeting(
+                meetingId,
+            )
+        return idsParticipants
+    }
 }
