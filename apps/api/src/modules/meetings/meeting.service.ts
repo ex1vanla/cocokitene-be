@@ -56,33 +56,44 @@ export class MeetingService {
     async attendanceMeeting(
         attendMeetingDto: AttendMeetingDto,
         userId: number,
-    ): Promise<UserMeeting> {
+        companyId: number,
+    ): Promise<string> {
         const { meetingId } = attendMeetingDto
-        let userMeeting: UserMeeting
+        let userMeetings: UserMeeting[]
         try {
-            userMeeting = await this.userMeetingRepository.findOne({
+            userMeetings = await this.userMeetingRepository.find({
                 where: {
                     userId: userId,
                     meetingId: meetingId,
                 },
-                relations: ['meeting'],
             })
-            if (!userMeeting) {
+            if (!userMeetings) {
                 throw new HttpException(
                     httpErrors.USER_MEETING_NOT_FOUND,
                     HttpStatus.NOT_FOUND,
                 )
             }
+            const existedMeeting =
+                await this.meetingRepository.getMeetingByMeetingIdAndCompanyId(
+                    meetingId,
+                    companyId,
+                )
+            if (!existedMeeting) {
+                throw new HttpException(
+                    httpErrors.MEETING_NOT_EXISTED,
+                    HttpStatus.BAD_REQUEST,
+                )
+            }
             const currentDate = new Date()
-            const startTimeMeeting = new Date(userMeeting.meeting.startTime)
-            const endTimeMeeting = new Date(userMeeting.meeting.endTime)
+            const startTimeMeeting = new Date(existedMeeting.startTime)
+            const endTimeMeeting = new Date(existedMeeting.endTime)
 
-            if (userMeeting.meeting.status == StatusMeeting.CANCELED) {
+            if (existedMeeting.status == StatusMeeting.CANCELED) {
                 throw new HttpException(
                     httpErrors.MEETING_HAS_CANCELED,
                     HttpStatus.BAD_REQUEST,
                 )
-            } else if (userMeeting.meeting.status == StatusMeeting.DELAYED) {
+            } else if (existedMeeting.status == StatusMeeting.DELAYED) {
                 throw new HttpException(
                     httpErrors.MEETING_HAS_DELAYED,
                     HttpStatus.BAD_REQUEST,
@@ -94,12 +105,17 @@ export class MeetingService {
                 )
             } else if (
                 currentDate >= startTimeMeeting &&
-                currentDate <= endTimeMeeting
+                currentDate < endTimeMeeting
             ) {
-                userMeeting.status = UserMeetingStatusEnum.PARTICIPATE
+                await Promise.all([
+                    ...userMeetings.map((userMeeting) =>
+                        this.userMeetingService.saveStatusUserMeeting(
+                            userMeeting,
+                        ),
+                    ),
+                ])
             }
-            await userMeeting.save()
-            return userMeeting
+            return 'You have successfully joined the meeting!!!'
         } catch (error) {
             throw new HttpException(
                 {

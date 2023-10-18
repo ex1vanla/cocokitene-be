@@ -97,4 +97,9 @@ export class UserMeetingService {
             )
         return idsParticipants
     }
+    async saveStatusUserMeeting(user: UserMeeting): Promise<UserMeeting> {
+        const userMeeting =
+            await this.userMeetingRepository.saveStatusUserMeeting(user)
+        return userMeeting
+    }
 }
