@@ -1,7 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { VotingRepository } from '@repositories/voting.repository'
 import { ProposalRepository } from '@repositories/proposal.repository'
-import { MeetingRepository } from '@repositories/meeting.repository'
 import { Voting } from '@entities/voting.entity'
 import { VoteProposalDto } from '@dtos/voting.dto'
 import { httpErrors } from '@shares/exception-filter'
@@ -13,7 +12,6 @@ export class VotingService {
     constructor(
         private readonly votingRepository: VotingRepository,
         private readonly proposalRepository: ProposalRepository,
-        private readonly meetingRepository: MeetingRepository,
     ) {}
 
     async findVotingByUserIdAndProposalId(
@@ -63,13 +61,13 @@ export class VotingService {
                 await this.findVotingByUserIdAndProposalId(userId, proposalId)
 
             if (checkExistedVoting) {
-                const updatedProposal = await this.updateVoteCount(
-                    existedProposal,
-                    checkExistedVoting,
-                    voteProposalDto,
-                )
-
-                return updatedProposal
+                const updateCountVoteExistedProposal =
+                    await this.updateVoteCount(
+                        existedProposal,
+                        checkExistedVoting,
+                        voteProposalDto,
+                    )
+                return updateCountVoteExistedProposal
             } else {
                 let createdVoting: Voting
                 try {
@@ -81,12 +79,11 @@ export class VotingService {
                     switch (result) {
                         case VoteProposalResult.VOTE:
                             existedProposal.votedQuantity++
+                            existedProposal.notVoteYetQuantity--
                             break
                         case VoteProposalResult.UNVOTE:
                             existedProposal.unVotedQuantity++
-                            break
-                        case VoteProposalResult.NO_IDEA:
-                            existedProposal.notVoteYetQuantity++
+                            existedProposal.notVoteYetQuantity--
                             break
                     }
                     await createdVoting.save()
@@ -101,7 +98,7 @@ export class VotingService {
             }
         } catch (error) {
             throw new HttpException(
-                error.message,
+                { message: error.message },
                 HttpStatus.INTERNAL_SERVER_ERROR,
             )
         }
@@ -122,28 +119,31 @@ export class VotingService {
             switch (resultOld) {
                 case VoteProposalResult.VOTE:
                     existedProposal.votedQuantity--
+                    existedProposal.notVoteYetQuantity++
                     break
                 case VoteProposalResult.UNVOTE:
                     existedProposal.unVotedQuantity--
-                    break
-                case VoteProposalResult.NO_IDEA:
-                    existedProposal.notVoteYetQuantity--
+                    existedProposal.notVoteYetQuantity++
                     break
             }
             switch (result) {
                 case VoteProposalResult.VOTE:
                     existedProposal.votedQuantity++
+                    existedProposal.notVoteYetQuantity--
                     break
                 case VoteProposalResult.UNVOTE:
                     existedProposal.unVotedQuantity++
-                    break
-                case VoteProposalResult.NO_IDEA:
-                    existedProposal.notVoteYetQuantity++
+                    existedProposal.notVoteYetQuantity--
                     break
             }
-            existedVoting.result = result
-            await this.votingRepository.save(existedVoting)
-            await this.proposalRepository.save(existedProposal)
+            if (result === VoteProposalResult.NO_IDEA) {
+                await this.votingRepository.delete(existedVoting.id)
+                // await existedProposal.save()
+            } else {
+                existedVoting.result = result
+                await existedVoting.save()
+            }
+            await existedProposal.save()
             return existedProposal
         } else {
             throw new HttpException(

@@ -248,7 +248,7 @@ export class MeetingService {
             ])
         } catch (error) {
             throw new HttpException(
-                error.message,
+                { message: error.message },
                 HttpStatus.INTERNAL_SERVER_ERROR,
             )
         }
