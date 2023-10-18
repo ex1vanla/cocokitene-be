@@ -8,7 +8,7 @@ import {
 import { verifySystemAdminAccessTokenJWT } from '@shares/utils/jwt'
 import { httpErrors } from '@shares/exception-filter'
 @Injectable()
-export class SystemadminGuard implements CanActivate {
+export class SystemAdminGuard implements CanActivate {
     async canActivate(context: ExecutionContext): Promise<boolean> {
         try {
             const request = context.switchToHttp().getRequest()
@@ -32,7 +32,10 @@ export class SystemadminGuard implements CanActivate {
             }
             return false
         } catch (error) {
-            throw new HttpException(error.message, HttpStatus.UNAUTHORIZED)
+            throw new HttpException(
+                { message: error.message },
+                HttpStatus.UNAUTHORIZED,
+            )
         }
     }
 }

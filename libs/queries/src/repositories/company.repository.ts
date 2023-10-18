@@ -18,9 +18,10 @@ export class CompanyRepository extends Repository<Company> {
         options: GetAllCompanyDto,
     ): Promise<Pagination<Company>> {
         const { page, limit, searchQuery } = options
-        const roleToCompare = 'ADMIN'
         const queryBuilder = this.createQueryBuilder('companys')
             .select(['companys.id', 'companys.companyName'])
+            .leftJoin('companys.representative', 'representative')
+            .addSelect(['representative.username'])
             .leftJoin(
                 'company_statuses',
                 'companyStatus',
@@ -28,23 +29,13 @@ export class CompanyRepository extends Repository<Company> {
             )
             .leftJoin('plans', 'plan', 'plan.id = companys.planId')
             .leftJoin('users', 'user', 'companys.id = user.companyId')
-            .leftJoin('user_roles', 'userRole', 'user.id = userRole.userId')
-            .leftJoin('roles', 'role', 'userRole.roleId = role.id')
             .leftJoin('meetings', 'meeting', 'companys.id = meeting.companyId')
-            .addSelect(`COUNT(user.id)`, 'totalCreatedAccount')
-            .addSelect(`COUNT(meeting.id)`, 'totalCreatedMTGs')
+            .addSelect(`COUNT(DISTINCT  user.id)`, 'totalCreatedAccount')
+            .addSelect(`COUNT(DISTINCT  meeting.id)`, 'totalCreatedMTGs')
             .addSelect(`plan.planName`, 'planName')
             .addSelect(`companyStatus.status`, 'companyStatus')
             .groupBy('companys.id')
-        queryBuilder.addSelect((subQuery) => {
-            return subQuery
-                .select('MAX(user.username)')
-                .from('users', 'user')
-                .leftJoin('user_roles', 'userRole', 'user.id = userRole.userId')
-                .leftJoin('roles', 'role', 'userRole.roleId = role.id')
-                .where('role.roleName = :roleName', { roleName: roleToCompare })
-                .andWhere('user.companyId = companys.id')
-        }, 'adminName')
+
         if (searchQuery) {
             queryBuilder.andWhere('(companys.companyName like :companyName)', {
                 companyName: `%${searchQuery}%`,
