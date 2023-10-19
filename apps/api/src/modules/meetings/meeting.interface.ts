@@ -15,7 +15,7 @@ export interface DetailMeetingResponse extends Partial<Meeting> {
     shareholders: Partial<UserMeeting>[]
     shareholdersTotal: number
     shareholdersJoined: number
-    votedMeetingShares: number
+    joinedMeetingShares: number
     totalMeetingShares: number
     proposals: ProposalItemDetailMeeting[]
 }

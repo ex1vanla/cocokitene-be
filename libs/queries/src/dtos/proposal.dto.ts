@@ -83,6 +83,7 @@ export class CreateProposalDto {
 export class ProposalDto extends OmitType(CreateProposalDto, [
     'meetingId',
     'creatorId',
+    'notVoteYetQuantity',
 ]) {}
 
 export class ProposalDtoUpdate {

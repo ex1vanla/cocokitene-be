@@ -41,6 +41,9 @@ export class UserMeetingRepository extends Repository<UserMeeting> {
                 },
             },
             relations: ['user'],
+            order: {
+                status: 'ASC',
+            },
         })
 
         return userMeetingList

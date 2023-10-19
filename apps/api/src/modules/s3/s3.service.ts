@@ -37,7 +37,7 @@ export class S3Service {
         for (const { fileName, fileType } of meetingFiles) {
             const bucketParam = {
                 Bucket: this.bucketName,
-                Key: fileType + '/' + Date.now() + '_' + fileName,
+                Key: fileType + '/' + Date.now() + '/' + fileName,
             }
             presignedUrlPromises.push(this.getPresignedUrl(bucketParam))
         }

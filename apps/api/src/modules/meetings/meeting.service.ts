@@ -289,7 +289,7 @@ export class MeetingService {
             0,
         )
 
-        const votedMeetingShares = shareholders.reduce(
+        const joinedMeetingShares = shareholders.reduce(
             (accumulator, currentValue) => {
                 accumulator =
                     currentValue.status === UserMeetingStatusEnum.PARTICIPATE
@@ -335,7 +335,7 @@ export class MeetingService {
             shareholders,
             shareholdersTotal,
             shareholdersJoined,
-            votedMeetingShares,
+            joinedMeetingShares,
             totalMeetingShares,
             proposals: listProposals,
         }
