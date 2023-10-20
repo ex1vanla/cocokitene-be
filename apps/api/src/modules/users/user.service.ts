@@ -74,4 +74,20 @@ export class UserService {
 
     //     return users
     // }
+
+    async getRepresentativeUser(representativeId: number): Promise<User> {
+        const representativeUser = await this.userRepository.findOne({
+            where: {
+                id: representativeId,
+            },
+        })
+        return representativeUser
+    }
+
+    async getSuperAdminCompany(companyId: number): Promise<User> {
+        const superAdmin = await this.userRepository.getSuperAdminCompany(
+            companyId,
+        )
+        return superAdmin
+    }
 }

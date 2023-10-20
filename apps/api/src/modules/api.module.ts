@@ -15,6 +15,7 @@ import { VotingModule } from '@api/modules/votings/voting.module'
 import { RoleModule } from '@api/modules/roles/role.module'
 import { UserRoleModule } from '@api/modules/user-roles/user-role.module'
 import { SystemAdminModule } from '@api/modules/system-admin/system-admin.module'
+import { PlanModule } from '@api/modules/plans/plan.module'
 
 @Module({
     imports: [
@@ -34,6 +35,7 @@ import { SystemAdminModule } from '@api/modules/system-admin/system-admin.module
         UserRoleModule,
         RoleModule,
         SystemAdminModule,
+        PlanModule,
     ],
     controllers: [ApiController],
     providers: [ApiService],

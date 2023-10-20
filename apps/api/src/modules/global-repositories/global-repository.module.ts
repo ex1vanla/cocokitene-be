@@ -11,6 +11,7 @@ import { VotingRepository } from '@repositories/voting.repository'
 import { UserRoleRepository } from '@repositories/user-role.repository'
 import { SystemAdminRepository } from '@repositories/system-admin.repository'
 import { CompanyRepository } from '@repositories/company.repository'
+import { PlanRepository } from '@repositories/plan.repository'
 
 const commonRepositories = [
     UserRepository,
@@ -24,6 +25,7 @@ const commonRepositories = [
     VotingRepository,
     SystemAdminRepository,
     CompanyRepository,
+    PlanRepository,
 ]
 
 @Global()

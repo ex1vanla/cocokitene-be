@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common'
 import { CompanyRepository } from '@repositories/company.repository'
 import { Pagination } from 'nestjs-typeorm-paginate'
-import { Company } from '@entities/company.entity'
 import { GetAllCompanyDto } from '@dtos/company.dto'
+import { Company } from '@entities/company.entity'
 
 @Injectable()
 export class CompanyService {
@@ -15,5 +15,13 @@ export class CompanyService {
             getAllCompanyDto,
         )
         return companys
+    }
+    async getCompanyById(companyId: number): Promise<Company> {
+        const company = await this.companyRepository.findOne({
+            where: {
+                id: companyId,
+            },
+        })
+        return company
     }
 }

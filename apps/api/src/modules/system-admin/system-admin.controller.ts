@@ -4,11 +4,12 @@ import {
     Get,
     HttpCode,
     HttpStatus,
+    Param,
     Query,
     UseGuards,
 } from '@nestjs/common'
-import { SystemAdminService } from '@api/modules/system-admin/system-admin.service'
 import { GetAllCompanyDto } from '@dtos/company.dto'
+import { SystemAdminService } from '@api/modules/system-admin/system-admin.service'
 import { SystemAdminGuard } from '@shares/guards/systemadmin.guard'
 
 @Controller('system-admin')
@@ -25,5 +26,13 @@ export class SystemAdminController {
             getAllCompanyDto,
         )
         return companys
+    }
+    @Get('/get-company/:id')
+    @UseGuards(SystemAdminGuard)
+    @HttpCode(HttpStatus.OK)
+    @ApiBearerAuth()
+    async getCompanyById(@Param('id') companyId: number) {
+        const company = await this.systemAdminService.getCompanyById(companyId)
+        return company
     }
 }
