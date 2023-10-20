@@ -12,6 +12,7 @@ import {
 import { CompanyStatus } from './company-status.entity'
 import { Plan } from './plan.entity'
 import { User } from '@entities/user.entity'
+import { CompanyTypeBussiness } from '@shares/constants'
 
 @Entity('companys')
 export class Company extends BaseEntity {
@@ -111,6 +112,23 @@ export class Company extends BaseEntity {
         length: 255,
     })
     logo: string
+
+    @Column({
+        nullable: false,
+        name: 'company_size',
+        type: 'integer',
+        width: 11,
+        default: 0,
+    })
+    companySize: number
+
+    @Column({
+        nullable: false,
+        type: 'enum',
+        name: 'bussiness_type',
+        enum: CompanyTypeBussiness,
+    })
+    bussinessType: CompanyTypeBussiness
 
     @ManyToOne(() => CompanyStatus)
     @JoinColumn({

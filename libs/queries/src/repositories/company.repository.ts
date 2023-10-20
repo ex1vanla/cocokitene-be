@@ -19,7 +19,11 @@ export class CompanyRepository extends Repository<Company> {
     ): Promise<Pagination<Company>> {
         const { page, limit, searchQuery } = options
         const queryBuilder = this.createQueryBuilder('companys')
-            .select(['companys.id', 'companys.companyName'])
+            .select([
+                'companys.id',
+                'companys.companyName',
+                'companys.companySize',
+            ])
             .leftJoin('companys.representative', 'representative')
             .addSelect(['representative.username'])
             .leftJoin(
@@ -28,9 +32,7 @@ export class CompanyRepository extends Repository<Company> {
                 'companyStatus.id = companys.statusId',
             )
             .leftJoin('plans', 'plan', 'plan.id = companys.planId')
-            .leftJoin('users', 'user', 'companys.id = user.companyId')
             .leftJoin('meetings', 'meeting', 'companys.id = meeting.companyId')
-            .addSelect(`COUNT(DISTINCT  user.id)`, 'totalCreatedAccount')
             .addSelect(`COUNT(DISTINCT  meeting.id)`, 'totalCreatedMTGs')
             .addSelect(`plan.planName`, 'planName')
             .addSelect(`companyStatus.status`, 'companyStatus')
