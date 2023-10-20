@@ -29,6 +29,7 @@ export class MeetingRepository extends Repository<Meeting> {
                 'meetings.meetingLink',
                 'meetings.status',
             ])
+            .distinct(true)
             .leftJoin(
                 'user_meetings',
                 'userMeeting',
