@@ -2,7 +2,11 @@ import { Repository } from 'typeorm'
 import { CustomRepository } from '@shares/decorators'
 import { UserMeeting } from '@entities/user-meeting.entity'
 import { CreateUserMeetingDto } from '@dtos/user-meeting.dto'
-import { MeetingRole } from '@shares/constants/meeting.const'
+import {
+    MeetingRole,
+    UserMeetingStatusEnum,
+} from '@shares/constants/meeting.const'
+
 @CustomRepository(UserMeeting)
 export class UserMeetingRepository extends Repository<UserMeeting> {
     async createUserMeeting(
@@ -95,5 +99,13 @@ export class UserMeetingRepository extends Repository<UserMeeting> {
         )
         const specificIdsParticipant = Array.from(new Set(idsParticipant))
         return specificIdsParticipant
+    }
+
+    async saveStatusUserMeeting(
+        userMeeting: UserMeeting,
+    ): Promise<UserMeeting> {
+        userMeeting.status = UserMeetingStatusEnum.PARTICIPATE
+        await userMeeting.save()
+        return userMeeting
     }
 }
