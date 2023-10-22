@@ -28,6 +28,7 @@ import {
 import { Pagination } from 'nestjs-typeorm-paginate'
 import { VotingService } from '@api/modules/votings/voting.service'
 import { VoteProposalResult } from '@shares/constants/proposal.const'
+import { GetAllDto } from '@dtos/base.dto'
 
 @Injectable()
 export class MeetingService {
@@ -324,7 +325,10 @@ export class MeetingService {
                     userId,
                     proposal.id,
                 )
-            if (!existedVoting) {
+            if (
+                !existedVoting ||
+                existedVoting.result === VoteProposalResult.NO_IDEA
+            ) {
                 listProposals.push({
                     ...proposal,
                     voteResult: VoteProposalResult.NO_IDEA,
@@ -482,5 +486,11 @@ export class MeetingService {
             ]),
         ])
         return existedMeeting
+    }
+    async getAllMeetingParticipant(meetingId: number, filter: GetAllDto) {
+        return this.userMeetingRepository.getAllParticipantInMeeting(
+            meetingId,
+            filter.searchQuery,
+        )
     }
 }

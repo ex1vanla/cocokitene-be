@@ -102,4 +102,12 @@ export class UserMeetingService {
             await this.userMeetingRepository.saveStatusUserMeeting(user)
         return userMeeting
     }
+
+    async getAllParticipantsInMeeting(meetingId: number): Promise<number[]> {
+        const idsParticipants =
+            await this.userMeetingRepository.getAllIdsParticipantInMeeting(
+                meetingId,
+            )
+        return idsParticipants
+    }
 }

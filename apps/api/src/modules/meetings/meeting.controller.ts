@@ -26,6 +26,7 @@ import {
 import { UserScope } from '@shares/decorators/user.decorator'
 import { Permission } from '@shares/decorators/permission.decorator'
 import { PermissionEnum } from '@shares/constants/permission.const'
+import { GetAllDto } from '@dtos/base.dto'
 
 @Controller('meetings')
 @ApiTags('meetings')
@@ -104,6 +105,19 @@ export class MeetingController {
             companyId,
         )
         return meeting
+    }
+
+    @Get('/:id/participants')
+    @UseGuards(JwtAuthGuard)
+    @Permission(PermissionEnum.DETAIL_MEETING)
+    @HttpCode(HttpStatus.OK)
+    @ApiBearerAuth()
+    async getMeetingParticipants(
+        @Param('id') meetingId: number,
+        @Query() filter: GetAllDto,
+        // @UserScope() user: User,
+    ) {
+        return this.meetingService.getAllMeetingParticipant(meetingId, filter)
     }
 
     @Get('/:id')

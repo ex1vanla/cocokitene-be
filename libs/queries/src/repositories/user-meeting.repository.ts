@@ -1,4 +1,4 @@
-import { Repository } from 'typeorm'
+import { Like, Repository } from 'typeorm'
 import { CustomRepository } from '@shares/decorators'
 import { UserMeeting } from '@entities/user-meeting.entity'
 import { CreateUserMeetingDto } from '@dtos/user-meeting.dto'
@@ -107,5 +107,66 @@ export class UserMeetingRepository extends Repository<UserMeeting> {
         userMeeting.status = UserMeetingStatusEnum.PARTICIPATE
         await userMeeting.save()
         return userMeeting
+    }
+
+    async getAllParticipantInMeeting(meetingId: number, searchValue: string) {
+        const base = {
+            meetingId: meetingId,
+        }
+        const participants = await this.find({
+            where: [
+                {
+                    ...base,
+                    user: {
+                        username: Like(`%${searchValue || ''}%`),
+                    },
+                },
+                {
+                    ...base,
+                    user: {
+                        email: Like(`%${searchValue || ''}%`),
+                    },
+                },
+            ],
+            relations: {
+                user: true,
+            },
+        })
+
+        const rs = {
+            hosts: [],
+            controlBoards: [],
+            directors: [],
+            shareholders: [],
+            administrativeCouncils: [],
+        }
+        participants.map((item) => {
+            const participant = {
+                defaultAvatarHashColor: item.user.defaultAvatarHashColor,
+                avatar: item.user.avatar,
+                name: item.user.username,
+                joined: item.status === UserMeetingStatusEnum.PARTICIPATE,
+            }
+            switch (item.role) {
+                case MeetingRole.HOST:
+                    rs.hosts.push(participant)
+                    break
+                case MeetingRole.CONTROL_BOARD:
+                    rs.controlBoards.push(participant)
+                    break
+                case MeetingRole.DIRECTOR:
+                    rs.directors.push(participant)
+                    break
+                case MeetingRole.SHAREHOLDER:
+                    rs.shareholders.push(participant)
+                    break
+                case MeetingRole.ADMINISTRATIVE_COUNCIL:
+                    rs.administrativeCouncils.push(participant)
+
+                default:
+                    break
+            }
+        })
+        return rs
     }
 }

@@ -34,7 +34,7 @@ export class VotingService {
         userId: number,
         proposalId: number,
         voteProposalDto: VoteProposalDto,
-    ): Promise<Voting> {
+    ): Promise<Proposal> {
         const { result } = voteProposalDto
 
         const proposal = await this.proposalRepository.getProposalById(
@@ -63,12 +63,13 @@ export class VotingService {
                 await this.findVotingByUserIdAndProposalId(userId, proposalId)
 
             if (checkExistedVoting) {
-                const updateResultVote = await this.updateVoteCount(
+                const updatedProposal = await this.updateVoteCount(
                     existedProposal,
                     checkExistedVoting,
                     voteProposalDto,
                 )
-                return updateResultVote
+
+                return updatedProposal
             } else {
                 let createdVoting: Voting
                 try {
@@ -90,7 +91,7 @@ export class VotingService {
                     }
                     await createdVoting.save()
                     await existedProposal.save()
-                    return createdVoting
+                    return existedProposal
                 } catch (error) {
                     throw new HttpException(
                         httpErrors.VOTING_CREATED_FAILED,
@@ -114,7 +115,7 @@ export class VotingService {
         existedProposal: Proposal,
         existedVoting: Voting,
         voteProposalDto: VoteProposalDto,
-    ): Promise<Voting> {
+    ): Promise<Proposal> {
         const { result } = voteProposalDto
         const resultOld = existedVoting.result
         if (result !== resultOld) {
@@ -141,9 +142,9 @@ export class VotingService {
                     break
             }
             existedVoting.result = result
-            await existedVoting.save()
-            await existedProposal.save()
-            return existedVoting
+            await this.votingRepository.save(existedVoting)
+            await this.proposalRepository.save(existedProposal)
+            return existedProposal
         } else {
             throw new HttpException(
                 httpErrors.VOTING_FAILED,
