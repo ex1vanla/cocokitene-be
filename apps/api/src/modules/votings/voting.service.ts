@@ -6,12 +6,14 @@ import { VoteProposalDto } from '@dtos/voting.dto'
 import { httpErrors } from '@shares/exception-filter'
 import { VoteProposalResult } from '@shares/constants/proposal.const'
 import { Proposal } from '@entities/proposal.entity'
+import { UserService } from '@api/modules/users/user.service'
 
 @Injectable()
 export class VotingService {
     constructor(
         private readonly votingRepository: VotingRepository,
         private readonly proposalRepository: ProposalRepository,
+        private readonly userService: UserService,
     ) {}
 
     async findVotingByUserIdAndProposalId(
@@ -52,6 +54,17 @@ export class VotingService {
             )
         }
 
+        const existedUser = await this.userService.getActiveUserById(userId)
+
+        if (!existedUser) {
+            throw new HttpException(
+                httpErrors.USER_NOT_FOUND,
+                HttpStatus.BAD_REQUEST,
+            )
+        }
+
+        const shareOfUser = existedUser.shareQuantity
+
         const existedProposal = await this.proposalRepository.getProposalById(
             proposalId,
         )
@@ -66,6 +79,7 @@ export class VotingService {
                         existedProposal,
                         checkExistedVoting,
                         voteProposalDto,
+                        shareOfUser,
                     )
                 return updateCountVoteExistedProposal
             } else {
@@ -78,12 +92,12 @@ export class VotingService {
                     })
                     switch (result) {
                         case VoteProposalResult.VOTE:
-                            existedProposal.votedQuantity++
-                            existedProposal.notVoteYetQuantity--
+                            existedProposal.votedQuantity += shareOfUser
+                            existedProposal.notVoteYetQuantity -= shareOfUser
                             break
                         case VoteProposalResult.UNVOTE:
-                            existedProposal.unVotedQuantity++
-                            existedProposal.notVoteYetQuantity--
+                            existedProposal.unVotedQuantity += shareOfUser
+                            existedProposal.notVoteYetQuantity -= shareOfUser
                             break
                     }
                     await createdVoting.save()
@@ -112,28 +126,29 @@ export class VotingService {
         existedProposal: Proposal,
         existedVoting: Voting,
         voteProposalDto: VoteProposalDto,
+        shareOfUser: number,
     ): Promise<Proposal> {
         const { result } = voteProposalDto
         const resultOld = existedVoting.result
         if (result !== resultOld) {
             switch (resultOld) {
                 case VoteProposalResult.VOTE:
-                    existedProposal.votedQuantity--
-                    existedProposal.notVoteYetQuantity++
+                    existedProposal.votedQuantity -= shareOfUser
+                    existedProposal.notVoteYetQuantity += shareOfUser
                     break
                 case VoteProposalResult.UNVOTE:
-                    existedProposal.unVotedQuantity--
-                    existedProposal.notVoteYetQuantity++
+                    existedProposal.unVotedQuantity -= shareOfUser
+                    existedProposal.notVoteYetQuantity += shareOfUser
                     break
             }
             switch (result) {
                 case VoteProposalResult.VOTE:
-                    existedProposal.votedQuantity++
-                    existedProposal.notVoteYetQuantity--
+                    existedProposal.votedQuantity += shareOfUser
+                    existedProposal.notVoteYetQuantity -= shareOfUser
                     break
                 case VoteProposalResult.UNVOTE:
-                    existedProposal.unVotedQuantity++
-                    existedProposal.notVoteYetQuantity--
+                    existedProposal.unVotedQuantity += shareOfUser
+                    existedProposal.notVoteYetQuantity -= shareOfUser
                     break
             }
             if (result === VoteProposalResult.NO_IDEA) {

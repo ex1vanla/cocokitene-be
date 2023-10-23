@@ -20,6 +20,19 @@ export class UserRepository extends Repository<User> {
         return user
     }
 
+    async getActiveUserById(id: number): Promise<User> {
+        const user = await this.createQueryBuilder('users')
+            .leftJoinAndSelect('users.userStatus', 'userStatus')
+            .where('userStatus.status= :status', {
+                status: UserStatusEnum.ACTIVE,
+            })
+            .andWhere('users.id = :id', {
+                id,
+            })
+            .getOne()
+        return user
+    }
+
     async getUserByWalletAddress(
         walletAddress: string,
         status?: UserStatusEnum,

@@ -40,6 +40,29 @@ export class UserService {
         return users
     }
 
+    async getTotalSharesHolderByShareholderIds(
+        shareholderIds: number[],
+    ): Promise<number> {
+        const users = await Promise.all([
+            ...shareholderIds.map((shareholderId) =>
+                this.userRepository.getActiveUserById(shareholderId),
+            ),
+        ])
+
+        const totalShares = users.reduce((accumulator, currentValue) => {
+            accumulator = accumulator + Number(currentValue.shareQuantity)
+            return accumulator
+        }, 0)
+
+        return totalShares
+    }
+
+    async getActiveUserById(userId: number): Promise<User> {
+        const user = await this.userRepository.getActiveUserById(userId)
+
+        return user
+    }
+
     // async getUserByMeetingIdAndRole(
     //     meetingId: number,
     //     role: MeetingRole,

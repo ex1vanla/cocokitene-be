@@ -29,6 +29,7 @@ import { Pagination } from 'nestjs-typeorm-paginate'
 import { VotingService } from '@api/modules/votings/voting.service'
 import { VoteProposalResult } from '@shares/constants/proposal.const'
 import { GetAllDto } from '@dtos/base.dto'
+import { UserService } from '@api/modules/users/user.service'
 
 @Injectable()
 export class MeetingService {
@@ -39,6 +40,7 @@ export class MeetingService {
         private readonly proposalService: ProposalService,
         private readonly userMeetingService: UserMeetingService,
         private readonly votingService: VotingService,
+        private readonly userService: UserService,
     ) {}
 
     async getAllMeetings(
@@ -174,6 +176,11 @@ export class MeetingService {
             shareholders,
         } = createMeetingDto
 
+        const totalShares =
+            await this.userService.getTotalSharesHolderByShareholderIds(
+                shareholders,
+            )
+
         try {
             await Promise.all([
                 ...meetingReports.map((report) =>
@@ -197,7 +204,7 @@ export class MeetingService {
                         type: resolution.type,
                         meetingId: createdMeeting.id,
                         creatorId: creatorId,
-                        notVoteYetQuantity: shareholders.length,
+                        notVoteYetQuantity: totalShares,
                     }),
                 ),
                 ...amendmentResolutions.map((amendmentResolution) =>
@@ -207,7 +214,7 @@ export class MeetingService {
                         type: amendmentResolution.type,
                         meetingId: createdMeeting.id,
                         creatorId: creatorId,
-                        notVoteYetQuantity: shareholders.length,
+                        notVoteYetQuantity: totalShares,
                     }),
                 ),
                 ...hosts.map((host) =>
@@ -419,6 +426,11 @@ export class MeetingService {
             shareholders,
         } = updateMeetingDto
 
+        const totalShares =
+            await this.userService.getTotalSharesHolderByShareholderIds(
+                shareholders,
+            )
+
         await Promise.all([
             ...meetingReports.map((report) =>
                 this.meetingFileService.createMeetingFile({
@@ -442,7 +454,7 @@ export class MeetingService {
                     type: resolution.type,
                     meetingId: meetingId,
                     creatorId: userId,
-                    notVoteYetQuantity: shareholders.length,
+                    notVoteYetQuantity: totalShares,
                 }),
             ),
 
@@ -453,7 +465,7 @@ export class MeetingService {
                     type: amendmentResolution.type,
                     meetingId: meetingId,
                     creatorId: userId,
-                    notVoteYetQuantity: shareholders.length,
+                    notVoteYetQuantity: totalShares,
                 }),
             ),
 
