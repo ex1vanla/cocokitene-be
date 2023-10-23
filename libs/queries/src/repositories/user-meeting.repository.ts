@@ -131,6 +131,9 @@ export class UserMeetingRepository extends Repository<UserMeeting> {
             relations: {
                 user: true,
             },
+            order: {
+                status: 'ASC',
+            },
         })
 
         const rs = {
