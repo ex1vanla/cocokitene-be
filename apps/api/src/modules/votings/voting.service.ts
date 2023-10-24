@@ -134,24 +134,21 @@ export class VotingService {
             switch (resultOld) {
                 case VoteProposalResult.VOTE:
                     existedProposal.votedQuantity -= shareOfUser
-                    existedProposal.notVoteYetQuantity += shareOfUser
                     break
                 case VoteProposalResult.UNVOTE:
                     existedProposal.unVotedQuantity -= shareOfUser
-                    existedProposal.notVoteYetQuantity += shareOfUser
                     break
             }
             switch (result) {
                 case VoteProposalResult.VOTE:
                     existedProposal.votedQuantity += shareOfUser
-                    existedProposal.notVoteYetQuantity -= shareOfUser
                     break
                 case VoteProposalResult.UNVOTE:
                     existedProposal.unVotedQuantity += shareOfUser
-                    existedProposal.notVoteYetQuantity -= shareOfUser
                     break
             }
             if (result === VoteProposalResult.NO_IDEA) {
+                existedProposal.notVoteYetQuantity += shareOfUser
                 await this.votingRepository.delete(existedVoting.id)
                 // await existedProposal.save()
             } else {
