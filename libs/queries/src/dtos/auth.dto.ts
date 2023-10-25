@@ -62,7 +62,7 @@ export class LoginByPassword {
     @IsString()
     @IsNotEmpty()
     @ApiProperty({
-        example: 'nguyenkien@#$%@hgdd',
+        example: 'nguyenkien',
     })
     password: string
 }

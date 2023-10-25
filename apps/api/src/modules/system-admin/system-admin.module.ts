@@ -6,7 +6,7 @@ import { UserModule } from '@api/modules/users/user.module'
 import { PlanModule } from '@api/modules/plans/plan.module'
 
 @Module({
-    imports: [CompanyModule, UserModule, PlanModule],
+    imports: [CompanyModule, UserModule,PlanModule],
     controllers: [SystemAdminController],
     providers: [SystemAdminService],
     exports: [SystemAdminService],

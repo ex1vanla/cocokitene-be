@@ -1,15 +1,19 @@
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import {
+    Body,
     Controller,
     Get,
     HttpCode,
     HttpStatus,
     Param,
+    Patch,
     Query,
     UseGuards,
 } from '@nestjs/common'
 import { GetAllCompanyDto } from '@dtos/company.dto'
 import { SystemAdminService } from '@api/modules/system-admin/system-admin.service'
+import { UpdateCompanyDto } from '@dtos/company.dto'
+import { SuperAdminDto } from '@dtos/user.dto'
 import { SystemAdminGuard } from '@shares/guards/systemadmin.guard'
 
 @Controller('system-admin')
@@ -27,12 +31,47 @@ export class SystemAdminController {
         )
         return companys
     }
-    @Get('/get-company/:id')
+
+    @Get('/company/:id')
     @UseGuards(SystemAdminGuard)
     @HttpCode(HttpStatus.OK)
     @ApiBearerAuth()
     async getCompanyById(@Param('id') companyId: number) {
         const company = await this.systemAdminService.getCompanyById(companyId)
         return company
+    }
+
+
+    @Patch('/company/:id')
+    @UseGuards(SystemAdminGuard)
+    @ApiBearerAuth()
+    @HttpCode(HttpStatus.OK)
+    async updateCompany(
+        @Param('id') companyId: number,
+        @Body() updateCompanyDto: UpdateCompanyDto,
+    ) {
+        const updatedCompany = await this.systemAdminService.updateCompany(
+            companyId,
+            updateCompanyDto,
+        )
+        return updatedCompany
+    }
+
+    @Patch('/company/:companyId/superadmin/:id')
+    @UseGuards(SystemAdminGuard)
+    @ApiBearerAuth()
+    @HttpCode(HttpStatus.OK)
+    async updateSuperAdmin(
+        @Param('companyId') companyId: number,
+        @Param('id') superAdminCompanyId: number,
+        @Body() superAdminDto: SuperAdminDto,
+    ) {
+        const updatedSuperAdminCompany =
+            await this.systemAdminService.updateSuperAdminCompany(
+                companyId,
+                superAdminCompanyId,
+                superAdminDto,
+            )
+        return updatedSuperAdminCompany
     }
 }

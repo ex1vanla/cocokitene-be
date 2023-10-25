@@ -43,7 +43,7 @@ export class CompanySeederService {
         }
         // ========end check companyStatus=======
         // test demo seed data for company with plan
-        const planNameDemo = 'import products bear toys children'
+        const planNameDemo = 'free'
         const plan = await this.planRepository.findOne({
             where: {
                 planName: planNameDemo,
