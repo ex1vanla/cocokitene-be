@@ -161,4 +161,18 @@ export class UserRepository extends Repository<User> {
             )
         }
     }
+    async getUserById(companyId: number, userId: number): Promise<User> {
+        const user = await this.createQueryBuilder('users')
+            .select(['users.username', 'users.email', 'users.walletAddress'])
+            .leftJoin('users.company', 'company')
+            .addSelect(['company.id', 'company.companyName'])
+            .leftJoin('users.userStatus', 'userStatus')
+            .addSelect(['userStatus.id', 'userStatus.status'])
+            .where('users.companyId = :companyId', {
+                companyId,
+            })
+            .andWhere('users.id = :userId', { userId: userId })
+            .getOne()
+        return user
+    }
 }

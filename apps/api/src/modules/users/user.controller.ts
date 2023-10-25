@@ -4,6 +4,7 @@ import {
     Get,
     HttpCode,
     HttpStatus,
+    Param,
     Query,
     UseGuards,
 } from '@nestjs/common'
@@ -49,5 +50,16 @@ export class UserController {
             companyId,
         )
         return users
+    }
+
+    @Get('/:id')
+    @UseGuards(JwtAuthGuard)
+    @Permission(PermissionEnum.DETAIL_ACCOUNT)
+    @HttpCode(HttpStatus.OK)
+    @ApiBearerAuth()
+    async getUserById(@Param('id') userId: number, @UserScope() user: User) {
+        const companyId = user?.companyId
+        const meeting = await this.userService.getUserById(companyId, userId)
+        return meeting
     }
 }

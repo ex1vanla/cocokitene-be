@@ -8,4 +8,11 @@ export class UserRoleService {
         const roleIds = await this.userRoleRepository.getRoleIdsByUserId(userId)
         return roleIds
     }
+
+    async getRoleNameByUserId(userId: number): Promise<string[]> {
+        const roleNames = await this.userRoleRepository.getRoleNameByUserId(
+            userId,
+        )
+        return roleNames
+    }
 }
