@@ -30,8 +30,7 @@ export class CompanyService {
         })
         return company
     }
-    //    
-
+  
     async updateCompany(
         companyId: number,
         updateCompanyDto: UpdateCompanyDto,

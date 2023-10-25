@@ -1,5 +1,6 @@
 import { Company } from '@entities/company.entity'
 import { PartialType } from '@nestjs/mapped-types'
+import { CompanyTypeBussiness } from '@shares/constants'
 
 export class InsertCompanyDto extends PartialType(Company) {}
 export const companyData: InsertCompanyDto[] = [

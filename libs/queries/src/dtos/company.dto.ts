@@ -1,9 +1,8 @@
 import { GetAllDto } from '@dtos/base.dto'
-
-export class GetAllCompanyDto extends GetAllDto {}
-import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator'
 import { ApiProperty } from '@nestjs/swagger'
+export class GetAllCompanyDto extends GetAllDto {}
 import { Type } from 'class-transformer'
+import { IsNumber, IsOptional, IsString } from 'class-validator'
 
 export class UpdateCompanyDto {
     @IsOptional()
@@ -55,6 +54,7 @@ export class UpdateCompanyDto {
     fax?: string
 
     @IsOptional()
+    @IsString()
     @ApiProperty({
         required: false,
         example: 'service',
@@ -71,10 +71,9 @@ export class UpdateCompanyDto {
     newStatusId?: number
 
     @IsOptional()
-    @IsNumber()
-    @Type(() => Number)
+    @IsString()
     @ApiProperty({
-        example: 2,
+        example: 'kiennv',
         required: false,
     })
     newRepresentativeUser?: string
