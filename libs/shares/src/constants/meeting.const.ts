@@ -1,12 +1,12 @@
 export enum UserMeetingStatusEnum {
-    PARTICIPATE = 'participate',
-    ABSENCE = 'absence',
+    PARTICIPATE = '0',
+    ABSENCE = '1',
 }
 
 export enum MeetingFileType {
-    MEETING_INVITATION = 'invitations',
-    MEETING_MINUTES = 'minutes',
-    REPORTS = 'reports',
+    MEETING_INVITATION = '0',
+    MEETING_MINUTES = '1',
+    REPORTS = '2',
 }
 export enum MeetingType {
     FUTURE = 'future',

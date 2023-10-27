@@ -1,6 +1,6 @@
 export enum UserStatusEnum {
-    INACTIVE = 'inactive',
-    ACTIVE = 'active',
+    INACTIVE = '0',
+    ACTIVE = '1',
 }
 
 export const REGISTER_ACCOUNT_MESSAGE = 'Register Account'

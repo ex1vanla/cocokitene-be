@@ -1,5 +1,4 @@
 export enum CompanyStatusEnum {
-    ACTIVE = 'active',
-    INACTIVE = 'inactive',
-    ACQUIRED = 'acquired',
+    ACTIVE = '0',
+    INACTIVE = '1',
 }
