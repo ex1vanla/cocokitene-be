@@ -5,14 +5,11 @@ import {
     Entity,
     JoinColumn,
     ManyToOne,
-    OneToOne,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm'
 import { CompanyStatus } from './company-status.entity'
 import { Plan } from './plan.entity'
-import { CompanyTypeBussiness } from '@shares/constants'
-import { User } from '@entities/user.entity'
 
 @Entity('companys')
 export class Company extends BaseEntity {
@@ -59,12 +56,12 @@ export class Company extends BaseEntity {
     statusId: number
 
     @Column({
-        nullable: false,
-        name: 'representative_id',
-        type: 'integer',
-        width: 11,
+        nullable: true,
+        name: 'representative_user',
+        type: 'varchar',
+        length: 255,
     })
-    representativeId: number
+    representativeUser: string
 
     @Column({
         nullable: true,
@@ -140,10 +137,4 @@ export class Company extends BaseEntity {
         name: 'plan_id',
     })
     plan: Plan
-
-    @OneToOne(() => User)
-    @JoinColumn({
-        name: 'representative_id',
-    })
-    representative: User
 }

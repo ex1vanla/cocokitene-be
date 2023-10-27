@@ -31,11 +31,7 @@ export class SystemAdminService {
                 HttpStatus.NOT_FOUND,
             )
         }
-
-        const [representativeUser, superAdmin, plan] = await Promise.all([
-            this.userService.getRepresentativeUser(
-                existedCompany.representativeId,
-            ),
+        const [superAdmin, plan] = await Promise.all([
             this.userService.getSuperAdminCompany(existedCompany.id),
             this.planService.getPlanCompany(existedCompany.planId),
         ])
@@ -43,7 +39,6 @@ export class SystemAdminService {
         return {
             ...existedCompany,
             superAdminInfo: superAdmin,
-            representativeUserName: representativeUser.username,
             servicePlan: plan,
         }
     }
