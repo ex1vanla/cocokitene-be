@@ -14,7 +14,6 @@ export class SystemAdminService {
         private readonly planService: PlanService,
     ) {}
 
-
     async getAllCompanys(getAllCompanyDto: GetAllCompanyDto) {
         const companys = await this.companyService.getAllCompanys(
             getAllCompanyDto,

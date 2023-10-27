@@ -97,12 +97,11 @@ export class Company extends BaseEntity {
     fax: string
 
     @Column({
+        name: 'date_of_corporation',
+        type: 'date',
         nullable: true,
-        name: 'representative_user',
-        type: 'varchar',
-        length: 255,
     })
-    representativeUser: string
+    dateOrCorporation: Date
 
     @CreateDateColumn({ name: 'created_at' })
     createdAt: Date
