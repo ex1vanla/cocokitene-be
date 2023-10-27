@@ -5,14 +5,11 @@ import {
     Entity,
     JoinColumn,
     ManyToOne,
-    OneToOne,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm'
 import { CompanyStatus } from './company-status.entity'
 import { Plan } from './plan.entity'
-import { User } from '@entities/user.entity'
-import { CompanyTypeBussiness } from '@shares/constants'
 
 @Entity('companys')
 export class Company extends BaseEntity {
@@ -52,7 +49,7 @@ export class Company extends BaseEntity {
     })
     address: string
 
-    @Column({ nullable: false, name: 'plan_id', type: 'integer', width: 11 })
+    @Column({ nullable: true, name: 'plan_id', type: 'integer', width: 11 })
     planId: number
 
     @Column({ nullable: false, name: 'status_id', type: 'integer', width: 11 })
@@ -92,12 +89,12 @@ export class Company extends BaseEntity {
     fax: string
 
     @Column({
-        nullable: false,
-        name: 'representative_id',
-        type: 'integer',
-        width: 11,
+        nullable: true,
+        name: 'representative_user',
+        type: 'varchar',
+        length: 255,
     })
-    representativeId: number
+    representativeUser: string
 
     @CreateDateColumn({ name: 'date_of_incorporation' })
     createdAt: Date
@@ -114,21 +111,12 @@ export class Company extends BaseEntity {
     logo: string
 
     @Column({
-        nullable: false,
-        name: 'company_size',
-        type: 'integer',
-        width: 11,
-        default: 0,
-    })
-    companySize: number
-
-    @Column({
-        nullable: false,
-        type: 'enum',
+        nullable: true,
+        type: 'varchar',
+        length: 255,
         name: 'bussiness_type',
-        enum: CompanyTypeBussiness,
     })
-    bussinessType: CompanyTypeBussiness
+    bussinessType: string
 
     @ManyToOne(() => CompanyStatus)
     @JoinColumn({
@@ -141,9 +129,4 @@ export class Company extends BaseEntity {
         name: 'plan_id',
     })
     plan: Plan
-    @OneToOne(() => User)
-    @JoinColumn({
-        name: 'representative_id',
-    })
-    representative: User
 }
