@@ -1,8 +1,8 @@
-import { GetAllDto } from '@dtos/base.dto'
-import { ApiProperty } from '@nestjs/swagger'
 export class GetAllCompanyDto extends GetAllDto {}
 import { Type } from 'class-transformer'
 import { IsNumber, IsOptional, IsString } from 'class-validator'
+import { ApiProperty } from '@nestjs/swagger'
+import { GetAllDto } from '@dtos/base.dto'
 
 export class UpdateCompanyDto {
     @IsOptional()
@@ -95,3 +95,5 @@ export class UpdateCompanyDto {
     })
     dateOfCorporation?: string
 }
+
+export class GetAllCompanyStatusDto extends GetAllDto {}

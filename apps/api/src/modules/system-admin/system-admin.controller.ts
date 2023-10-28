@@ -12,8 +12,9 @@ import {
 } from '@nestjs/common'
 import { GetAllCompanyDto } from '@dtos/company.dto'
 import { SystemAdminService } from '@api/modules/system-admin/system-admin.service'
-import { UpdateCompanyDto } from '@dtos/company.dto'
+import { GetAllCompanyStatusDto, UpdateCompanyDto } from '@dtos/company.dto'
 import { SuperAdminDto } from '@dtos/user.dto'
+import { GetAllPlanDto } from '@dtos/plan.dto'
 import { SystemAdminGuard } from '@shares/guards/systemadmin.guard'
 
 @Controller('system-admin')
@@ -55,6 +56,30 @@ export class SystemAdminController {
             updateCompanyDto,
         )
         return updatedCompany
+    }
+
+    
+    @Get('/plans')
+    @HttpCode(HttpStatus.OK)
+    @ApiBearerAuth()
+    @UseGuards(SystemAdminGuard)
+    async getAllPlans(@Query() getAllPlanDto: GetAllPlanDto) {
+        const plans = await this.systemAdminService.getAllPlans(getAllPlanDto)
+        return plans
+    }
+
+    @Get('/company-status')
+    @HttpCode(HttpStatus.OK)
+    @ApiBearerAuth()
+    @UseGuards(SystemAdminGuard)
+    async getAllCompanyStatus(
+        @Query() getAllCompanyStatusDto: GetAllCompanyStatusDto,
+    ) {
+        const companyStatus =
+            await this.systemAdminService.getAllPCompanyStatus(
+                getAllCompanyStatusDto,
+            )
+        return companyStatus
     }
 
     @Patch('/company/:companyId/superadmin/:id')

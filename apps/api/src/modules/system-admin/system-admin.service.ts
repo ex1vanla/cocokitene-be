@@ -1,14 +1,16 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { GetAllCompanyDto } from '@dtos/company.dto'
 import { CompanyService } from '@api/modules/companys/company.service'
-import { PlanService } from '../plans/plan.service'
 import { UserService } from '../users/user.service'
 import { DetailCompanyResponse } from '../companys/company.interface'
-import { UpdateCompanyDto } from '@dtos/company.dto'
+import { GetAllCompanyStatusDto, UpdateCompanyDto } from '@dtos/company.dto'
 import { Company } from '@entities/company.entity'
 import { httpErrors } from '@shares/exception-filter'
 import { SuperAdminDto } from '@dtos/user.dto'
 import { User } from '@sentry/node'
+import { GetAllPlanDto } from '@dtos/plan.dto'
+import { PlanService } from '@api/modules/plans/plan.service'
+import { CompanyStatusService } from '@api/modules/company-status/company-status.service'
 
 @Injectable()
 export class SystemAdminService {
@@ -16,6 +18,7 @@ export class SystemAdminService {
         private readonly companyService: CompanyService,
         private readonly userService: UserService,
         private readonly planService: PlanService,
+        private readonly companyStatusService: CompanyStatusService,
     ) {}
 
     async getAllCompanys(getAllCompanyDto: GetAllCompanyDto) {
@@ -70,6 +73,11 @@ export class SystemAdminService {
             )
         }
         return existedCompany
+        const updatedCompany = await this.companyService.updateCompany(
+            companyId,
+            updateCompanyDto,
+        )
+        return updatedCompany
     }
 
     async updateSuperAdminCompany(
@@ -93,5 +101,18 @@ export class SystemAdminService {
                 superAdminDto,
             )
         return updatedSuperAdminCompany
+    }
+
+    async getAllPlans(getAllPlanDto: GetAllPlanDto) {
+        const plans = await this.planService.getAllPlans(getAllPlanDto)
+        return plans
+    }
+
+    async getAllPCompanyStatus(getAllCompanyStatusDto: GetAllCompanyStatusDto) {
+        const companyStatuses =
+            await this.companyStatusService.getAllCompanyStatus(
+                getAllCompanyStatusDto,
+            )
+        return companyStatuses
     }
 }

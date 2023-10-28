@@ -5,13 +5,11 @@ import {
     Entity,
     JoinColumn,
     ManyToOne,
-    OneToOne,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm'
 import { CompanyStatus } from './company-status.entity'
 import { Plan } from './plan.entity'
-import { User } from '@entities/user.entity'
 
 @Entity('companys')
 export class Company extends BaseEntity {
@@ -119,6 +117,8 @@ export class Company extends BaseEntity {
     })
     logo: string
 
+    
+
     @Column({
         nullable: true,
         type: 'varchar',
@@ -138,10 +138,4 @@ export class Company extends BaseEntity {
         name: 'plan_id',
     })
     plan: Plan
-
-    @OneToOne(() => User)
-    @JoinColumn({
-        name: 'representative_id',
-    })
-    representative: User
 }

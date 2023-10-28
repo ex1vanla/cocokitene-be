@@ -1,4 +1,6 @@
 import { Injectable } from '@nestjs/common'
+import { GetAllPlanDto } from '@dtos/plan.dto'
+import { Pagination } from 'nestjs-typeorm-paginate'
 import { Plan } from '@entities/plan.entity'
 import { PlanRepository } from '@repositories/plan.repository'
 
@@ -14,6 +16,11 @@ export class PlanService {
         })
         return plan
     }
+
+
+
+    async getAllPlans(getAllPlanDto: GetAllPlanDto): Promise<Pagination<Plan>> {
+        const plans = await this.planRepository.getAllPlans(getAllPlanDto)
+        return plans
+    }
 }
-
-
