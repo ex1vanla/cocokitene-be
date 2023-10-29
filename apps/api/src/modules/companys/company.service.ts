@@ -21,6 +21,7 @@ export class CompanyService {
             where: {
                 id: companyId,
             },
+            relations: ['companyStatus'],
         })
         return company
     }
