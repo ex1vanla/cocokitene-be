@@ -3,7 +3,6 @@ import { CustomRepository } from '@shares/decorators'
 import { Repository } from 'typeorm'
 import { paginateRaw, Pagination } from 'nestjs-typeorm-paginate'
 import { GetAllCompanyDto } from '@dtos/company.dto'
-import { UserStatusEnum } from '@shares/constants'
 @CustomRepository(Company)
 export class CompanyRepository extends Repository<Company> {
     async getCompanyByName(name): Promise<Company> {
@@ -33,18 +32,10 @@ export class CompanyRepository extends Repository<Company> {
             .leftJoin('plans', 'plan', 'plan.id = companys.planId')
             .leftJoin('meetings', 'meeting', 'companys.id = meeting.companyId')
             .leftJoin('users', 'user', 'user.companyId = companys.id')
-            .leftJoin(
-                'user_statuses',
-                'userStatus',
-                'userStatus.id = user.statusId',
-            )
             .addSelect(`COUNT(DISTINCT  meeting.id)`, 'totalCreatedMTGs')
             .addSelect(`plan.planName`, 'planName')
             .addSelect(`companyStatus.status`, 'companyStatus')
             .addSelect(`COUNT(DISTINCT user.id) `, 'totalCreatedAccount')
-            .where('userStatus.status = :activeStatus', {
-                activeStatus: UserStatusEnum.ACTIVE,
-            })
             .groupBy('companys.id')
 
         if (searchQuery) {
