@@ -74,4 +74,11 @@ export class UserService {
 
     //     return users
     // }
+
+    async getSuperAdminCompany(companyId: number): Promise<User> {
+        const superAdmin = await this.userRepository.getSuperAdminCompany(
+            companyId,
+        )
+        return superAdmin
+    }
 }

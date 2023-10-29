@@ -112,4 +112,17 @@ export class UserRepository extends Repository<User> {
 
     //     return users
     // }
+
+    async getSuperAdminCompany(companyId: number): Promise<User> {
+        const superAdmin = await this.createQueryBuilder('users')
+            .leftJoin('user_roles', 'userRole', 'users.id = userRole.userId')
+            .leftJoin('roles', 'role', 'userRole.roleId = role.id')
+
+            .leftJoinAndSelect('users.userStatus', 'userStatus')
+            .where('role.roleName = :roleName', { roleName: 'SUPER_ADMIN' })
+            .andWhere('users.companyId = :companyId', { companyId: companyId })
+            .getOne()
+
+        return superAdmin
+    }
 }
