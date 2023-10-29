@@ -17,8 +17,6 @@ export class PlanService {
         return plan
     }
 
-
-
     async getAllPlans(getAllPlanDto: GetAllPlanDto): Promise<Pagination<Plan>> {
         const plans = await this.planRepository.getAllPlans(getAllPlanDto)
         return plans

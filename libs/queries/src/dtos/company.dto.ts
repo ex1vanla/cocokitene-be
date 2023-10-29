@@ -1,4 +1,3 @@
-export class GetAllCompanyDto extends GetAllDto {}
 import { Type } from 'class-transformer'
 import { IsNumber, IsOptional, IsString } from 'class-validator'
 import { ApiProperty } from '@nestjs/swagger'
@@ -97,3 +96,4 @@ export class UpdateCompanyDto {
 }
 
 export class GetAllCompanyStatusDto extends GetAllDto {}
+export class GetAllCompanyDto extends GetAllDto {}

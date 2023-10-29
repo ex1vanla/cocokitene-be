@@ -42,7 +42,6 @@ export class SystemAdminController {
         return company
     }
 
-
     @Patch('/company/:id')
     @UseGuards(SystemAdminGuard)
     @ApiBearerAuth()
@@ -58,7 +57,6 @@ export class SystemAdminController {
         return updatedCompany
     }
 
-    
     @Get('/plans')
     @HttpCode(HttpStatus.OK)
     @ApiBearerAuth()

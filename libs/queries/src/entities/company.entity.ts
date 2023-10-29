@@ -117,8 +117,6 @@ export class Company extends BaseEntity {
     })
     logo: string
 
-    
-
     @Column({
         nullable: true,
         type: 'varchar',

@@ -27,12 +27,11 @@ export class SystemAdminService {
         )
         return companys
     }
-    
+
     async getCompanyById(companyId: number): Promise<DetailCompanyResponse> {
         const existedCompany = await this.companyService.getCompanyById(
             companyId,
         )
-
 
         const [superAdmin, plan] = await Promise.all([
             this.userService.getSuperAdminCompany(existedCompany.id),
@@ -46,33 +45,10 @@ export class SystemAdminService {
         }
     }
 
-
-
     async updateCompany(
         companyId: number,
         updateCompanyDto: UpdateCompanyDto,
     ): Promise<Company> {
-        let existedCompany = await this.companyService.getCompanyById(companyId)
-        if (!existedCompany) {
-            throw new HttpException(
-                httpErrors.COMPANY_NOT_FOUND,
-                HttpStatus.NOT_FOUND,
-            )
-        }
-      
-
-        try {
-            existedCompany = await this.companyService.updateCompany(
-                companyId,
-                updateCompanyDto,
-            )
-        } catch (error) {
-            throw new HttpException(
-                httpErrors.COMPANY_UPDATE_FAILED,
-                HttpStatus.INTERNAL_SERVER_ERROR,
-            )
-        }
-        return existedCompany
         const updatedCompany = await this.companyService.updateCompany(
             companyId,
             updateCompanyDto,

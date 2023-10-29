@@ -21,7 +21,6 @@ export class CompanyService {
         return companys
     }
 
-
     async getCompanyById(companyId: number): Promise<Company> {
         const company = await this.companyRepository.findOne({
             where: {
@@ -31,7 +30,7 @@ export class CompanyService {
         })
         return company
     }
-  
+
     async updateCompany(
         companyId: number,
         updateCompanyDto: UpdateCompanyDto,
