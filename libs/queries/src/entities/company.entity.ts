@@ -49,7 +49,7 @@ export class Company extends BaseEntity {
     })
     address: string
 
-    @Column({ nullable: false, name: 'plan_id', type: 'integer', width: 11 })
+    @Column({ nullable: true, name: 'plan_id', type: 'integer', width: 11 })
     planId: number
 
     @Column({ nullable: false, name: 'status_id', type: 'integer', width: 11 })
@@ -88,7 +88,15 @@ export class Company extends BaseEntity {
     })
     fax: string
 
-    @CreateDateColumn({ name: 'date_of_incorporation' })
+    @Column({
+        nullable: true,
+        name: 'representative_user',
+        type: 'varchar',
+        length: 255,
+    })
+    representativeUser: string
+
+    @CreateDateColumn({ name: 'created_at' })
     createdAt: Date
 
     @UpdateDateColumn({ name: 'updated_at' })
@@ -101,6 +109,14 @@ export class Company extends BaseEntity {
         length: 255,
     })
     logo: string
+
+    @Column({
+        nullable: true,
+        type: 'varchar',
+        length: 255,
+        name: 'bussiness_type',
+    })
+    bussinessType: string
 
     @ManyToOne(() => CompanyStatus)
     @JoinColumn({
