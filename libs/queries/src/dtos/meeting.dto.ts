@@ -89,7 +89,7 @@ export class CreateMeetingDto {
         each: true,
     })
     @Type(() => MeetingFileDto)
-    meetingReports: MeetingFileDto[]
+    meetingMinutes: MeetingFileDto[]
 
     @ApiProperty({
         required: true,
@@ -231,7 +231,7 @@ export class UpdateMeetingDto {
         each: true,
     })
     @Type(() => MeetingFileDto)
-    meetingReports?: MeetingFileDto[]
+    meetingMinutes?: MeetingFileDto[]
 
     @IsOptional()
     @ApiProperty({

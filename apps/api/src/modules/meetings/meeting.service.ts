@@ -165,7 +165,7 @@ export class MeetingService {
         }
 
         const {
-            meetingReports,
+            meetingMinutes,
             meetingInvitations,
             resolutions,
             amendmentResolutions,
@@ -183,11 +183,11 @@ export class MeetingService {
 
         try {
             await Promise.all([
-                ...meetingReports.map((report) =>
+                ...meetingMinutes.map((file) =>
                     this.meetingFileService.createMeetingFile({
-                        url: report.url,
+                        url: file.url,
                         meetingId: createdMeeting.id,
-                        fileType: report.fileType,
+                        fileType: file.fileType,
                     }),
                 ),
                 ...meetingInvitations.map((invitation) =>
@@ -415,7 +415,7 @@ export class MeetingService {
         }
 
         const {
-            meetingReports,
+            meetingMinutes,
             meetingInvitations,
             resolutions,
             amendmentResolutions,
@@ -432,11 +432,11 @@ export class MeetingService {
             )
 
         await Promise.all([
-            ...meetingReports.map((report) =>
+            ...meetingMinutes.map((file) =>
                 this.meetingFileService.createMeetingFile({
-                    url: report.url,
+                    url: file.url,
                     meetingId: meetingId,
-                    fileType: report.fileType,
+                    fileType: file.fileType,
                 }),
             ),
             ...meetingInvitations.map((invitation) =>
