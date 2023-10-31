@@ -3,10 +3,11 @@ export enum UserMeetingStatusEnum {
     ABSENCE = '1',
 }
 
-export enum MeetingFileType {
+export enum FileTypes {
     MEETING_INVITATION = '0',
     MEETING_MINUTES = '1',
     REPORTS = '2',
+    AVATARS = '3',
 }
 export enum MeetingType {
     FUTURE = 'future',

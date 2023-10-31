@@ -24,6 +24,10 @@ export const httpErrors = {
         message: 'User not active. Please try again',
         code: 'USER_00003',
     },
+    USER_UPDATE_FAILED: {
+        message: 'User update failed. Please try again',
+        code: 'USER_00006',
+    },
     // user status error
     USER_STATUS_NOT_EXISTED: {
         message: 'User not existed. Please try again',
@@ -140,5 +144,10 @@ export const httpErrors = {
     SUPER_ADMIN_NOT_IN_THIS_COMPANY: {
         message: 'this super admin in not of this company. Please try again',
         code: 'SUPER_ADMIN_00000',
+    },
+    // user-role
+    USER_ROLE_CREATE_FAILED: {
+        message: 'user_role created failed. Please try again',
+        code: 'USER_ROLE_CREATE_FAILED_00000',
     },
 }

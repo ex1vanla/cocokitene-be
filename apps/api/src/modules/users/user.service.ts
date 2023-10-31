@@ -1,4 +1,4 @@
-import { GetAllUsersDto, SuperAdminDto } from '@dtos/user.dto'
+import { GetAllUsersDto, SuperAdminDto, UpdateUserDto } from '@dtos/user.dto'
 import { User } from '@entities/user.entity'
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { UserRepository } from '@repositories/user.repository'
@@ -100,6 +100,58 @@ export class UserService {
                 newSuperAdminDto,
             )
         return updatedSuperAdminCompany
+    }
+    async updateUser(
+        companyId: number,
+        userId: number,
+        updateUserDto: UpdateUserDto,
+    ): Promise<User> {
+        const existedCompany = await this.companyService.getCompanyById(
+            companyId,
+        )
+        if (!existedCompany) {
+            throw new HttpException(
+                httpErrors.COMPANY_NOT_FOUND,
+                HttpStatus.NOT_FOUND,
+            )
+        }
+        let existedUser = await this.userRepository.findOne({
+            where: {
+                id: userId,
+            },
+        })
+        if (!existedUser) {
+            throw new HttpException(
+                httpErrors.USER_NOT_FOUND,
+                HttpStatus.NOT_FOUND,
+            )
+        }
+
+        //update user
+
+        try {
+            existedUser = await this.userRepository.updateUser(
+                userId,
+                companyId,
+                updateUserDto,
+            )
+        } catch (error) {
+            throw new HttpException(
+                httpErrors.USER_UPDATE_FAILED,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            )
+        }
+
+        const { roleIds, userAvatar } = updateUserDto
+
+        await Promise.all([
+            await this.userRoleService.updateUserRole(userId, roleIds),
+            (existedUser = await this.userRepository.updateUserAvatar(
+                existedUser.id,
+                userAvatar,
+            )),
+        ])
+        return existedUser
     }
     async getUserById(
         companyId: number,

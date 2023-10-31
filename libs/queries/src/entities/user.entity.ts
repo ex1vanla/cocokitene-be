@@ -72,7 +72,9 @@ export class User extends BaseEntity {
     @Column({
         nullable: true,
         type: 'varchar',
-        length: 50,
+        length: 255,
+        default:
+            'https://fastly.picsum.photos/id/296/200/300.jpg?hmac=3w6L7NcSbkDRHC36vvfj4JuF0yOHmTjqQS5F9biJyKA',
     })
     defaultAvatarHashColor: string
 

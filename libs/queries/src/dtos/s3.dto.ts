@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { MeetingFileType } from '@shares/constants/meeting.const'
+import { FileTypes } from '@shares/constants/meeting.const'
 import { Type } from 'class-transformer'
 import { IsEnum, IsString, ValidateNested } from 'class-validator'
 
@@ -8,9 +8,9 @@ export class MeetingFile {
     @IsString()
     fileName: string
 
-    @ApiProperty({ example: MeetingFileType.MEETING_INVITATION })
-    @IsEnum(MeetingFileType)
-    fileType: MeetingFileType
+    @ApiProperty({ example: FileTypes.MEETING_INVITATION })
+    @IsEnum(FileTypes)
+    fileType: FileTypes
 }
 
 export class GetPresignedUrlDto {
@@ -21,7 +21,7 @@ export class GetPresignedUrlDto {
         example: [
             {
                 fileName: '',
-                fileType: MeetingFileType.MEETING_INVITATION,
+                fileType: FileTypes.MEETING_INVITATION,
             },
         ],
     })

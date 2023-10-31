@@ -1,10 +1,12 @@
-import { GetAllUsersDto } from '@dtos/user.dto'
+import { GetAllUsersDto, UpdateUserDto } from '@dtos/user.dto'
 import {
+    Body,
     Controller,
     Get,
     HttpCode,
     HttpStatus,
     Param,
+    Patch,
     Query,
     UseGuards,
 } from '@nestjs/common'
@@ -64,5 +66,23 @@ export class UserController {
             userId,
         )
         return userDetails
+    }
+    @Patch(':userId')
+    @UseGuards(JwtAuthGuard)
+    @Permission(PermissionEnum.EDIT_ACCOUNT)
+    @ApiBearerAuth()
+    @HttpCode(HttpStatus.OK)
+    async updateUser(
+        @Param('userId') userId: number,
+        @Body() updateUserDto: UpdateUserDto,
+        @UserScope() user: User,
+    ) {
+        const companyId = user?.companyId
+        const updateUser = await this.userService.updateUser(
+            companyId,
+            userId,
+            updateUserDto,
+        )
+        return updateUser
     }
 }

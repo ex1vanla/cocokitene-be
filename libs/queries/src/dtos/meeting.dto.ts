@@ -243,7 +243,7 @@ export class UpdateMeetingDto {
         each: true,
     })
     @Type(() => MeetingFileDto)
-    meetingInvitations: MeetingFileDto[]
+    meetingInvitations?: MeetingFileDto[]
 
     @IsOptional()
     @ApiProperty({
@@ -254,7 +254,7 @@ export class UpdateMeetingDto {
         each: true,
     })
     @Type(() => ProposalDto)
-    resolutions: ProposalDto[]
+    resolutions?: ProposalDto[]
 
     @IsOptional()
     @ApiProperty({
@@ -265,7 +265,7 @@ export class UpdateMeetingDto {
         each: true,
     })
     @Type(() => ProposalDto)
-    amendmentResolutions: ProposalDto[]
+    amendmentResolutions?: ProposalDto[]
 
     @IsArray()
     @IsOptional()
@@ -274,7 +274,7 @@ export class UpdateMeetingDto {
         required: false,
         example: [1, 2],
     })
-    hosts: number[]
+    hosts?: number[]
 
     @IsArray()
     @IsOptional()
