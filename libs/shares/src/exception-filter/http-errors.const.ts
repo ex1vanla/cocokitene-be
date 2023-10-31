@@ -28,11 +28,17 @@ export const httpErrors = {
         message: 'User update failed. Please try again',
         code: 'USER_00006',
     },
+    USER_CREATE_FAILED: {
+        message: 'User create failed. Please try again',
+        code: 'USER_00004',
+    },
+   
     // user status error
     USER_STATUS_NOT_EXISTED: {
         message: 'User not existed. Please try again',
         code: 'USER_STATUS_00000',
     },
+
     // role error
     ROLE_NOT_EXISTED: {
         message: 'Role not existed. Please try again',
@@ -150,4 +156,5 @@ export const httpErrors = {
         message: 'user_role created failed. Please try again',
         code: 'USER_ROLE_CREATE_FAILED_00000',
     },
+    
 }

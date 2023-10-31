@@ -1,4 +1,4 @@
-import { GetAllUsersDto, UpdateUserDto } from '@dtos/user.dto'
+import { CreateUserDto, GetAllUsersDto, UpdateUserDto } from '@dtos/user.dto'
 import {
     Body,
     Controller,
@@ -7,6 +7,7 @@ import {
     HttpStatus,
     Param,
     Patch,
+    Post,
     Query,
     UseGuards,
 } from '@nestjs/common'
@@ -84,5 +85,22 @@ export class UserController {
             updateUserDto,
         )
         return updateUser
+    }
+    
+    @Post('')
+    @UseGuards(JwtAuthGuard)
+    @HttpCode(HttpStatus.CREATED)
+    @ApiBearerAuth()
+    @Permission(PermissionEnum.CREATE_ACCOUNT)
+    async createUser(
+        @Body() createUserDto: CreateUserDto,
+        @UserScope() user: User,
+    ) {
+        const companyId = user?.companyId
+        const createdUser = await this.userService.createUser(
+            companyId,
+            createUserDto,
+        )
+        return createdUser
     }
 }

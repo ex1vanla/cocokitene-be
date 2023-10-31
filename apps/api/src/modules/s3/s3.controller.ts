@@ -24,7 +24,6 @@ export class S3Controller {
         const presignedUrl = await this.s3Service.getPresignedUrls(
             getPresignedUrlDto,
         )
-
         return presignedUrl
     }
 }

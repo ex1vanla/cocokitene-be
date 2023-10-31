@@ -1,4 +1,4 @@
-import { GetAllUsersDto, SuperAdminDto, UpdateUserDto } from '@dtos/user.dto'
+import { CreateUserDto, GetAllUsersDto, SuperAdminDto, UpdateUserDto } from '@dtos/user.dto'
 import { User } from '@entities/user.entity'
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { UserRepository } from '@repositories/user.repository'
@@ -8,6 +8,7 @@ import { Pagination } from 'nestjs-typeorm-paginate'
 import { DetailUserReponse } from '@api/modules/users/user.interface'
 import { CompanyService } from '@api/modules/companys/company.service'
 import { UserRoleService } from '@api/modules/user-roles/user-role.service'
+import { uuid } from '@shares/utils/uuid'
 
 @Injectable()
 export class UserService {
@@ -106,6 +107,7 @@ export class UserService {
         userId: number,
         updateUserDto: UpdateUserDto,
     ): Promise<User> {
+   
         const existedCompany = await this.companyService.getCompanyById(
             companyId,
         )
@@ -155,6 +157,7 @@ export class UserService {
         }
         return existedUser
     }
+
     async getUserById(
         companyId: number,
         userId: number,
@@ -186,4 +189,54 @@ export class UserService {
             roleName: roleNameByUserId,
         }
     }
+  
+    async createUser(companyId: number, createUserDto: CreateUserDto) {
+        const existedCompany = await this.companyService.getCompanyById(
+            companyId,
+        )
+        if (!existedCompany) {
+            throw new HttpException(
+                httpErrors.COMPANY_NOT_FOUND,
+                HttpStatus.NOT_FOUND,
+            )
+        }
+        //createUser
+        let createdUser: User
+
+        try {
+            createdUser = await this.userRepository.createUser(
+                companyId,
+                createUserDto,
+            )
+
+            createdUser.nonce = uuid()
+            await createdUser.save()
+        } catch (error) {
+            throw new HttpException(
+                httpErrors.USER_CREATE_FAILED,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            )
+        }
+        const { roleIds } = createUserDto
+        try {
+            await Promise.all([
+                ...roleIds.map((roleId) =>
+                    this.userRoleService.createUserRole({
+                        userId: createdUser.id,
+                        roleId: roleId,
+                    }),
+                ),
+            ])
+        } catch (error) {
+            throw new HttpException(
+                { message: error.message },
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            )
+        }
+        return createdUser
+    }
+
+
+
+       
 }

@@ -76,4 +76,14 @@ export const permissionData: InsertPermissionDto[] = [
         description:
             'the user with this right can see list proposal in the meeting of company',
     },
+    {
+        key: PermissionEnum.LIST_USER_STATUS,
+        description:
+            'the user with this right can see list status of user in the system',
+    },
+    {
+        key: PermissionEnum.LIST_ROLES,
+        description:
+            'the user with this right can see list role of user in the system',
+    },
 ]

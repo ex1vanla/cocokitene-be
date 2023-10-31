@@ -68,6 +68,7 @@ export class Company extends BaseEntity {
         name: 'company_phone',
         type: 'varchar',
         length: 255,
+        unique: true,
     })
     phone: string
 

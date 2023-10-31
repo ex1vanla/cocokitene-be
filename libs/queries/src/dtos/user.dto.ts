@@ -2,15 +2,45 @@ import {
     ArrayMinSize,
     IsArray,
     IsEmail,
+    IsEnum,
     IsInt,
     IsNotEmpty,
     IsNumber,
     IsOptional,
     IsString,
+    ValidateNested,
 } from 'class-validator'
-import { ApiProperty } from '@nestjs/swagger'
+import { ApiProperty, OmitType } from '@nestjs/swagger'
 import { Transform, Type } from 'class-transformer'
 import { GetAllDto } from '@dtos/base.dto'
+import { FileTypes } from '@shares/constants/meeting.const'
+
+export class CreateUserAvatarDto {
+    @IsNotEmpty()
+    @IsString()
+    @ApiProperty({
+        required: true,
+        example: 'https://www.africau.edu/images/default/sample.pdf',
+    })
+    avatar: string
+
+    @IsNumber()
+    @ApiProperty({
+        required: true,
+        example: 1,
+    })
+    userId: number
+
+    @IsEnum(FileTypes)
+    @ApiProperty({
+        required: true,
+        example: FileTypes.AVATARS,
+        enum: FileTypes,
+    })
+    fileType: FileTypes
+}
+
+export class UserAvatarDto extends OmitType(CreateUserAvatarDto, ['userId']) {}
 
 export class UpdateUserDto {
     @IsEmail()
@@ -102,6 +132,7 @@ export class CreateUserDto {
     @IsNotEmpty()
     @IsString()
     @ApiProperty({
+        required: true,
         example: 'leopaulbn@gmail.com',
     })
     email: string
@@ -109,6 +140,7 @@ export class CreateUserDto {
     @IsString()
     @IsNotEmpty()
     @ApiProperty({
+        required: true,
         example: 'leopaul',
     })
     username: string
@@ -116,6 +148,7 @@ export class CreateUserDto {
     @IsString()
     @IsNotEmpty()
     @ApiProperty({
+        required: true,
         example: '0x9b500a4B354914d420c3D1497AEe4Ba9d45b7Df0',
     })
     @Transform(({ value }) => {
@@ -123,14 +156,49 @@ export class CreateUserDto {
     })
     walletAddress: string
 
+    @IsNumber()
+    @IsNotEmpty()
+    @ApiProperty({
+        required: true,
+        example: 100,
+    })
+    shareQuantity: number
+
+    @IsString()
+    @IsNotEmpty()
+    @ApiProperty({
+        required: true,
+        example: '0868071819',
+    })
+    phone: string
+
     @IsArray()
     @IsNotEmpty()
     @ArrayMinSize(1)
     @IsInt({ each: true })
     @ApiProperty({
-        example: 1,
+        required: true,
+        example: [1, 3, 4],
     })
     roleIds: number[]
+
+    @IsNumber()
+    @IsNotEmpty()
+    @ApiProperty({
+        required: true,
+        example: 1,
+    })
+    statusId: number
+
+    @ApiProperty({
+        required: true,
+        // type: [UserAvatarDto],
+    })
+    @ValidateNested({
+        each: true,
+    })
+    @Type(() => UserAvatarDto)
+    userAvatar: UserAvatarDto
 }
 
 export class GetAllUsersDto extends GetAllDto {}

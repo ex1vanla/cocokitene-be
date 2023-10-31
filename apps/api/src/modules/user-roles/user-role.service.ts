@@ -1,9 +1,9 @@
-import { CreateUserRoleDto } from '@dtos/user-role.dto'
 import { UserRole } from '@entities/user-role.entity'
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { UserRoleRepository } from '@repositories/user-role.repository'
 import { httpErrors } from '@shares/exception-filter'
 import { RoleService } from '@api/modules/roles/role.service'
+import { CreateUserRoleDto } from '@dtos/user-role.dto'
 
 @Injectable()
 export class UserRoleService {

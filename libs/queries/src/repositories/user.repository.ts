@@ -1,11 +1,17 @@
-import { GetAllUsersDto, SuperAdminDto, UpdateUserDto } from '@dtos/user.dto'
-
+import {
+    CreateUserAvatarDto,
+    CreateUserDto,
+    GetAllUsersDto,
+    SuperAdminDto,
+    UpdateUserDto,
+} from '@dtos/user.dto'
 import { User } from '@entities/user.entity'
 import { UserStatusEnum } from '@shares/constants/user.const'
 import { CustomRepository } from '@shares/decorators'
 import { Pagination, paginate } from 'nestjs-typeorm-paginate'
 import { Repository } from 'typeorm'
 import { HttpException, HttpStatus } from '@nestjs/common'
+import { httpErrors } from '@shares/exception-filter'
 
 @CustomRepository(User)
 export class UserRepository extends Repository<User> {
@@ -205,6 +211,17 @@ export class UserRepository extends Repository<User> {
             })
             .andWhere('users.id = :userId', { userId: userId })
             .getOne()
+        return user
+    }
+    async createUser(
+        companyId: number,
+        createUserDto: CreateUserDto,
+    ): Promise<User> {
+        const user = await this.create({
+            ...createUserDto,
+            companyId,
+        })
+        await user.save()
         return user
     }
 }
