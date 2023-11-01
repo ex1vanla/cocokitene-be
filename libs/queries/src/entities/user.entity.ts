@@ -23,7 +23,7 @@ export class User extends BaseEntity {
         type: 'varchar',
         length: 255,
         nullable: true,
-        unique: true,
+        // unique: true,
     })
     username: string
 
@@ -32,7 +32,7 @@ export class User extends BaseEntity {
         type: 'varchar',
         length: 255,
         nullable: true,
-        unique: true,
+        // unique: true,
     })
     email: string
 
@@ -41,6 +41,7 @@ export class User extends BaseEntity {
         type: 'varchar',
         length: 255,
         nullable: false,
+        unique: true,
     })
     walletAddress: string
 
@@ -50,7 +51,7 @@ export class User extends BaseEntity {
     @Column({ nullable: false, name: 'status_id', type: 'integer', width: 11 })
     statusId: number
 
-    @Column({ nullable: true, name: 'company_id', type: 'integer', width: 11 })
+    @Column({ nullable: false, name: 'company_id', type: 'integer', width: 11 })
     companyId: number
 
     @Column({

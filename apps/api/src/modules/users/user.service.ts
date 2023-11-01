@@ -1,4 +1,4 @@
-import { GetAllUsersDto } from '@dtos/user.dto'
+import { GetAllUsersDto, SuperAdminDto } from '@dtos/user.dto'
 import { User } from '@entities/user.entity'
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { UserRepository } from '@repositories/user.repository'
@@ -80,5 +80,18 @@ export class UserService {
             companyId,
         )
         return superAdmin
+    }
+    async updateSuperAdminCompany(
+        companyId: number,
+        superAdminCompanyId: number,
+        newSuperAdminDto: SuperAdminDto,
+    ): Promise<User> {
+        const updatedSuperAdminCompany =
+            await this.userRepository.updateSuperAdminCompany(
+                companyId,
+                superAdminCompanyId,
+                newSuperAdminDto,
+            )
+        return updatedSuperAdminCompany
     }
 }

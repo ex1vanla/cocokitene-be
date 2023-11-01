@@ -101,7 +101,7 @@ export class Company extends BaseEntity {
         type: 'date',
         nullable: true,
     })
-    dateOrCorporation: Date
+    dateOfCorporation: Date
 
     @CreateDateColumn({ name: 'created_at' })
     createdAt: Date

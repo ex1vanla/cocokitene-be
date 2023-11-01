@@ -73,6 +73,10 @@ export const httpErrors = {
         message: 'Company not found. Please try again',
         code: 'COMPANY_00000',
     },
+    COMPANY_UPDATE_FAILED: {
+        message: 'Company update failed. Please try again',
+        code: 'COMPANY_00001',
+    },
     // meeting file error
     MEETING_FILE_CREATE_FAILED: {
         message: 'Create meeting file failed. Please try again',
@@ -131,5 +135,10 @@ export const httpErrors = {
         message:
             'Password of system admin invalid credentials. Please try again',
         code: 'SYSTEM_ADMIN_00001',
+    },
+    //super_admin
+    SUPER_ADMIN_NOT_IN_THIS_COMPANY: {
+        message: 'this super admin in not of this company. Please try again',
+        code: 'SUPER_ADMIN_00000',
     },
 }

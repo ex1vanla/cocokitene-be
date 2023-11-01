@@ -3,6 +3,8 @@ import { CustomRepository } from '@shares/decorators'
 import { Repository } from 'typeorm'
 import { paginateRaw, Pagination } from 'nestjs-typeorm-paginate'
 import { GetAllCompanyDto } from '@dtos/company.dto'
+import { UpdateCompanyDto } from '@dtos/company.dto'
+import { HttpException, HttpStatus } from '@nestjs/common'
 @CustomRepository(Company)
 export class CompanyRepository extends Repository<Company> {
     async getCompanyByName(name): Promise<Company> {
@@ -45,5 +47,41 @@ export class CompanyRepository extends Repository<Company> {
         }
 
         return paginateRaw(queryBuilder, { page, limit })
+    }
+    async updateCompany(
+        companyId: number,
+        updateCompanyDto: UpdateCompanyDto,
+    ): Promise<Company> {
+        try {
+            await this.createQueryBuilder('companys')
+                .update(Company)
+                .set({
+                    companyName: updateCompanyDto.companyName,
+                    description: updateCompanyDto.description,
+                    address: updateCompanyDto.address,
+                    email: updateCompanyDto.email,
+                    phone: updateCompanyDto.phone,
+                    fax: updateCompanyDto.fax,
+                    bussinessType: updateCompanyDto.bussinessType,
+                    dateOfCorporation: updateCompanyDto.dateOfCorporation,
+                    statusId: updateCompanyDto.newStatusId,
+                    planId: updateCompanyDto.newPlanId,
+                    representativeUser: updateCompanyDto.newRepresentativeUser,
+                })
+                .where('companys.id = :companyId', { companyId })
+                .execute()
+
+            const company = await this.findOne({
+                where: {
+                    id: companyId,
+                },
+            })
+            return company
+        } catch (error) {
+            throw new HttpException(
+                { message: error.message },
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            )
+        }
     }
 }

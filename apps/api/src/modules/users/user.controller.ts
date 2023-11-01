@@ -15,8 +15,6 @@ import { JwtAuthGuard } from '@shares/guards/jwt-auth.guard'
 import { User } from '@entities/user.entity'
 import { PermissionEnum } from '@shares/constants'
 import { Permission } from '@shares/decorators/permission.decorator'
-// import { PermissionEnum } from '@shares/constants'
-// import { Permission } from '@shares/decorators/permission.decorator'
 
 @Controller('users')
 @ApiTags('users')

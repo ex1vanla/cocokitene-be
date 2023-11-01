@@ -1,9 +1,10 @@
-import { GetAllUsersDto } from '@dtos/user.dto'
+import { GetAllUsersDto, SuperAdminDto } from '@dtos/user.dto'
 import { User } from '@entities/user.entity'
 import { UserStatusEnum } from '@shares/constants/user.const'
 import { CustomRepository } from '@shares/decorators'
 import { Pagination, paginate } from 'nestjs-typeorm-paginate'
 import { Repository } from 'typeorm'
+import { HttpException, HttpStatus } from '@nestjs/common'
 
 @CustomRepository(User)
 export class UserRepository extends Repository<User> {
@@ -124,5 +125,40 @@ export class UserRepository extends Repository<User> {
             .getOne()
 
         return superAdmin
+    }
+
+    async updateSuperAdminCompany(
+        companyId: number,
+        superAdminCompanyId: number,
+        newSuperAdminDto: SuperAdminDto,
+    ): Promise<User> {
+        try {
+            await this.createQueryBuilder('users')
+                .update(User)
+                .set({
+                    username: newSuperAdminDto.username,
+                    walletAddress: newSuperAdminDto.walletAddress,
+                    email: newSuperAdminDto.email,
+                    statusId: newSuperAdminDto.newStatusId,
+                })
+                .where('users.id = :superAdminCompanyId', {
+                    superAdminCompanyId,
+                })
+                .andWhere('users.company_id = :companyId', {
+                    companyId,
+                })
+                .execute()
+            const updatedSuperAdminCompany = await this.findOne({
+                where: {
+                    id: superAdminCompanyId,
+                },
+            })
+            return updatedSuperAdminCompany
+        } catch (error) {
+            throw new HttpException(
+                { message: error.message },
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            )
+        }
     }
 }
