@@ -1,4 +1,10 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
+import {
+    HttpException,
+    HttpStatus,
+    Inject,
+    Injectable,
+    forwardRef,
+} from '@nestjs/common'
 import { MeetingRepository } from '@repositories/meeting.repository'
 
 import { MeetingFileService } from '@api/modules/meeting-files/meeting-file.service'
@@ -36,6 +42,7 @@ export class MeetingService {
     constructor(
         private readonly meetingRepository: MeetingRepository,
         private readonly userMeetingRepository: UserMeetingRepository,
+        @Inject(forwardRef(() => MeetingFileService))
         private readonly meetingFileService: MeetingFileService,
         private readonly proposalService: ProposalService,
         private readonly userMeetingService: UserMeetingService,

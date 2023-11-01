@@ -7,13 +7,13 @@ import { ProposalModule } from '@api/modules/proposals/proposal.module'
 import { UserMeetingModule } from '@api/modules/user-meetings/user-meeting.module'
 import { UserModule } from '@api/modules/users/user.module'
 import { VotingModule } from '@api/modules/votings/voting.module'
-import { Module } from '@nestjs/common'
+import { Module, forwardRef } from '@nestjs/common'
 
 @Module({
     imports: [
         CompanyModule,
         EmailModule,
-        MeetingFileModule,
+        forwardRef(() => MeetingFileModule),
         ProposalModule,
         UserMeetingModule,
         UserModule,
