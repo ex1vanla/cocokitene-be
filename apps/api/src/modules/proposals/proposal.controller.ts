@@ -39,10 +39,9 @@ export class ProposalController {
         @Body() proposalDtoUpdate: ProposalDtoUpdate,
         @UserScope() user: User,
     ) {
-        const userId = user?.id,
-            companyId = user?.companyId
+        const companyId = user?.companyId
+
         const updatedProposal = await this.proposalService.updateProposal(
-            userId,
             companyId,
             proposalId,
             proposalDtoUpdate,
@@ -81,10 +80,8 @@ export class ProposalController {
         @Param('proposalId') proposalId: number,
         @UserScope() user: User,
     ) {
-        const userId = user?.id,
-            companyId = user?.companyId
+        const companyId = user?.companyId
         const result = await this.proposalService.deleteProposal(
-            userId,
             companyId,
             proposalId,
         )

@@ -1,7 +1,7 @@
 import { MeetingFile } from '@entities/meeting-file'
 import { CustomRepository } from '@shares/decorators'
 import { Repository } from 'typeorm'
-import { CreateMeetingFileDto } from '../dtos'
+import { CreateMeetingFileDto, MeetingFileDto } from '../dtos'
 
 @CustomRepository(MeetingFile)
 export class MeetingFileRepository extends Repository<MeetingFile> {
@@ -26,5 +26,29 @@ export class MeetingFileRepository extends Repository<MeetingFile> {
             relations: ['meeting'],
         })
         return meetingFile
+    }
+
+    async updateMeetingFile(
+        meetingFileId: number,
+        meetingFileDto: MeetingFileDto,
+    ): Promise<MeetingFile> {
+        await this.createQueryBuilder('meeting_files')
+            .update(MeetingFile)
+            .set({
+                url: meetingFileDto.url,
+                fileType: meetingFileDto.fileType,
+            })
+            .where('meeting_files.id = :meetingFileId', { meetingFileId })
+            .execute()
+        const meetingFile = await this.findOne({
+            where: {
+                id: meetingFileId,
+            },
+        })
+        return meetingFile
+    }
+
+    async deleteMeetingFile(meetingFileId: number): Promise<void> {
+        await this.delete(meetingFileId)
     }
 }

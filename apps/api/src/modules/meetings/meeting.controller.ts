@@ -140,7 +140,7 @@ export class MeetingController {
         return meeting
     }
 
-    @Patch('/edit-meeting/:meetingId')
+    @Patch('/:meetingId')
     @UseGuards(JwtAuthGuard)
     @Permission(PermissionEnum.EDIT_MEETING)
     @ApiBearerAuth()

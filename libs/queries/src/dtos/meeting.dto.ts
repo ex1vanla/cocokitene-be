@@ -169,6 +169,7 @@ export class IdMeetingDto {
         example: 1,
         required: true,
     })
+    @Type(() => Number)
     meetingId: number
 }
 

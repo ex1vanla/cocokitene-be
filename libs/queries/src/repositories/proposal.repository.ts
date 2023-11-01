@@ -51,7 +51,7 @@ export class ProposalRepository extends Repository<Proposal> {
         return proposal
     }
     async updateProposal(
-        userId: number,
+        // userId: number,
         proposalId: number,
         proposalDtoUpdate: ProposalDtoUpdate,
     ): Promise<Proposal> {
@@ -61,7 +61,7 @@ export class ProposalRepository extends Repository<Proposal> {
             .set({
                 title: title,
                 description: description,
-                creatorId: userId,
+                // creatorId: userId,
             })
             .where('proposals.id = :proposalId', { proposalId })
             .andWhere('proposals.type = :type', { type })

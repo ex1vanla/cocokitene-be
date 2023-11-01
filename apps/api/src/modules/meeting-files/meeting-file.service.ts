@@ -1,15 +1,22 @@
-import { CreateMeetingFileDto } from '@dtos/meeting-file.dto'
+import { CreateMeetingFileDto, MeetingFileDto } from '@dtos/meeting-file.dto'
 import { MeetingFile } from '@entities/meeting-file'
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
+import {
+    HttpException,
+    HttpStatus,
+    Inject,
+    Injectable,
+    forwardRef,
+} from '@nestjs/common'
 import { MeetingFileRepository } from '@repositories/meeting-file.repository'
 import { httpErrors } from '@shares/exception-filter'
-import { MeetingRepository } from '@repositories/meeting.repository'
+import { MeetingService } from '@api/modules/meetings/meeting.service'
 
 @Injectable()
 export class MeetingFileService {
     constructor(
         private readonly meetingFileRepository: MeetingFileRepository,
-        private readonly meetingRepository: MeetingRepository,
+        @Inject(forwardRef(() => MeetingService))
+        private readonly meetingService: MeetingService,
     ) {}
 
     async createMeetingFile(
@@ -64,6 +71,47 @@ export class MeetingFileService {
                 id: meetingFileId,
             })
             return `meeting-file with Id ${meetingFileId} deleted successfully`
+        } catch (error) {
+            throw new HttpException(
+                { message: error.message },
+                HttpStatus.BAD_REQUEST,
+            )
+        }
+    }
+
+    async updateListMeetingFiles(
+        meetingId: number,
+        meetingFiles: MeetingFileDto[],
+    ): Promise<void> {
+        const meeting = await this.meetingService.getExternalMeetingById(
+            meetingId,
+        )
+        const listCurrentMeetingFiles = meeting.meetingFiles
+        // list edited
+        const listEdited = meetingFiles.filter((file) => !!file.id)
+        const listEditedIds = listEdited.map((file) => file.id)
+        // list deleted
+        const listDeleted = listCurrentMeetingFiles.filter(
+            (file) => !listEditedIds.includes(file.id),
+        )
+        // list added
+        const listAdded = meetingFiles.filter((file) => !file.id)
+
+        try {
+            await Promise.all([
+                ...listEdited.map((file) =>
+                    this.meetingFileRepository.updateMeetingFile(file.id, file),
+                ),
+                ...listDeleted.map((file) =>
+                    this.meetingFileRepository.deleteMeetingFile(file.id),
+                ),
+                ...listAdded.map((file) =>
+                    this.meetingFileRepository.createMeetingFile({
+                        ...file,
+                        meetingId,
+                    }),
+                ),
+            ])
         } catch (error) {
             throw new HttpException(
                 { message: error.message },

@@ -368,6 +368,13 @@ export class MeetingService {
         }
     }
 
+    async getExternalMeetingById(meetingId: number): Promise<Meeting> {
+        const meeting = await this.meetingRepository.getExternalMeetingById(
+            meetingId,
+        )
+        return meeting
+    }
+
     async updateMeeting(
         idMeetingDto: IdMeetingDto,
         updateMeetingDto: UpdateMeetingDto,
@@ -431,42 +438,19 @@ export class MeetingService {
                 shareholders,
             )
 
+        const listMeetingFiles = [...meetingMinutes, ...meetingInvitations]
+        const listProposals = [...resolutions, ...amendmentResolutions]
+
         await Promise.all([
-            ...meetingMinutes.map((file) =>
-                this.meetingFileService.createMeetingFile({
-                    url: file.url,
-                    meetingId: meetingId,
-                    fileType: file.fileType,
-                }),
+            this.meetingFileService.updateListMeetingFiles(
+                meetingId,
+                listMeetingFiles,
             ),
-            ...meetingInvitations.map((invitation) =>
-                this.meetingFileService.createMeetingFile({
-                    url: invitation.url,
-                    meetingId: meetingId,
-                    fileType: invitation.fileType,
-                }),
-            ),
-
-            ...resolutions.map((resolution) =>
-                this.proposalService.createProposal({
-                    title: resolution.title,
-                    description: resolution.description,
-                    type: resolution.type,
-                    meetingId: meetingId,
-                    creatorId: userId,
-                    notVoteYetQuantity: totalShares,
-                }),
-            ),
-
-            ...amendmentResolutions.map((amendmentResolution) =>
-                this.proposalService.createProposal({
-                    title: amendmentResolution.title,
-                    description: amendmentResolution.description,
-                    type: amendmentResolution.type,
-                    meetingId: meetingId,
-                    creatorId: userId,
-                    notVoteYetQuantity: totalShares,
-                }),
+            this.proposalService.updateListProposals(
+                meetingId,
+                userId,
+                listProposals,
+                totalShares,
             ),
 
             await Promise.all([

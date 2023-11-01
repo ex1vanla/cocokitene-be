@@ -1,21 +1,29 @@
 import {
     CreateProposalDto,
     GetAllProposalDto,
+    ProposalDto,
     ProposalDtoUpdate,
 } from '@dtos/proposal.dto'
 import { Proposal } from '@entities/proposal.entity'
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
+import {
+    HttpException,
+    HttpStatus,
+    Inject,
+    Injectable,
+    forwardRef,
+} from '@nestjs/common'
 import { ProposalRepository } from '@repositories/proposal.repository'
 import { httpErrors } from '@shares/exception-filter'
-import { MeetingRepository } from '@repositories/meeting.repository'
 import { VotingService } from '@api/modules/votings/voting.service'
+import { MeetingService } from '@api/modules/meetings/meeting.service'
 
 @Injectable()
 export class ProposalService {
     constructor(
         private readonly proposalRepository: ProposalRepository,
-        private readonly meetingRepository: MeetingRepository,
         private readonly votingService: VotingService,
+        @Inject(forwardRef(() => MeetingService))
+        private readonly meetingService: MeetingService,
     ) {}
 
     async createProposal(
@@ -50,7 +58,6 @@ export class ProposalService {
     }
 
     async updateProposal(
-        userId: number,
         companyId: number,
         proposalId: number,
         proposalDtoUpdate: ProposalDtoUpdate,
@@ -75,7 +82,6 @@ export class ProposalService {
             }
 
             const updateProposal = await this.proposalRepository.updateProposal(
-                userId,
                 proposalId,
                 proposalDtoUpdate,
             )
@@ -88,11 +94,7 @@ export class ProposalService {
         }
     }
 
-    async deleteProposal(
-        userId: number,
-        companyId: number,
-        proposalId: number,
-    ) {
+    async deleteProposal(companyId: number, proposalId: number) {
         // check existed of meeting and proposal
         const proposal = await this.proposalRepository.getProposalById(
             proposalId,
@@ -142,5 +144,55 @@ export class ProposalService {
         )
 
         return proposals
+    }
+
+    async updateListProposals(
+        meetingId: number,
+        userId: number,
+        proposals: ProposalDto[],
+        totalShares: number,
+    ): Promise<void> {
+        const meeting = await this.meetingService.getExternalMeetingById(
+            meetingId,
+        )
+        const listCurrentProposals = meeting.proposals
+        // list edited
+        const listEdited = proposals.filter((proposal) => !!proposal.id)
+        const listEditedIds = listEdited.map((proposal) => proposal.id)
+        // list deleted
+        const listDeleted = listCurrentProposals.filter(
+            (proposal) => !listEditedIds.includes(proposal.id),
+        )
+        // list added
+        const listAdded = proposals.filter((proposal) => !proposal.id)
+
+        try {
+            await Promise.all([
+                ...listEdited.map((proposal) =>
+                    this.proposalRepository.updateProposal(
+                        proposal.id,
+                        proposal,
+                    ),
+                ),
+                ...listDeleted.map((proposal) =>
+                    this.deleteProposal(meeting.companyId, proposal.id),
+                ),
+                ...listAdded.map((proposal) =>
+                    this.createProposal({
+                        title: proposal.title,
+                        description: proposal.description,
+                        type: proposal.type,
+                        creatorId: userId,
+                        meetingId,
+                        notVoteYetQuantity: totalShares,
+                    }),
+                ),
+            ])
+        } catch (error) {
+            throw new HttpException(
+                { message: error.message },
+                HttpStatus.BAD_REQUEST,
+            )
+        }
     }
 }

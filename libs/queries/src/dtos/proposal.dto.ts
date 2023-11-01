@@ -84,7 +84,15 @@ export class ProposalDto extends OmitType(CreateProposalDto, [
     'meetingId',
     'creatorId',
     'notVoteYetQuantity',
-]) {}
+]) {
+    @IsOptional()
+    @IsNumber()
+    @ApiProperty({
+        required: true,
+        example: 1,
+    })
+    id?: number
+}
 
 export class ProposalDtoUpdate {
     @IsOptional()

@@ -1,6 +1,12 @@
 import { ApiProperty, OmitType } from '@nestjs/swagger'
 import { MeetingFileType } from '@shares/constants/meeting.const'
-import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator'
+import {
+    IsEnum,
+    IsNotEmpty,
+    IsNumber,
+    IsOptional,
+    IsString,
+} from 'class-validator'
 
 export class CreateMeetingFileDto {
     @IsNotEmpty()
@@ -28,4 +34,12 @@ export class CreateMeetingFileDto {
 
 export class MeetingFileDto extends OmitType(CreateMeetingFileDto, [
     'meetingId',
-]) {}
+]) {
+    @IsOptional()
+    @IsNumber()
+    @ApiProperty({
+        required: true,
+        example: 1,
+    })
+    id?: number
+}
