@@ -61,8 +61,8 @@ export class RoleRepository extends Repository<Role> {
                 'roles.createdAt',
                 'roles.updatedAt',
             ])
-            .where('roles.roleName != :roleName', {
-                roleName: 'SUPER_ADMIN',
+            .where('roles.roleName != :role', {
+                role: 'SUPER_ADMIN',
             })
 
         if (searchQuery) {

@@ -1,5 +1,4 @@
 import {
-    CreateUserAvatarDto,
     CreateUserDto,
     GetAllUsersDto,
     SuperAdminDto,
@@ -11,7 +10,6 @@ import { CustomRepository } from '@shares/decorators'
 import { Pagination, paginate } from 'nestjs-typeorm-paginate'
 import { Repository } from 'typeorm'
 import { HttpException, HttpStatus } from '@nestjs/common'
-import { httpErrors } from '@shares/exception-filter'
 
 @CustomRepository(User)
 export class UserRepository extends Repository<User> {

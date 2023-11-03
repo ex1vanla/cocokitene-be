@@ -2,45 +2,15 @@ import {
     ArrayMinSize,
     IsArray,
     IsEmail,
-    IsEnum,
     IsInt,
     IsNotEmpty,
     IsNumber,
     IsOptional,
     IsString,
-    ValidateNested,
 } from 'class-validator'
-import { ApiProperty, OmitType } from '@nestjs/swagger'
+import { ApiProperty } from '@nestjs/swagger'
 import { Transform, Type } from 'class-transformer'
 import { GetAllDto } from '@dtos/base.dto'
-import { FileTypes } from '@shares/constants/meeting.const'
-
-export class CreateUserAvatarDto {
-    @IsNotEmpty()
-    @IsString()
-    @ApiProperty({
-        required: true,
-        example: 'https://www.africau.edu/images/default/sample.pdf',
-    })
-    avatar: string
-
-    @IsNumber()
-    @ApiProperty({
-        required: true,
-        example: 1,
-    })
-    userId: number
-
-    @IsEnum(FileTypes)
-    @ApiProperty({
-        required: true,
-        example: FileTypes.AVATARS,
-        enum: FileTypes,
-    })
-    fileType: FileTypes
-}
-
-export class UserAvatarDto extends OmitType(CreateUserAvatarDto, ['userId']) {}
 
 export class UpdateUserDto {
     @IsEmail()
@@ -157,9 +127,9 @@ export class CreateUserDto {
     walletAddress: string
 
     @IsNumber()
-    @IsNotEmpty()
+    @IsOptional()
     @ApiProperty({
-        required: true,
+        required: false,
         example: 100,
     })
     shareQuantity: number
@@ -190,15 +160,14 @@ export class CreateUserDto {
     })
     statusId: number
 
+    @IsString()
+    @IsNotEmpty()
     @ApiProperty({
         required: true,
-        // type: [UserAvatarDto],
+        example:
+            'https://i.seadn.io/gcs/files/86ba42e7b54bcdfd6fb2c6fc7d1f2fc3.jpg',
     })
-    @ValidateNested({
-        each: true,
-    })
-    @Type(() => UserAvatarDto)
-    userAvatar: UserAvatarDto
+    avatar: string
 }
 
 export class GetAllUsersDto extends GetAllDto {}

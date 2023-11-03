@@ -27,9 +27,9 @@ export class RoleController {
         @Query() getAllNormalRolesDto: GetAllNormalRolesDto,
         // @UserScope() user: User,
     ) {
-        const userStatus = await this.roleService.getAllNormalRoles(
+        const normalRoles = await this.roleService.getAllNormalRoles(
             getAllNormalRolesDto,
         )
-        return userStatus
+        return normalRoles
     }
 }
