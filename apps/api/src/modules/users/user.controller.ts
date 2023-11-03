@@ -59,7 +59,10 @@ export class UserController {
     @ApiBearerAuth()
     async getUserById(@Param('id') userId: number, @UserScope() user: User) {
         const companyId = user?.companyId
-        const meeting = await this.userService.getUserById(companyId, userId)
-        return meeting
+        const userDetails = await this.userService.getUserById(
+            companyId,
+            userId,
+        )
+        return userDetails
     }
 }
