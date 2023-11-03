@@ -3,10 +3,14 @@ import { UserRole } from '@entities/user-role.entity'
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { UserRoleRepository } from '@repositories/user-role.repository'
 import { httpErrors } from '@shares/exception-filter'
+import { RoleService } from '@api/modules/roles/role.service'
 
 @Injectable()
 export class UserRoleService {
-    constructor(private readonly userRoleRepository: UserRoleRepository) {}
+    constructor(
+        private readonly userRoleRepository: UserRoleRepository,
+        private readonly roleService: RoleService,
+    ) {}
     async getRoleIdsByUserId(userId: number): Promise<number[]> {
         const roleIds = await this.userRoleRepository.getRoleIdsByUserId(userId)
         return roleIds
@@ -43,17 +47,14 @@ export class UserRoleService {
     ): Promise<number[]> {
         const currentRoles =
             await this.userRoleRepository.getListCurrentRoleIdOfUserId(userId)
-
         // ids just add from dto
         const rolesToAdds = newRoleIds.filter(
             (roleId) => !currentRoles.includes(roleId),
         )
-        const addedRoles: number[] = []
-        addedRoles.push(...rolesToAdds)
 
         //ids need to delete when it not appear in newRoleIds
         const rolesToRemoves = currentRoles.filter(
-            (rolesId) => !currentRoles.includes(rolesId),
+            (rolesId) => !newRoleIds.includes(rolesId),
         )
 
         await Promise.all([
@@ -67,6 +68,12 @@ export class UserRoleService {
                 }),
             ),
         ])
-        return addedRoles
+        const roleIds = await this.getRoleIdsByUserId(userId)
+        return roleIds
+    }
+
+    async getRoleByRoleName(roleName: string) {
+        const role = await this.roleService.getRoleByRoleName(roleName)
+        return role
     }
 }

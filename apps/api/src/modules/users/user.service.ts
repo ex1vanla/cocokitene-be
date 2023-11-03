@@ -118,6 +118,7 @@ export class UserService {
         let existedUser = await this.userRepository.findOne({
             where: {
                 id: userId,
+                companyId: companyId,
             },
         })
         if (!existedUser) {
@@ -128,7 +129,6 @@ export class UserService {
         }
 
         //update user
-
         try {
             existedUser = await this.userRepository.updateUser(
                 userId,
@@ -141,16 +141,18 @@ export class UserService {
                 HttpStatus.INTERNAL_SERVER_ERROR,
             )
         }
-
-        const { roleIds, userAvatar } = updateUserDto
-
-        await Promise.all([
-            await this.userRoleService.updateUserRole(userId, roleIds),
-            (existedUser = await this.userRepository.updateUserAvatar(
-                existedUser.id,
-                userAvatar,
-            )),
-        ])
+        const { roleIds } = updateUserDto
+        const roleIdsOfUserId = await this.userRoleService.updateUserRole(
+            userId,
+            roleIds,
+        )
+        const roleShareHolder = await this.userRoleService.getRoleByRoleName(
+            'SHAREHOLDER',
+        )
+        if (roleIdsOfUserId.includes(roleShareHolder.id)) {
+            existedUser.shareQuantity = updateUserDto.shareQuantity
+            await existedUser.save()
+        }
         return existedUser
     }
     async getUserById(

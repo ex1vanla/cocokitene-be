@@ -1,4 +1,4 @@
-import { GetAllUsersDto, SuperAdminDto, UpdateUserAvatarDto, UpdateUserDto } from '@dtos/user.dto'
+import { GetAllUsersDto, SuperAdminDto, UpdateUserDto } from '@dtos/user.dto'
 
 import { User } from '@entities/user.entity'
 import { UserStatusEnum } from '@shares/constants/user.const'
@@ -155,14 +155,14 @@ export class UserRepository extends Repository<User> {
                 },
             })
             return updatedSuperAdminCompany
-        }catch (error) {
+        } catch (error) {
             throw new HttpException(
                 { message: error.message },
                 HttpStatus.INTERNAL_SERVER_ERROR,
             )
         }
     }
-    
+
     async updateUser(
         userId: number,
         companyId: number,
@@ -175,6 +175,8 @@ export class UserRepository extends Repository<User> {
                 walletAddress: updateUserDto.walletAddress,
                 email: updateUserDto.email,
                 statusId: updateUserDto.statusId,
+                phone: updateUserDto.phone,
+                avatar: updateUserDto.avatar,
             })
             .where('users.id = :userId', {
                 userId: userId,
@@ -190,27 +192,7 @@ export class UserRepository extends Repository<User> {
         })
         return user
     }
-
-    async updateUserAvatar(
-        userId: number,
-        updateUserAvatarDto: UpdateUserAvatarDto,
-    ): Promise<User> {
-        try {
-            const user = await this.findOne({
-                where: {
-                    id: userId,
-                },
-            })
-            user.avatar = updateUserAvatarDto.avatar
-            await user.save()
-            return user
-        } catch (error) {
-            throw new HttpException(
-                { message: error.message },
-                HttpStatus.INTERNAL_SERVER_ERROR,
-            )
-        }
-    }
+    
     async getUserById(companyId: number, userId: number): Promise<User> {
         const user = await this.createQueryBuilder('users')
             .select(['users.username', 'users.email', 'users.walletAddress'])
