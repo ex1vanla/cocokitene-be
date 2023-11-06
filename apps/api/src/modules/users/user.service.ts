@@ -5,10 +5,17 @@ import { UserRepository } from '@repositories/user.repository'
 import { httpErrors } from '@shares/exception-filter'
 import { WalletAddressDto } from 'libs/queries/src/dtos/base.dto'
 import { Pagination } from 'nestjs-typeorm-paginate'
+import { DetailUserReponse } from '@api/modules/users/user.interface'
+import { CompanyService } from '@api/modules/companys/company.service'
+import { UserRoleService } from '@api/modules/user-roles/user-role.service'
 
 @Injectable()
 export class UserService {
-    constructor(private readonly userRepository: UserRepository) {}
+    constructor(
+        private readonly userRepository: UserRepository,
+        private readonly companyService: CompanyService,
+        private readonly userRoleService: UserRoleService,
+    ) {}
 
     async getUserNonceByUserWalletAddress(
         walletAddressDto: WalletAddressDto,
@@ -93,5 +100,36 @@ export class UserService {
                 newSuperAdminDto,
             )
         return updatedSuperAdminCompany
+    }
+    async getUserById(
+        companyId: number,
+        userId: number,
+    ): Promise<DetailUserReponse> {
+        const existedCompany = await this.companyService.getCompanyById(
+            companyId,
+        )
+        if (!existedCompany) {
+            throw new HttpException(
+                httpErrors.COMPANY_NOT_FOUND,
+                HttpStatus.NOT_FOUND,
+            )
+        }
+        const existedUser = await this.userRepository.getUserById(
+            companyId,
+            userId,
+        )
+        if (!existedUser) {
+            throw new HttpException(
+                httpErrors.USER_NOT_FOUND,
+                HttpStatus.NOT_FOUND,
+            )
+        }
+        const roleNameByUserId = await this.userRoleService.getRoleNameByUserId(
+            userId,
+        )
+        return {
+            ...existedUser,
+            roleName: roleNameByUserId,
+        }
     }
 }
