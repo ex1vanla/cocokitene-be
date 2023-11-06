@@ -2,6 +2,8 @@ import { Role } from '@entities/role.entity'
 import { PermissionEnum } from '@shares/constants/permission.const'
 import { CustomRepository } from '@shares/decorators'
 import { Repository } from 'typeorm'
+import { GetAllNormalRolesDto } from '@dtos/role.dto'
+import { paginate, Pagination } from 'nestjs-typeorm-paginate'
 
 @CustomRepository(Role)
 export class RoleRepository extends Repository<Role> {
@@ -45,5 +47,29 @@ export class RoleRepository extends Repository<Role> {
             }
         }
         return permissionKeys
+    }
+
+    async getAllNormalRoles(
+        options: GetAllNormalRolesDto,
+    ): Promise<Pagination<Role>> {
+        const { page, limit, searchQuery } = options
+        const queryBuilder = this.createQueryBuilder('roles')
+            .select([
+                'roles.id',
+                'roles.roleName',
+                'roles.description',
+                'roles.createdAt',
+                'roles.updatedAt',
+            ])
+            .where('roles.roleName != :role', {
+                role: 'SUPER_ADMIN',
+            })
+
+        if (searchQuery) {
+            queryBuilder.andWhere('(roles.roleName like :roleName)', {
+                roleName: `%${searchQuery}%`,
+            })
+        }
+        return paginate(queryBuilder, { page, limit })
     }
 }

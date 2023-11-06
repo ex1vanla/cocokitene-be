@@ -17,6 +17,7 @@ import { UserRoleModule } from '@api/modules/user-roles/user-role.module'
 import { SystemAdminModule } from '@api/modules/system-admin/system-admin.module'
 import { PlanModule } from '@api/modules/plans/plan.module'
 import { CompanyStatusModule } from '@api/modules/company-status/company-status.module'
+import { UserStatusModule } from '@api/modules/user-status/user-status.module'
 
 @Module({
     imports: [
@@ -38,6 +39,7 @@ import { CompanyStatusModule } from '@api/modules/company-status/company-status.
         SystemAdminModule,
         PlanModule,
         CompanyStatusModule,
+        UserStatusModule,
     ],
     controllers: [ApiController],
     providers: [ApiService],

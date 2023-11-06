@@ -102,6 +102,7 @@ export class CreateUserDto {
     @IsNotEmpty()
     @IsString()
     @ApiProperty({
+        required: true,
         example: 'leopaulbn@gmail.com',
     })
     email: string
@@ -109,6 +110,7 @@ export class CreateUserDto {
     @IsString()
     @IsNotEmpty()
     @ApiProperty({
+        required: true,
         example: 'leopaul',
     })
     username: string
@@ -116,6 +118,7 @@ export class CreateUserDto {
     @IsString()
     @IsNotEmpty()
     @ApiProperty({
+        required: true,
         example: '0x9b500a4B354914d420c3D1497AEe4Ba9d45b7Df0',
     })
     @Transform(({ value }) => {
@@ -123,14 +126,48 @@ export class CreateUserDto {
     })
     walletAddress: string
 
+    @IsNumber()
+    @IsOptional()
+    @ApiProperty({
+        required: false,
+        example: 100,
+    })
+    shareQuantity: number
+
+    @IsString()
+    @IsNotEmpty()
+    @ApiProperty({
+        required: true,
+        example: '0868071819',
+    })
+    phone: string
+
     @IsArray()
     @IsNotEmpty()
     @ArrayMinSize(1)
     @IsInt({ each: true })
     @ApiProperty({
-        example: 1,
+        required: true,
+        example: [1, 3, 4],
     })
     roleIds: number[]
+
+    @IsNumber()
+    @IsNotEmpty()
+    @ApiProperty({
+        required: true,
+        example: 1,
+    })
+    statusId: number
+
+    @IsString()
+    @IsNotEmpty()
+    @ApiProperty({
+        required: true,
+        example:
+            'https://i.seadn.io/gcs/files/86ba42e7b54bcdfd6fb2c6fc7d1f2fc3.jpg',
+    })
+    avatar: string
 }
 
 export class GetAllUsersDto extends GetAllDto {}

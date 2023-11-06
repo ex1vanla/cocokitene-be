@@ -14,4 +14,6 @@ export enum PermissionEnum {
     EDIT_PROPOSAL = 'edit_proposal',
     DELETE_PROPOSAL = 'delete_proposal',
     LIST_PROPOSAL = 'list_poposal',
+    LIST_USER_STATUS = 'list_user_status',
+    LIST_ROLES = 'list_roles',
 }
