@@ -1,5 +1,5 @@
 import { Meeting } from '@entities/meeting.entity'
-import { MeetingFileType } from '@shares/constants/meeting.const'
+import { FileTypes } from '@shares/constants/meeting.const'
 import {
     BaseEntity,
     Column,
@@ -26,9 +26,9 @@ export class MeetingFile extends BaseEntity {
         nullable: true,
         type: 'enum',
         name: 'file_type',
-        enum: MeetingFileType,
+        enum: FileTypes,
     })
-    fileType: MeetingFileType
+    fileType: FileTypes
 
     @DeleteDateColumn()
     deletedAt: Date

@@ -461,27 +461,27 @@ export class MeetingService {
             ),
 
             await Promise.all([
-                await this.userMeetingService.updateUserMeeting(
+                this.userMeetingService.updateUserMeeting(
                     meetingId,
                     MeetingRole.HOST,
                     hosts,
                 ),
-                await this.userMeetingService.updateUserMeeting(
+                this.userMeetingService.updateUserMeeting(
                     meetingId,
                     MeetingRole.CONTROL_BOARD,
                     controlBoards,
                 ),
-                await this.userMeetingService.updateUserMeeting(
+                this.userMeetingService.updateUserMeeting(
                     meetingId,
                     MeetingRole.DIRECTOR,
                     directors,
                 ),
-                await this.userMeetingService.updateUserMeeting(
+                this.userMeetingService.updateUserMeeting(
                     meetingId,
                     MeetingRole.ADMINISTRATIVE_COUNCIL,
                     administrativeCouncils,
                 ),
-                await this.userMeetingService.updateUserMeeting(
+                this.userMeetingService.updateUserMeeting(
                     meetingId,
                     MeetingRole.SHAREHOLDER,
                     shareholders,

@@ -1,3 +1,4 @@
+import { Role } from '@entities/role.entity'
 import { Injectable } from '@nestjs/common'
 import { RoleRepository } from '@repositories/role.repository'
 
@@ -9,5 +10,14 @@ export class RoleService {
             roleIds,
         )
         return permissionKeys
+    }
+
+    async getRoleByRoleName(roleName: string): Promise<Role> {
+        const role = await this.roleRepository.findOne({
+            where: {
+                roleName: roleName,
+            },
+        })
+        return role
     }
 }

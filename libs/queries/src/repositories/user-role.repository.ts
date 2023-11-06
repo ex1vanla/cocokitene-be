@@ -1,6 +1,7 @@
 import { CustomRepository } from '@shares/decorators'
 import { UserRole } from '@entities/user-role.entity'
 import { Repository } from 'typeorm'
+import { CreateUserRoleDto } from '@dtos/user-role.dto'
 @CustomRepository(UserRole)
 export class UserRoleRepository extends Repository<UserRole> {
     async getRoleIdsByUserId(userId: number): Promise<number[]> {
@@ -21,5 +22,39 @@ export class UserRoleRepository extends Repository<UserRole> {
             (userRole) => userRole.role.roleName,
         )
         return roleNames
+    }
+    async createUserRole(
+        createUserRoleDto: CreateUserRoleDto,
+    ): Promise<UserRole> {
+        const { userId, roleId } = createUserRoleDto
+        const createdUserRole = await this.create({
+            userId,
+            roleId,
+        })
+        return createdUserRole.save()
+    }
+
+    async removeRole(roleId: number, userId: number) {
+        const existedUserRole = await this.findOne({
+            where: {
+                roleId: roleId,
+                userId: userId,
+            },
+        })
+        if (existedUserRole) {
+            await this.remove(existedUserRole)
+        }
+    }
+
+    async getListCurrentRoleIdOfUserId(userId: number): Promise<number[]> {
+        const listUserRoles = await this.find({
+            where: {
+                userId: userId,
+            },
+        })
+        const listIdRoleOfUser = listUserRoles.map(
+            (listUserRole) => listUserRole.roleId,
+        )
+        return listIdRoleOfUser
     }
 }

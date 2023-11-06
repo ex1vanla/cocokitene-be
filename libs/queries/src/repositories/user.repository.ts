@@ -1,4 +1,5 @@
-import { GetAllUsersDto, SuperAdminDto } from '@dtos/user.dto'
+import { GetAllUsersDto, SuperAdminDto, UpdateUserDto } from '@dtos/user.dto'
+
 import { User } from '@entities/user.entity'
 import { UserStatusEnum } from '@shares/constants/user.const'
 import { CustomRepository } from '@shares/decorators'
@@ -161,6 +162,37 @@ export class UserRepository extends Repository<User> {
             )
         }
     }
+
+    async updateUser(
+        userId: number,
+        companyId: number,
+        updateUserDto: UpdateUserDto,
+    ): Promise<User> {
+        await this.createQueryBuilder('users')
+            .update(User)
+            .set({
+                username: updateUserDto.username,
+                walletAddress: updateUserDto.walletAddress,
+                email: updateUserDto.email,
+                statusId: updateUserDto.statusId,
+                phone: updateUserDto.phone,
+                avatar: updateUserDto.avatar,
+            })
+            .where('users.id = :userId', {
+                userId: userId,
+            })
+            .andWhere('users.company_id = :companyId', {
+                companyId: companyId,
+            })
+            .execute()
+        const user = await this.findOne({
+            where: {
+                id: userId,
+            },
+        })
+        return user
+    }
+    
     async getUserById(companyId: number, userId: number): Promise<User> {
         const user = await this.createQueryBuilder('users')
             .select(['users.username', 'users.email', 'users.walletAddress'])

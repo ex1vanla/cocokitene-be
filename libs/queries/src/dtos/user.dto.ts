@@ -12,6 +12,78 @@ import { ApiProperty } from '@nestjs/swagger'
 import { Transform, Type } from 'class-transformer'
 import { GetAllDto } from '@dtos/base.dto'
 
+export class UpdateUserDto {
+    @IsEmail()
+    @IsOptional()
+    @IsString()
+    @ApiProperty({
+        required: false,
+        example: 'leopaulbn@gmail.com',
+    })
+    email?: string
+
+    @IsString()
+    @IsOptional()
+    @ApiProperty({
+        required: false,
+        example: 'leopaul',
+    })
+    username?: string
+
+    @IsString()
+    @IsOptional()
+    @ApiProperty({
+        required: false,
+        example: '0x9b500a4B354914d420c3D1497AEe4Ba9d45b7Df0',
+    })
+    @Transform(({ value }) => {
+        return value?.toLowerCase()
+    })
+    walletAddress?: string
+
+    @IsNumber()
+    @IsOptional()
+    @ApiProperty({
+        required: false,
+        example: 100,
+    })
+    shareQuantity?: number
+
+    @IsString()
+    @IsOptional()
+    @ApiProperty({
+        required: false,
+        example: '0868071819',
+    })
+    phone?: string
+
+    @IsArray()
+    @IsOptional()
+    @ArrayMinSize(1)
+    @IsInt({ each: true })
+    @ApiProperty({
+        required: false,
+        example: [1, 3, 4],
+    })
+    roleIds?: number[]
+
+    @IsNumber()
+    @IsOptional()
+    @ApiProperty({
+        required: false,
+        example: 1,
+    })
+    statusId?: number
+
+    @IsOptional()
+    @IsString()
+    @ApiProperty({
+        required: false,
+        example: 'https://www.africau.edu/images/default/sample.pdf',
+    })
+    avatar: string
+}
+
 export class GetUserByWalletAddressDto {
     @IsString()
     @IsNotEmpty()
