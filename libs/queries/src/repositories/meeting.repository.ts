@@ -152,6 +152,7 @@ export class MeetingRepository extends Repository<Meeting> {
             .update(Meeting)
             .set({
                 title: updateMeetingDto.title,
+                note: updateMeetingDto.note,
                 startTime: updateMeetingDto.startTime,
                 endTime: updateMeetingDto.endTime,
                 meetingLink: updateMeetingDto.meetingLink,
