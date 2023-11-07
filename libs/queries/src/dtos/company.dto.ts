@@ -137,10 +137,10 @@ export class CreateCompanyDto {
     })
     email: string
 
-    @IsNotEmpty()
+    @IsOptional()
     @IsString()
     @ApiProperty({
-        required: true,
+        required: false,
         example: '2021-12-20',
     })
     dateOfCorporation: string
@@ -157,7 +157,7 @@ export class CreateCompanyDto {
     @IsOptional()
     @ApiProperty({
         example: '(255) 555-44',
-        required: true,
+        required: false,
     })
     fax: string
 
@@ -165,18 +165,9 @@ export class CreateCompanyDto {
     @IsOptional()
     @ApiProperty({
         example: 'service',
-        required: true,
+        required: false,
     })
     bussinessType: string
-
-    @IsNotEmpty()
-    @IsNumber()
-    @Type(() => Number)
-    @ApiProperty({
-        required: true,
-        example: 1,
-    })
-    statusId: number
 
     @IsString()
     @IsNotEmpty()
@@ -193,7 +184,7 @@ export class CreateCompanyDto {
         required: true,
         example: 1,
     })
-    planId: number
+    statusId: number
 
     @ApiProperty({
         required: true,

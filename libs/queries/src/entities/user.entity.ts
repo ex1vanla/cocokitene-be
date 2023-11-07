@@ -23,7 +23,7 @@ export class User extends BaseEntity {
         type: 'varchar',
         length: 255,
         nullable: true,
-        // unique: true,
+        unique: true,
     })
     username: string
 
@@ -32,7 +32,7 @@ export class User extends BaseEntity {
         type: 'varchar',
         length: 255,
         nullable: true,
-        // unique: true,
+        unique: true,
     })
     email: string
 

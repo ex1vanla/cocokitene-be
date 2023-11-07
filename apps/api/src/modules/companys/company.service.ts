@@ -18,7 +18,10 @@ import { httpErrors } from '@shares/exception-filter'
 import { UserService } from '@api/modules/users/user.service'
 import { RoleService } from '@api/modules/roles/role.service'
 import { enumToArray } from '@shares/utils/enum'
-import { RoleEnum } from '@shares/constants'
+import { PlanEnum, RoleEnum } from '@shares/constants'
+import { UserRoleService } from '@api/modules/user-roles/user-role.service'
+import { UserStatusService } from '@api/modules/user-status/user-status.service'
+import { PlanService } from '@api/modules/plans/plan.service'
 
 @Injectable()
 export class CompanyService {
@@ -28,6 +31,9 @@ export class CompanyService {
         @Inject(forwardRef(() => UserService))
         private readonly userService: UserService,
         private readonly roleService: RoleService,
+        private readonly userRoleService: UserRoleService,
+        private readonly userStatusService: UserStatusService,
+        private readonly planService: PlanService,
     ) {}
     async getAllCompanys(
         getAllCompanyDto: GetAllCompanyDto,
@@ -90,20 +96,35 @@ export class CompanyService {
                 HttpStatus.INTERNAL_SERVER_ERROR,
             )
         }
-
+        const planFree = await this.planService.getPlanByPlanName(PlanEnum.FREE)
+        createdCompany.planId = planFree.id
+        await createdCompany.save()
         const { superAdminCompany } = createCompanyDto
-        await Promise.all([
-            this.userService.createSuperAdminCompany({
+
+        const createdSuperAdminCompany =
+            await this.userService.createSuperAdminCompany({
                 username: superAdminCompany.username,
                 email: superAdminCompany.email,
                 walletAddress: superAdminCompany.walletAddress,
                 statusId: superAdminCompany.statusId,
                 companyId: createdCompany.id,
-            }),
+            })
+
+        await Promise.all(
             enumToArray(RoleEnum).map((role) =>
                 this.roleService.createCompanyRole(role, createdCompany.id),
             ),
-        ])
+        )
+        const roleSuperAdminOfCompany =
+            await this.roleService.getRoleByRoleNameAndIdCompany(
+                RoleEnum.SUPER_ADMIN,
+                createdCompany.id,
+            )
+
+        await this.userRoleService.createUserRole({
+            userId: createdSuperAdminCompany.id,
+            roleId: roleSuperAdminOfCompany.id,
+        })
 
         return createdCompany
     }

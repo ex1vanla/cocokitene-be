@@ -166,7 +166,6 @@ export class UserService {
                 RoleEnum.SHAREHOLDER,
                 companyId,
             )
-
         if (roleIdsOfUserId.includes(roleShareHolder.id)) {
             existedUser.shareQuantity = updateUserDto.shareQuantity
             await existedUser.save()
@@ -266,6 +265,7 @@ export class UserService {
                     email,
                     statusId,
                 })
+            createdSuperAdmin.nonce = uuid()
             await createdSuperAdmin.save()
             return createdSuperAdmin
         } catch (error) {
