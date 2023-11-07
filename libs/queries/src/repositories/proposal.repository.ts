@@ -21,6 +21,7 @@ export class ProposalRepository extends Repository<Proposal> {
         const {
             title,
             description,
+            oldDescription,
             type,
             meetingId,
             creatorId,
@@ -29,6 +30,7 @@ export class ProposalRepository extends Repository<Proposal> {
         const createdProposal = await this.create({
             title,
             description,
+            oldDescription,
             type,
             meetingId,
             creatorId,
@@ -55,12 +57,13 @@ export class ProposalRepository extends Repository<Proposal> {
         proposalId: number,
         proposalDtoUpdate: ProposalDtoUpdate,
     ): Promise<Proposal> {
-        const { title, description, type } = proposalDtoUpdate
+        const { title, description, oldDescription, type } = proposalDtoUpdate
         await this.createQueryBuilder('proposals')
             .update(Proposal)
             .set({
                 title: title,
                 description: description,
+                oldDescription: oldDescription,
                 // creatorId: userId,
             })
             .where('proposals.id = :proposalId', { proposalId })

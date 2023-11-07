@@ -208,6 +208,7 @@ export class MeetingService {
                     this.proposalService.createProposal({
                         title: resolution.title,
                         description: resolution.description,
+                        oldDescription: resolution.oldDescription,
                         type: resolution.type,
                         meetingId: createdMeeting.id,
                         creatorId: creatorId,
@@ -218,6 +219,7 @@ export class MeetingService {
                     this.proposalService.createProposal({
                         title: amendmentResolution.title,
                         description: amendmentResolution.description,
+                        oldDescription: amendmentResolution.oldDescription,
                         type: amendmentResolution.type,
                         meetingId: createdMeeting.id,
                         creatorId: creatorId,

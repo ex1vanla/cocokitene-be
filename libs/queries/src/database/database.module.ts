@@ -19,6 +19,7 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { Meeting } from '@entities/meeting.entity'
 import { UserMeeting } from '@entities/user-meeting.entity'
 import { MeetingFile } from '@entities/meeting-file'
+import { ProposalFile } from '@entities/proposal-file'
 
 @Module({
     imports: [
@@ -49,6 +50,7 @@ import { MeetingFile } from '@entities/meeting-file'
                         MeetingFile,
                         Proposal,
                         Voting,
+                        ProposalFile,
                     ],
                     timezone: 'Z',
                     synchronize: configService.get('database.synchronize'),

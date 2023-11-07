@@ -51,6 +51,14 @@ export class CreateProposalDto {
     })
     description: string
 
+    @IsOptional()
+    @IsString()
+    @ApiProperty({
+        required: false,
+        example: 'Approve the final budget description',
+    })
+    oldDescription?: string
+
     @IsNumber()
     @ApiProperty({
         required: true,
@@ -110,6 +118,14 @@ export class ProposalDtoUpdate {
         example: 'Approve the final budget description',
     })
     description: string
+
+    @IsOptional()
+    @IsString()
+    @ApiProperty({
+        required: false,
+        example: 'Approve the final budget description',
+    })
+    oldDescription?: string
 
     @IsEnum(ProposalType)
     @ApiProperty({

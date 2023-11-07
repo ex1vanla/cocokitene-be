@@ -32,6 +32,7 @@ export class ProposalService {
         const {
             title,
             description,
+            oldDescription,
             type,
             creatorId,
             meetingId,
@@ -42,6 +43,7 @@ export class ProposalService {
                 await this.proposalRepository.createProposal({
                     title,
                     description,
+                    oldDescription,
                     type,
                     creatorId,
                     meetingId,
@@ -181,6 +183,7 @@ export class ProposalService {
                     this.createProposal({
                         title: proposal.title,
                         description: proposal.description,
+                        oldDescription: proposal.oldDescription,
                         type: proposal.type,
                         creatorId: userId,
                         meetingId,
