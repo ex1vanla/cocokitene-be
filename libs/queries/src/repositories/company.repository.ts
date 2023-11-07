@@ -2,7 +2,7 @@ import { Company } from '@entities/company.entity'
 import { CustomRepository } from '@shares/decorators'
 import { Repository } from 'typeorm'
 import { paginateRaw, Pagination } from 'nestjs-typeorm-paginate'
-import { GetAllCompanyDto } from '@dtos/company.dto'
+import { CreateCompanyDto, GetAllCompanyDto } from '@dtos/company.dto'
 import { UpdateCompanyDto } from '@dtos/company.dto'
 import { HttpException, HttpStatus } from '@nestjs/common'
 @CustomRepository(Company)
@@ -85,5 +85,13 @@ export class CompanyRepository extends Repository<Company> {
                 HttpStatus.INTERNAL_SERVER_ERROR,
             )
         }
+    }
+
+    async createCompany(createCompanyDto: CreateCompanyDto): Promise<Company> {
+        const company = await this.create({
+            ...createCompanyDto,
+        })
+        await company.save()
+        return company
     }
 }

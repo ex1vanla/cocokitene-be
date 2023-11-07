@@ -5,11 +5,13 @@ import {
     Entity,
     JoinColumn,
     ManyToOne,
+    OneToMany,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm'
 import { CompanyStatus } from './company-status.entity'
 import { Plan } from './plan.entity'
+import { Role } from './role.entity'
 
 @Entity('companys')
 export class Company extends BaseEntity {
@@ -137,4 +139,7 @@ export class Company extends BaseEntity {
         name: 'plan_id',
     })
     plan: Plan
+
+    @OneToMany(() => Role, (role) => role.company)
+    role: Role[]
 }

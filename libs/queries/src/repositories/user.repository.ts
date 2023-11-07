@@ -1,4 +1,5 @@
 import {
+    CreateSuperAdminCompanyDto,
     CreateUserDto,
     GetAllUsersDto,
     SuperAdminDto,
@@ -221,5 +222,21 @@ export class UserRepository extends Repository<User> {
         })
         await user.save()
         return user
+    }
+
+    async createSuperAdminCompany(
+        createSuperAdminCompanyDto: CreateSuperAdminCompanyDto,
+    ): Promise<User> {
+        const { username, companyId, walletAddress, email, statusId } =
+            createSuperAdminCompanyDto
+        const createdSuperAdmin = await this.create({
+            username,
+            companyId,
+            walletAddress,
+            email,
+            statusId,
+        })
+        await createdSuperAdmin.save()
+        return createdSuperAdmin
     }
 }

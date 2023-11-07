@@ -1,16 +1,33 @@
 import { Company } from '@entities/company.entity'
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
+import {
+    forwardRef,
+    HttpException,
+    HttpStatus,
+    Inject,
+    Injectable,
+} from '@nestjs/common'
 import { CompanyRepository } from '@repositories/company.repository'
 import { Pagination } from 'nestjs-typeorm-paginate'
-import { GetAllCompanyDto, UpdateCompanyDto } from '@dtos/company.dto'
+import {
+    CreateCompanyDto,
+    GetAllCompanyDto,
+    UpdateCompanyDto,
+} from '@dtos/company.dto'
 import { CompanyStatusRepository } from '@repositories/company-status.repository'
 import { httpErrors } from '@shares/exception-filter'
+import { UserService } from '@api/modules/users/user.service'
+import { RoleService } from '@api/modules/roles/role.service'
+import { enumToArray } from '@shares/utils/enum'
+import { RoleEnum } from '@shares/constants'
 
 @Injectable()
 export class CompanyService {
     constructor(
         private readonly companyRepository: CompanyRepository,
         private readonly companyStatusRepository: CompanyStatusRepository,
+        @Inject(forwardRef(() => UserService))
+        private readonly userService: UserService,
+        private readonly roleService: RoleService,
     ) {}
     async getAllCompanys(
         getAllCompanyDto: GetAllCompanyDto,
@@ -58,5 +75,36 @@ export class CompanyService {
             )
         }
         return existedCompany
+    }
+
+    async createCompany(createCompanyDto: CreateCompanyDto): Promise<Company> {
+        //create company
+        let createdCompany: Company
+        try {
+            createdCompany = await this.companyRepository.createCompany(
+                createCompanyDto,
+            )
+        } catch (error) {
+            throw new HttpException(
+                httpErrors.COMPANY_CREATE_FAILED,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            )
+        }
+
+        const { superAdminCompany } = createCompanyDto
+        await Promise.all([
+            this.userService.createSuperAdminCompany({
+                username: superAdminCompany.username,
+                email: superAdminCompany.email,
+                walletAddress: superAdminCompany.walletAddress,
+                statusId: superAdminCompany.statusId,
+                companyId: createdCompany.id,
+            }),
+            enumToArray(RoleEnum).map((role) =>
+                this.roleService.createCompanyRole(role, createdCompany.id),
+            ),
+        ])
+
+        return createdCompany
     }
 }

@@ -33,11 +33,11 @@ export enum StatusMeeting {
 }
 
 export enum MeetingRole {
-    HOST = 'host',
-    CONTROL_BOARD = 'control_board',
-    DIRECTOR = 'director',
-    ADMINISTRATIVE_COUNCIL = 'administrative_council',
-    SHAREHOLDER = 'shareholder',
+    HOST = '0',
+    CONTROL_BOARD = '1',
+    DIRECTOR = '2',
+    ADMINISTRATIVE_COUNCIL = '3',
+    SHAREHOLDER = '4',
 }
 
 export enum UserJoinMeetingStatusEnum {

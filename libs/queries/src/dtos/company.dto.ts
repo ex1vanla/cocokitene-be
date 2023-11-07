@@ -1,8 +1,16 @@
 import { Type } from 'class-transformer'
-import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator'
+import { Sort_By_Order } from '@shares/constants'
+import {
+    IsEnum,
+    IsNotEmpty,
+    IsNumber,
+    IsOptional,
+    IsString,
+    ValidateNested,
+} from 'class-validator'
 import { ApiProperty } from '@nestjs/swagger'
 import { GetAllDto } from '@dtos/base.dto'
-import { Sort_By_Order } from '@shares/constants'
+import { SuperAdminCompanyDto } from '@dtos/user.dto'
 
 export class UpdateCompanyDto {
     @IsOptional()
@@ -94,6 +102,107 @@ export class UpdateCompanyDto {
         example: '2023-12-20',
     })
     dateOfCorporation?: string
+}
+
+export class CreateCompanyDto {
+    @IsString()
+    @IsNotEmpty()
+    @ApiProperty({
+        example: 'NAB Innovation Centre Vietnam',
+        required: true,
+    })
+    companyName: string
+
+    @IsString()
+    @IsNotEmpty()
+    @ApiProperty({
+        example: 'phamhung, ha noi, vietnam',
+        required: true,
+    })
+    address: string
+
+    @IsString()
+    @IsNotEmpty()
+    @ApiProperty({
+        example: 'NAB',
+        required: true,
+    })
+    companyShortName: string
+
+    @IsString()
+    @IsNotEmpty()
+    @ApiProperty({
+        example: 'nab@gmail.com',
+        required: true,
+    })
+    email: string
+
+    @IsNotEmpty()
+    @IsString()
+    @ApiProperty({
+        required: true,
+        example: '2021-12-20',
+    })
+    dateOfCorporation: string
+
+    @IsString()
+    @IsNotEmpty()
+    @ApiProperty({
+        example: '0984533323',
+        required: true,
+    })
+    phone: string
+
+    @IsString()
+    @IsOptional()
+    @ApiProperty({
+        example: '(255) 555-44',
+        required: true,
+    })
+    fax: string
+
+    @IsString()
+    @IsOptional()
+    @ApiProperty({
+        example: 'service',
+        required: true,
+    })
+    bussinessType: string
+
+    @IsNotEmpty()
+    @IsNumber()
+    @Type(() => Number)
+    @ApiProperty({
+        required: true,
+        example: 1,
+    })
+    statusId: number
+
+    @IsString()
+    @IsNotEmpty()
+    @ApiProperty({
+        example: 'Mr Phuong',
+        required: true,
+    })
+    representativeUser: string
+
+    @IsNotEmpty()
+    @IsNumber()
+    @Type(() => Number)
+    @ApiProperty({
+        required: true,
+        example: 1,
+    })
+    planId: number
+
+    @ApiProperty({
+        required: true,
+    })
+    @ValidateNested({
+        each: true,
+    })
+    @Type(() => SuperAdminCompanyDto)
+    superAdminCompany: SuperAdminCompanyDto
 }
 
 export class GetAllCompanyStatusDto extends GetAllDto {}

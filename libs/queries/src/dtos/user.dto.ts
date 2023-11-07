@@ -8,7 +8,7 @@ import {
     IsOptional,
     IsString,
 } from 'class-validator'
-import { ApiProperty } from '@nestjs/swagger'
+import { ApiProperty, OmitType } from '@nestjs/swagger'
 import { Transform, Type } from 'class-transformer'
 import { GetAllDto } from '@dtos/base.dto'
 
@@ -206,3 +206,50 @@ export class SuperAdminDto {
     })
     newStatusId?: number
 }
+
+export class CreateSuperAdminCompanyDto {
+    @IsNotEmpty()
+    @IsString()
+    @ApiProperty({
+        example: 'VuongLQ',
+        required: true,
+    })
+    username: string
+
+    @IsNotEmpty()
+    @IsString()
+    @ApiProperty({
+        example: '0xc3899509f0A71e69b13c59bf76AB6DAC61B0AaB6',
+        required: true,
+    })
+    walletAddress: string
+
+    @IsNotEmpty()
+    @IsString()
+    @ApiProperty({
+        example: 'vuonglq@gmail.com',
+        required: true,
+    })
+    email: string
+
+    @IsNotEmpty()
+    @IsNumber()
+    @Type(() => Number)
+    @ApiProperty({
+        required: true,
+        example: 2,
+    })
+    statusId: number
+
+    @IsNumber()
+    @IsNotEmpty()
+    @Type(() => Number)
+    @ApiProperty({
+        required: true,
+        example: 1,
+    })
+    companyId: number
+}
+export class SuperAdminCompanyDto extends OmitType(CreateSuperAdminCompanyDto, [
+    'companyId',
+]) {}
