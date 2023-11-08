@@ -28,6 +28,7 @@ export class MeetingRepository extends Repository<Meeting> {
                 'meetings.endTime',
                 'meetings.meetingLink',
                 'meetings.status',
+                'meetings.note',
             ])
             .distinct(true)
             .leftJoin(
