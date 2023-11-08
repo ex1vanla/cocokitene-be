@@ -2,7 +2,6 @@ import {
     CreateProposalDto,
     GetAllProposalDto,
     ProposalDto,
-    ProposalDtoUpdate,
 } from '@dtos/proposal.dto'
 import { Proposal } from '@entities/proposal.entity'
 import {
@@ -59,42 +58,42 @@ export class ProposalService {
         }
     }
 
-    async updateProposal(
-        companyId: number,
-        proposalId: number,
-        proposalDtoUpdate: ProposalDtoUpdate,
-    ): Promise<Proposal> {
-        try {
-            // check existed of meeting and proposal
-            const proposal = await this.proposalRepository.getProposalById(
-                proposalId,
-            )
-            if (!proposal) {
-                throw new HttpException(
-                    httpErrors.PROPOSAL_NOT_FOUND,
-                    HttpStatus.NOT_FOUND,
-                )
-            }
-
-            if (proposal.meeting.companyId !== companyId) {
-                throw new HttpException(
-                    httpErrors.MEETING_NOT_IN_THIS_COMPANY,
-                    HttpStatus.BAD_REQUEST,
-                )
-            }
-
-            const updateProposal = await this.proposalRepository.updateProposal(
-                proposalId,
-                proposalDtoUpdate,
-            )
-            return updateProposal
-        } catch (error) {
-            throw new HttpException(
-                httpErrors.MEETING_UPDATE_FAILED,
-                HttpStatus.INTERNAL_SERVER_ERROR,
-            )
-        }
-    }
+    // async updateProposal(
+    //     companyId: number,
+    //     proposalId: number,
+    //     proposalDtoUpdate: ProposalDtoUpdate,
+    // ): Promise<Proposal> {
+    //     try {
+    //         // check existed of meeting and proposal
+    //         const proposal = await this.proposalRepository.getProposalById(
+    //             proposalId,
+    //         )
+    //         if (!proposal) {
+    //             throw new HttpException(
+    //                 httpErrors.PROPOSAL_NOT_FOUND,
+    //                 HttpStatus.NOT_FOUND,
+    //             )
+    //         }
+    //
+    //         if (proposal.meeting.companyId !== companyId) {
+    //             throw new HttpException(
+    //                 httpErrors.MEETING_NOT_IN_THIS_COMPANY,
+    //                 HttpStatus.BAD_REQUEST,
+    //             )
+    //         }
+    //
+    //         const updateProposal = await this.proposalRepository.updateProposal(
+    //             proposalId,
+    //             proposalDtoUpdate,
+    //         )
+    //         return updateProposal
+    //     } catch (error) {
+    //         throw new HttpException(
+    //             httpErrors.MEETING_UPDATE_FAILED,
+    //             HttpStatus.INTERNAL_SERVER_ERROR,
+    //         )
+    //     }
+    // }
 
     async deleteProposal(companyId: number, proposalId: number) {
         // check existed of meeting and proposal
@@ -167,6 +166,10 @@ export class ProposalService {
         )
         // list added
         const listAdded = proposals.filter((proposal) => !proposal.id)
+        const listDeletedIds = listDeleted.map((proposal) => proposal.id)
+        const listProposalAfterDelete = listCurrentProposals.filter(
+            (proposal) => !listDeletedIds.includes(proposal.id),
+        )
 
         try {
             await Promise.all([
@@ -179,17 +182,26 @@ export class ProposalService {
                 ...listDeleted.map((proposal) =>
                     this.deleteProposal(meeting.companyId, proposal.id),
                 ),
-                ...listAdded.map((proposal) =>
-                    this.createProposal({
-                        title: proposal.title,
-                        description: proposal.description,
-                        oldDescription: proposal.oldDescription,
-                        type: proposal.type,
-                        creatorId: userId,
-                        meetingId,
-                        notVoteYetQuantity: totalShares,
-                    }),
-                ),
+                await Promise.all([
+                    ...listProposalAfterDelete.map((proposal) =>
+                        this.proposalRepository.updateNotVoteYetQuantityProposal(
+                            proposal.id,
+                            proposal.type,
+                            totalShares,
+                        ),
+                    ),
+                    ...listAdded.map((proposal) =>
+                        this.createProposal({
+                            title: proposal.title,
+                            description: proposal.description,
+                            oldDescription: proposal.oldDescription,
+                            type: proposal.type,
+                            creatorId: userId,
+                            meetingId,
+                            notVoteYetQuantity: totalShares,
+                        }),
+                    ),
+                ]),
             ])
         } catch (error) {
             throw new HttpException(
