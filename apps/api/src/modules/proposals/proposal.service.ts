@@ -16,6 +16,7 @@ import { ProposalRepository } from '@repositories/proposal.repository'
 import { httpErrors } from '@shares/exception-filter'
 import { VotingService } from '@api/modules/votings/voting.service'
 import { MeetingService } from '@api/modules/meetings/meeting.service'
+import { ProposalFileService } from '@api/modules/proposal-files/proposal-file.service'
 
 @Injectable()
 export class ProposalService {
@@ -24,6 +25,7 @@ export class ProposalService {
         private readonly votingService: VotingService,
         @Inject(forwardRef(() => MeetingService))
         private readonly meetingService: MeetingService,
+        private readonly proposalFileService: ProposalFileService,
     ) {}
 
     async createProposal(
@@ -37,6 +39,7 @@ export class ProposalService {
             creatorId,
             meetingId,
             notVoteYetQuantity,
+            files,
         } = createProposalDto
         try {
             const createdProposal =
@@ -49,7 +52,20 @@ export class ProposalService {
                     meetingId,
                     notVoteYetQuantity,
                 })
-            await createdProposal.save()
+
+            if (files && files.length > 0) {
+                console.log(files)
+
+                await Promise.all([
+                    ...files.map((file) =>
+                        this.proposalFileService.createProposalFile({
+                            url: file.url,
+                            proposalId: createdProposal.id,
+                        }),
+                    ),
+                ])
+            }
+
             return createdProposal
         } catch (error) {
             throw new HttpException(

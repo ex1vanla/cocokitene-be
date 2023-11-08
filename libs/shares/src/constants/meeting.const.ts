@@ -8,7 +8,17 @@ export enum FileTypes {
     MEETING_MINUTES = '1',
     REPORTS = '2',
     AVATARS = '3',
+    PROPOSAL_FILES = '4',
 }
+
+export enum FileTypesToFolderName {
+    MEETING_INVITATION = 'invitations',
+    MEETING_MINUTES = 'minutes',
+    REPORTS = 'reports',
+    PROPOSAL_FILES = 'proposals',
+    AVATARS = 'avatars',
+}
+
 export enum MeetingType {
     FUTURE = 'future',
     PASS = 'pass',

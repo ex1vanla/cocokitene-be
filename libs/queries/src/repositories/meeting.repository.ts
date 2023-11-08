@@ -113,6 +113,8 @@ export class MeetingRepository extends Repository<Meeting> {
                 'creator.avatar',
                 'creator.defaultAvatarHashColor',
             ])
+            .innerJoin('proposals.proposalFiles', 'proposalFiles')
+            .addSelect(['proposalFiles.url'])
             .getOne()
 
         return meeting

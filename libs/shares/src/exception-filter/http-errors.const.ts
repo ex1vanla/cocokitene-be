@@ -32,7 +32,7 @@ export const httpErrors = {
         message: 'User create failed. Please try again',
         code: 'USER_00004',
     },
-   
+
     // user status error
     USER_STATUS_NOT_EXISTED: {
         message: 'User not existed. Please try again',
@@ -98,7 +98,7 @@ export const httpErrors = {
     },
     // proposal error
     PROPOSAL_CREATE_FAILED: {
-        message: 'Proposal file failed. Please try again',
+        message: 'Proposal create failed. Please try again',
         code: 'PROPOSAL_00000',
     },
     PROPOSAL_NOT_FOUND: {
@@ -110,6 +110,12 @@ export const httpErrors = {
             'Proposal with meetingId and type vote failed. Please try again',
         code: 'PROPOSAL_000002',
     },
+    // proposal file error
+    PROPOSAL_FILE_CREATE_FAILED: {
+        message: 'Create proposal file failed. Please try again',
+        code: 'PROPOSAL_FILE_00000',
+    },
+
     // user meeting error
     USER_MEETING_CREATE_FAILED: {
         message: 'User meeting failed. Please try again',
@@ -156,5 +162,4 @@ export const httpErrors = {
         message: 'user_role created failed. Please try again',
         code: 'USER_ROLE_CREATE_FAILED_00000',
     },
-    
 }

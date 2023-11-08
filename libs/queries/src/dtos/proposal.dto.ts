@@ -1,13 +1,15 @@
+import { ProposalFileDto } from '@dtos/proposal-file.dto'
 import { ApiProperty, OmitType } from '@nestjs/swagger'
 import { ProposalType } from '@shares/constants/proposal.const'
+import { Type } from 'class-transformer'
 import {
     IsEnum,
     IsNotEmpty,
     IsNumber,
     IsOptional,
     IsString,
+    ValidateNested,
 } from 'class-validator'
-import { Type } from 'class-transformer'
 
 export class GetAllProposalDto {
     @IsNumber()
@@ -50,6 +52,16 @@ export class CreateProposalDto {
         example: 'Approve the final budget description',
     })
     description: string
+
+    @ApiProperty({
+        required: false,
+        type: [ProposalFileDto],
+    })
+    @ValidateNested({
+        each: true,
+    })
+    @Type(() => ProposalFileDto)
+    files?: ProposalFileDto[]
 
     @IsOptional()
     @IsString()
