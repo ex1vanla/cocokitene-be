@@ -21,6 +21,13 @@ export class Meeting extends BaseEntity {
     title: string
 
     @Column({
+        name: 'note',
+        type: 'text',
+        nullable: true,
+    })
+    note: string
+
+    @Column({
         type: 'datetime',
         nullable: true,
         name: 'start_time',

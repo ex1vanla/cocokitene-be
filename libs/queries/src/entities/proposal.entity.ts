@@ -5,11 +5,13 @@ import {
     Entity,
     JoinColumn,
     ManyToOne,
+    OneToMany,
     PrimaryGeneratedColumn,
 } from 'typeorm'
 import { User } from '@entities/user.entity'
 import { Meeting } from '@entities/meeting.entity'
 import { ProposalType } from '@shares/constants/proposal.const'
+import { ProposalFile } from '@entities/proposal-file'
 @Entity('proposals')
 export class Proposal extends BaseEntity {
     @PrimaryGeneratedColumn()
@@ -29,6 +31,13 @@ export class Proposal extends BaseEntity {
         nullable: true,
     })
     description: string
+
+    @Column({
+        name: 'old_description',
+        type: 'text',
+        nullable: true,
+    })
+    oldDescription: string
 
     @Column({
         nullable: false,
@@ -82,4 +91,7 @@ export class Proposal extends BaseEntity {
         name: 'creator_id',
     })
     creator: User
+
+    @OneToMany(() => ProposalFile, (proposalFile) => proposalFile.proposal)
+    proposalFiles: ProposalFile[]
 }

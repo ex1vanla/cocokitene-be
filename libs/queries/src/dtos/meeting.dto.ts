@@ -57,6 +57,14 @@ export class CreateMeetingDto {
     })
     title: string
 
+    @IsOptional()
+    @IsString()
+    @ApiProperty({
+        example: 'Note change of meeting',
+        required: false,
+    })
+    note: string
+
     @IsNotEmpty()
     @IsString()
     @ApiProperty({
@@ -191,6 +199,14 @@ export class UpdateMeetingDto {
         required: false,
     })
     title?: string
+
+    @IsOptional()
+    @IsString()
+    @ApiProperty({
+        example: 'Note of meeting',
+        required: false,
+    })
+    note?: string
 
     @IsOptional()
     @IsString()
