@@ -196,7 +196,7 @@ export class UserRepository extends Repository<User> {
         })
         return user
     }
-    
+
     async getUserById(companyId: number, userId: number): Promise<User> {
         const user = await this.createQueryBuilder('users')
             .select(['users.username', 'users.email', 'users.walletAddress'])

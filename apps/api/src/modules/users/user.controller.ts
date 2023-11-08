@@ -86,7 +86,7 @@ export class UserController {
         )
         return updateUser
     }
-    
+
     @Post('')
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.CREATED)

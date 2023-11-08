@@ -1,12 +1,10 @@
 import {
-    Body,
     Controller,
     Delete,
     Get,
     HttpCode,
     HttpStatus,
     Param,
-    Patch,
     Post,
     Query,
     UseGuards,
@@ -15,7 +13,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import { JwtAuthGuard } from '@shares/guards/jwt-auth.guard'
 import { PermissionEnum } from '@shares/constants'
 import { Permission } from '@shares/decorators/permission.decorator'
-import { GetAllProposalDto, ProposalDtoUpdate } from '@dtos/proposal.dto'
+import { GetAllProposalDto } from '@dtos/proposal.dto'
 import { ProposalService } from '@api/modules/proposals/proposal.service'
 import { UserScope } from '@shares/decorators/user.decorator'
 import { User } from '@entities/user.entity'
@@ -29,25 +27,25 @@ export class ProposalController {
         private readonly proposalService: ProposalService,
         private readonly votingService: VotingService,
     ) {}
-    @Patch('/edit-proposal/:proposalId')
-    @UseGuards(JwtAuthGuard)
-    @Permission(PermissionEnum.EDIT_PROPOSAL)
-    @ApiBearerAuth()
-    @HttpCode(HttpStatus.OK)
-    async updateProposal(
-        @Param('proposalId') proposalId: number,
-        @Body() proposalDtoUpdate: ProposalDtoUpdate,
-        @UserScope() user: User,
-    ) {
-        const companyId = user?.companyId
-
-        const updatedProposal = await this.proposalService.updateProposal(
-            companyId,
-            proposalId,
-            proposalDtoUpdate,
-        )
-        return updatedProposal
-    }
+    // @Patch('/edit-proposal/:proposalId')
+    // @UseGuards(JwtAuthGuard)
+    // @Permission(PermissionEnum.EDIT_PROPOSAL)
+    // @ApiBearerAuth()
+    // @HttpCode(HttpStatus.OK)
+    // async updateProposal(
+    //     @Param('proposalId') proposalId: number,
+    //     @Body() proposalDtoUpdate: ProposalDtoUpdate,
+    //     @UserScope() user: User,
+    // ) {
+    //     const companyId = user?.companyId
+    //
+    //     const updatedProposal = await this.proposalService.updateProposal(
+    //         companyId,
+    //         proposalId,
+    //         proposalDtoUpdate,
+    //     )
+    //     return updatedProposal
+    // }
 
     @Post('/vote/:proposalId')
     @UseGuards(JwtAuthGuard)
