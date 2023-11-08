@@ -1,4 +1,9 @@
-import { CreateUserDto, GetAllUsersDto, SuperAdminDto, UpdateUserDto } from '@dtos/user.dto'
+import {
+    CreateUserDto,
+    GetAllUsersDto,
+    SuperAdminDto,
+    UpdateUserDto,
+} from '@dtos/user.dto'
 import { User } from '@entities/user.entity'
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { UserRepository } from '@repositories/user.repository'
@@ -107,7 +112,6 @@ export class UserService {
         userId: number,
         updateUserDto: UpdateUserDto,
     ): Promise<User> {
-   
         const existedCompany = await this.companyService.getCompanyById(
             companyId,
         )
@@ -189,7 +193,7 @@ export class UserService {
             roleName: roleNameByUserId,
         }
     }
-  
+
     async createUser(companyId: number, createUserDto: CreateUserDto) {
         const existedCompany = await this.companyService.getCompanyById(
             companyId,
@@ -235,8 +239,4 @@ export class UserService {
         }
         return createdUser
     }
-
-
-
-       
 }
