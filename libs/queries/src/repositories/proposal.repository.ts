@@ -36,8 +36,7 @@ export class ProposalRepository extends Repository<Proposal> {
             creatorId,
             notVoteYetQuantity,
         })
-        await createdProposal.save()
-        return createdProposal
+        return await createdProposal.save()
     }
 
     async getProposalByProposalIdAndType(

@@ -4,6 +4,7 @@ import { CompanyRepository } from '@repositories/company.repository'
 import { MeetingFileRepository } from '@repositories/meeting-file.repository'
 import { MeetingRepository } from '@repositories/meeting.repository'
 import { PlanRepository } from '@repositories/plan.repository'
+import { ProposalFileRepository } from '@repositories/proposal-file.repository'
 import { ProposalRepository } from '@repositories/proposal.repository'
 import { RoleRepository } from '@repositories/role.repository'
 import { SystemAdminRepository } from '@repositories/system-admin.repository'
@@ -29,6 +30,7 @@ const commonRepositories = [
     PlanRepository,
     CompanyStatusRepository,
     PlanRepository,
+    ProposalFileRepository,
 ]
 
 @Global()
