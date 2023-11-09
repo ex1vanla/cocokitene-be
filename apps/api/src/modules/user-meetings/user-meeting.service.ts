@@ -2,7 +2,10 @@ import { CreateUserMeetingDto } from '@dtos/user-meeting.dto'
 import { UserMeeting } from '@entities/user-meeting.entity'
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { UserMeetingRepository } from '@repositories/user-meeting.repository'
-import { MeetingRole } from '@shares/constants/meeting.const'
+import {
+    MeetingRole,
+    UserMeetingStatusEnum,
+} from '@shares/constants/meeting.const'
 import { httpErrors } from '@shares/exception-filter'
 
 @Injectable()
@@ -109,5 +112,18 @@ export class UserMeetingService {
                 meetingId,
             )
         return idsParticipants
+    }
+
+    async isUserJoinedMeeting(
+        userId: number,
+        meetingId: number,
+    ): Promise<boolean> {
+        const userMeeting = await this.userMeetingRepository.findOne({
+            where: {
+                userId,
+                meetingId,
+            },
+        })
+        return userMeeting?.status === UserMeetingStatusEnum.PARTICIPATE
     }
 }

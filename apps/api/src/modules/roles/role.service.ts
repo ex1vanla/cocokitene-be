@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common'
 import { RoleRepository } from '@repositories/role.repository'
 import { GetAllNormalRolesDto } from '@dtos/role.dto'
 import { Pagination } from 'nestjs-typeorm-paginate'
+import { RoleEnum } from '@shares/constants/role.const'
 
 @Injectable()
 export class RoleService {
@@ -14,14 +15,19 @@ export class RoleService {
         return permissionKeys
     }
 
-    async getRoleByRoleName(roleName: string): Promise<Role> {
+    async getRoleByRoleNameAndIdCompany(
+        roleName: RoleEnum,
+        companyId: number,
+    ): Promise<Role> {
         const role = await this.roleRepository.findOne({
             where: {
                 roleName: roleName,
+                companyId: companyId,
             },
         })
         return role
     }
+
     async getAllNormalRoles(
         getAllNormalRolesDto: GetAllNormalRolesDto,
     ): Promise<Pagination<Role>> {

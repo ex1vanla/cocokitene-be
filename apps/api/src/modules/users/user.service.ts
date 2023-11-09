@@ -14,6 +14,7 @@ import { DetailUserReponse } from '@api/modules/users/user.interface'
 import { CompanyService } from '@api/modules/companys/company.service'
 import { UserRoleService } from '@api/modules/user-roles/user-role.service'
 import { uuid } from '@shares/utils/uuid'
+import { RoleEnum } from '@shares/constants'
 
 @Injectable()
 export class UserService {
@@ -152,9 +153,12 @@ export class UserService {
             userId,
             roleIds,
         )
-        const roleShareHolder = await this.userRoleService.getRoleByRoleName(
-            'SHAREHOLDER',
-        )
+        const roleShareHolder =
+            await this.userRoleService.getRoleByRoleNameAndIdCompany(
+                RoleEnum.SHAREHOLDER,
+                companyId,
+            )
+
         if (roleIdsOfUserId.includes(roleShareHolder.id)) {
             existedUser.shareQuantity = updateUserDto.shareQuantity
             await existedUser.save()
