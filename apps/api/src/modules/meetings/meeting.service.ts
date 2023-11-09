@@ -46,6 +46,7 @@ export class MeetingService {
         private readonly meetingFileService: MeetingFileService,
         private readonly proposalService: ProposalService,
         private readonly userMeetingService: UserMeetingService,
+        @Inject(forwardRef(() => VotingService))
         private readonly votingService: VotingService,
         private readonly userService: UserService,
     ) {}
