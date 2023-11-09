@@ -106,14 +106,14 @@ export class MeetingRepository extends Repository<Meeting> {
             })
             .leftJoinAndSelect('meeting.meetingFiles', 'meetingFiles')
             .leftJoinAndSelect('meeting.proposals', 'proposals')
-            .innerJoin('proposals.creator', 'creator')
+            .leftJoin('proposals.creator', 'creator')
             .addSelect([
                 'creator.username',
                 'creator.email',
                 'creator.avatar',
                 'creator.defaultAvatarHashColor',
             ])
-            .innerJoin('proposals.proposalFiles', 'proposalFiles')
+            .leftJoin('proposals.proposalFiles', 'proposalFiles')
             .addSelect(['proposalFiles.url'])
             .getOne()
 
