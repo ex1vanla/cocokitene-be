@@ -71,7 +71,7 @@ export class MeetingRepository extends Repository<Meeting> {
         return paginateRaw(queryBuilder, options)
     }
 
-    async getExternalMeetingById(id: number): Promise<Meeting> {
+    async getInternalMeetingById(id: number): Promise<Meeting> {
         const meeting = await this.createQueryBuilder('meeting')
             .select()
             .where('meeting.id = :id', {

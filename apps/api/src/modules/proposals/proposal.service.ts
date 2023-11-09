@@ -170,7 +170,7 @@ export class ProposalService {
         proposals: ProposalDto[],
         totalShares: number,
     ): Promise<void> {
-        const meeting = await this.meetingService.getExternalMeetingById(
+        const meeting = await this.meetingService.getInternalMeetingById(
             meetingId,
         )
         const listCurrentProposals = meeting.proposals

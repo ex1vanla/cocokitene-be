@@ -379,8 +379,8 @@ export class MeetingService {
         }
     }
 
-    async getExternalMeetingById(meetingId: number): Promise<Meeting> {
-        const meeting = await this.meetingRepository.getExternalMeetingById(
+    async getInternalMeetingById(meetingId: number): Promise<Meeting> {
+        const meeting = await this.meetingRepository.getInternalMeetingById(
             meetingId,
         )
         return meeting

@@ -33,7 +33,7 @@ export class ProposalFileService {
     //     meetingId: number,
     //     meetingFiles: MeetingFileDto[],
     // ): Promise<void> {
-    //     const meeting = await this.meetingService.getExternalMeetingById(
+    //     const meeting = await this.meetingService.getInternalMeetingById(
     //         meetingId,
     //     )
     //     const listCurrentMeetingFiles = meeting.meetingFiles
