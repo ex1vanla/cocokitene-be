@@ -111,7 +111,7 @@ export class UserMeetingService {
         return idsParticipants
     }
 
-    async getUserMeetingBYUserIdAndMeetingId(
+    async getUserMeetingByUserIdAndMeetingId(
         userId: number,
         meetingId: number,
     ): Promise<UserMeeting> {

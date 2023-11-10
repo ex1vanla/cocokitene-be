@@ -80,7 +80,7 @@ export class VotingService {
             meetingId,
         )
         const userMeeting =
-            await this.userMeetingService.getUserMeetingBYUserIdAndMeetingId(
+            await this.userMeetingService.getUserMeetingByUserIdAndMeetingId(
                 userId,
                 meetingId,
             )
