@@ -120,19 +120,4 @@ export class ProposalRepository extends Repository<Proposal> {
             })
         return paginateRaw(queryBuilder, options)
     }
-
-    async updateNotVoteYetQuantityProposal(
-        proposalId: number,
-        totalShares: number,
-    ): Promise<Proposal> {
-        await this.createQueryBuilder('proposals')
-            .update(Proposal)
-            .set({
-                notVoteYetQuantity: totalShares,
-            })
-            .where('proposals.id = :proposalId', { proposalId })
-            .execute()
-        const proposal = await this.getProposalByProposalId(proposalId)
-        return proposal
-    }
 }
