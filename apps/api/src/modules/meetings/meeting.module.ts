@@ -17,7 +17,7 @@ import { Module, forwardRef } from '@nestjs/common'
         ProposalModule,
         UserMeetingModule,
         UserModule,
-        VotingModule,
+        forwardRef(() => VotingModule),
     ],
     controllers: [MeetingController],
     providers: [MeetingService],

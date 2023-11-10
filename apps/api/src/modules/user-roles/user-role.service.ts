@@ -4,6 +4,7 @@ import { UserRoleRepository } from '@repositories/user-role.repository'
 import { RoleService } from '@api/modules/roles/role.service'
 import { CreateUserRoleDto } from '@dtos/user-role.dto'
 import { httpErrors } from '@shares/exception-filter/http-errors.const'
+import { RoleEnum } from '@shares/constants/role.const'
 
 @Injectable()
 export class UserRoleService {
@@ -72,8 +73,11 @@ export class UserRoleService {
         return roleIds
     }
 
-    async getRoleByRoleName(roleName: string) {
-        const role = await this.roleService.getRoleByRoleName(roleName)
+    async getRoleByRoleNameAndIdCompany(roleName: RoleEnum, companyId: number) {
+        const role = await this.roleService.getRoleByRoleNameAndIdCompany(
+            roleName,
+            companyId,
+        )
         return role
     }
 }

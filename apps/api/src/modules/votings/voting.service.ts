@@ -1,4 +1,10 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
+import {
+    forwardRef,
+    HttpException,
+    HttpStatus,
+    Inject,
+    Injectable,
+} from '@nestjs/common'
 import { VotingRepository } from '@repositories/voting.repository'
 import { ProposalRepository } from '@repositories/proposal.repository'
 import { Voting } from '@entities/voting.entity'
@@ -7,6 +13,10 @@ import { httpErrors } from '@shares/exception-filter'
 import { VoteProposalResult } from '@shares/constants/proposal.const'
 import { Proposal } from '@entities/proposal.entity'
 import { UserService } from '@api/modules/users/user.service'
+import { MeetingService } from '@api/modules/meetings/meeting.service'
+import { UserMeetingService } from '@api/modules/user-meetings/user-meeting.service'
+import { RoleService } from '@api/modules/roles/role.service'
+import { UserMeetingStatusEnum } from '@shares/constants/meeting.const'
 
 @Injectable()
 export class VotingService {
@@ -14,6 +24,10 @@ export class VotingService {
         private readonly votingRepository: VotingRepository,
         private readonly proposalRepository: ProposalRepository,
         private readonly userService: UserService,
+        private readonly userMeetingService: UserMeetingService,
+        private readonly roleService: RoleService,
+        @Inject(forwardRef(() => MeetingService))
+        private readonly meetingService: MeetingService,
     ) {}
 
     async findVotingByUserIdAndProposalId(
@@ -53,9 +67,7 @@ export class VotingService {
                 HttpStatus.BAD_REQUEST,
             )
         }
-
         const existedUser = await this.userService.getActiveUserById(userId)
-
         if (!existedUser) {
             throw new HttpException(
                 httpErrors.USER_NOT_FOUND,
@@ -63,6 +75,32 @@ export class VotingService {
             )
         }
 
+        const meetingId = proposal.meetingId
+        const meeting = await this.meetingService.getInternalMeetingById(
+            meetingId,
+        )
+        const userMeeting =
+            await this.userMeetingService.getUserMeetingByUserIdAndMeetingId(
+                userId,
+                meetingId,
+            )
+        const isUserJoinedMeeting =
+            userMeeting.status === UserMeetingStatusEnum.PARTICIPATE
+        if (!isUserJoinedMeeting) {
+            throw new HttpException(
+                httpErrors.USER_NOT_YET_ATTENDANCE,
+                HttpStatus.BAD_REQUEST,
+            )
+        }
+
+        const currentDate = new Date()
+        const endTimeMeeting = new Date(meeting.endTime)
+        if (currentDate > endTimeMeeting) {
+            throw new HttpException(
+                httpErrors.VOTING_WHEN_MEETING_ENDED,
+                HttpStatus.BAD_REQUEST,
+            )
+        }
         const shareOfUser = existedUser.shareQuantity
 
         const existedProposal = await this.proposalRepository.getProposalById(

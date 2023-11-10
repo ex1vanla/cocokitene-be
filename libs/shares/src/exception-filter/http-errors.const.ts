@@ -132,6 +132,10 @@ export const httpErrors = {
             'At now, you can not  attendance this meeting anymore because it finished. Please try again',
         code: 'USER_ATTENDANCE_00000',
     },
+    USER_NOT_YET_ATTENDANCE: {
+        message: 'user have not participated in the meeting,. Please try again',
+        code: 'USER_ATTENDANCE_00001',
+    },
     //voting
     VOTING_FAILED: {
         message:
@@ -141,6 +145,10 @@ export const httpErrors = {
     VOTING_CREATED_FAILED: {
         message: 'Create voting failded. Please send result diffirence.',
         code: 'VOTING_00001',
+    },
+    VOTING_WHEN_MEETING_ENDED: {
+        message: 'user vote when the meeting has ended. Please try again',
+        code: 'VOTING_00002',
     },
     //system-admin
     SYSTEM_ADMIN_NOT_FOUND: {
@@ -161,5 +169,9 @@ export const httpErrors = {
     USER_ROLE_CREATE_FAILED: {
         message: 'user_role created failed. Please try again',
         code: 'USER_ROLE_CREATE_FAILED_00000',
+    },
+    USER_NOT_HAS_ROLE_SHAREHOLDER: {
+        message: 'user do not have the role of shareholder. Please try again',
+        code: 'USER_ROLE_00001',
     },
 }

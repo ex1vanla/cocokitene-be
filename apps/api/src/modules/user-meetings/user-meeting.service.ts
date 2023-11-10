@@ -110,4 +110,17 @@ export class UserMeetingService {
             )
         return idsParticipants
     }
+
+    async getUserMeetingByUserIdAndMeetingId(
+        userId: number,
+        meetingId: number,
+    ): Promise<UserMeeting> {
+        const userMeeting = await this.userMeetingRepository.findOne({
+            where: {
+                userId,
+                meetingId,
+            },
+        })
+        return userMeeting
+    }
 }
