@@ -16,6 +16,7 @@ import { UserService } from '@api/modules/users/user.service'
 import { MeetingService } from '@api/modules/meetings/meeting.service'
 import { UserMeetingService } from '@api/modules/user-meetings/user-meeting.service'
 import { RoleService } from '@api/modules/roles/role.service'
+import { UserMeetingStatusEnum } from '@shares/constants/meeting.const'
 
 @Injectable()
 export class VotingService {
@@ -66,16 +67,6 @@ export class VotingService {
                 HttpStatus.BAD_REQUEST,
             )
         }
-        const meetingId = proposal.meetingId
-        const isUserJoinedMeeting =
-            await this.userMeetingService.isUserJoinedMeeting(userId, meetingId)
-        if (!isUserJoinedMeeting) {
-            throw new HttpException(
-                httpErrors.USER_NOT_YET_ATTENDANCE,
-                HttpStatus.BAD_REQUEST,
-            )
-        }
-
         const existedUser = await this.userService.getActiveUserById(userId)
         if (!existedUser) {
             throw new HttpException(
@@ -84,11 +75,24 @@ export class VotingService {
             )
         }
 
-        const meeting = await this.meetingService.getMeetingById(
+        const meetingId = proposal.meetingId
+        const meeting = await this.meetingService.getInternalMeetingById(
             meetingId,
-            companyId,
-            existedUser.id,
         )
+        const userMeeting =
+            await this.userMeetingService.getUserMeetingBYUserIdAndMeetingId(
+                userId,
+                meetingId,
+            )
+        const isUserJoinedMeeting =
+            userMeeting.status === UserMeetingStatusEnum.PARTICIPATE
+        if (!isUserJoinedMeeting) {
+            throw new HttpException(
+                httpErrors.USER_NOT_YET_ATTENDANCE,
+                HttpStatus.BAD_REQUEST,
+            )
+        }
+
         const currentDate = new Date()
         const endTimeMeeting = new Date(meeting.endTime)
         if (currentDate > endTimeMeeting) {
