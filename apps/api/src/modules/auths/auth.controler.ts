@@ -1,11 +1,4 @@
-import {
-    Body,
-    Controller,
-    HttpCode,
-    HttpStatus,
-    Post,
-    Query,
-} from '@nestjs/common'
+import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common'
 import { ApiTags } from '@nestjs/swagger'
 import { AuthService } from '@api/modules/auths/auth.service'
 import {
@@ -39,7 +32,7 @@ export class AuthControler {
     //refresh token user
     @Post('/user/refresh-token')
     @HttpCode(HttpStatus.CREATED)
-    async generateNewAccessJWT(@Query() refreshTokenDto: RefreshTokenDto) {
+    async generateNewAccessJWT(@Body() refreshTokenDto: RefreshTokenDto) {
         const newAccessToken = await this.authService.generateNewAccessJWT(
             refreshTokenDto,
         )
@@ -49,7 +42,7 @@ export class AuthControler {
     @Post('/system-admin/refresh-token')
     @HttpCode(HttpStatus.CREATED)
     async generateNewAccessJWTSystemAdmin(
-        @Query() systemAdminRefreshTokenDto: SystemAdminRefreshTokenDto,
+        @Body() systemAdminRefreshTokenDto: SystemAdminRefreshTokenDto,
     ) {
         const newAccessTokenSystemAdmin =
             await this.authService.generateNewAccessJWTSystemAdmin(
