@@ -182,10 +182,6 @@ export class ProposalService {
         )
         // list added
         const listAdded = proposals.filter((proposal) => !proposal.id)
-        const listDeletedIds = listDeleted.map((proposal) => proposal.id)
-        const listProposalAfterDelete = listCurrentProposals.filter(
-            (proposal) => !listDeletedIds.includes(proposal.id),
-        )
 
         try {
             await Promise.all([
@@ -193,31 +189,23 @@ export class ProposalService {
                     this.proposalRepository.updateProposal(
                         proposal.id,
                         proposal,
+                        totalShares,
                     ),
                 ),
                 ...listDeleted.map((proposal) =>
                     this.deleteProposal(meeting.companyId, proposal.id),
                 ),
-                await Promise.all([
-                    ...listProposalAfterDelete.map((proposal) =>
-                        this.proposalRepository.updateNotVoteYetQuantityProposal(
-                            proposal.id,
-                            proposal.type,
-                            totalShares,
-                        ),
-                    ),
-                    ...listAdded.map((proposal) =>
-                        this.createProposal({
-                            title: proposal.title,
-                            description: proposal.description,
-                            oldDescription: proposal.oldDescription,
-                            type: proposal.type,
-                            creatorId: userId,
-                            meetingId,
-                            notVoteYetQuantity: totalShares,
-                        }),
-                    ),
-                ]),
+                ...listAdded.map((proposal) =>
+                    this.createProposal({
+                        title: proposal.title,
+                        description: proposal.description,
+                        oldDescription: proposal.oldDescription,
+                        type: proposal.type,
+                        creatorId: userId,
+                        meetingId,
+                        notVoteYetQuantity: totalShares,
+                    }),
+                ),
             ])
         } catch (error) {
             throw new HttpException(

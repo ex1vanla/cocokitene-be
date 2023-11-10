@@ -11,7 +11,6 @@ import {
     paginateRaw,
     Pagination,
 } from 'nestjs-typeorm-paginate'
-import { ProposalType } from '@shares/constants/proposal.const'
 
 @CustomRepository(Proposal)
 export class ProposalRepository extends Repository<Proposal> {
@@ -39,14 +38,10 @@ export class ProposalRepository extends Repository<Proposal> {
         return await createdProposal.save()
     }
 
-    async getProposalByProposalIdAndType(
-        proposalId: number,
-        type: ProposalType,
-    ) {
+    async getProposalByProposalId(proposalId: number) {
         const proposal = await this.findOne({
             where: {
                 id: proposalId,
-                type: type,
             },
         })
         return proposal
@@ -55,23 +50,21 @@ export class ProposalRepository extends Repository<Proposal> {
         // userId: number,
         proposalId: number,
         proposalDtoUpdate: ProposalDtoUpdate,
+        totalShares: number,
     ): Promise<Proposal> {
-        const { title, description, oldDescription, type } = proposalDtoUpdate
+        const { title, description, oldDescription } = proposalDtoUpdate
         await this.createQueryBuilder('proposals')
             .update(Proposal)
             .set({
                 title: title,
                 description: description,
                 oldDescription: oldDescription,
+                notVoteYetQuantity: totalShares,
                 // creatorId: userId,
             })
             .where('proposals.id = :proposalId', { proposalId })
-            .andWhere('proposals.type = :type', { type })
             .execute()
-        const proposal = await this.getProposalByProposalIdAndType(
-            proposalId,
-            type,
-        )
+        const proposal = await this.getProposalByProposalId(proposalId)
         return proposal
     }
 
@@ -130,7 +123,6 @@ export class ProposalRepository extends Repository<Proposal> {
 
     async updateNotVoteYetQuantityProposal(
         proposalId: number,
-        typeProposal: ProposalType,
         totalShares: number,
     ): Promise<Proposal> {
         await this.createQueryBuilder('proposals')
@@ -139,12 +131,8 @@ export class ProposalRepository extends Repository<Proposal> {
                 notVoteYetQuantity: totalShares,
             })
             .where('proposals.id = :proposalId', { proposalId })
-            .andWhere('proposals.type = :typeProposal', { typeProposal })
             .execute()
-        const proposal = await this.getProposalByProposalIdAndType(
-            proposalId,
-            typeProposal,
-        )
+        const proposal = await this.getProposalByProposalId(proposalId)
         return proposal
     }
 }

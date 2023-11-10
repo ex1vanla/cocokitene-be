@@ -39,7 +39,7 @@ export class MeetingRepository extends Repository<Meeting> {
             )
             .addSelect(
                 `(CASE 
-                WHEN userMeeting.status = 'participate' THEN true
+                WHEN userMeeting.status = '0' THEN true
                 ELSE false 
             END)`,
                 'isJoined',
