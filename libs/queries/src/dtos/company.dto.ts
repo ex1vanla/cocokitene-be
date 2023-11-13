@@ -186,6 +186,15 @@ export class CreateCompanyDto {
     })
     statusId: number
 
+    @IsOptional()
+    @IsNumber()
+    @Type(() => Number)
+    @ApiProperty({
+        required: false,
+        example: 1,
+    })
+    planId: number
+
     @ApiProperty({
         required: true,
     })

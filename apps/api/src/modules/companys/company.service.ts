@@ -18,7 +18,7 @@ import { httpErrors } from '@shares/exception-filter'
 import { UserService } from '@api/modules/users/user.service'
 import { RoleService } from '@api/modules/roles/role.service'
 import { enumToArray } from '@shares/utils/enum'
-import { PlanEnum, RoleEnum } from '@shares/constants'
+import { RoleEnum } from '@shares/constants'
 import { UserRoleService } from '@api/modules/user-roles/user-role.service'
 import { UserStatusService } from '@api/modules/user-status/user-status.service'
 import { PlanService } from '@api/modules/plans/plan.service'
@@ -96,9 +96,6 @@ export class CompanyService {
                 HttpStatus.INTERNAL_SERVER_ERROR,
             )
         }
-        const planFree = await this.planService.getPlanByPlanName(PlanEnum.FREE)
-        createdCompany.planId = planFree.id
-        await createdCompany.save()
         const { superAdminCompany } = createCompanyDto
 
         const createdSuperAdminCompany =
