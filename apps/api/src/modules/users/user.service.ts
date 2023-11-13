@@ -15,6 +15,7 @@ import { CompanyService } from '@api/modules/companys/company.service'
 import { UserRoleService } from '@api/modules/user-roles/user-role.service'
 import { uuid } from '@shares/utils/uuid'
 import { RoleEnum } from '@shares/constants'
+import { generateRandomHexColor } from '@shares/utils'
 
 @Injectable()
 export class UserService {
@@ -218,6 +219,7 @@ export class UserService {
             )
 
             createdUser.nonce = uuid()
+            createdUser.defaultAvatarHashColor = generateRandomHexColor()
             await createdUser.save()
         } catch (error) {
             throw new HttpException(
