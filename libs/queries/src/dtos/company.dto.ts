@@ -1,7 +1,8 @@
 import { Type } from 'class-transformer'
-import { IsNumber, IsOptional, IsString } from 'class-validator'
+import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator'
 import { ApiProperty } from '@nestjs/swagger'
 import { GetAllDto } from '@dtos/base.dto'
+import { Sort_By_Order } from '@shares/constants'
 
 export class UpdateCompanyDto {
     @IsOptional()
@@ -96,4 +97,14 @@ export class UpdateCompanyDto {
 }
 
 export class GetAllCompanyStatusDto extends GetAllDto {}
-export class GetAllCompanyDto extends GetAllDto {}
+export class GetAllCompanyDto extends GetAllDto {
+    @IsOptional()
+    @IsEnum(Sort_By_Order)
+    @ApiProperty({
+        required: false,
+        example: Sort_By_Order.ASC,
+        default: Sort_By_Order.ASC,
+        enum: Sort_By_Order,
+    })
+    sortOrder?: Sort_By_Order
+}

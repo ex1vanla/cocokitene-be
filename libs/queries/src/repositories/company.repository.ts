@@ -19,7 +19,7 @@ export class CompanyRepository extends Repository<Company> {
     async getAllCompanys(
         options: GetAllCompanyDto,
     ): Promise<Pagination<Company>> {
-        const { page, limit, searchQuery } = options
+        const { page, limit, searchQuery, sortOrder } = options
         const queryBuilder = this.createQueryBuilder('companys')
             .select([
                 'companys.id',
@@ -45,7 +45,9 @@ export class CompanyRepository extends Repository<Company> {
                 companyName: `%${searchQuery}%`,
             })
         }
-
+        if (sortOrder) {
+            queryBuilder.orderBy('companys.updatedAt', sortOrder)
+        }
         return paginateRaw(queryBuilder, { page, limit })
     }
     async updateCompany(
