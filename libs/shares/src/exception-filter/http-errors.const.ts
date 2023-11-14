@@ -126,6 +126,11 @@ export const httpErrors = {
         code: 'PROPOSAL_FILE_00000',
     },
 
+    PROPOSAL_FILES_DELETE_FAILED: {
+        message: 'Delete all proposal files failed. Please try again',
+        code: 'PROPOSAL_FILE_00001',
+    },
+
     // user meeting error
     USER_MEETING_CREATE_FAILED: {
         message: 'User meeting failed. Please try again',
