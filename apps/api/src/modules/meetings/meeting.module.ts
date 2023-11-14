@@ -7,7 +7,13 @@ import { ProposalModule } from '@api/modules/proposals/proposal.module'
 import { UserMeetingModule } from '@api/modules/user-meetings/user-meeting.module'
 import { UserModule } from '@api/modules/users/user.module'
 import { VotingModule } from '@api/modules/votings/voting.module'
-import { Module, forwardRef } from '@nestjs/common'
+import {
+    Module,
+    forwardRef,
+    NestModule,
+    MiddlewareConsumer,
+} from '@nestjs/common'
+import { MeetingStatusMiddleware } from '@shares/middlewares/meeting-status.middleware'
 
 @Module({
     imports: [
@@ -23,4 +29,10 @@ import { Module, forwardRef } from '@nestjs/common'
     providers: [MeetingService],
     exports: [MeetingService],
 })
-export class MeetingModule {}
+export class MeetingModule implements NestModule {
+    configure(consumer: MiddlewareConsumer) {
+        consumer.apply(MeetingStatusMiddleware).forRoutes(MeetingController)
+    }
+}
+
+// export class MeetingModule{}

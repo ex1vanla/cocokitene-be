@@ -305,7 +305,6 @@ export class MeetingService {
                 ),
             ),
         )
-
         const shareholdersTotal = shareholders.length
         const shareholdersJoined = shareholders.reduce(
             (accumulator, currentValue) => {
