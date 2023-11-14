@@ -139,6 +139,16 @@ export class ProposalDtoUpdate {
     })
     oldDescription?: string
 
+    @ApiProperty({
+        required: false,
+        type: [ProposalFileDto],
+    })
+    @ValidateNested({
+        each: true,
+    })
+    @Type(() => ProposalFileDto)
+    files?: ProposalFileDto[]
+
     @IsEnum(ProposalType)
     @ApiProperty({
         required: true,

@@ -139,6 +139,8 @@ export class ProposalService {
             })
             //join voting and delete relate idProposal
             await this.votingService.deleteVoting(proposalId)
+            //delete meeting file
+            await this.proposalFileService.deleteAllProposalFiles(proposalId)
 
             return `proposal with Id ${proposalId} deleted successfully`
         } catch (error) {
@@ -192,6 +194,12 @@ export class ProposalService {
                         totalShares,
                     ),
                 ),
+                ...listEdited.map((proposal) =>
+                    this.proposalFileService.updateListProposalFiles(
+                        proposal.id,
+                        proposal.files,
+                    ),
+                ),
                 ...listDeleted.map((proposal) =>
                     this.deleteProposal(meeting.companyId, proposal.id),
                 ),
@@ -204,6 +212,7 @@ export class ProposalService {
                         creatorId: userId,
                         meetingId,
                         notVoteYetQuantity: totalShares,
+                        files: proposal.files,
                     }),
                 ),
             ])
@@ -213,5 +222,12 @@ export class ProposalService {
                 HttpStatus.BAD_REQUEST,
             )
         }
+    }
+
+    async getInternalProposalById(proposalId: number): Promise<Proposal> {
+        const proposal = await this.proposalRepository.getInternalProposalById(
+            proposalId,
+        )
+        return proposal
     }
 }

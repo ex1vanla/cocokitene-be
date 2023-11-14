@@ -46,6 +46,19 @@ export class ProposalRepository extends Repository<Proposal> {
         })
         return proposal
     }
+
+    async getInternalProposalById(id: number): Promise<Proposal> {
+        const proposal = await this.createQueryBuilder('proposals')
+            .select()
+            .where('proposals.id = :id', {
+                id,
+            })
+            .leftJoinAndSelect('proposals.proposalFiles', 'proposalFiles')
+            .getOne()
+
+        return proposal
+    }
+
     async updateProposal(
         // userId: number,
         proposalId: number,

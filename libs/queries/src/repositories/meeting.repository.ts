@@ -113,8 +113,8 @@ export class MeetingRepository extends Repository<Meeting> {
                 'creator.avatar',
                 'creator.defaultAvatarHashColor',
             ])
-            .leftJoin('proposals.proposalFiles', 'proposalFiles')
-            .addSelect(['proposalFiles.url'])
+            .leftJoinAndSelect('proposals.proposalFiles', 'proposalFiles')
+            // .addSelect(['proposalFiles.url', 'proposalFiles.id'])
             .getOne()
 
         return meeting

@@ -12,7 +12,7 @@ import { ProposalFileModule } from '@api/modules/proposal-files/proposal-file.mo
     imports: [
         VotingModule,
         forwardRef(() => MeetingModule),
-        ProposalFileModule,
+        forwardRef(() => ProposalFileModule),
     ],
 })
 export class ProposalModule {}
