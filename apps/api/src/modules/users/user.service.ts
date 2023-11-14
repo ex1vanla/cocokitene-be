@@ -1,11 +1,18 @@
 import {
+    CreateSuperAdminCompanyDto,
     CreateUserDto,
     GetAllUsersDto,
     SuperAdminDto,
     UpdateUserDto,
 } from '@dtos/user.dto'
 import { User } from '@entities/user.entity'
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
+import {
+    forwardRef,
+    HttpException,
+    HttpStatus,
+    Inject,
+    Injectable,
+} from '@nestjs/common'
 import { UserRepository } from '@repositories/user.repository'
 import { httpErrors } from '@shares/exception-filter'
 import { WalletAddressDto } from 'libs/queries/src/dtos/base.dto'
@@ -21,6 +28,7 @@ import { generateRandomHexColor } from '@shares/utils'
 export class UserService {
     constructor(
         private readonly userRepository: UserRepository,
+        @Inject(forwardRef(() => CompanyService))
         private readonly companyService: CompanyService,
         private readonly userRoleService: UserRoleService,
     ) {}
@@ -159,7 +167,6 @@ export class UserService {
                 RoleEnum.SHAREHOLDER,
                 companyId,
             )
-
         if (roleIdsOfUserId.includes(roleShareHolder.id)) {
             existedUser.shareQuantity = updateUserDto.shareQuantity
             await existedUser.save()
@@ -244,5 +251,30 @@ export class UserService {
             )
         }
         return createdUser
+    }
+
+    async createSuperAdminCompany(
+        createSuperAdminCompanyDto: CreateSuperAdminCompanyDto,
+    ): Promise<User> {
+        const { username, companyId, walletAddress, email, statusId } =
+            createSuperAdminCompanyDto
+        try {
+            const createdSuperAdmin =
+                await this.userRepository.createSuperAdminCompany({
+                    username,
+                    companyId,
+                    walletAddress,
+                    email,
+                    statusId,
+                })
+            createdSuperAdmin.nonce = uuid()
+            await createdSuperAdmin.save()
+            return createdSuperAdmin
+        } catch (error) {
+            throw new HttpException(
+                httpErrors.SUPER_ADMIN_CREATE_FAILED,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            )
+        }
     }
 }

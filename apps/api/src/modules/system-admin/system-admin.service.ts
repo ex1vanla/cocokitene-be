@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
-import { GetAllCompanyDto } from '@dtos/company.dto'
+import { CreateCompanyDto, GetAllCompanyDto } from '@dtos/company.dto'
 import { CompanyService } from '@api/modules/companys/company.service'
 import { UserService } from '../users/user.service'
 import { DetailCompanyResponse } from '../companys/company.interface'
@@ -11,6 +11,7 @@ import { User } from '@sentry/node'
 import { GetAllPlanDto } from '@dtos/plan.dto'
 import { PlanService } from '@api/modules/plans/plan.service'
 import { CompanyStatusService } from '@api/modules/company-status/company-status.service'
+import { RoleService } from '@api/modules/roles/role.service'
 
 @Injectable()
 export class SystemAdminService {
@@ -19,6 +20,7 @@ export class SystemAdminService {
         private readonly userService: UserService,
         private readonly planService: PlanService,
         private readonly companyStatusService: CompanyStatusService,
+        private readonly roleService: RoleService,
     ) {}
 
     async getAllCompanys(getAllCompanyDto: GetAllCompanyDto) {
@@ -90,5 +92,12 @@ export class SystemAdminService {
                 getAllCompanyStatusDto,
             )
         return companyStatuses
+    }
+
+    async createCompany(createCompanyDto: CreateCompanyDto) {
+        const company = await this.companyService.createCompany(
+            createCompanyDto,
+        )
+        return company
     }
 }

@@ -1,9 +1,9 @@
 import { Role } from '@entities/role.entity'
-import { Injectable } from '@nestjs/common'
 import { RoleRepository } from '@repositories/role.repository'
 import { GetAllNormalRolesDto } from '@dtos/role.dto'
 import { Pagination } from 'nestjs-typeorm-paginate'
-import { RoleEnum } from '@shares/constants/role.const'
+import { RoleEnum } from '@shares/constants'
+import { Injectable } from '@nestjs/common'
 
 @Injectable()
 export class RoleService {
@@ -35,5 +35,13 @@ export class RoleService {
             getAllNormalRolesDto,
         )
         return roles
+    }
+
+    async createCompanyRole(role: RoleEnum, companyId: number): Promise<Role> {
+        const createdCompanyRole = await this.roleRepository.createCompanyRole(
+            role,
+            companyId,
+        )
+        return createdCompanyRole
     }
 }

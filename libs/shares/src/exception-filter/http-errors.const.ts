@@ -87,6 +87,16 @@ export const httpErrors = {
         message: 'Company update failed. Please try again',
         code: 'COMPANY_00001',
     },
+    COMPANY_CREATE_FAILED: {
+        message: 'Company create failed. Please try again',
+        code: 'COMPANY_00002',
+    },
+    //company-role
+    COMPANY_ROLE_CREATE_FAILED: {
+        message: 'Company_role create failed. Please try again',
+        code: 'COMPANY_00000',
+    },
+
     // meeting file error
     MEETING_FILE_CREATE_FAILED: {
         message: 'Create meeting file failed. Please try again',
@@ -164,6 +174,10 @@ export const httpErrors = {
     SUPER_ADMIN_NOT_IN_THIS_COMPANY: {
         message: 'this super admin in not of this company. Please try again',
         code: 'SUPER_ADMIN_00000',
+    },
+    SUPER_ADMIN_CREATE_FAILED: {
+        message: 'super admin create failed. Please try again',
+        code: 'SUPER_ADMIN_00001',
     },
     // user-role
     USER_ROLE_CREATE_FAILED: {

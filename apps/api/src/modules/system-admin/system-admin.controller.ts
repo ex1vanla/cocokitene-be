@@ -7,10 +7,11 @@ import {
     HttpStatus,
     Param,
     Patch,
+    Post,
     Query,
     UseGuards,
 } from '@nestjs/common'
-import { GetAllCompanyDto } from '@dtos/company.dto'
+import { CreateCompanyDto, GetAllCompanyDto } from '@dtos/company.dto'
 import { SystemAdminService } from '@api/modules/system-admin/system-admin.service'
 import { GetAllCompanyStatusDto, UpdateCompanyDto } from '@dtos/company.dto'
 import { SuperAdminDto } from '@dtos/user.dto'
@@ -96,5 +97,16 @@ export class SystemAdminController {
                 superAdminDto,
             )
         return updatedSuperAdminCompany
+    }
+
+    @Post('/companys')
+    @UseGuards(SystemAdminGuard)
+    @ApiBearerAuth()
+    @HttpCode(HttpStatus.OK)
+    async createCompany(@Body() createCompanyDto: CreateCompanyDto) {
+        const company = await this.systemAdminService.createCompany(
+            createCompanyDto,
+        )
+        return company
     }
 }

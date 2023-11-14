@@ -3,6 +3,7 @@ import { GetAllPlanDto } from '@dtos/plan.dto'
 import { Pagination } from 'nestjs-typeorm-paginate'
 import { Plan } from '@entities/plan.entity'
 import { PlanRepository } from '@repositories/plan.repository'
+import { PlanEnum } from '@shares/constants'
 
 @Injectable()
 export class PlanService {
@@ -20,5 +21,14 @@ export class PlanService {
     async getAllPlans(getAllPlanDto: GetAllPlanDto): Promise<Pagination<Plan>> {
         const plans = await this.planRepository.getAllPlans(getAllPlanDto)
         return plans
+    }
+
+    async getPlanByPlanName(planName: PlanEnum): Promise<Plan> {
+        const plan = await this.planRepository.findOne({
+            where: {
+                planName: planName,
+            },
+        })
+        return plan
     }
 }

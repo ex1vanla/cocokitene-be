@@ -4,6 +4,9 @@ import { CustomRepository } from '@shares/decorators'
 import { Repository } from 'typeorm'
 import { GetAllNormalRolesDto } from '@dtos/role.dto'
 import { paginate, Pagination } from 'nestjs-typeorm-paginate'
+import { RoleEnum } from '@shares/constants'
+import { HttpException, HttpStatus } from '@nestjs/common'
+import { httpErrors } from '@shares/exception-filter'
 
 @CustomRepository(Role)
 export class RoleRepository extends Repository<Role> {
@@ -71,5 +74,21 @@ export class RoleRepository extends Repository<Role> {
             })
         }
         return paginate(queryBuilder, { page, limit })
+    }
+
+    async createCompanyRole(role: RoleEnum, companyId: number): Promise<Role> {
+        try {
+            const createdCompanyRole = await this.create({
+                roleName: role,
+                companyId: companyId,
+            })
+            await createdCompanyRole.save()
+            return createdCompanyRole
+        } catch (error) {
+            throw new HttpException(
+                httpErrors.COMPANY_ROLE_CREATE_FAILED,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            )
+        }
     }
 }

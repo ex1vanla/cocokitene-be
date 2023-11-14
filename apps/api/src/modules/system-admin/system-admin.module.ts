@@ -5,9 +5,16 @@ import { CompanyModule } from '@api/modules/companys/company.module'
 import { UserModule } from '@api/modules/users/user.module'
 import { PlanModule } from '@api/modules/plans/plan.module'
 import { CompanyStatusModule } from '../company-status/company-status.module'
+import { RoleModule } from '@api/modules/roles/role.module'
 
 @Module({
-    imports: [CompanyModule, UserModule, PlanModule, CompanyStatusModule],
+    imports: [
+        CompanyModule,
+        UserModule,
+        PlanModule,
+        CompanyStatusModule,
+        RoleModule,
+    ],
     controllers: [SystemAdminController],
     providers: [SystemAdminService],
     exports: [SystemAdminService],
