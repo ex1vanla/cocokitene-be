@@ -232,12 +232,13 @@ export class UpdateMeetingDto {
     })
     endTime?: string
 
+    @IsOptional()
     @IsEnum(StatusMeeting)
     @ApiProperty({
         required: false,
         enum: StatusMeeting,
     })
-    status: StatusMeeting
+    status?: StatusMeeting
 
     @IsOptional()
     @ApiProperty({

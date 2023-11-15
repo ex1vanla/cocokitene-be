@@ -25,7 +25,7 @@ export class UserStatusController {
     @Permission(PermissionEnum.LIST_USER_STATUS)
     async getAllUserStatus(
         @Query() getAllUserStatusDto: GetAllUserStatusDto,
-        // @UserScope() user: User,
+        // @fUserScope() user: User,
     ) {
         const userStatus = await this.userStatusService.getAllUserStatus(
             getAllUserStatusDto,
