@@ -507,15 +507,9 @@ export class MeetingService {
         )
     }
 
-    async standardStatusMeeting(
-        // companyId: number,
-        meetingId: number,
-    ): Promise<Meeting> {
+    async standardStatusMeeting(meetingId: number): Promise<Meeting> {
         const existedMeeting =
-            await this.meetingRepository.getInternalMeetingById(
-                meetingId,
-                // companyId,
-            )
+            await this.meetingRepository.getInternalMeetingById(meetingId)
         if (!existedMeeting) {
             throw new HttpException(
                 httpErrors.MEETING_NOT_EXISTED,

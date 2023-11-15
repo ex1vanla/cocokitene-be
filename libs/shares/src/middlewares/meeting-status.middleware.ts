@@ -13,14 +13,9 @@ export class MeetingStatusMiddleware implements NestMiddleware {
 
     async use(req: Request, res: Response, next: NextFunction) {
         // console.log('start middleware')
-        // console.log('req----',req);
         try {
             const meetingId = parseInt(req.params?.id)
-            // const companyId = req.user.companyId
-            await this.meetingService.standardStatusMeeting(
-                // companyId,
-                meetingId,
-            )
+            await this.meetingService.standardStatusMeeting(meetingId)
             // console.log('end middleware')
             next()
         } catch (error) {
