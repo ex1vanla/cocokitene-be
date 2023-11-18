@@ -71,6 +71,43 @@ export class MeetingRepository extends Repository<Meeting> {
         return paginateRaw(queryBuilder, options)
     }
 
+    async getInternalListMeeting(
+        companyId: number,
+        options: IPaginationOptions & GetAllMeetingDto,
+    ): Promise<Meeting[]> {
+        const searchQuery = options.searchQuery || ''
+        const sortField = options.sortField
+        const sortOrder = options.sortOrder
+        const type = options.type
+        const queryBuilder = this.createQueryBuilder('meetings')
+            .select(['meetings.id'])
+            .where('meetings.companyId= :companyId', {
+                companyId: companyId,
+            })
+        if (searchQuery) {
+            queryBuilder.andWhere('(meetings.title like :searchQuery)', {
+                searchQuery: `%${searchQuery}%`,
+            })
+        }
+        if (type == MeetingType.FUTURE) {
+            queryBuilder.andWhere(
+                'meetings.startTime >= :currentDateTime OR (meetings.startTime <= :currentDateTime AND meetings.endTime >= :currentDateTime)',
+                {
+                    currentDateTime: new Date(),
+                },
+            )
+        } else {
+            queryBuilder.andWhere('meetings.endTime <= :currentDateTime', {
+                currentDateTime: new Date(),
+            })
+        }
+        if (sortField && sortOrder) {
+            queryBuilder.orderBy(`meetings.${sortField}`, sortOrder)
+        }
+        const listMeetings = await queryBuilder.getMany()
+        return listMeetings
+    }
+
     async getInternalMeetingById(id: number): Promise<Meeting> {
         const meeting = await this.createQueryBuilder('meeting')
             .select()

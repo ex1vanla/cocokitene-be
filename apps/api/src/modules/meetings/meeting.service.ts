@@ -1,9 +1,9 @@
 import {
+    forwardRef,
     HttpException,
     HttpStatus,
     Inject,
     Injectable,
-    forwardRef,
 } from '@nestjs/common'
 import { MeetingRepository } from '@repositories/meeting.repository'
 
@@ -28,7 +28,6 @@ import {
     AttendMeetingDto,
     CreateMeetingDto,
     GetAllMeetingDto,
-    IdMeetingDto,
     UpdateMeetingDto,
 } from 'libs/queries/src/dtos/meeting.dto'
 import { Pagination } from 'nestjs-typeorm-paginate'
@@ -56,6 +55,15 @@ export class MeetingService {
         userId: number,
         companyId: number,
     ): Promise<Pagination<Meeting>> {
+        const listMeetingsResponse =
+            await this.meetingRepository.getInternalListMeeting(
+                companyId,
+                getAllMeetingDto,
+            )
+        const idsMeeting = listMeetingsResponse.map((meeting) => meeting.id)
+        await Promise.all([
+            ...idsMeeting.map((id) => this.standardStatusMeeting(id)),
+        ])
         const meetings = await this.meetingRepository.getAllMeetings(
             companyId,
             userId,
@@ -305,7 +313,6 @@ export class MeetingService {
                 ),
             ),
         )
-
         const shareholdersTotal = shareholders.length
         const shareholdersJoined = shareholders.reduce(
             (accumulator, currentValue) => {
@@ -388,13 +395,11 @@ export class MeetingService {
     }
 
     async updateMeeting(
-        idMeetingDto: IdMeetingDto,
+        meetingId: number,
         updateMeetingDto: UpdateMeetingDto,
         userId: number,
         companyId: number,
     ) {
-        const { meetingId } = idMeetingDto
-
         if (!userId) {
             throw new HttpException(
                 httpErrors.USER_NOT_FOUND,
@@ -500,5 +505,37 @@ export class MeetingService {
             meetingId,
             filter.searchQuery,
         )
+    }
+
+    async standardStatusMeeting(meetingId: number): Promise<Meeting> {
+        const existedMeeting =
+            await this.meetingRepository.getInternalMeetingById(meetingId)
+        if (!existedMeeting) {
+            throw new HttpException(
+                httpErrors.MEETING_NOT_EXISTED,
+                HttpStatus.BAD_REQUEST,
+            )
+        }
+        if (
+            existedMeeting.status === StatusMeeting.DELAYED ||
+            existedMeeting.status === StatusMeeting.CANCELED
+        ) {
+            return existedMeeting
+        }
+        const currenDate = new Date()
+        const startTimeMeeting = new Date(existedMeeting.startTime)
+        const endTimeMeeting = new Date(existedMeeting.endTime)
+        if (currenDate < startTimeMeeting) {
+            existedMeeting.status = StatusMeeting.NOT_HAPPEN
+        } else if (
+            currenDate >= startTimeMeeting &&
+            currenDate <= endTimeMeeting
+        ) {
+            existedMeeting.status = StatusMeeting.HAPPENING
+        } else if (currenDate > endTimeMeeting) {
+            existedMeeting.status = StatusMeeting.HAPPENED
+        }
+        await existedMeeting.save()
+        return existedMeeting
     }
 }

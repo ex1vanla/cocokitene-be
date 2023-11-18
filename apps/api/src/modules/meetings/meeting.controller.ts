@@ -140,20 +140,20 @@ export class MeetingController {
         return meeting
     }
 
-    @Patch('/:meetingId')
+    @Patch('/:id')
     @UseGuards(JwtAuthGuard)
     @Permission(PermissionEnum.EDIT_MEETING)
     @ApiBearerAuth()
     @HttpCode(HttpStatus.OK)
     async updateMeeting(
-        @Param() idMeetingDto: IdMeetingDto,
+        @Param('id') meetingId: number,
         @Body() updateMeetingDto: UpdateMeetingDto,
         @UserScope() user: User,
     ) {
         const userId = user?.id
         const companyId = user?.companyId
         const meeting = await this.meetingService.updateMeeting(
-            idMeetingDto,
+            meetingId,
             updateMeetingDto,
             userId,
             companyId,
