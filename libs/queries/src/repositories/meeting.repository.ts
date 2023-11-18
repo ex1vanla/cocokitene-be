@@ -195,6 +195,7 @@ export class MeetingRepository extends Repository<Meeting> {
                 note: updateMeetingDto.note,
                 startTime: updateMeetingDto.startTime,
                 endTime: updateMeetingDto.endTime,
+                endVotingTime: updateMeetingDto.endVotingTime,
                 meetingLink: updateMeetingDto.meetingLink,
                 status: updateMeetingDto.status,
             })

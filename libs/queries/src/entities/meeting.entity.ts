@@ -42,6 +42,13 @@ export class Meeting extends BaseEntity {
     endTime: Date
 
     @Column({
+        type: 'datetime',
+        nullable: true,
+        name: 'end_voting_time',
+    })
+    endVotingTime: Date
+
+    @Column({
         nullable: true,
         name: 'meeting_link',
         type: 'varchar',
