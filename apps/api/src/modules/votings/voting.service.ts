@@ -94,8 +94,8 @@ export class VotingService {
         }
 
         const currentDate = new Date()
-        const endTimeMeeting = new Date(meeting.endTime)
-        if (currentDate > endTimeMeeting) {
+        const endVotingTime = new Date(meeting.endVotingTime)
+        if (currentDate > endVotingTime) {
             throw new HttpException(
                 httpErrors.VOTING_WHEN_MEETING_ENDED,
                 HttpStatus.BAD_REQUEST,

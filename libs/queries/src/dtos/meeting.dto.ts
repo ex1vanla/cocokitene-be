@@ -89,6 +89,14 @@ export class CreateMeetingDto {
     })
     endTime: string
 
+    @IsNotEmpty()
+    @IsString()
+    @ApiProperty({
+        required: true,
+        example: '2023-12-20 16:00:00',
+    })
+    endVotingTime: string
+
     @ApiProperty({
         required: true,
         type: [MeetingFileDto],
@@ -231,6 +239,14 @@ export class UpdateMeetingDto {
         example: '2023-12-20 16:00:00',
     })
     endTime?: string
+
+    @IsOptional()
+    @IsString()
+    @ApiProperty({
+        required: false,
+        example: '2023-12-20 16:00:00',
+    })
+    endVotingTime?: string
 
     @IsOptional()
     @IsEnum(StatusMeeting)
