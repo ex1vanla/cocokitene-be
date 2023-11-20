@@ -64,10 +64,18 @@ export class UpdateCompanyDto {
     @IsOptional()
     @IsString()
     @ApiProperty({
+        example: '123456789',
+        required: false,
+    })
+    taxNumber?: string
+
+    @IsOptional()
+    @IsString()
+    @ApiProperty({
         required: false,
         example: 'service',
     })
-    bussinessType?: string
+    businessType?: string
 
     @IsOptional()
     @IsNumber()
@@ -112,6 +120,14 @@ export class CreateCompanyDto {
         required: true,
     })
     companyName: string
+
+    @IsString()
+    @IsOptional()
+    @ApiProperty({
+        example: 'Company description',
+        required: false,
+    })
+    description: string
 
     @IsString()
     @IsNotEmpty()
@@ -164,10 +180,18 @@ export class CreateCompanyDto {
     @IsString()
     @IsOptional()
     @ApiProperty({
+        example: '123456789',
+        required: false,
+    })
+    taxNumber: string
+
+    @IsString()
+    @IsOptional()
+    @ApiProperty({
         example: 'service',
         required: false,
     })
-    bussinessType: string
+    businessType: string
 
     @IsString()
     @IsNotEmpty()

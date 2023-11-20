@@ -3,6 +3,10 @@ import { SystemAdmin } from '../..'
 
 export class InertSertSystemAdminDto extends PartialType(SystemAdmin) {}
 
+// nguyenkien--->$2b$10$jbqtJoIKdWleu6U0AsvCIOJgxo8eStV.HCrMlfXuvo76oNfoUqR1W
+// nguyentienhuy--->$2b$10$799eKj1aPSb1nJJG8fp9Ge7qIS17GiW.Jbrz3dsmUlA16QU3UQfCe
+// nguyenanhphuong-->$2b$10$UeuuNr3KwfXqQ6AQ8iQOLujOlGwP1XOOJA2hLevkqwjY1lYgv2Z.m
+
 export const systemAdminData: InertSertSystemAdminDto[] = [
     {
         username: 'kienkien',

@@ -9,7 +9,7 @@ export const companyData: InsertCompanyDto[] = [
         email: 'kiennv@trithucmoi.co',
         logo: 'https://i.seadn.io/gae/OKLcGukcmQqdypfwDR32CizFRU1NPFZ7OKUe6dl62707LcmluEOXi3z_L6Fzk63ycncFFYynXCPn7jDXGBhXCcGaKpyNmrLPpYdM?auto=format&w=3840',
         representativeUser: 'tungtt',
-        bussinessType: 'advertisement',
+        businessType: 'advertisement',
         dateOfCorporation: new Date('2022-10-10'),
     },
     {
@@ -18,7 +18,7 @@ export const companyData: InsertCompanyDto[] = [
         email: 'nguyenkien123ns@gmail.com',
         logo: 'https://i.seadn.io/gcs/files/893d0ff24e35e342fc1da6c2fd2a0908.jpg?auto=format&w=3840',
         representativeUser: 'anhttk',
-        bussinessType: 'advertisement',
+        businessType: 'advertisement',
         dateOfCorporation: new Date('2022-10-10'),
     },
     {
@@ -27,7 +27,7 @@ export const companyData: InsertCompanyDto[] = [
         email: 'nguyenkienns@gmail.com',
         logo: 'https://i.seadn.io/gcs/files/893d0ff24e35e342fc1da6c2fd2a0908.jpg?auto=format&w=3840',
         representativeUser: 'maitt',
-        bussinessType: 'advertisement',
+        businessType: 'advertisement',
         dateOfCorporation: new Date('2022-10-10'),
     },
 ]

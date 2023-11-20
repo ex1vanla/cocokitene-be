@@ -126,7 +126,7 @@ export class Company extends BaseEntity {
         length: 255,
         name: 'bussiness_type',
     })
-    bussinessType: string
+    businessType: string
 
     @ManyToOne(() => CompanyStatus)
     @JoinColumn({
