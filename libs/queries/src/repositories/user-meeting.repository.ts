@@ -53,7 +53,7 @@ export class UserMeetingRepository extends Repository<UserMeeting> {
         return userMeetingList
     }
 
-    async getListUserIdPaticipantsByMeetingId(
+    async getListUserIdPaticipantsByMeetingIdAndMeetingRole(
         meetingId: number,
         meetingRole: MeetingRole,
     ): Promise<number[]> {

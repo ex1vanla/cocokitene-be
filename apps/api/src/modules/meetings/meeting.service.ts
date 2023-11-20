@@ -412,11 +412,10 @@ export class MeetingService {
                 HttpStatus.BAD_REQUEST,
             )
         }
-        let existedMeeting =
-            await this.meetingRepository.getMeetingByMeetingIdAndCompanyId(
-                meetingId,
-                companyId,
-            )
+        let existedMeeting = await this.getMeetingByMeetingIdAndCompanyId(
+            meetingId,
+            companyId,
+        )
         if (!existedMeeting) {
             throw new HttpException(
                 httpErrors.MEETING_NOT_EXISTED,
@@ -449,7 +448,6 @@ export class MeetingService {
             administrativeCouncils,
             shareholders,
         } = updateMeetingDto
-
         const totalShares =
             await this.userService.getTotalSharesHolderByShareholderIds(
                 shareholders,
@@ -457,7 +455,12 @@ export class MeetingService {
 
         const listMeetingFiles = [...meetingMinutes, ...meetingInvitations]
         const listProposals = [...resolutions, ...amendmentResolutions]
-
+        await this.proposalService.removeUserVoting(
+            meetingId,
+            companyId,
+            MeetingRole.SHAREHOLDER,
+            shareholders,
+        )
         await Promise.all([
             this.meetingFileService.updateListMeetingFiles(
                 meetingId,
@@ -469,7 +472,6 @@ export class MeetingService {
                 listProposals,
                 totalShares,
             ),
-
             await Promise.all([
                 this.userMeetingService.updateUserMeeting(
                     meetingId,
@@ -537,5 +539,17 @@ export class MeetingService {
         }
         await existedMeeting.save()
         return existedMeeting
+    }
+
+    async getMeetingByMeetingIdAndCompanyId(
+        meetingId: number,
+        companyId: number,
+    ): Promise<Meeting> {
+        const meeting =
+            await this.meetingRepository.getMeetingByMeetingIdAndCompanyId(
+                meetingId,
+                companyId,
+            )
+        return meeting
     }
 }

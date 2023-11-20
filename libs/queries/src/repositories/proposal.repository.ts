@@ -133,4 +133,22 @@ export class ProposalRepository extends Repository<Proposal> {
             })
         return paginateRaw(queryBuilder, options)
     }
+
+    async getAllInternalProposalInMeeting(
+        meetingId: number,
+    ): Promise<Proposal[]> {
+        const queryBuilder = this.createQueryBuilder('proposals')
+            .select([
+                'proposals.id',
+                'proposals.title',
+                'proposals.description',
+                'proposals.type',
+                'proposals.votedQuantity',
+                'proposals.unVotedQuantity',
+                'proposals.notVoteYetQuantity',
+            ])
+            .where('proposals.meetingId = :meetingId', { meetingId })
+        const idsProposal = await queryBuilder.getMany()
+        return idsProposal
+    }
 }

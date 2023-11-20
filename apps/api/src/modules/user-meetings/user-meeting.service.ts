@@ -52,7 +52,7 @@ export class UserMeetingService {
         meetingRole: MeetingRole,
         newIdPaticipants: number[],
     ): Promise<number[]> {
-        const listUserIds = await this.getListUserIdPaticipantsByMeetingId(
+        const listUserIds = await this.getListUserIdPaticipantsByMeetingIdAndMeetingRole(
             meetingId,
             meetingRole,
         )
@@ -123,15 +123,13 @@ export class UserMeetingService {
         return userMeeting
     }
 
-    async getListUserIdPaticipantsByMeetingId(
+    async getListUserIdPaticipantsByMeetingIdAndMeetingRole(
         meetingId: number,
         meetingRole: MeetingRole,
     ): Promise<number[]> {
-        const listIdUserMeetingFollowRoles =
-            await this.userMeetingRepository.getListUserIdPaticipantsByMeetingId(
-                meetingId,
-                meetingRole,
-            )
-        return listIdUserMeetingFollowRoles
+        return await this.userMeetingRepository.getListUserIdPaticipantsByMeetingIdAndMeetingRole(
+            meetingId,
+            meetingRole,
+        )
     }
 }

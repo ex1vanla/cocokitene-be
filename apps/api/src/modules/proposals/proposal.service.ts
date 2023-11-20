@@ -5,17 +5,21 @@ import {
 } from '@dtos/proposal.dto'
 import { Proposal } from '@entities/proposal.entity'
 import {
+    forwardRef,
     HttpException,
     HttpStatus,
     Inject,
     Injectable,
-    forwardRef,
 } from '@nestjs/common'
 import { ProposalRepository } from '@repositories/proposal.repository'
 import { httpErrors } from '@shares/exception-filter'
 import { VotingService } from '@api/modules/votings/voting.service'
 import { MeetingService } from '@api/modules/meetings/meeting.service'
 import { ProposalFileService } from '@api/modules/proposal-files/proposal-file.service'
+import { UserMeetingService } from '@api/modules/user-meetings/user-meeting.service'
+import { MeetingRole } from '@shares/constants/meeting.const'
+import { UserService } from '@api/modules/users/user.service'
+import { VoteProposalResult } from '@shares/constants/proposal.const'
 
 @Injectable()
 export class ProposalService {
@@ -25,6 +29,8 @@ export class ProposalService {
         @Inject(forwardRef(() => MeetingService))
         private readonly meetingService: MeetingService,
         private readonly proposalFileService: ProposalFileService,
+        private readonly userMeetingService: UserMeetingService,
+        private readonly userService: UserService,
     ) {}
 
     async createProposal(
@@ -177,11 +183,13 @@ export class ProposalService {
         const listCurrentProposals = meeting.proposals
         // list edited
         const listEdited = proposals.filter((proposal) => !!proposal.id)
+
         const listEditedIds = listEdited.map((proposal) => proposal.id)
         // list deleted
         const listDeleted = listCurrentProposals.filter(
             (proposal) => !listEditedIds.includes(proposal.id),
         )
+
         // list added
         const listAdded = proposals.filter((proposal) => !proposal.id)
 
@@ -229,5 +237,82 @@ export class ProposalService {
             proposalId,
         )
         return proposal
+    }
+
+    async removeUserVoting(
+        meetingId: number,
+        companyId: number,
+        meetingRole: MeetingRole,
+        newIdPaticipants: number[],
+    ): Promise<void> {
+        const existedMeeting =
+            await this.meetingService.getMeetingByMeetingIdAndCompanyId(
+                meetingId,
+                companyId,
+            )
+        if (!existedMeeting) {
+            throw new HttpException(
+                httpErrors.MEETING_NOT_EXISTED,
+                HttpStatus.BAD_REQUEST,
+            )
+        }
+
+        const currentRoles =
+            await this.userMeetingService.getListUserIdPaticipantsByMeetingIdAndMeetingRole(
+                meetingId,
+                meetingRole,
+            )
+
+        //ids need to delete when it not appear in newIdPaticipant
+        const idUsersToRemoves = currentRoles.filter(
+            (userId) => !newIdPaticipants.includes(userId),
+        )
+        const usersToRemoves = await Promise.all([
+            ...idUsersToRemoves.map((id) =>
+                this.userService.getActiveUserById(id),
+            ),
+        ])
+
+        const listProposalInMeeting =
+            await this.getAllInternalProposalInMeeting(meetingId)
+        for (const proposal of listProposalInMeeting) {
+            await Promise.all([
+                ...usersToRemoves.map(async (user) => {
+                    const resultVotedByUser =
+                        await this.votingService.findVotingByUserIdAndProposalId(
+                            user.id,
+                            proposal.id,
+                        )
+                    if (!resultVotedByUser) {
+                        proposal.notVoteYetQuantity -= user.shareQuantity
+                        await proposal.save()
+                    } else {
+                        const result = resultVotedByUser.result
+                        switch (result) {
+                            case VoteProposalResult.VOTE:
+                                proposal.votedQuantity -= user.shareQuantity
+                                break
+                            case VoteProposalResult.UNVOTE:
+                                proposal.unVotedQuantity -= user.shareQuantity
+                                break
+                        }
+                        await proposal.save()
+                        await this.votingService.removeUserVoting(
+                            user.id,
+                            proposal.id,
+                        )
+                    }
+                }),
+            ])
+        }
+    }
+    async getAllInternalProposalInMeeting(
+        meetingId: number,
+    ): Promise<Proposal[]> {
+        const listProposalResponses =
+            await this.proposalRepository.getAllInternalProposalInMeeting(
+                meetingId,
+            )
+        return listProposalResponses
     }
 }

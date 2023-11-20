@@ -218,4 +218,15 @@ export class VotingService {
             )
         }
     }
+
+    async removeUserVoting(userId: number, proposalId: number): Promise<void> {
+        try {
+            await this.votingRepository.delete({ userId, proposalId })
+        } catch (error) {
+            throw new HttpException(
+                httpErrors.DELETE_FAILED_USER_VOTING,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            )
+        }
+    }
 }
