@@ -194,13 +194,28 @@ export class ProposalService {
         const listAdded = proposals.filter((proposal) => !proposal.id)
         try {
             await Promise.all([
-                ...listEdited.map((proposal) =>
-                    this.proposalRepository.updateProposal(
+                ...listEdited.map(async (proposal) => {
+                    // user have voted and have not deleted, I need update number of notVoteYet
+                    const currentProposal =
+                        await this.proposalRepository.getProposalByProposalId(
+                            proposal.id,
+                        )
+                    const votedQuantity =
+                        currentProposal.votedQuantity !== null
+                            ? currentProposal.votedQuantity
+                            : 0
+                    const unVotedQuantity =
+                        currentProposal.unVotedQuantity !== null
+                            ? currentProposal.unVotedQuantity
+                            : 0
+                    const updatedNotVoteYetQuantity =
+                        totalShares - votedQuantity - unVotedQuantity
+                    await this.proposalRepository.updateProposal(
                         proposal.id,
                         proposal,
-                        totalShares,
-                    ),
-                ),
+                        updatedNotVoteYetQuantity,
+                    )
+                }),
                 ...listEdited.map((proposal) =>
                     this.proposalFileService.updateListProposalFiles(
                         proposal.id,
