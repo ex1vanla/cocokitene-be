@@ -71,7 +71,7 @@ export class ProposalRepository extends Repository<Proposal> {
             proposal.votedQuantity !== null ? proposal.votedQuantity : 0
         const unVotedQuantity =
             proposal.unVotedQuantity !== null ? proposal.unVotedQuantity : 0
-        const updatepNotVoteYetQuantity =
+        const updatedNotVoteYetQuantity =
             totalShares - votedQuantity - unVotedQuantity
         await this.createQueryBuilder('proposals')
             .update(Proposal)
@@ -80,7 +80,7 @@ export class ProposalRepository extends Repository<Proposal> {
                 description: description,
                 oldDescription: oldDescription,
                 // user have voted and have not deleted, I need update number of notVoteYet
-                notVoteYetQuantity: updatepNotVoteYetQuantity,
+                notVoteYetQuantity: updatedNotVoteYetQuantity,
                 // creatorId: userId,
             })
             .where('proposals.id = :proposalId', { proposalId })
