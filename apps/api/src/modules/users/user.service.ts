@@ -23,6 +23,7 @@ import { UserRoleService } from '@api/modules/user-roles/user-role.service'
 import { uuid } from '@shares/utils/uuid'
 import { RoleEnum } from '@shares/constants'
 import { generateRandomHexColor } from '@shares/utils'
+import { Like } from 'typeorm'
 
 @Injectable()
 export class UserService {
@@ -204,6 +205,24 @@ export class UserService {
             ...existedUser,
             roleName: roleNameByUserId,
         }
+    }
+
+    async getUserByEmail(email: string): Promise<User> {
+        const existedUser = await this.userRepository.findOne({
+            where: {
+                email: Like(`%${email}%`),
+            },
+        })
+        return existedUser
+    }
+
+    async getUserByWalletAddress(walletAddress: string): Promise<User> {
+        const existedUser = await this.userRepository.findOne({
+            where: {
+                walletAddress: Like(`%${walletAddress}%`),
+            },
+        })
+        return existedUser
     }
 
     async createUser(companyId: number, createUserDto: CreateUserDto) {

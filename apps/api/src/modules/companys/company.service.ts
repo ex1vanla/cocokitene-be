@@ -22,6 +22,7 @@ import { RoleEnum } from '@shares/constants'
 import { UserRoleService } from '@api/modules/user-roles/user-role.service'
 import { UserStatusService } from '@api/modules/user-status/user-status.service'
 import { PlanService } from '@api/modules/plans/plan.service'
+import { User } from '@entities/user.entity'
 
 @Injectable()
 export class CompanyService {
@@ -84,6 +85,30 @@ export class CompanyService {
     }
 
     async createCompany(createCompanyDto: CreateCompanyDto): Promise<Company> {
+        // check email and wallet address existed super admin
+        const superAdminEmail = createCompanyDto.superAdminCompany.email
+        const superAdminWalletAddress =
+            createCompanyDto.superAdminCompany.walletAddress
+
+        let superAdmin: User
+        superAdmin = await this.userService.getUserByEmail(superAdminEmail)
+        if (superAdmin) {
+            throw new HttpException(
+                httpErrors.SUPER_ADMIN_EXISTED,
+                HttpStatus.BAD_REQUEST,
+            )
+        }
+
+        superAdmin = await this.userService.getUserByWalletAddress(
+            superAdminWalletAddress,
+        )
+        if (superAdmin) {
+            throw new HttpException(
+                httpErrors.SUPER_ADMIN_EXISTED,
+                HttpStatus.BAD_REQUEST,
+            )
+        }
+
         //create company
         let createdCompany: Company
         try {
