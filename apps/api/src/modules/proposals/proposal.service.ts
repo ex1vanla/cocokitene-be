@@ -274,36 +274,41 @@ export class ProposalService {
 
         const listProposalInMeeting =
             await this.getAllInternalProposalInMeeting(meetingId)
-        for (const proposal of listProposalInMeeting) {
-            await Promise.all([
-                ...usersToRemoves.map(async (user) => {
-                    const resultVotedByUser =
-                        await this.votingService.findVotingByUserIdAndProposalId(
-                            user.id,
-                            proposal.id,
-                        )
-                    if (!resultVotedByUser) {
-                        proposal.notVoteYetQuantity -= user.shareQuantity
-                        await proposal.save()
-                    } else {
-                        const result = resultVotedByUser.result
-                        switch (result) {
-                            case VoteProposalResult.VOTE:
-                                proposal.votedQuantity -= user.shareQuantity
-                                break
-                            case VoteProposalResult.UNVOTE:
-                                proposal.unVotedQuantity -= user.shareQuantity
-                                break
+
+        await Promise.all(
+            listProposalInMeeting.map(async (proposal) => {
+                await Promise.all([
+                    ...usersToRemoves.map(async (user) => {
+                        //handle check result voted by user
+                        const resultVotedByUser =
+                            await this.votingService.findVotingByUserIdAndProposalId(
+                                user.id,
+                                proposal.id,
+                            )
+                        if (!resultVotedByUser) {
+                            proposal.notVoteYetQuantity -= user.shareQuantity
+                            await proposal.save()
+                        } else {
+                            const result = resultVotedByUser.result
+                            switch (result) {
+                                case VoteProposalResult.VOTE:
+                                    proposal.votedQuantity -= user.shareQuantity
+                                    break
+                                case VoteProposalResult.UNVOTE:
+                                    proposal.unVotedQuantity -=
+                                        user.shareQuantity
+                                    break
+                            }
+                            await proposal.save()
+                            await this.votingService.removeUserVoting(
+                                user.id,
+                                proposal.id,
+                            )
                         }
-                        await proposal.save()
-                        await this.votingService.removeUserVoting(
-                            user.id,
-                            proposal.id,
-                        )
-                    }
-                }),
-            ])
-        }
+                    }),
+                ])
+            }),
+        )
     }
     async getAllInternalProposalInMeeting(
         meetingId: number,
