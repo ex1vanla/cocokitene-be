@@ -184,6 +184,10 @@ export const httpErrors = {
         message: 'super admin create failed. Please try again',
         code: 'SUPER_ADMIN_00001',
     },
+    SUPER_ADMIN_EXISTED: {
+        message: 'super admin is existed. Please try again',
+        code: 'SUPER_ADMIN_00002',
+    },
     // user-role
     USER_ROLE_CREATE_FAILED: {
         message: 'user_role created failed. Please try again',

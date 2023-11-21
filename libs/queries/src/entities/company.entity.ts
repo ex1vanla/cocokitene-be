@@ -23,7 +23,6 @@ export class Company extends BaseEntity {
         name: 'company_name',
         type: 'varchar',
         length: 255,
-        unique: true,
     })
     companyName: string
 
@@ -70,7 +69,6 @@ export class Company extends BaseEntity {
         name: 'company_phone',
         type: 'varchar',
         length: 255,
-        unique: true,
     })
     phone: string
 
@@ -86,7 +84,6 @@ export class Company extends BaseEntity {
         name: 'company_email',
         type: 'varchar',
         length: 255,
-        unique: true,
         nullable: false,
     })
     email: string
@@ -126,7 +123,7 @@ export class Company extends BaseEntity {
         length: 255,
         name: 'bussiness_type',
     })
-    bussinessType: string
+    businessType: string
 
     @ManyToOne(() => CompanyStatus)
     @JoinColumn({
