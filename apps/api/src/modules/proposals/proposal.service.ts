@@ -192,7 +192,6 @@ export class ProposalService {
 
         // list added
         const listAdded = proposals.filter((proposal) => !proposal.id)
-
         try {
             await Promise.all([
                 ...listEdited.map((proposal) =>

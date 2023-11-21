@@ -28,7 +28,6 @@ export class VotingService {
         private readonly proposalRepository: ProposalRepository,
         private readonly userService: UserService,
         private readonly userMeetingService: UserMeetingService,
-        private readonly roleService: RoleService,
         @Inject(forwardRef(() => MeetingService))
         private readonly meetingService: MeetingService,
     ) {}
@@ -80,7 +79,7 @@ export class VotingService {
         }
 
         const listIdsShareholders =
-            await this.userMeetingService.getListUserIdPaticipantsByMeetingId(
+            await this.userMeetingService.getListUserIdPaticipantsByMeetingIdAndMeetingRole(
                 proposal.meetingId,
                 MeetingRole.SHAREHOLDER,
             )

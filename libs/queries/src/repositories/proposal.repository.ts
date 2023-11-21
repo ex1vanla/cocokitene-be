@@ -66,19 +66,27 @@ export class ProposalRepository extends Repository<Proposal> {
         totalShares: number,
     ): Promise<Proposal> {
         const { title, description, oldDescription } = proposalDtoUpdate
+        const proposal = await this.getProposalByProposalId(proposalId)
+        const votedQuantity =
+            proposal.votedQuantity !== null ? proposal.votedQuantity : 0
+        const unVotedQuantity =
+            proposal.unVotedQuantity !== null ? proposal.unVotedQuantity : 0
+        const updatepNotVoteYetQuantity =
+            totalShares - votedQuantity - unVotedQuantity
         await this.createQueryBuilder('proposals')
             .update(Proposal)
             .set({
                 title: title,
                 description: description,
                 oldDescription: oldDescription,
-                notVoteYetQuantity: totalShares,
+                // user have voted and have not deleted, I need update number of notVoteYet
+                notVoteYetQuantity: updatepNotVoteYetQuantity,
                 // creatorId: userId,
             })
             .where('proposals.id = :proposalId', { proposalId })
             .execute()
-        const proposal = await this.getProposalByProposalId(proposalId)
-        return proposal
+        const updatedProposal = await this.getProposalByProposalId(proposalId)
+        return updatedProposal
     }
 
     async getProposalById(proposalId: number): Promise<Proposal> {
