@@ -84,8 +84,8 @@ export class ProposalRepository extends Repository<Proposal> {
             })
             .where('proposals.id = :proposalId', { proposalId })
             .execute()
-        const updatedProposal = await this.getProposalByProposalId(proposalId)
-        return updatedProposal
+        const proposal = await this.getProposalByProposalId(proposalId)
+        return proposal
     }
 
     async getProposalById(proposalId: number): Promise<Proposal> {

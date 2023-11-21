@@ -17,15 +17,9 @@ import { VotingService } from '@api/modules/votings/voting.service'
 import { MeetingService } from '@api/modules/meetings/meeting.service'
 import { ProposalFileService } from '@api/modules/proposal-files/proposal-file.service'
 import { UserMeetingService } from '@api/modules/user-meetings/user-meeting.service'
-<<<<<<< HEAD
 import { VoteProposalResult } from '@shares/constants/proposal.const'
 import { CalculateProposal } from '@api/modules/proposals/proposal.interface'
 import { User } from '@entities/user.entity'
-=======
-import { MeetingRole } from '@shares/constants/meeting.const'
-import { UserService } from '@api/modules/users/user.service'
-import { VoteProposalResult } from '@shares/constants/proposal.const'
->>>>>>> ce7f45a (refactor: add and remove shareholder)
 
 @Injectable()
 export class ProposalService {
@@ -36,10 +30,6 @@ export class ProposalService {
         private readonly meetingService: MeetingService,
         private readonly proposalFileService: ProposalFileService,
         private readonly userMeetingService: UserMeetingService,
-<<<<<<< HEAD
-=======
-        private readonly userService: UserService,
->>>>>>> ce7f45a (refactor: add and remove shareholder)
     ) {}
 
     async createProposal(
