@@ -31,7 +31,7 @@ export class MeetingRepository extends Repository<Meeting> {
                 'meetings.note',
             ])
             .distinct(true)
-            .leftJoin(
+            .innerJoin(
                 'user_meetings',
                 'userMeeting',
                 'userMeeting.meetingId = meetings.id AND userMeeting.userId = :userId',
