@@ -63,15 +63,24 @@ export class SystemAdminService {
         superAdminCompanyId: number,
         superAdminDto: SuperAdminDto,
     ): Promise<User> {
-        const superAdmin = await this.userService.getActiveUserById(
+        const superAdmin = await this.userService.getInternalUserById(
             superAdminCompanyId,
         )
+
+        if (!superAdmin) {
+            throw new HttpException(
+                httpErrors.SUPER_ADMIN_NOT_FOUND,
+                HttpStatus.BAD_REQUEST,
+            )
+        }
+
         if (superAdmin.companyId !== companyId) {
             throw new HttpException(
                 httpErrors.SUPER_ADMIN_NOT_IN_THIS_COMPANY,
                 HttpStatus.BAD_REQUEST,
             )
         }
+
         const updatedSuperAdminCompany =
             await this.userService.updateSuperAdminCompany(
                 companyId,

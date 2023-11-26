@@ -204,7 +204,7 @@ export class SuperAdminDto {
         required: false,
         example: 2,
     })
-    newStatusId?: number
+    statusId?: number
 }
 
 export class CreateSuperAdminCompanyDto {

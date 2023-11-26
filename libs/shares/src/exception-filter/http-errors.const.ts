@@ -188,6 +188,10 @@ export const httpErrors = {
         message: 'super admin is existed. Please try again',
         code: 'SUPER_ADMIN_00002',
     },
+    SUPER_ADMIN_NOT_FOUND: {
+        message: 'super admin not found. Please try again',
+        code: 'SUPER_ADMIN_00003',
+    },
     // user-role
     USER_ROLE_CREATE_FAILED: {
         message: 'user_role created failed. Please try again',

@@ -59,6 +59,7 @@ export class CompanyRepository extends Repository<Company> {
                 .update(Company)
                 .set({
                     companyName: updateCompanyDto.companyName,
+                    companyShortName: updateCompanyDto.companyShortName,
                     description: updateCompanyDto.description,
                     address: updateCompanyDto.address,
                     email: updateCompanyDto.email,
@@ -67,9 +68,9 @@ export class CompanyRepository extends Repository<Company> {
                     taxNumber: updateCompanyDto.taxNumber,
                     businessType: updateCompanyDto.businessType,
                     dateOfCorporation: updateCompanyDto.dateOfCorporation,
-                    statusId: updateCompanyDto.newStatusId,
-                    planId: updateCompanyDto.newPlanId,
-                    representativeUser: updateCompanyDto.newRepresentativeUser,
+                    statusId: updateCompanyDto.statusId,
+                    planId: updateCompanyDto.planId,
+                    representativeUser: updateCompanyDto.representativeUser,
                 })
                 .where('companys.id = :companyId', { companyId })
                 .execute()

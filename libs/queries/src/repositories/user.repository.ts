@@ -40,6 +40,15 @@ export class UserRepository extends Repository<User> {
         return user
     }
 
+    async getInternalUserById(id: number): Promise<User> {
+        const user = await this.createQueryBuilder('users')
+            .where('users.id = :id', {
+                id,
+            })
+            .getOne()
+        return user
+    }
+
     async getUserByWalletAddress(
         walletAddress: string,
         status?: UserStatusEnum,
@@ -145,7 +154,7 @@ export class UserRepository extends Repository<User> {
                     username: newSuperAdminDto.username,
                     walletAddress: newSuperAdminDto.walletAddress,
                     email: newSuperAdminDto.email,
-                    statusId: newSuperAdminDto.newStatusId,
+                    statusId: newSuperAdminDto.statusId,
                 })
                 .where('users.id = :superAdminCompanyId', {
                     superAdminCompanyId,
@@ -161,6 +170,7 @@ export class UserRepository extends Repository<User> {
             })
             return updatedSuperAdminCompany
         } catch (error) {
+            throw error
             throw new HttpException(
                 { message: error.message },
                 HttpStatus.INTERNAL_SERVER_ERROR,
