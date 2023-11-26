@@ -87,6 +87,11 @@ export class UserService {
         return user
     }
 
+    async getInternalUserById(userId: number): Promise<User> {
+        const user = await this.userRepository.getInternalUserById(userId)
+        return user
+    }
+
     // async getUserByMeetingIdAndRole(
     //     meetingId: number,
     //     role: MeetingRole,

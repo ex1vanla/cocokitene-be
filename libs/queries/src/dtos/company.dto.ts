@@ -24,6 +24,14 @@ export class UpdateCompanyDto {
     @IsOptional()
     @IsString()
     @ApiProperty({
+        example: 'NAB',
+        required: false,
+    })
+    companyShortName?: string
+
+    @IsOptional()
+    @IsString()
+    @ApiProperty({
         example: 'donate to our company to build a community center',
         required: false,
     })
@@ -84,7 +92,7 @@ export class UpdateCompanyDto {
         required: false,
         example: 1,
     })
-    newStatusId?: number
+    statusId?: number
 
     @IsOptional()
     @IsString()
@@ -92,7 +100,7 @@ export class UpdateCompanyDto {
         example: 'kiennv',
         required: false,
     })
-    newRepresentativeUser?: string
+    representativeUser?: string
 
     @IsOptional()
     @IsNumber()
@@ -101,7 +109,7 @@ export class UpdateCompanyDto {
         example: 1,
         required: false,
     })
-    newPlanId?: number
+    planId?: number
 
     @IsOptional()
     @IsString()
