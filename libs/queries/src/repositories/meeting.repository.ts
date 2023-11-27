@@ -14,7 +14,7 @@ export class MeetingRepository extends Repository<Meeting> {
     async getAllMeetings(
         companyId: number,
         userId: number,
-        isUserHasPermissionCreateMeeting: boolean,
+        canUserCreateMeeting: boolean,
         options: IPaginationOptions & GetAllMeetingDto,
     ): Promise<Pagination<Meeting>> {
         const searchQuery = options.searchQuery || ''
@@ -32,7 +32,7 @@ export class MeetingRepository extends Repository<Meeting> {
                 'meetings.note',
             ])
             .distinct(true)
-        if (isUserHasPermissionCreateMeeting) {
+        if (canUserCreateMeeting) {
             queryBuilder.leftJoin(
                 'user_meetings',
                 'userMeeting',

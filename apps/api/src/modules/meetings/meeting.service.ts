@@ -64,7 +64,7 @@ export class MeetingService {
                 companyId,
                 getAllMeetingDto,
             )
-        const isUserHasPermissionCreateMeeting = permissionKeys.includes(
+        const canUserCreateMeeting = permissionKeys.includes(
             PermissionEnum.CREATE_MEETING,
         )
         const idsMeeting = listMeetingsResponse.map((meeting) => meeting.id)
@@ -74,7 +74,7 @@ export class MeetingService {
         const meetings = await this.meetingRepository.getAllMeetings(
             companyId,
             userId,
-            isUserHasPermissionCreateMeeting,
+            canUserCreateMeeting,
             getAllMeetingDto,
         )
         return meetings
