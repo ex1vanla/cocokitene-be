@@ -35,6 +35,8 @@ import { VotingService } from '@api/modules/votings/voting.service'
 import { VoteProposalResult } from '@shares/constants/proposal.const'
 import { GetAllDto } from '@dtos/base.dto'
 import { UserService } from '@api/modules/users/user.service'
+import { User } from '@entities/user.entity'
+import { PermissionEnum } from '@shares/constants'
 
 @Injectable()
 export class MeetingService {
@@ -52,14 +54,19 @@ export class MeetingService {
 
     async getAllMeetings(
         getAllMeetingDto: GetAllMeetingDto,
-        userId: number,
+        user: User,
         companyId: number,
     ): Promise<Pagination<Meeting>> {
+        const userId = user.id
+        const permissionKeys: string[] = (user as any).permissionKeys || []
         const listMeetingsResponse =
             await this.meetingRepository.getInternalListMeeting(
                 companyId,
                 getAllMeetingDto,
             )
+        const isUserHasPermissionCreateMeeting = permissionKeys.includes(
+            PermissionEnum.CREATE_MEETING,
+        )
         const idsMeeting = listMeetingsResponse.map((meeting) => meeting.id)
         await Promise.all([
             ...idsMeeting.map((id) => this.standardStatusMeeting(id)),
@@ -67,6 +74,7 @@ export class MeetingService {
         const meetings = await this.meetingRepository.getAllMeetings(
             companyId,
             userId,
+            isUserHasPermissionCreateMeeting,
             getAllMeetingDto,
         )
         return meetings

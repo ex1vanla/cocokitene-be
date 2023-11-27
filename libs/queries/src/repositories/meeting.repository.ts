@@ -14,6 +14,7 @@ export class MeetingRepository extends Repository<Meeting> {
     async getAllMeetings(
         companyId: number,
         userId: number,
+        isUserHasPermissionCreateMeeting: boolean,
         options: IPaginationOptions & GetAllMeetingDto,
     ): Promise<Pagination<Meeting>> {
         const searchQuery = options.searchQuery || ''
@@ -31,12 +32,23 @@ export class MeetingRepository extends Repository<Meeting> {
                 'meetings.note',
             ])
             .distinct(true)
-            .innerJoin(
+        if (isUserHasPermissionCreateMeeting) {
+            queryBuilder.leftJoin(
                 'user_meetings',
                 'userMeeting',
                 'userMeeting.meetingId = meetings.id AND userMeeting.userId = :userId',
                 { userId },
             )
+        } else {
+            queryBuilder.innerJoin(
+                'user_meetings',
+                'userMeeting',
+                'userMeeting.meetingId = meetings.id AND userMeeting.userId = :userId',
+                { userId },
+            )
+        }
+
+        queryBuilder
             .addSelect(
                 `(CASE 
                 WHEN userMeeting.status = '0' THEN true
