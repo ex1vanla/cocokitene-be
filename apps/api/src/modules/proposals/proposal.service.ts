@@ -167,7 +167,7 @@ export class ProposalService {
                         votedQuantity,
                         unVotedQuantity,
                         notVoteYetQuantity,
-                    } = await this.reCalculateProposalVoteCounts(
+                    } = await this.recalculateVoteResult(
                         proposal,
                         usersToRemoves,
                         totalShares,
@@ -217,7 +217,7 @@ export class ProposalService {
         return proposal
     }
 
-    async reCalculateProposalVoteCounts(
+    async recalculateVoteResult(
         proposal: ProposalDto,
         usersToRemoves: User[],
         totalShares: number,
