@@ -17,9 +17,9 @@ import { VotingService } from '@api/modules/votings/voting.service'
 import { MeetingService } from '@api/modules/meetings/meeting.service'
 import { ProposalFileService } from '@api/modules/proposal-files/proposal-file.service'
 import { UserMeetingService } from '@api/modules/user-meetings/user-meeting.service'
-import { MeetingRole } from '@shares/constants/meeting.const'
-import { UserService } from '@api/modules/users/user.service'
 import { VoteProposalResult } from '@shares/constants/proposal.const'
+import { CalculateProposal } from '@api/modules/proposals/proposal.interface'
+import { User } from '@entities/user.entity'
 
 @Injectable()
 export class ProposalService {
@@ -30,7 +30,6 @@ export class ProposalService {
         private readonly meetingService: MeetingService,
         private readonly proposalFileService: ProposalFileService,
         private readonly userMeetingService: UserMeetingService,
-        private readonly userService: UserService,
     ) {}
 
     async createProposal(
@@ -79,43 +78,6 @@ export class ProposalService {
             )
         }
     }
-
-    // async updateProposal(
-    //     companyId: number,
-    //     proposalId: number,
-    //     proposalDtoUpdate: ProposalDtoUpdate,
-    // ): Promise<Proposal> {
-    //     try {
-    //         // check existed of meeting and proposal
-    //         const proposal = await this.proposalRepository.getProposalById(
-    //             proposalId,
-    //         )
-    //         if (!proposal) {
-    //             throw new HttpException(
-    //                 httpErrors.PROPOSAL_NOT_FOUND,
-    //                 HttpStatus.NOT_FOUND,
-    //             )
-    //         }
-    //
-    //         if (proposal.meeting.companyId !== companyId) {
-    //             throw new HttpException(
-    //                 httpErrors.MEETING_NOT_IN_THIS_COMPANY,
-    //                 HttpStatus.BAD_REQUEST,
-    //             )
-    //         }
-    //
-    //         const updateProposal = await this.proposalRepository.updateProposal(
-    //             proposalId,
-    //             proposalDtoUpdate,
-    //         )
-    //         return updateProposal
-    //     } catch (error) {
-    //         throw new HttpException(
-    //             httpErrors.MEETING_UPDATE_FAILED,
-    //             HttpStatus.INTERNAL_SERVER_ERROR,
-    //         )
-    //     }
-    // }
 
     async deleteProposal(companyId: number, proposalId: number) {
         // check existed of meeting and proposal
@@ -176,6 +138,7 @@ export class ProposalService {
         userId: number,
         proposals: ProposalDto[],
         totalShares: number,
+        shareholders: number[],
     ): Promise<void> {
         const meeting = await this.meetingService.getInternalMeetingById(
             meetingId,
@@ -192,28 +155,29 @@ export class ProposalService {
 
         // list added
         const listAdded = proposals.filter((proposal) => !proposal.id)
+        const usersToRemoves =
+            await this.userMeetingService.getListUserToRemoveInMeeting(
+                meetingId,
+                shareholders,
+            )
         try {
             await Promise.all([
                 ...listEdited.map(async (proposal) => {
-                    // user have voted and have not deleted, I need update number of notVoteYet
-                    const currentProposal =
-                        await this.proposalRepository.getProposalByProposalId(
-                            proposal.id,
-                        )
-                    const votedQuantity =
-                        currentProposal.votedQuantity !== null
-                            ? currentProposal.votedQuantity
-                            : 0
-                    const unVotedQuantity =
-                        currentProposal.unVotedQuantity !== null
-                            ? currentProposal.unVotedQuantity
-                            : 0
-                    const updatedNotVoteYetQuantity =
-                        totalShares - votedQuantity - unVotedQuantity
+                    const {
+                        votedQuantity,
+                        unVotedQuantity,
+                        notVoteYetQuantity,
+                    } = await this.reCalculateProposalVoteCounts(
+                        proposal,
+                        usersToRemoves,
+                        totalShares,
+                    )
+                    proposal.votedQuantity = votedQuantity
+                    proposal.unVotedQuantity = unVotedQuantity
+                    proposal.notVoteYetQuantity = notVoteYetQuantity
                     await this.proposalRepository.updateProposal(
                         proposal.id,
                         proposal,
-                        updatedNotVoteYetQuantity,
                     )
                 }),
                 ...listEdited.map((proposal) =>
@@ -253,85 +217,60 @@ export class ProposalService {
         return proposal
     }
 
-    async removeUserVoting(
-        meetingId: number,
-        companyId: number,
-        meetingRole: MeetingRole,
-        newIdPaticipants: number[],
-    ): Promise<void> {
-        const existedMeeting =
-            await this.meetingService.getMeetingByMeetingIdAndCompanyId(
-                meetingId,
-                companyId,
-            )
-        if (!existedMeeting) {
-            throw new HttpException(
-                httpErrors.MEETING_NOT_EXISTED,
-                HttpStatus.BAD_REQUEST,
-            )
-        }
+    async reCalculateProposalVoteCounts(
+        proposal: ProposalDto,
+        usersToRemoves: User[],
+        totalShares: number,
+    ): Promise<CalculateProposal> {
+        let votedQuantity = 0,
+            unVotedQuantity = 0,
+            notVoteYetQuantity = 0
+        let temporaryVoteQuantity = 0,
+            temporaryUnvoteQuantity = 0
+        const currentProposal =
+            await this.proposalRepository.getProposalByProposalId(proposal.id)
 
-        const currentRoles =
-            await this.userMeetingService.getListUserIdPaticipantsByMeetingIdAndMeetingRole(
-                meetingId,
-                meetingRole,
-            )
-
-        //ids need to delete when it not appear in newIdPaticipant
-        const idUsersToRemoves = currentRoles.filter(
-            (userId) => !newIdPaticipants.includes(userId),
-        )
-        const usersToRemoves = await Promise.all([
-            ...idUsersToRemoves.map((id) =>
-                this.userService.getActiveUserById(id),
-            ),
-        ])
-
-        const listProposalInMeeting =
-            await this.getAllInternalProposalInMeeting(meetingId)
-
-        await Promise.all(
-            listProposalInMeeting.map(async (proposal) => {
-                await Promise.all([
-                    ...usersToRemoves.map(async (user) => {
-                        //handle check result voted by user
-                        const resultVotedByUser =
-                            await this.votingService.findVotingByUserIdAndProposalId(
-                                user.id,
-                                proposal.id,
-                            )
-                        if (!resultVotedByUser) {
-                            proposal.notVoteYetQuantity -= user.shareQuantity
-                            await proposal.save()
-                        } else {
-                            const result = resultVotedByUser.result
-                            switch (result) {
-                                case VoteProposalResult.VOTE:
-                                    proposal.votedQuantity -= user.shareQuantity
-                                    break
-                                case VoteProposalResult.UNVOTE:
-                                    proposal.unVotedQuantity -=
-                                        user.shareQuantity
-                                    break
-                            }
-                            await proposal.save()
-                            await this.votingService.removeUserVoting(
-                                user.id,
-                                proposal.id,
-                            )
-                        }
-                    }),
-                ])
+        await Promise.all([
+            ...usersToRemoves.map(async (user) => {
+                //handle check result voted by user
+                const resultVotedByUser =
+                    await this.votingService.findVotingByUserIdAndProposalId(
+                        user.id,
+                        currentProposal.id,
+                    )
+                if (!resultVotedByUser) {
+                    return
+                } else {
+                    const result = resultVotedByUser.result
+                    switch (result) {
+                        case VoteProposalResult.VOTE:
+                            temporaryVoteQuantity += user.shareQuantity
+                            break
+                        case VoteProposalResult.UNVOTE:
+                            temporaryUnvoteQuantity += user.shareQuantity
+                            break
+                    }
+                    await this.votingService.removeUserVoting(
+                        user.id,
+                        currentProposal.id,
+                    )
+                }
             }),
-        )
-    }
-    async getAllInternalProposalInMeeting(
-        meetingId: number,
-    ): Promise<Proposal[]> {
-        const listProposalResponses =
-            await this.proposalRepository.getAllInternalProposalInMeeting(
-                meetingId,
-            )
-        return listProposalResponses
+        ])
+        votedQuantity =
+            currentProposal.votedQuantity !== null
+                ? currentProposal.votedQuantity - temporaryVoteQuantity
+                : 0
+        unVotedQuantity =
+            currentProposal.unVotedQuantity !== null
+                ? currentProposal.unVotedQuantity - temporaryUnvoteQuantity
+                : 0
+        notVoteYetQuantity = totalShares - votedQuantity - unVotedQuantity
+        // notVoteYetQuantity = totalShares
+        return {
+            votedQuantity,
+            unVotedQuantity,
+            notVoteYetQuantity,
+        }
     }
 }

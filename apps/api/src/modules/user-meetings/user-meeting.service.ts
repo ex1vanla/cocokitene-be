@@ -4,11 +4,14 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { UserMeetingRepository } from '@repositories/user-meeting.repository'
 import { MeetingRole } from '@shares/constants/meeting.const'
 import { httpErrors } from '@shares/exception-filter'
+import { UserService } from '@api/modules/users/user.service'
+import { User } from '@entities/user.entity'
 
 @Injectable()
 export class UserMeetingService {
     constructor(
         private readonly userMeetingRepository: UserMeetingRepository,
+        private readonly userService: UserService,
     ) {}
 
     async createUserMeeting(
@@ -131,5 +134,26 @@ export class UserMeetingService {
             meetingId,
             meetingRole,
         )
+    }
+
+    async getListUserToRemoveInMeeting(
+        meetingId: number,
+        newIdPaticipants: number[],
+    ): Promise<User[]> {
+        const listOldShareholderIds =
+            await this.getListUserIdPaticipantsByMeetingIdAndMeetingRole(
+                meetingId,
+                MeetingRole.SHAREHOLDER,
+            )
+        //id of user need to delete
+        const idUsersToRemoves = listOldShareholderIds.filter(
+            (userId) => !newIdPaticipants.includes(userId),
+        )
+        const usersToRemoves = await Promise.all([
+            ...idUsersToRemoves.map((id) =>
+                this.userService.getActiveUserById(id),
+            ),
+        ])
+        return usersToRemoves
     }
 }

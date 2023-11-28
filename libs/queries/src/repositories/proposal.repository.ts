@@ -60,19 +60,26 @@ export class ProposalRepository extends Repository<Proposal> {
     }
 
     async updateProposal(
-        // userId: number,
         proposalId: number,
         proposalDtoUpdate: ProposalDtoUpdate,
-        updatedNotVoteYetQuantity: number,
     ): Promise<Proposal> {
-        const { title, description, oldDescription } = proposalDtoUpdate
+        const {
+            title,
+            description,
+            oldDescription,
+            notVoteYetQuantity,
+            votedQuantity,
+            unVotedQuantity,
+        } = proposalDtoUpdate
         await this.createQueryBuilder('proposals')
             .update(Proposal)
             .set({
                 title: title,
                 description: description,
                 oldDescription: oldDescription,
-                notVoteYetQuantity: updatedNotVoteYetQuantity,
+                unVotedQuantity: unVotedQuantity,
+                votedQuantity: votedQuantity,
+                notVoteYetQuantity: notVoteYetQuantity,
                 // creatorId: userId,
             })
             .where('proposals.id = :proposalId', { proposalId })
@@ -132,23 +139,5 @@ export class ProposalRepository extends Repository<Proposal> {
                 meetingId: meetingId,
             })
         return paginateRaw(queryBuilder, options)
-    }
-
-    async getAllInternalProposalInMeeting(
-        meetingId: number,
-    ): Promise<Proposal[]> {
-        const queryBuilder = this.createQueryBuilder('proposals')
-            .select([
-                'proposals.id',
-                'proposals.title',
-                'proposals.description',
-                'proposals.type',
-                'proposals.votedQuantity',
-                'proposals.unVotedQuantity',
-                'proposals.notVoteYetQuantity',
-            ])
-            .where('proposals.meetingId = :meetingId', { meetingId })
-        const idsProposal = await queryBuilder.getMany()
-        return idsProposal
     }
 }
