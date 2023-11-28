@@ -266,7 +266,6 @@ export class ProposalService {
                 ? currentProposal.unVotedQuantity - temporaryUnvoteQuantity
                 : 0
         notVoteYetQuantity = totalShares - votedQuantity - unVotedQuantity
-        // notVoteYetQuantity = totalShares
         return {
             votedQuantity,
             unVotedQuantity,
