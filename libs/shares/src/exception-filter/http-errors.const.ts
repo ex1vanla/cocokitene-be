@@ -165,6 +165,11 @@ export const httpErrors = {
         message: 'user vote when the meeting has ended. Please try again',
         code: 'VOTING_00002',
     },
+    USER_NOT_HAVE_THE_RIGHT_TO_VOTE: {
+        message:
+            'user are not a shareholder in this meeting so you do not have the right to vote. Please try again',
+        code: 'VOTING_00003',
+    },
     //system-admin
     SYSTEM_ADMIN_NOT_FOUND: {
         message: 'System admin does not exist. Please try again',
