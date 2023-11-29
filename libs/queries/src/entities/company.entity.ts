@@ -121,7 +121,7 @@ export class Company extends BaseEntity {
         nullable: true,
         type: 'varchar',
         length: 255,
-        name: 'bussiness_type',
+        name: 'business_type',
     })
     businessType: string
 
