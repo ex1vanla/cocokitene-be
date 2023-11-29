@@ -92,6 +92,7 @@ export class MeetingService {
                     HttpStatus.NOT_FOUND,
                 )
             }
+
             const existedMeeting =
                 await this.meetingRepository.getMeetingByMeetingIdAndCompanyId(
                     meetingId,
@@ -313,6 +314,32 @@ export class MeetingService {
                 ),
             ),
         )
+
+        // const userMeeting = await this.userMeetingRepository.findOne({
+        //     where: {
+        //         userId: userId,
+        //         meetingId: meetingId,
+        //         status: UserMeetingStatusEnum.PARTICIPATE
+        //     }
+        // })
+        // console.log('userMeeting da participate--',userMeeting);
+        // if(!userMeeting) {
+        //     await Promise.all([
+        //         ...userMeetings.map((userMeeting) =>
+        //           this.userMeetingService.saveStatusUserMeeting(
+        //             userMeeting,
+        //           ),
+        //         ),
+        //
+        //     ])
+        // }else {
+        //     const usersWithStatusMeetingIsAbcense = userMeetings.filter((userMeeting)=> userMeeting.status === UserMeetingStatusEnum.ABSENCE)
+        //     console.log('usersWithStatusMeetingIsAbcense---',usersWithStatusMeetingIsAbcense);
+        //     await Promise.all([
+        //         ...usersWithStatusMeetingIsAbcense.map((userMeeting)=> this.userMeetingService.saveStatusUserMeeting(userMeeting)),
+        //     ])
+        // }
+
         const shareholdersTotal = shareholders.length
         const shareholdersJoined = shareholders.reduce(
             (accumulator, currentValue) => {
