@@ -52,21 +52,20 @@ export class UserMeetingService {
         meetingRole: MeetingRole,
         newIdPaticipants: number[],
     ): Promise<number[]> {
-        const currentRoles =
-            await this.userMeetingRepository.getListUserIdPaticipantsByMeetingId(
-                meetingId,
-                meetingRole,
-            )
+        const listUserIds = await this.getListUserIdPaticipantsByMeetingId(
+            meetingId,
+            meetingRole,
+        )
 
         // ids just add from dto
         const usersToAdds = newIdPaticipants.filter(
-            (userId) => !currentRoles.includes(userId),
+            (userId) => !listUserIds.includes(userId),
         )
         const addedUsersFollowRole: number[] = []
         addedUsersFollowRole.push(...usersToAdds)
 
         //ids need to delete when it not appear in newIdPaticipant
-        const usersToRemoves = currentRoles.filter(
+        const usersToRemoves = listUserIds.filter(
             (userId) => !newIdPaticipants.includes(userId),
         )
 
@@ -122,5 +121,17 @@ export class UserMeetingService {
             },
         })
         return userMeeting
+    }
+
+    async getListUserIdPaticipantsByMeetingId(
+        meetingId: number,
+        meetingRole: MeetingRole,
+    ): Promise<number[]> {
+        const listIdUserMeetingFollowRoles =
+            await this.userMeetingRepository.getListUserIdPaticipantsByMeetingId(
+                meetingId,
+                meetingRole,
+            )
+        return listIdUserMeetingFollowRoles
     }
 }

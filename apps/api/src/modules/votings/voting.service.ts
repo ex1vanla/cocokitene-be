@@ -16,7 +16,10 @@ import { UserService } from '@api/modules/users/user.service'
 import { MeetingService } from '@api/modules/meetings/meeting.service'
 import { UserMeetingService } from '@api/modules/user-meetings/user-meeting.service'
 import { RoleService } from '@api/modules/roles/role.service'
-import { UserMeetingStatusEnum } from '@shares/constants/meeting.const'
+import {
+    MeetingRole,
+    UserMeetingStatusEnum,
+} from '@shares/constants/meeting.const'
 
 @Injectable()
 export class VotingService {
@@ -67,10 +70,23 @@ export class VotingService {
                 HttpStatus.BAD_REQUEST,
             )
         }
+
         const existedUser = await this.userService.getActiveUserById(userId)
         if (!existedUser) {
             throw new HttpException(
                 httpErrors.USER_NOT_FOUND,
+                HttpStatus.BAD_REQUEST,
+            )
+        }
+
+        const listIdsShareholders =
+            await this.userMeetingService.getListUserIdPaticipantsByMeetingId(
+                proposal.meetingId,
+                MeetingRole.SHAREHOLDER,
+            )
+        if (!listIdsShareholders.includes(userId)) {
+            throw new HttpException(
+                httpErrors.USER_NOT_HAVE_THE_RIGHT_TO_VOTE,
                 HttpStatus.BAD_REQUEST,
             )
         }

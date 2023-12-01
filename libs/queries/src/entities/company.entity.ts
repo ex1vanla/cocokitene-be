@@ -27,7 +27,7 @@ export class Company extends BaseEntity {
     companyName: string
 
     @Column({
-        nullable: true,
+        nullable: false,
         name: 'company_short_name',
         type: 'varchar',
         length: 255,
@@ -50,14 +50,14 @@ export class Company extends BaseEntity {
     })
     address: string
 
-    @Column({ nullable: true, name: 'plan_id', type: 'integer', width: 11 })
+    @Column({ nullable: false, name: 'plan_id', type: 'integer', width: 11 })
     planId: number
 
     @Column({ nullable: false, name: 'status_id', type: 'integer', width: 11 })
     statusId: number
 
     @Column({
-        nullable: true,
+        nullable: false,
         name: 'representative_user',
         type: 'varchar',
         length: 255,
@@ -65,7 +65,7 @@ export class Company extends BaseEntity {
     representativeUser: string
 
     @Column({
-        nullable: true,
+        nullable: false,
         name: 'company_phone',
         type: 'varchar',
         length: 255,
@@ -73,7 +73,7 @@ export class Company extends BaseEntity {
     phone: string
 
     @Column({
-        nullable: true,
+        nullable: false,
         name: 'company_tax_number',
         type: 'varchar',
         length: 255,
@@ -99,7 +99,7 @@ export class Company extends BaseEntity {
     @Column({
         name: 'date_of_corporation',
         type: 'date',
-        nullable: true,
+        nullable: false,
     })
     dateOfCorporation: Date
 
@@ -118,7 +118,7 @@ export class Company extends BaseEntity {
     logo: string
 
     @Column({
-        nullable: true,
+        nullable: false,
         type: 'varchar',
         length: 255,
         name: 'business_type',
