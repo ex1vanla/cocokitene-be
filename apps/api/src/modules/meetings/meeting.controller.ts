@@ -46,10 +46,10 @@ export class MeetingController {
         @UserScope() user: User,
     ) {
         const companyId = user?.companyId
-        const userId = user?.id
+        // const userId = user?.id
         const meetings = await this.meetingService.getAllMeetings(
             getAllMeetingDto,
-            userId,
+            user,
             companyId,
         )
         return meetings
