@@ -57,20 +57,22 @@ export class MeetingService {
         user: User,
         companyId: number,
     ): Promise<Pagination<Meeting>> {
-        const userId = user.id
-        const permissionKeys: string[] = (user as any).permissionKeys || []
         const listMeetingsResponse =
             await this.meetingRepository.getInternalListMeeting(
                 companyId,
                 getAllMeetingDto,
             )
-        const canUserCreateMeeting = permissionKeys.includes(
-            PermissionEnum.CREATE_MEETING,
-        )
+
         const idsMeeting = listMeetingsResponse.map((meeting) => meeting.id)
         await Promise.all([
             ...idsMeeting.map((id) => this.standardStatusMeeting(id)),
         ])
+        const userId = user.id
+        const permissionKeys: string[] = (user as any).permissionKeys || []
+        const canUserCreateMeeting = permissionKeys.includes(
+            PermissionEnum.CREATE_MEETING,
+        )
+
         const meetings = await this.meetingRepository.getAllMeetings(
             companyId,
             userId,
