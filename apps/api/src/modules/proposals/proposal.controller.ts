@@ -27,25 +27,6 @@ export class ProposalController {
         private readonly proposalService: ProposalService,
         private readonly votingService: VotingService,
     ) {}
-    // @Patch('/edit-proposal/:proposalId')
-    // @UseGuards(JwtAuthGuard)
-    // @Permission(PermissionEnum.EDIT_PROPOSAL)
-    // @ApiBearerAuth()
-    // @HttpCode(HttpStatus.OK)
-    // async updateProposal(
-    //     @Param('proposalId') proposalId: number,
-    //     @Body() proposalDtoUpdate: ProposalDtoUpdate,
-    //     @UserScope() user: User,
-    // ) {
-    //     const companyId = user?.companyId
-    //
-    //     const updatedProposal = await this.proposalService.updateProposal(
-    //         companyId,
-    //         proposalId,
-    //         proposalDtoUpdate,
-    //     )
-    //     return updatedProposal
-    // }
 
     @Post('/vote/:proposalId')
     @UseGuards(JwtAuthGuard)

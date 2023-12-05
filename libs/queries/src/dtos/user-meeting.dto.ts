@@ -1,6 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { MeetingRole } from '@shares/constants/meeting.const'
-import { IsEnum, IsNumber } from 'class-validator'
+import {
+    MeetingRole,
+    UserMeetingStatusEnum,
+} from '@shares/constants/meeting.const'
+import { IsEnum, IsNumber, IsOptional } from 'class-validator'
 
 export class CreateUserMeetingDto {
     @IsNumber()
@@ -23,4 +26,12 @@ export class CreateUserMeetingDto {
         enum: MeetingRole,
     })
     role: MeetingRole
+
+    @IsOptional()
+    @IsEnum(MeetingRole)
+    @ApiProperty({
+        required: false,
+        enum: MeetingRole,
+    })
+    status?: UserMeetingStatusEnum
 }

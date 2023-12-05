@@ -2,7 +2,10 @@ import { CreateUserMeetingDto } from '@dtos/user-meeting.dto'
 import { UserMeeting } from '@entities/user-meeting.entity'
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { UserMeetingRepository } from '@repositories/user-meeting.repository'
-import { MeetingRole } from '@shares/constants/meeting.const'
+import {
+    MeetingRole,
+    UserMeetingStatusEnum,
+} from '@shares/constants/meeting.const'
 import { httpErrors } from '@shares/exception-filter'
 import { UserService } from '@api/modules/users/user.service'
 import { User } from '@entities/user.entity'
@@ -17,13 +20,14 @@ export class UserMeetingService {
     async createUserMeeting(
         createUserMeetingDto: CreateUserMeetingDto,
     ): Promise<UserMeeting> {
-        const { userId, meetingId, role } = createUserMeetingDto
+        const { userId, meetingId, role, status } = createUserMeetingDto
         try {
             const createdUserMeeting =
                 await this.userMeetingRepository.createUserMeeting({
                     userId,
                     meetingId,
                     role,
+                    status,
                 })
             // return await createdUserMeeting.save()
             return createdUserMeeting
@@ -81,13 +85,28 @@ export class UserMeetingService {
                     meetingRole,
                 ),
             ),
-            ...usersToAdds.map((usersToAdd) =>
-                this.createUserMeeting({
-                    userId: usersToAdd,
-                    meetingId: meetingId,
-                    role: meetingRole,
-                }),
-            ),
+            ...usersToAdds.map(async (usersToAdd) => {
+                const isUserParticipateMeeting =
+                    await this.getUserMeetingByUserIdAndMeetingIdAndStatus(
+                        usersToAdd,
+                        meetingId,
+                        UserMeetingStatusEnum.PARTICIPATE,
+                    )
+                if (isUserParticipateMeeting) {
+                    await this.createUserMeeting({
+                        userId: usersToAdd,
+                        meetingId: meetingId,
+                        role: meetingRole,
+                        status: UserMeetingStatusEnum.PARTICIPATE,
+                    })
+                } else {
+                    await this.createUserMeeting({
+                        userId: usersToAdd,
+                        meetingId: meetingId,
+                        role: meetingRole,
+                    })
+                }
+            }),
         ])
 
         return addedUsersFollowRole
@@ -156,5 +175,19 @@ export class UserMeetingService {
             ),
         ])
         return usersToRemoves
+    }
+    async getUserMeetingByUserIdAndMeetingIdAndStatus(
+        userId: number,
+        meetingId: number,
+        statusUserWithMeeting: UserMeetingStatusEnum,
+    ): Promise<UserMeeting> {
+        const userMeeting = await this.userMeetingRepository.findOne({
+            where: {
+                userId: userId,
+                meetingId: meetingId,
+                status: statusUserWithMeeting,
+            },
+        })
+        return userMeeting
     }
 }

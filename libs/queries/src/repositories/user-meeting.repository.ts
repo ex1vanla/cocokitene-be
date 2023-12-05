@@ -12,12 +12,13 @@ export class UserMeetingRepository extends Repository<UserMeeting> {
     async createUserMeeting(
         createUserMeetingDto: CreateUserMeetingDto,
     ): Promise<UserMeeting> {
-        const { userId, meetingId, role } = createUserMeetingDto
+        const { userId, meetingId, role, status } = createUserMeetingDto
 
         const createdUserMeeting = await this.create({
             userId,
             meetingId,
             role,
+            status,
         })
         return await createdUserMeeting.save()
         // return createdUserMeeting
