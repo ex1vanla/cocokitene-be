@@ -15,7 +15,6 @@ import { Proposal } from '@entities/proposal.entity'
 import { UserService } from '@api/modules/users/user.service'
 import { MeetingService } from '@api/modules/meetings/meeting.service'
 import { UserMeetingService } from '@api/modules/user-meetings/user-meeting.service'
-import { RoleService } from '@api/modules/roles/role.service'
 import {
     MeetingRole,
     UserMeetingStatusEnum,
@@ -28,7 +27,6 @@ export class VotingService {
         private readonly proposalRepository: ProposalRepository,
         private readonly userService: UserService,
         private readonly userMeetingService: UserMeetingService,
-        private readonly roleService: RoleService,
         @Inject(forwardRef(() => MeetingService))
         private readonly meetingService: MeetingService,
     ) {}
@@ -80,7 +78,7 @@ export class VotingService {
         }
 
         const listIdsShareholders =
-            await this.userMeetingService.getListUserIdPaticipantsByMeetingId(
+            await this.userMeetingService.getListUserIdPaticipantsByMeetingIdAndMeetingRole(
                 proposal.meetingId,
                 MeetingRole.SHAREHOLDER,
             )
@@ -215,6 +213,17 @@ export class VotingService {
             throw new HttpException(
                 httpErrors.VOTING_FAILED,
                 HttpStatus.BAD_REQUEST,
+            )
+        }
+    }
+
+    async removeUserVoting(userId: number, proposalId: number): Promise<void> {
+        try {
+            await this.votingRepository.delete({ userId, proposalId })
+        } catch (error) {
+            throw new HttpException(
+                httpErrors.DELETE_FAILED_USER_VOTING,
+                HttpStatus.INTERNAL_SERVER_ERROR,
             )
         }
     }

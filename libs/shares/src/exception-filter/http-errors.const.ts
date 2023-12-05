@@ -170,6 +170,10 @@ export const httpErrors = {
             'user are not a shareholder in this meeting so you do not have the right to vote. Please try again',
         code: 'VOTING_00003',
     },
+    DELETE_FAILED_USER_VOTING: {
+        message: 'delete user voting failed. Please try again',
+        code: 'VOTING_00004',
+    },
     //system-admin
     SYSTEM_ADMIN_NOT_FOUND: {
         message: 'System admin does not exist. Please try again',

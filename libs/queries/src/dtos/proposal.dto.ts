@@ -107,11 +107,30 @@ export class ProposalDto extends OmitType(CreateProposalDto, [
 ]) {
     @IsOptional()
     @IsNumber()
+    @Type(() => Number)
     @ApiProperty({
         required: true,
         example: 1,
     })
     id?: number
+
+    @IsOptional()
+    @IsNumber()
+    @Type(() => Number)
+    @ApiProperty({ required: false })
+    votedQuantity?: number = 0
+
+    @IsOptional()
+    @IsNumber()
+    @Type(() => Number)
+    @ApiProperty({ required: false })
+    unVotedQuantity?: number = 0
+
+    @IsOptional()
+    @IsNumber()
+    @Type(() => Number)
+    @ApiProperty({ required: false })
+    notVoteYetQuantity?: number = 0
 }
 
 export class ProposalDtoUpdate {
@@ -155,4 +174,22 @@ export class ProposalDtoUpdate {
         enum: ProposalType,
     })
     type: ProposalType
+
+    @IsOptional()
+    @IsNumber()
+    @Type(() => Number)
+    @ApiProperty({ required: false })
+    votedQuantity?: number = 0
+
+    @IsOptional()
+    @IsNumber()
+    @Type(() => Number)
+    @ApiProperty({ required: false })
+    unVotedQuantity?: number = 0
+
+    @IsOptional()
+    @IsNumber()
+    @Type(() => Number)
+    @ApiProperty({ required: false })
+    notVoteYetQuantity?: number = 0
 }

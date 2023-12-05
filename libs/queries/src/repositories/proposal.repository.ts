@@ -60,19 +60,26 @@ export class ProposalRepository extends Repository<Proposal> {
     }
 
     async updateProposal(
-        // userId: number,
         proposalId: number,
         proposalDtoUpdate: ProposalDtoUpdate,
-        totalShares: number,
     ): Promise<Proposal> {
-        const { title, description, oldDescription } = proposalDtoUpdate
+        const {
+            title,
+            description,
+            oldDescription,
+            notVoteYetQuantity,
+            votedQuantity,
+            unVotedQuantity,
+        } = proposalDtoUpdate
         await this.createQueryBuilder('proposals')
             .update(Proposal)
             .set({
                 title: title,
                 description: description,
                 oldDescription: oldDescription,
-                notVoteYetQuantity: totalShares,
+                unVotedQuantity: unVotedQuantity,
+                votedQuantity: votedQuantity,
+                notVoteYetQuantity: notVoteYetQuantity,
                 // creatorId: userId,
             })
             .where('proposals.id = :proposalId', { proposalId })

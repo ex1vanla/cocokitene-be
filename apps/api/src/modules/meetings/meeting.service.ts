@@ -422,11 +422,10 @@ export class MeetingService {
                 HttpStatus.BAD_REQUEST,
             )
         }
-        let existedMeeting =
-            await this.meetingRepository.getMeetingByMeetingIdAndCompanyId(
-                meetingId,
-                companyId,
-            )
+        let existedMeeting = await this.getMeetingByMeetingIdAndCompanyId(
+            meetingId,
+            companyId,
+        )
         if (!existedMeeting) {
             throw new HttpException(
                 httpErrors.MEETING_NOT_EXISTED,
@@ -464,7 +463,6 @@ export class MeetingService {
             await this.userService.getTotalSharesHolderByShareholderIds(
                 shareholders,
             )
-
         const listMeetingFiles = [...meetingMinutes, ...meetingInvitations]
         const listProposals = [...resolutions, ...amendmentResolutions]
 
@@ -478,8 +476,8 @@ export class MeetingService {
                 userId,
                 listProposals,
                 totalShares,
+                shareholders,
             ),
-
             await Promise.all([
                 this.userMeetingService.updateUserMeeting(
                     meetingId,
@@ -547,5 +545,17 @@ export class MeetingService {
         }
         await existedMeeting.save()
         return existedMeeting
+    }
+
+    async getMeetingByMeetingIdAndCompanyId(
+        meetingId: number,
+        companyId: number,
+    ): Promise<Meeting> {
+        const meeting =
+            await this.meetingRepository.getMeetingByMeetingIdAndCompanyId(
+                meetingId,
+                companyId,
+            )
+        return meeting
     }
 }
