@@ -15,7 +15,6 @@ import { Proposal } from '@entities/proposal.entity'
 import { UserService } from '@api/modules/users/user.service'
 import { MeetingService } from '@api/modules/meetings/meeting.service'
 import { UserMeetingService } from '@api/modules/user-meetings/user-meeting.service'
-import { RoleService } from '@api/modules/roles/role.service'
 import {
     MeetingRole,
     UserMeetingStatusEnum,

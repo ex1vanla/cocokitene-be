@@ -55,10 +55,11 @@ export class UserMeetingService {
         meetingRole: MeetingRole,
         newIdPaticipants: number[],
     ): Promise<number[]> {
-        const listUserIds = await this.getListUserIdPaticipantsByMeetingIdAndMeetingRole(
-            meetingId,
-            meetingRole,
-        )
+        const listUserIds =
+            await this.getListUserIdPaticipantsByMeetingIdAndMeetingRole(
+                meetingId,
+                meetingRole,
+            )
 
         // ids just add from dto
         const usersToAdds = newIdPaticipants.filter(

@@ -455,13 +455,6 @@ export class MeetingService {
             )
         const listMeetingFiles = [...meetingMinutes, ...meetingInvitations]
         const listProposals = [...resolutions, ...amendmentResolutions]
-        // user have voted and were deleted
-        await this.proposalService.removeUserVoting(
-            meetingId,
-            companyId,
-            MeetingRole.SHAREHOLDER,
-            shareholders,
-        )
 
         await Promise.all([
             this.meetingFileService.updateListMeetingFiles(
