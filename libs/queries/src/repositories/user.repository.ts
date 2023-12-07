@@ -80,12 +80,14 @@ export class UserRepository extends Repository<User> {
                 'users.id',
                 'users.username',
                 'users.email',
+                'users.walletAddress',
                 'users.avatar',
                 'users.companyId',
                 'users.defaultAvatarHashColor',
                 'users.createdAt',
                 'users.updatedAt',
             ])
+            .leftJoinAndSelect('users.userStatus', 'userStatus')
             .leftJoinAndSelect('users.userRole', 'userRole')
             .leftJoinAndSelect('userRole.role', 'role')
             .where('users.companyId = :companyId', {
