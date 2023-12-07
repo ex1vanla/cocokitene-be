@@ -83,13 +83,15 @@ export class UserRepository extends Repository<User> {
                 'users.avatar',
                 'users.companyId',
                 'users.defaultAvatarHashColor',
-                'users.activeTime',
                 'users.createdAt',
                 'users.updatedAt',
             ])
-            .leftJoin('users.userStatus', 'userStatus')
-            .addSelect(['userStatus.id', 'userStatus.status'])
+            .leftJoinAndSelect('users.userRole', 'userRole')
+            .leftJoinAndSelect('userRole.role', 'role')
             .where('users.companyId = :companyId', {
+                companyId,
+            })
+            .andWhere('role.companyId = :companyId', {
                 companyId,
             })
 
