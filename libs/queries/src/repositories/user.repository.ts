@@ -73,7 +73,6 @@ export class UserRepository extends Repository<User> {
         options: GetAllUsersDto,
         companyId: number,
     ): Promise<Pagination<User>> {
-        // console.log('companyId', companyId)
         const { page, limit, searchQuery } = options
 
         const queryBuilder = this.createQueryBuilder('users')
@@ -87,6 +86,8 @@ export class UserRepository extends Repository<User> {
                 'users.createdAt',
                 'users.updatedAt',
             ])
+            .leftJoinAndSelect('users.userRole', 'userRole')
+            .leftJoinAndSelect('userRole.role', 'role')
             .where('users.companyId = :companyId', {
                 companyId,
             })
