@@ -2,6 +2,7 @@ import {
     ArrayMinSize,
     IsArray,
     IsEmail,
+    IsEnum,
     IsInt,
     IsNotEmpty,
     IsNumber,
@@ -11,6 +12,7 @@ import {
 import { ApiProperty, OmitType } from '@nestjs/swagger'
 import { Transform, Type } from 'class-transformer'
 import { GetAllDto } from '@dtos/base.dto'
+import { Sort_By_Order } from '@shares/constants'
 
 export class UpdateUserDto {
     @IsEmail()
@@ -170,7 +172,17 @@ export class CreateUserDto {
     avatar: string
 }
 
-export class GetAllUsersDto extends GetAllDto {}
+export class GetAllUsersDto extends GetAllDto {
+    @IsOptional()
+    @IsEnum(Sort_By_Order)
+    @ApiProperty({
+        required: false,
+        example: Sort_By_Order.ASC,
+        default: Sort_By_Order.ASC,
+        enum: Sort_By_Order,
+    })
+    sortOrder?: Sort_By_Order
+}
 
 export class SuperAdminDto {
     @IsOptional()

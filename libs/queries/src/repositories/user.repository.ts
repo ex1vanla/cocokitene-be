@@ -73,21 +73,27 @@ export class UserRepository extends Repository<User> {
         options: GetAllUsersDto,
         companyId: number,
     ): Promise<Pagination<User>> {
-        // console.log('companyId', companyId)
-        const { page, limit, searchQuery } = options
+        const { page, limit, searchQuery, sortOrder } = options
 
         const queryBuilder = this.createQueryBuilder('users')
             .select([
                 'users.id',
                 'users.username',
                 'users.email',
+                'users.walletAddress',
                 'users.avatar',
                 'users.companyId',
                 'users.defaultAvatarHashColor',
                 'users.createdAt',
                 'users.updatedAt',
             ])
+            .leftJoinAndSelect('users.userStatus', 'userStatus')
+            .leftJoinAndSelect('users.userRole', 'userRole')
+            .leftJoinAndSelect('userRole.role', 'role')
             .where('users.companyId = :companyId', {
+                companyId,
+            })
+            .andWhere('role.companyId = :companyId', {
                 companyId,
             })
 
@@ -99,6 +105,9 @@ export class UserRepository extends Repository<User> {
                 .orWhere('users.email like :email)', {
                     email: `%${searchQuery}%`,
                 })
+        }
+        if (sortOrder) {
+            queryBuilder.orderBy('users.updatedAt', sortOrder)
         }
 
         return paginate(queryBuilder, { page, limit })
