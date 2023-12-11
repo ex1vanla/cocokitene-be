@@ -73,7 +73,7 @@ export class UserRepository extends Repository<User> {
         options: GetAllUsersDto,
         companyId: number,
     ): Promise<Pagination<User>> {
-        const { page, limit, searchQuery } = options
+        const { page, limit, searchQuery, sortOrder } = options
 
         const queryBuilder = this.createQueryBuilder('users')
             .select([
@@ -105,6 +105,9 @@ export class UserRepository extends Repository<User> {
                 .orWhere('users.email like :email)', {
                     email: `%${searchQuery}%`,
                 })
+        }
+        if (sortOrder) {
+            queryBuilder.orderBy('users.updatedAt', sortOrder)
         }
 
         return paginate(queryBuilder, { page, limit })
