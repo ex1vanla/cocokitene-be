@@ -210,7 +210,13 @@ export class UserRepository extends Repository<User> {
 
     async getUserById(companyId: number, userId: number): Promise<User> {
         const user = await this.createQueryBuilder('users')
-            .select(['users.username', 'users.email', 'users.walletAddress'])
+            .select([
+                'users.username',
+                'users.email',
+                'users.walletAddress',
+                'users.defaultAvatarHashColor',
+                'users.avatar',
+            ])
             .leftJoin('users.company', 'company')
             .addSelect(['company.id', 'company.companyName'])
             .leftJoin('users.userStatus', 'userStatus')
