@@ -19,6 +19,7 @@ import { PlanModule } from '@api/modules/plans/plan.module'
 import { CompanyStatusModule } from '@api/modules/company-status/company-status.module'
 import { UserStatusModule } from '@api/modules/user-status/user-status.module'
 import { UserMeetingModule } from '@api/modules/user-meetings/user-meeting.module'
+import { PermissionModule } from '@api/modules/permissions/permission.module'
 
 @Module({
     imports: [
@@ -42,6 +43,7 @@ import { UserMeetingModule } from '@api/modules/user-meetings/user-meeting.modul
         CompanyStatusModule,
         UserStatusModule,
         UserMeetingModule,
+        PermissionModule,
     ],
     controllers: [ApiController],
     providers: [ApiService],
