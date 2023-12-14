@@ -16,8 +16,8 @@ export class PermissionRepository extends Repository<Permission> {
             'permissions.description',
         ])
         if (searchQuery) {
-            queryBuilder.andWhere('permissions.key like : searchQuery', {
-                searchQuery: `${searchQuery}`,
+            queryBuilder.andWhere('(permissions.key like :searchQuery)', {
+                searchQuery: `%${searchQuery}%`,
             })
         }
         return paginate(queryBuilder, { page, limit })
