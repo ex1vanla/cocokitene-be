@@ -58,12 +58,13 @@ export class RolePermissionService {
 
         await Promise.all([
             ...listPermissions.items.map(async (permission) => {
-                const permissionId = permission.id
-                updatedListRolePermissions[permissionId.toString()] = {}
+                const permissionId = permission.id,
+                    permissionName = permission.key
+                updatedListRolePermissions[permissionName] = {}
                 await Promise.all([
                     ...listRoles.items.map(async (role) => {
-                        updatedListRolePermissions[permissionId][
-                            role.id.toString()
+                        updatedListRolePermissions[permissionName][
+                            role.roleName
                         ] = await this.getRolePermisionByPermissionIdAndRoleId(
                             permissionId,
                             role.id,
