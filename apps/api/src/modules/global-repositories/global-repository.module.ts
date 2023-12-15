@@ -14,6 +14,10 @@ import { UserStatusRepository } from '@repositories/user-status.repository'
 import { UserRepository } from '@repositories/user.repository'
 import { VotingRepository } from '@repositories/voting.repository'
 import { TypeOrmExModule } from '@shares/modules'
+<<<<<<< HEAD
+=======
+import { RolePermissionRepository } from '@repositories/role-permission.repository'
+>>>>>>> ed047a8 (feat: api setting permission for roles)
 import { PermissionRepository } from '@repositories/permission.repository'
 
 const commonRepositories = [
@@ -32,6 +36,10 @@ const commonRepositories = [
     CompanyStatusRepository,
     PlanRepository,
     ProposalFileRepository,
+<<<<<<< HEAD
+=======
+    RolePermissionRepository,
+>>>>>>> ed047a8 (feat: api setting permission for roles)
     PermissionRepository,
 ]
 

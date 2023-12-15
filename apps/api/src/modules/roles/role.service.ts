@@ -28,15 +28,29 @@ export class RoleService {
         return role
     }
 
+    // list role for screen new create account
     async getAllNormalRoles(
         getAllNormalRolesDto: GetAllNormalRolesDto,
+        companyId: number,
     ): Promise<Pagination<Role>> {
         const roles = await this.roleRepository.getAllNormalRoles(
             getAllNormalRolesDto,
+            companyId,
         )
         return roles
     }
+    // list role for screen setting-role
 
+    async getAllInternalRoleInCompany(
+        getAllNormalRolesDto: GetAllNormalRolesDto,
+        companyId: number,
+    ): Promise<Pagination<Role>> {
+        const roles = await this.roleRepository.getAllInternalRoleInCompany(
+            getAllNormalRolesDto,
+            companyId,
+        )
+        return roles
+    }
     async createCompanyRole(role: RoleEnum, companyId: number): Promise<Role> {
         const createdCompanyRole = await this.roleRepository.createCompanyRole(
             role,
