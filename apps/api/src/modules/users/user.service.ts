@@ -203,12 +203,13 @@ export class UserService {
                 HttpStatus.NOT_FOUND,
             )
         }
-        const roleNameByUserId = await this.userRoleService.getRoleNameByUserId(
+        const rolesByUserId = await this.userRoleService.getRolesByUserId(
             userId,
         )
+
         return {
             ...existedUser,
-            roleName: roleNameByUserId,
+            roles: rolesByUserId,
         }
     }
 
