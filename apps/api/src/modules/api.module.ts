@@ -20,6 +20,7 @@ import { CompanyStatusModule } from '@api/modules/company-status/company-status.
 import { UserStatusModule } from '@api/modules/user-status/user-status.module'
 import { UserMeetingModule } from '@api/modules/user-meetings/user-meeting.module'
 import { PermissionModule } from '@api/modules/permissions/permission.module'
+import { RolePermissionModule } from '@api/modules/role-permissions/role-permission.module'
 
 @Module({
     imports: [
@@ -44,6 +45,7 @@ import { PermissionModule } from '@api/modules/permissions/permission.module'
         UserStatusModule,
         UserMeetingModule,
         PermissionModule,
+        RolePermissionModule,
     ],
     controllers: [ApiController],
     providers: [ApiService],
