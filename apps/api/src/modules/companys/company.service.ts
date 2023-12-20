@@ -23,6 +23,8 @@ import { UserRoleService } from '@api/modules/user-roles/user-role.service'
 import { UserStatusService } from '@api/modules/user-status/user-status.service'
 import { PlanService } from '@api/modules/plans/plan.service'
 import { User } from '@entities/user.entity'
+import { PermissionService } from '@api/modules/permissions/permission.service'
+import { RolePermissionService } from '@api/modules/role-permissions/role-permission.service'
 
 @Injectable()
 export class CompanyService {
@@ -35,6 +37,8 @@ export class CompanyService {
         private readonly userRoleService: UserRoleService,
         private readonly userStatusService: UserStatusService,
         private readonly planService: PlanService,
+        private readonly permissionService: PermissionService,
+        private readonly rolePermissionService: RolePermissionService,
     ) {}
     async getAllCompanys(
         getAllCompanyDto: GetAllCompanyDto,
@@ -142,6 +146,18 @@ export class CompanyService {
                 RoleEnum.SUPER_ADMIN,
                 createdCompany.id,
             )
+        const listPermissions = await this.permissionService.getAllPermissions({
+            page: 1,
+            limit: 30,
+        })
+        await Promise.all([
+            ...listPermissions.items.map((permission) =>
+                this.rolePermissionService.createRolePermission({
+                    permissionId: permission.id,
+                    roleId: roleSuperAdminOfCompany.id,
+                }),
+            ),
+        ])
 
         await this.userRoleService.createUserRole({
             userId: createdSuperAdminCompany.id,
