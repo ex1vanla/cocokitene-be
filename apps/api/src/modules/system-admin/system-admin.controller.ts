@@ -17,6 +17,7 @@ import { GetAllCompanyStatusDto, UpdateCompanyDto } from '@dtos/company.dto'
 import { SuperAdminDto } from '@dtos/user.dto'
 import { GetAllPlanDto } from '@dtos/plan.dto'
 import { SystemAdminGuard } from '@shares/guards/systemadmin.guard'
+import { GetAllUserStatusDto } from '@dtos/user-status.dto'
 
 @Controller('system-admin')
 @ApiTags('system-admin')
@@ -108,5 +109,19 @@ export class SystemAdminController {
             createCompanyDto,
         )
         return company
+    }
+
+    @Get('/user-status')
+    @HttpCode(HttpStatus.OK)
+    @ApiBearerAuth()
+    @UseGuards(SystemAdminGuard)
+    async getAllUserStatus(
+        @Query() getAllUserStatusDto: GetAllUserStatusDto,
+        // @fUserScope() user: User,
+    ) {
+        const userStatus = await this.systemAdminService.getAllUserStatus(
+            getAllUserStatusDto,
+        )
+        return userStatus
     }
 }
