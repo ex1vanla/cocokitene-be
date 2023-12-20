@@ -106,10 +106,11 @@ export class UserRepository extends Repository<User> {
                     email: `%${searchQuery}%`,
                 })
         }
-        if (sortOrder) {
-            queryBuilder.orderBy('users.updatedAt', sortOrder)
-        }
 
+        if (sortOrder) {
+            queryBuilder.addOrderBy('users.updatedAt', sortOrder)
+        }
+        queryBuilder.addOrderBy('role.roleName', 'ASC')
         return paginate(queryBuilder, { page, limit })
     }
 
