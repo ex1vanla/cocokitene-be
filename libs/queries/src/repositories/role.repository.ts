@@ -85,11 +85,16 @@ export class RoleRepository extends Repository<Role> {
         return roles
     }
 
-    async createCompanyRole(role: RoleEnum, companyId: number): Promise<Role> {
+    async createCompanyRole(
+        role: RoleEnum | string,
+        companyId: number,
+        description?: string,
+    ): Promise<Role> {
         try {
             const createdCompanyRole = await this.create({
                 roleName: role,
                 companyId: companyId,
+                description: description,
             })
             await createdCompanyRole.save()
             return createdCompanyRole
