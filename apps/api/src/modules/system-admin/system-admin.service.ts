@@ -1,9 +1,13 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
-import { CreateCompanyDto, GetAllCompanyDto } from '@dtos/company.dto'
+import {
+    CreateCompanyDto,
+    GetAllCompanyDto,
+    GetAllCompanyStatusDto,
+    UpdateCompanyDto,
+} from '@dtos/company.dto'
 import { CompanyService } from '@api/modules/companys/company.service'
 import { UserService } from '../users/user.service'
 import { DetailCompanyResponse } from '../companys/company.interface'
-import { GetAllCompanyStatusDto, UpdateCompanyDto } from '@dtos/company.dto'
 import { Company } from '@entities/company.entity'
 import { httpErrors } from '@shares/exception-filter'
 import { SuperAdminDto } from '@dtos/user.dto'
@@ -12,6 +16,8 @@ import { GetAllPlanDto } from '@dtos/plan.dto'
 import { PlanService } from '@api/modules/plans/plan.service'
 import { CompanyStatusService } from '@api/modules/company-status/company-status.service'
 import { RoleService } from '@api/modules/roles/role.service'
+import { GetAllUserStatusDto } from '@dtos/user-status.dto'
+import { UserStatusService } from '@api/modules/user-status/user-status.service'
 
 @Injectable()
 export class SystemAdminService {
@@ -21,6 +27,7 @@ export class SystemAdminService {
         private readonly planService: PlanService,
         private readonly companyStatusService: CompanyStatusService,
         private readonly roleService: RoleService,
+        private readonly userStatusService: UserStatusService,
     ) {}
 
     async getAllCompanys(getAllCompanyDto: GetAllCompanyDto) {
@@ -108,5 +115,12 @@ export class SystemAdminService {
             createCompanyDto,
         )
         return company
+    }
+
+    async getAllUserStatus(getAllUserStatusDto: GetAllUserStatusDto) {
+        const userStatus = await this.userStatusService.getAllUserStatus(
+            getAllUserStatusDto,
+        )
+        return userStatus
     }
 }
