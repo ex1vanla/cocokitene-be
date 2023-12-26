@@ -3,6 +3,7 @@ import {
     CreateUserDto,
     GetAllUsersDto,
     SuperAdminDto,
+    UpdateOwnProfileDto,
     UpdateUserDto,
 } from '@dtos/user.dto'
 import { User } from '@entities/user.entity'
@@ -264,5 +265,34 @@ export class UserRepository extends Repository<User> {
         })
         await createdSuperAdmin.save()
         return createdSuperAdmin
+    }
+    // update profile
+    async updateOwnProfile(
+        userId: number,
+        companyId: number,
+        updateOwnProfileDto: UpdateOwnProfileDto,
+    ): Promise<User> {
+        await this.createQueryBuilder('users')
+            .update(User)
+            .set({
+                username: updateOwnProfileDto.username,
+                walletAddress: updateOwnProfileDto.walletAddress,
+                email: updateOwnProfileDto.email,
+                phone: updateOwnProfileDto.phone,
+                avatar: updateOwnProfileDto.avatar,
+            })
+            .where('users.id = :userId', {
+                userId: userId,
+            })
+            .andWhere('users.company_id = :companyId', {
+                companyId: companyId,
+            })
+            .execute()
+        const user = await this.findOne({
+            where: {
+                id: userId,
+            },
+        })
+        return user
     }
 }

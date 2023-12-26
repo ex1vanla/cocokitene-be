@@ -86,6 +86,11 @@ export class UpdateUserDto {
     avatar: string
 }
 
+export class UpdateOwnProfileDto extends OmitType(UpdateUserDto, [
+    'roleIds',
+    'statusId',
+    'shareQuantity',
+]) {}
 export class GetUserByWalletAddressDto {
     @IsString()
     @IsNotEmpty()
