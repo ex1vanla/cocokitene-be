@@ -1,6 +1,4 @@
 import { Injectable } from '@nestjs/common'
-import { GetAllPermissionDto } from '@dtos/permission.dto'
-import { Pagination } from 'nestjs-typeorm-paginate'
 import { Permission } from '@entities/permission.entity'
 import { PermissionRepository } from '@repositories/permission.repository'
 
@@ -8,12 +6,8 @@ import { PermissionRepository } from '@repositories/permission.repository'
 export class PermissionService {
     constructor(private readonly permissionRepository: PermissionRepository) {}
 
-    async getAllPermissions(
-        getAllPermissionDto: GetAllPermissionDto,
-    ): Promise<Pagination<Permission>> {
-        const permissions = await this.permissionRepository.getAllPermissions(
-            getAllPermissionDto,
-        )
+    async getAllPermissions(): Promise<Permission[]> {
+        const permissions = await this.permissionRepository.getAllPermissions()
         return permissions
     }
 }

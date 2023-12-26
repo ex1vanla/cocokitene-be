@@ -35,16 +35,10 @@ export class RolePermissionService {
 
         const updatedListRolePermissions = {}
         const listRoles = await this.roleService.getAllInternalRoleInCompany(
-            {
-                page: 1,
-                limit: 10,
-            },
             companyId,
         )
-        const listPermissions = await this.permissionService.getAllPermissions({
-            page: 1,
-            limit: 20,
-        })
+
+        const listPermissions = await this.permissionService.getAllPermissions()
 
         await Promise.all([
             ...roleForPermissionDto.assignmentRoleOfPermission.map(
@@ -57,12 +51,12 @@ export class RolePermissionService {
         ])
 
         await Promise.all([
-            ...listPermissions.items.map(async (permission) => {
+            ...listPermissions.map(async (permission) => {
                 const permissionId = permission.id,
                     permissionName = permission.key
                 updatedListRolePermissions[permissionName] = {}
                 await Promise.all([
-                    ...listRoles.items.map(async (role) => {
+                    ...listRoles.map(async (role) => {
                         updatedListRolePermissions[permissionName][
                             role.roleName
                         ] = await this.getRolePermisionByPermissionIdAndRoleId(

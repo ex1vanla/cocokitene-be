@@ -41,12 +41,8 @@ export class RoleService {
     }
     // list role for screen setting-role
 
-    async getAllInternalRoleInCompany(
-        getAllNormalRolesDto: GetAllNormalRolesDto,
-        companyId: number,
-    ): Promise<Pagination<Role>> {
+    async getAllInternalRoleInCompany(companyId: number): Promise<Role[]> {
         const roles = await this.roleRepository.getAllInternalRoleInCompany(
-            getAllNormalRolesDto,
             companyId,
         )
         return roles

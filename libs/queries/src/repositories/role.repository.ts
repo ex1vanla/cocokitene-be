@@ -74,23 +74,15 @@ export class RoleRepository extends Repository<Role> {
         return paginate(queryBuilder, { page, limit })
     }
 
-    async getAllInternalRoleInCompany(
-        options: GetAllNormalRolesDto,
-        companyId: number,
-    ): Promise<Pagination<Role>> {
-        const { page, limit, searchQuery } = options
+    async getAllInternalRoleInCompany(companyId: number): Promise<Role[]> {
         const queryBuilder = this.createQueryBuilder('roles')
             .select(['roles.id', 'roles.roleName', 'roles.description'])
             .where('roles.companyId = :companyId', {
                 companyId: companyId,
             })
 
-        if (searchQuery) {
-            queryBuilder.andWhere('(roles.roleName like :roleName)', {
-                roleName: `%${searchQuery}%`,
-            })
-        }
-        return paginate(queryBuilder, { page, limit })
+        const roles = await queryBuilder.getMany()
+        return roles
     }
 
     async createCompanyRole(role: RoleEnum, companyId: number): Promise<Role> {
