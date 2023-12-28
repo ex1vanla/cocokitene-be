@@ -11,4 +11,14 @@ export class SystemAdminRepository extends Repository<SystemAdmin> {
         })
         return systemAdmin
     }
+    async getSystemAdminByResetPasswordToken(
+        token: string,
+    ): Promise<SystemAdmin> {
+        const systemAdmin = await this.findOne({
+            where: {
+                resetPasswordToken: token,
+            },
+        })
+        return systemAdmin
+    }
 }

@@ -6,7 +6,6 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import { HttpExceptionFilter } from '@shares/exception-filter'
 import { JwtAuthGuard } from '@shares/guards/jwt-auth.guard'
 import { ResponseTransformInterceptor } from '@shares/interceptors/response.interceptor'
-// import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
     const app = await NestFactory.create(ApiModule)
@@ -46,7 +45,6 @@ async function bootstrap() {
     })
 
     const port = config.get('api.port')
-
     await app.listen(port)
     Logger.log(`🚀 Api application is running on: ${await app.getUrl()}`)
 }

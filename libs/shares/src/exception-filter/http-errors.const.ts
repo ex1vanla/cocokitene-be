@@ -224,4 +224,17 @@ export const httpErrors = {
         message: 'Update profile failed. Please try again',
         code: 'PROFILE_00001',
     },
+    //token reset password
+    RESET_PASSWORD_TOKEN_IS_STILL_VALID: {
+        message: 'Reset password token is still valid. Please try again',
+        code: 'RESET_PASSWORD_TOKEN_00000',
+    },
+    RESET_PASSWORD_TOKEN_SEND_FAILED: {
+        message: 'Reset password token has send failed. Please try again',
+        code: 'RESET_PASSWORD_TOKEN_00001',
+    },
+    RESET_PASSWORD_TOKEN_EXPIRED: {
+        message: 'Reset password token has expired. Please try again',
+        code: 'RESET_PASSWORD_TOKEN_00002',
+    },
 }

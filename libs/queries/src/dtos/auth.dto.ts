@@ -66,3 +66,12 @@ export class LoginByPassword {
     })
     password: string
 }
+
+export class ForgotPasswordDto {
+    @IsEmail()
+    @IsNotEmpty()
+    @ApiProperty({
+        example: 'nguyenkien123ns@gmail.com',
+    })
+    email: string
+}

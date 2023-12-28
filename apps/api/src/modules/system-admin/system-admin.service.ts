@@ -18,6 +18,7 @@ import { CompanyStatusService } from '@api/modules/company-status/company-status
 import { RoleService } from '@api/modules/roles/role.service'
 import { GetAllUserStatusDto } from '@dtos/user-status.dto'
 import { UserStatusService } from '@api/modules/user-status/user-status.service'
+import { SystemAdminRepository } from '@repositories/system-admin.repository'
 
 @Injectable()
 export class SystemAdminService {
@@ -28,6 +29,7 @@ export class SystemAdminService {
         private readonly companyStatusService: CompanyStatusService,
         private readonly roleService: RoleService,
         private readonly userStatusService: UserStatusService,
+        private readonly systemAdminRepository: SystemAdminRepository,
     ) {}
 
     async getAllCompanys(getAllCompanyDto: GetAllCompanyDto) {
