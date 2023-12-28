@@ -141,6 +141,7 @@ export class CompanyService {
                 this.roleService.createCompanyRole(role, createdCompany.id),
             ),
         )
+
         const roleSuperAdminOfCompany =
             await this.roleService.getRoleByRoleNameAndIdCompany(
                 RoleEnum.SUPER_ADMIN,

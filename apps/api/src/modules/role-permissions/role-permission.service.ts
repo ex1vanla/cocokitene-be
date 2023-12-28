@@ -6,8 +6,8 @@ import {
 } from '@dtos/role-permission.dto'
 import { RoleService } from '@api/modules/roles/role.service'
 import { CompanyService } from '@api/modules/companys/company.service'
-import { RolePermission } from '@entities/role-permission.entity'
 import { PermissionService } from '@api/modules/permissions/permission.service'
+import { RolePermission } from '@entities/role-permission.entity'
 import { httpErrors } from '@shares/exception-filter'
 
 @Injectable()

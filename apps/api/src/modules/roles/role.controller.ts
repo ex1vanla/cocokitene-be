@@ -1,8 +1,10 @@
 import {
+    Body,
     Controller,
     Get,
     HttpCode,
     HttpStatus,
+    Post,
     Query,
     UseGuards,
 } from '@nestjs/common'
@@ -11,9 +13,9 @@ import { RoleService } from '@api/modules/roles/role.service'
 import { JwtAuthGuard } from '@shares/guards/jwt-auth.guard'
 import { Permission } from '@shares/decorators/permission.decorator'
 import { PermissionEnum } from '@shares/constants'
-import { GetAllNormalRolesDto } from '@dtos/role.dto'
 import { UserScope } from '@shares/decorators/user.decorator'
-import { User } from '@sentry/node'
+import { GetAllNormalRolesDto, RoleDto } from '@dtos/role.dto'
+import { User } from '@entities/user.entity'
 
 @Controller('roles')
 @ApiTags('roles')
@@ -35,5 +37,23 @@ export class RoleController {
             companyId,
         )
         return normalRoles
+    }
+
+    @Post('')
+    @UseGuards(JwtAuthGuard)
+    @HttpCode(HttpStatus.CREATED)
+    @ApiBearerAuth()
+    @Permission(PermissionEnum.CREATE_ROLE)
+    async createRoleHasPermissionInCompany(
+        @Body() roleDto: RoleDto,
+        @UserScope() user: User,
+    ) {
+        const companyId = user?.companyId
+
+        const role = await this.roleService.createRoleHasPermissionInCompany({
+            ...roleDto,
+            companyId,
+        })
+        return role
     }
 }
