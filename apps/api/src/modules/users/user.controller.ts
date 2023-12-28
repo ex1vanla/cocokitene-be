@@ -126,4 +126,20 @@ export class UserController {
         )
         return updateUser
     }
+    //profile
+    @Get('/profile/:id')
+    @UseGuards(JwtAuthGuard)
+    @Permission(PermissionEnum.DETAIL_PROFILE)
+    @HttpCode(HttpStatus.OK)
+    @ApiBearerAuth()
+    async getProfileOwnById(
+        @Param('id') userId: number,
+        @UserScope() user: User,
+    ) {
+        const profileOwnDetail = await this.userService.getProfileOwnById(
+            userId,
+            user,
+        )
+        return profileOwnDetail
+    }
 }

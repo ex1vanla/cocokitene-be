@@ -20,4 +20,5 @@ export enum PermissionEnum {
     SETTING_PERMISSION_FOR_ROLES = 'setting_permission_for_roles',
     CREATE_ROLE = 'create_role',
     EDIT_PROFILE = 'edit_profile',
+    DETAIL_PROFILE = 'detail_profile',
 }

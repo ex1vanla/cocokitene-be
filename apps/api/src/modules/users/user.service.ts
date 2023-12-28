@@ -311,7 +311,7 @@ export class UserService {
         updateOwnProfileDto: UpdateOwnProfileDto,
     ): Promise<User> {
         const companyId = user?.companyId,
-            userRequestId = user?.id
+        userRequestId = user?.id
         const existedCompany = await this.companyService.getCompanyById(
             companyId,
         )
@@ -341,6 +341,7 @@ export class UserService {
             )
         }
 
+
         //update profle of user
         try {
             existedUser = await this.userRepository.updateOwnProfile(
@@ -356,5 +357,56 @@ export class UserService {
         }
 
         return existedUser
+
     }
+
+
+
+    
+    //profile
+    async getProfileOwnById(
+        userId: number,
+        user: User,
+    ): Promise<DetailUserReponse> {
+        const companyId = user?.companyId,
+            userRequestId = user?.id
+        const existedCompany = await this.companyService.getCompanyById(
+            companyId,
+        )
+        if (!existedCompany) {
+            throw new HttpException(
+                httpErrors.COMPANY_NOT_FOUND,
+                HttpStatus.NOT_FOUND,
+            )
+        }
+        const canSeeDetailOwnProfile = userId == userRequestId
+        if (!canSeeDetailOwnProfile) {
+            throw new HttpException(
+                httpErrors.USER_NOT_OWNER_OF_PROFILE,
+                HttpStatus.BAD_REQUEST,
+            )
+        }
+        
+        const existedUser = await this.userRepository.getUserById(
+            companyId,
+            userId,
+        )
+
+        if (!existedUser) {
+            throw new HttpException(
+                httpErrors.USER_NOT_FOUND,
+                HttpStatus.NOT_FOUND,
+            )
+        }
+        const rolesByUserId = await this.userRoleService.getRolesByUserId(
+            userId,
+        )
+        return {
+            ...existedUser,
+            roles: rolesByUserId,
+        }
+    }
+
+
+        
 }
