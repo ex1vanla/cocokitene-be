@@ -146,12 +146,9 @@ export class CompanyService {
                 RoleEnum.SUPER_ADMIN,
                 createdCompany.id,
             )
-        const listPermissions = await this.permissionService.getAllPermissions({
-            page: 1,
-            limit: 30,
-        })
+        const listPermissions = await this.permissionService.getAllPermissions()
         await Promise.all([
-            ...listPermissions.items.map((permission) =>
+            ...listPermissions.map((permission) =>
                 this.rolePermissionService.createRolePermission({
                     permissionId: permission.id,
                     roleId: roleSuperAdminOfCompany.id,
