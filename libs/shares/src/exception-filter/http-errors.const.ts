@@ -214,5 +214,13 @@ export const httpErrors = {
     ROLE_PERMISSION_CREATE_FAILED: {
         message: 'Create role_permission failed. Please try again',
         code: 'ROLE_PERMISSION_00000',
+    // profile
+    USER_NOT_OWNER_OF_PROFILE: {
+        message: 'User is not the owner of this profile. Please try again',
+        code: 'PROFILE_00000',
+    },
+    PROFILE_UPDATE_FAILED: {
+        message: 'Update profile failed. Please try again',
+        code: 'PROFILE_00001',
     },
 }

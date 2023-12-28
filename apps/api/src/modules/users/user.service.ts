@@ -3,6 +3,7 @@ import {
     CreateUserDto,
     GetAllUsersDto,
     SuperAdminDto,
+    UpdateOwnProfileDto,
     UpdateUserDto,
 } from '@dtos/user.dto'
 import { User } from '@entities/user.entity'
@@ -301,5 +302,59 @@ export class UserService {
                 HttpStatus.INTERNAL_SERVER_ERROR,
             )
         }
+    }
+
+    // update profile
+    async updateOwnProfile(
+        user: User,
+        userId: number,
+        updateOwnProfileDto: UpdateOwnProfileDto,
+    ): Promise<User> {
+        const companyId = user?.companyId,
+            userRequestId = user?.id
+        const existedCompany = await this.companyService.getCompanyById(
+            companyId,
+        )
+        if (!existedCompany) {
+            throw new HttpException(
+                httpErrors.COMPANY_NOT_FOUND,
+                HttpStatus.NOT_FOUND,
+            )
+        }
+        const canUpdateOwnProfile = userId == userRequestId
+        if (!canUpdateOwnProfile) {
+            throw new HttpException(
+                httpErrors.USER_NOT_OWNER_OF_PROFILE,
+                HttpStatus.BAD_REQUEST,
+            )
+        }
+        let existedUser = await this.userRepository.findOne({
+            where: {
+                id: userId,
+                companyId: companyId,
+            },
+        })
+        if (!existedUser) {
+            throw new HttpException(
+                httpErrors.USER_NOT_FOUND,
+                HttpStatus.NOT_FOUND,
+            )
+        }
+
+        //update profle of user
+        try {
+            existedUser = await this.userRepository.updateOwnProfile(
+                userId,
+                companyId,
+                updateOwnProfileDto,
+            )
+        } catch (error) {
+            throw new HttpException(
+                httpErrors.PROFILE_UPDATE_FAILED,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            )
+        }
+
+        return existedUser
     }
 }

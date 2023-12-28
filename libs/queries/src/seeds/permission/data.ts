@@ -101,4 +101,8 @@ export const permissionData: InsertPermissionDto[] = [
         description:
             'the user with this right can create role of user in the system',
     },
+    {
+        key: PermissionEnum.EDIT_PROFILE,
+        description: 'the user with this right can update their own profile',
+    },
 ]

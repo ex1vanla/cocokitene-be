@@ -1,4 +1,9 @@
-import { CreateUserDto, GetAllUsersDto, UpdateUserDto } from '@dtos/user.dto'
+import {
+    CreateUserDto,
+    GetAllUsersDto,
+    UpdateOwnProfileDto,
+    UpdateUserDto,
+} from '@dtos/user.dto'
 import {
     Body,
     Controller,
@@ -102,5 +107,23 @@ export class UserController {
             createUserDto,
         )
         return createdUser
+    }
+
+    @Patch('/profile/:userId')
+    @UseGuards(JwtAuthGuard)
+    @Permission(PermissionEnum.EDIT_PROFILE)
+    @ApiBearerAuth()
+    @HttpCode(HttpStatus.OK)
+    async updateOwnProfile(
+        @Param('userId') userId: number,
+        @Body() updateOwnProfileDto: UpdateOwnProfileDto,
+        @UserScope() user: User,
+    ) {
+        const updateUser = await this.userService.updateOwnProfile(
+            user,
+            userId,
+            updateOwnProfileDto,
+        )
+        return updateUser
     }
 }
