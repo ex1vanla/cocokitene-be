@@ -14,7 +14,7 @@ import {
     UserStatusEnum,
 } from '@shares/constants'
 import { httpErrors } from '@shares/exception-filter'
-import { comparePassword, hashPassword } from '@shares/utils'
+
 import { uuid } from '@shares/utils/uuid'
 import { User } from '@entities/user.entity'
 import {
@@ -39,6 +39,8 @@ import { SystemAdminRepository } from '@repositories/system-admin.repository'
 import { SystemAdmin } from '@entities/system-admin.entity'
 import { ResetPasswordDto } from '@dtos/password.dto'
 import { EmailService } from '@api/modules/emails/email.service'
+import { ChangePasswordDto } from '@dtos/system-admin.dto'
+import { comparePassword, hashPassword } from '@shares/utils'
 
 @Injectable()
 export class AuthService {
@@ -275,6 +277,8 @@ export class AuthService {
         }
     }
 
+
+
     async verifyEmailAndResetPassword(
         linkToken: string,
         resetPasswordDto: ResetPasswordDto,
@@ -303,4 +307,40 @@ export class AuthService {
         await systemAdmin.save()
         return 'Reset Password Successfully'
     }
+
+
+
+    async changePassword(
+        systemAdminId: number,
+        changePasswordDto: ChangePasswordDto,
+    ) {
+        const { currentPassword, newPassword } = changePasswordDto
+        const existedSystemAdmin =
+            await this.systemAdminRepository.getSystemAdminById(systemAdminId)
+        if (!existedSystemAdmin) {
+            throw new HttpException(
+                httpErrors.SYSTEM_ADMIN_NOT_FOUND,
+                HttpStatus.NOT_FOUND,
+            )
+        }
+        const checkPassword = await comparePassword(
+            currentPassword,
+            existedSystemAdmin.password,
+        )
+        if (!checkPassword) {
+            throw new HttpException(
+                httpErrors.SYSTEM_ADMIN_INVALID_PASSWORD,
+                HttpStatus.FORBIDDEN,
+            )
+        }
+        const hashedNewPassword = await hashPassword(newPassword)
+        existedSystemAdmin.password = hashedNewPassword
+        await existedSystemAdmin.save()
+        return 'Change Password successfully!!!'
+    }
+
+
+
+
+
 }

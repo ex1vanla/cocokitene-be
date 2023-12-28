@@ -16,6 +16,7 @@ import {
     SystemAdminRefreshTokenDto,
 } from 'libs/queries/src/dtos/auth.dto'
 import { ResetPasswordDto } from '@dtos/password.dto'
+import { ChangePasswordDto } from '@dtos/system-admin.dto'
 
 @Controller('auths')
 @ApiTags('auths')
@@ -83,5 +84,18 @@ export class AuthController {
                 resetPasswordDto,
             )
         return isEmailVerify
+    }
+    
+    @Post('system-admin/:id/reset-password')
+    @HttpCode(HttpStatus.OK)
+    async changePassword(
+        @Param('id') systemAdminId: number,
+        @Body() changePasswordDto: ChangePasswordDto,
+    ) {
+        const changePassword = await this.authService.changePassword(
+            systemAdminId,
+            changePasswordDto,
+        )
+        return changePassword
     }
 }

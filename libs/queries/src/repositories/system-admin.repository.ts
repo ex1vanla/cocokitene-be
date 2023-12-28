@@ -21,4 +21,14 @@ export class SystemAdminRepository extends Repository<SystemAdmin> {
         })
         return systemAdmin
     }
+
+
+    async getSystemAdminById(systemAdminId: number): Promise<SystemAdmin> {
+        const systemAdmin = await this.findOne({
+            where: {
+                id: systemAdminId,
+            },
+        })
+        return systemAdmin
+    }
 }
