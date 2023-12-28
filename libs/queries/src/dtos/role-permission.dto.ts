@@ -38,6 +38,8 @@ export class RoleForPermissionDto {
     assignmentRoleOfPermission: RoleIdsOfPermisisonDto[]
 }
 
+
+
 export class CreateRolePermissonDto {
     @IsNumber()
     @Type(() => Number)

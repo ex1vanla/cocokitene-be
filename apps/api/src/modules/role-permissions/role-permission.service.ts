@@ -5,10 +5,10 @@ import {
     RoleForPermissionDto,
 } from '@dtos/role-permission.dto'
 import { RoleService } from '@api/modules/roles/role.service'
-import { httpErrors } from '@shares/exception-filter'
 import { CompanyService } from '@api/modules/companys/company.service'
 import { RolePermission } from '@entities/role-permission.entity'
 import { PermissionService } from '@api/modules/permissions/permission.service'
+import { httpErrors } from '@shares/exception-filter'
 
 @Injectable()
 export class RolePermissionService {
@@ -122,6 +122,8 @@ export class RolePermissionService {
             permissionId,
         )
     }
+
+
     async createRolePermission(
         createRolePermissonDto: CreateRolePermissonDto,
     ): Promise<RolePermission> {
