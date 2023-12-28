@@ -12,6 +12,8 @@ import { JwtAuthGuard } from '@shares/guards/jwt-auth.guard'
 import { Permission } from '@shares/decorators/permission.decorator'
 import { PermissionEnum } from '@shares/constants'
 import { GetAllNormalRolesDto } from '@dtos/role.dto'
+import { UserScope } from '@shares/decorators/user.decorator'
+import { User } from '@sentry/node'
 
 @Controller('roles')
 @ApiTags('roles')
@@ -25,10 +27,12 @@ export class RoleController {
     @Permission(PermissionEnum.LIST_ROLES)
     async getAllNormalRoles(
         @Query() getAllNormalRolesDto: GetAllNormalRolesDto,
-        // @UserScope() user: User,
+        @UserScope() user: User,
     ) {
+        const companyId = user?.companyId
         const normalRoles = await this.roleService.getAllNormalRoles(
             getAllNormalRolesDto,
+            companyId,
         )
         return normalRoles
     }

@@ -210,4 +210,9 @@ export const httpErrors = {
         message: 'user do not have the role of shareholder. Please try again',
         code: 'USER_ROLE_00001',
     },
+    //role-permission
+    ROLE_PERMISSION_CREATE_FAILED: {
+        message: 'Create role_permission failed. Please try again',
+        code: 'ROLE_PERMISSION_00000',
+    },
 }
