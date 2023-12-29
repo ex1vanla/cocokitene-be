@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common'
+import { forwardRef, Module } from '@nestjs/common'
 import { RolePermissionController } from '@api/modules/role-permissions/role-permission.controller'
 import { RolePermissionService } from '@api/modules/role-permissions/role-permission.service'
 import { CompanyModule } from '@api/modules/companys/company.module'
@@ -9,6 +9,10 @@ import { PermissionModule } from '@api/modules/permissions/permission.module'
     controllers: [RolePermissionController],
     providers: [RolePermissionService],
     exports: [RolePermissionService],
-    imports: [CompanyModule, RoleModule, PermissionModule],
+    imports: [
+        forwardRef(() => CompanyModule),
+        forwardRef(() => RoleModule),
+        PermissionModule,
+    ],
 })
 export class RolePermissionModule {}

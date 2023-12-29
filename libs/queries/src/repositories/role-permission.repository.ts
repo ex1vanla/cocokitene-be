@@ -19,7 +19,6 @@ export class RolePermissionRepository extends Repository<RolePermission> {
         return listRoleIds
     }
 
-
     async createRolePermission(
         createRolePermissonDto: CreateRolePermissonDto,
     ): Promise<RolePermission> {

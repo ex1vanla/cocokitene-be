@@ -37,6 +37,7 @@ export class CompanyService {
         private readonly userRoleService: UserRoleService,
         private readonly userStatusService: UserStatusService,
         private readonly planService: PlanService,
+        @Inject(forwardRef(() => PermissionService))
         private readonly permissionService: PermissionService,
         private readonly rolePermissionService: RolePermissionService,
     ) {}

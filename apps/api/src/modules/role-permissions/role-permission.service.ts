@@ -1,4 +1,10 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
+import {
+    forwardRef,
+    HttpException,
+    HttpStatus,
+    Inject,
+    Injectable,
+} from '@nestjs/common'
 import { RolePermissionRepository } from '@repositories/role-permission.repository'
 import {
     CreateRolePermissonDto,
@@ -14,7 +20,9 @@ import { httpErrors } from '@shares/exception-filter'
 export class RolePermissionService {
     constructor(
         private readonly rolePermissionRepository: RolePermissionRepository,
+        @Inject(forwardRef(() => RoleService))
         private readonly roleService: RoleService,
+        @Inject(forwardRef(() => CompanyService))
         private readonly companyService: CompanyService,
         private readonly permissionService: PermissionService,
     ) {}
@@ -122,7 +130,6 @@ export class RolePermissionService {
             permissionId,
         )
     }
-
 
     async createRolePermission(
         createRolePermissonDto: CreateRolePermissonDto,

@@ -8,6 +8,9 @@ import { RolePermissionModule } from '@api/modules/role-permissions/role-permiss
     controllers: [RoleController],
     providers: [RoleService],
     exports: [RoleService],
-    imports: [forwardRef(() => CompanyModule), RolePermissionModule],
+    imports: [
+        forwardRef(() => CompanyModule),
+        forwardRef(() => RolePermissionModule),
+    ],
 })
 export class RoleModule {}

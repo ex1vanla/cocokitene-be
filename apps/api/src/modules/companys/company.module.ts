@@ -16,7 +16,7 @@ import { PermissionModule } from '@api/modules/permissions/permission.module'
         UserRoleModule,
         UserStatusModule,
         PlanModule,
-        RolePermissionModule,
+        forwardRef(() => RolePermissionModule),
         PermissionModule,
     ],
     controllers: [CompanyController],

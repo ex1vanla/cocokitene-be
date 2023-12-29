@@ -20,6 +20,7 @@ export class RoleService {
         private readonly roleRepository: RoleRepository,
         @Inject(forwardRef(() => CompanyService))
         private readonly companyService: CompanyService,
+        @Inject(forwardRef(() => RolePermissionService))
         private readonly rolePermissionService: RolePermissionService,
     ) {}
     async getPermissionsByRoleId(roleIds: number[]): Promise<string[]> {

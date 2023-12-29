@@ -311,7 +311,7 @@ export class UserService {
         updateOwnProfileDto: UpdateOwnProfileDto,
     ): Promise<User> {
         const companyId = user?.companyId,
-        userRequestId = user?.id
+            userRequestId = user?.id
         const existedCompany = await this.companyService.getCompanyById(
             companyId,
         )
@@ -341,7 +341,6 @@ export class UserService {
             )
         }
 
-
         //update profle of user
         try {
             existedUser = await this.userRepository.updateOwnProfile(
@@ -357,12 +356,8 @@ export class UserService {
         }
 
         return existedUser
-
     }
 
-
-
-    
     //profile
     async getProfileOwnById(
         userId: number,
@@ -386,7 +381,7 @@ export class UserService {
                 HttpStatus.BAD_REQUEST,
             )
         }
-        
+
         const existedUser = await this.userRepository.getUserById(
             companyId,
             userId,
@@ -406,7 +401,4 @@ export class UserService {
             roles: rolesByUserId,
         }
     }
-
-
-        
 }
