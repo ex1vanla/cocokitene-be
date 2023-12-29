@@ -87,12 +87,9 @@ export class UserRepository extends Repository<User> {
                 'users.defaultAvatarHashColor',
                 'users.createdAt',
                 'users.updatedAt',
-                'userStatus.id',
-                'userStatus.description',
-                'userStatus.status',
                 'GROUP_CONCAT(role.role ORDER BY role.role ASC ) as listRoleResponse',
             ])
-            .leftJoin('users.userStatus', 'userStatus')
+            .leftJoinAndSelect('users.userStatus', 'userStatus')
             .leftJoin('users.userRole', 'userRole')
             .leftJoin('userRole.role', 'role')
             .where('users.companyId = :companyId', { companyId })
