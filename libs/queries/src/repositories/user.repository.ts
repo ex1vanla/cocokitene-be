@@ -9,7 +9,7 @@ import {
 import { User } from '@entities/user.entity'
 import { UserStatusEnum } from '@shares/constants/user.const'
 import { CustomRepository } from '@shares/decorators'
-import { Pagination, paginate } from 'nestjs-typeorm-paginate'
+import { Pagination, paginateRaw } from 'nestjs-typeorm-paginate'
 import { Repository } from 'typeorm'
 import { HttpException, HttpStatus } from '@nestjs/common'
 
@@ -87,16 +87,14 @@ export class UserRepository extends Repository<User> {
                 'users.defaultAvatarHashColor',
                 'users.createdAt',
                 'users.updatedAt',
+                'GROUP_CONCAT(role.role ORDER BY role.role ASC ) as listRoleResponse',
             ])
             .leftJoinAndSelect('users.userStatus', 'userStatus')
-            .leftJoinAndSelect('users.userRole', 'userRole')
-            .leftJoinAndSelect('userRole.role', 'role')
-            .where('users.companyId = :companyId', {
-                companyId,
-            })
-            .andWhere('role.companyId = :companyId', {
-                companyId,
-            })
+            .leftJoin('users.userRole', 'userRole')
+            .leftJoin('userRole.role', 'role')
+            .where('users.companyId = :companyId', { companyId })
+            .andWhere('role.companyId = :companyId', { companyId })
+            .groupBy('users.id')
 
         if (searchQuery) {
             queryBuilder
@@ -111,8 +109,8 @@ export class UserRepository extends Repository<User> {
         if (sortOrder) {
             queryBuilder.addOrderBy('users.updatedAt', sortOrder)
         }
-        queryBuilder.addOrderBy('role.roleName', 'ASC')
-        return paginate(queryBuilder, { page, limit })
+
+        return paginateRaw(queryBuilder, { page, limit })
     }
 
     // async getUserByMeetingIdAndRole(
