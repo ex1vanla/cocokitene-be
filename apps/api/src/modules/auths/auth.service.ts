@@ -277,8 +277,6 @@ export class AuthService {
         }
     }
 
-
-
     async verifyEmailAndResetPassword(
         linkToken: string,
         resetPasswordDto: ResetPasswordDto,
@@ -308,8 +306,6 @@ export class AuthService {
         return 'Reset Password Successfully'
     }
 
-
-
     async changePassword(
         systemAdminId: number,
         changePasswordDto: ChangePasswordDto,
@@ -338,9 +334,4 @@ export class AuthService {
         await existedSystemAdmin.save()
         return 'Change Password successfully!!!'
     }
-
-
-
-
-
 }
