@@ -222,6 +222,7 @@ export class UserRepository extends Repository<User> {
             .select([
                 'users.username',
                 'users.email',
+                'users.phone',
                 'users.walletAddress',
                 'users.defaultAvatarHashColor',
                 'users.avatar',
