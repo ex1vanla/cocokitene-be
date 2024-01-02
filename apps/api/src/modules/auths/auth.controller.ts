@@ -5,6 +5,7 @@ import {
     HttpStatus,
     Param,
     Post,
+    UseGuards,
 } from '@nestjs/common'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import { AuthService } from '@api/modules/auths/auth.service'
@@ -16,6 +17,10 @@ import {
     SystemAdminRefreshTokenDto,
 } from 'libs/queries/src/dtos/auth.dto'
 import { ResetPasswordDto } from '@dtos/password.dto'
+import { ChangePasswordDto } from '@dtos/system-admin.dto'
+import { SystemAdminGuard } from '@shares/guards/systemadmin.guard'
+import { SystemAdminScope } from '@shares/decorators/system-admin.decorator'
+import { SystemAdmin } from '@entities/system-admin.entity'
 
 @Controller('auths')
 @ApiTags('auths')
@@ -83,5 +88,21 @@ export class AuthController {
                 resetPasswordDto,
             )
         return isEmailVerify
+    }
+
+    @Post('system-admin/reset-password')
+    @UseGuards(SystemAdminGuard)
+    @ApiBearerAuth()
+    @HttpCode(HttpStatus.OK)
+    async changePassword(
+        @Body() changePasswordDto: ChangePasswordDto,
+        @SystemAdminScope() systemAdmin: SystemAdmin,
+    ) {
+        const systemAdminId = systemAdmin?.id
+        const changePassword = await this.authService.changePassword(
+            systemAdminId,
+            changePasswordDto,
+        )
+        return changePassword
     }
 }
