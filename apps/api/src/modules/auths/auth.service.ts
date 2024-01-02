@@ -9,40 +9,36 @@ import {
     LoginResponseData,
     SystemAdminLoginResponseData,
 } from '@api/modules/auths/auth.interface'
-import { UserStatusEnum } from '@shares/constants'
-import { httpErrors } from '@shares/exception-filter'
 import {
-    comparePassword,
-    getSignedMessage,
-    isValidSignature,
-} from '@shares/utils'
+    TOKEN_VERIFY_EMAIL_EXPIRE_IN_MILISECOND,
+    UserStatusEnum,
+} from '@shares/constants'
+import { httpErrors } from '@shares/exception-filter'
+import { comparePassword, hashPassword } from '@shares/utils'
 import { uuid } from '@shares/utils/uuid'
 import { User } from '@entities/user.entity'
 import {
     generateAccessJWT,
+    generateCryptoToken,
     generateRefreshTokenJWT,
     generateSystemAdminAccessJWT,
     generateSystemAdminRefreshJWT,
-    verifyAccessTokenJWT,
     verifyRefreshJWT,
     verifySystemAdminRefreshTokenJWT,
 } from '@shares/utils/jwt'
 import {
+    ForgotPasswordDto,
     LoginByPassword,
     LoginDto,
     RefreshTokenDto,
     SystemAdminRefreshTokenDto,
 } from 'libs/queries/src/dtos/auth.dto'
-import { UserRole } from '@entities/user-role.entity'
-import { RolePermission } from '@entities/role-permission.entity'
-import { Permission } from '@entities/permission.entity'
-import { Role } from '@entities/role.entity'
-import { RoleRepository } from '@repositories/role.repository'
-import { UserRoleRepository } from '@repositories/user-role.repository'
 import { RoleService } from '@api/modules/roles/role.service'
 import { UserRoleService } from '@api/modules/user-roles/user-role.service'
 import { SystemAdminRepository } from '@repositories/system-admin.repository'
 import { SystemAdmin } from '@entities/system-admin.entity'
+import { ResetPasswordDto } from '@dtos/password.dto'
+import { EmailService } from '@api/modules/emails/email.service'
 
 @Injectable()
 export class AuthService {
@@ -52,6 +48,7 @@ export class AuthService {
         private readonly roleService: RoleService,
         private readonly userRoleService: UserRoleService,
         private readonly systemAdminRepository: SystemAdminRepository,
+        private readonly emailService: EmailService,
     ) {}
 
     async login(loginDto: LoginDto): Promise<LoginResponseData> {
@@ -248,5 +245,62 @@ export class AuthService {
         }
         const systemAdminAccessToken = generateSystemAdminAccessJWT(payload)
         return systemAdminAccessToken
+    }
+
+    async sendEmailForgotPassword(forgotPasswordDto: ForgotPasswordDto) {
+        const { email } = forgotPasswordDto
+        const existedSystemAdmin =
+            await this.systemAdminRepository.findSystemAdminByEmail(email)
+        if (!existedSystemAdmin) {
+            throw new HttpException(
+                httpErrors.SYSTEM_ADMIN_NOT_FOUND,
+                HttpStatus.NOT_FOUND,
+            )
+        }
+        existedSystemAdmin.resetPasswordToken = generateCryptoToken()
+        existedSystemAdmin.resetPasswordExpireTime = new Date(
+            Date.now() + TOKEN_VERIFY_EMAIL_EXPIRE_IN_MILISECOND,
+        )
+        await existedSystemAdmin.save()
+
+        try {
+            await this.emailService.sendEmailConfirmResetPassword(
+                existedSystemAdmin,
+            )
+        } catch (error) {
+            throw new HttpException(
+                httpErrors.RESET_PASSWORD_TOKEN_SEND_FAILED,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            )
+        }
+    }
+
+    async verifyEmailAndResetPassword(
+        linkToken: string,
+        resetPasswordDto: ResetPasswordDto,
+    ): Promise<string> {
+        const { password, confirmPassword } = resetPasswordDto
+        const systemAdmin =
+            await this.systemAdminRepository.getSystemAdminByResetPasswordToken(
+                linkToken,
+            )
+        if (!systemAdmin) {
+            throw new HttpException(
+                httpErrors.SYSTEM_ADMIN_NOT_FOUND,
+                HttpStatus.NOT_FOUND,
+            )
+        }
+        const currentTime = new Date()
+        const expiredLinkToken = systemAdmin.resetPasswordExpireTime
+        if (currentTime > expiredLinkToken) {
+            throw new HttpException(
+                httpErrors.RESET_PASSWORD_TOKEN_EXPIRED,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            )
+        }
+        const newPasswordHashed = await hashPassword(password)
+        systemAdmin.password = newPasswordHashed
+        await systemAdmin.save()
+        return 'Reset Password Successfully'
     }
 }

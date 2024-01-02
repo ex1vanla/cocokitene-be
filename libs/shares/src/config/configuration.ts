@@ -39,6 +39,7 @@ interface Configuration {
             user: string
             password: string
         }
+        baseUrl: string
     }
     s3: {
         accessKeyId: string
@@ -99,6 +100,7 @@ export default (): Configuration => ({
             user: process.env.EMAIL_USER,
             password: process.env.EMAIL_PASSWORD,
         },
+        baseUrl: process.env.BASE_URL,
     },
     s3: {
         accessKeyId: process.env.S3_ACCESS_KEY || '',
