@@ -168,7 +168,7 @@ export class CreateUserDto {
     statusId: number
 
     @IsString()
-    @IsNotEmpty()
+    @IsOptional()
     @ApiProperty({
         required: true,
         example:
