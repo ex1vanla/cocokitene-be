@@ -153,4 +153,43 @@ export class RolePermissionService {
             )
         }
     }
+
+    async getAllRoleWithPermissions(companyId: number): Promise<any> {
+        const existedCompany = await this.companyService.getCompanyById(
+            companyId,
+        )
+        if (!existedCompany) {
+            throw new HttpException(
+                httpErrors.COMPANY_NOT_FOUND,
+                HttpStatus.NOT_FOUND,
+            )
+        }
+
+        // list permission
+        const listPermissions = await this.permissionService.getAllPermissions()
+
+        // list role
+        const listRoles = await this.roleService.getAllInternalRoleInCompany(
+            companyId,
+        )
+        const rolePermissions = {}
+
+        await Promise.all([
+            ...listPermissions.map(async (permission) => {
+                const permissionId = permission.id,
+                    permissionName = permission.key
+                rolePermissions[permissionName] = {}
+                await Promise.all([
+                    ...listRoles.map(async (role) => {
+                        rolePermissions[permissionName][role.roleName] =
+                            await this.getRolePermisionByPermissionIdAndRoleId(
+                                permissionId,
+                                role.id,
+                            )
+                    }),
+                ])
+            }),
+        ])
+        return rolePermissions
+    }
 }
