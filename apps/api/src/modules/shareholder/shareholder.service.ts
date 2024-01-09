@@ -6,7 +6,6 @@ import { ShareholderRepository } from '@repositories/shareholder.repository'
 import { Pagination } from 'nestjs-typeorm-paginate'
 
 import { CompanyService } from '@api/modules/companys/company.service'
-import { UserRoleService } from '@api/modules/user-roles/user-role.service'
 
 @Injectable()
 export class ShareholderService {
@@ -14,7 +13,6 @@ export class ShareholderService {
         private readonly shareholderRepository: ShareholderRepository,
         @Inject(forwardRef(() => CompanyService))
         private readonly companyService: CompanyService,
-        private readonly userRoleService: UserRoleService,
     ) {}
 
     async getAllShareholderCompany(
