@@ -13,6 +13,7 @@ import { UserRoleRepository } from '@repositories/user-role.repository'
 import { UserStatusRepository } from '@repositories/user-status.repository'
 import { UserRepository } from '@repositories/user.repository'
 import { VotingRepository } from '@repositories/voting.repository'
+import { ShareholderRepository } from '@repositories/shareholder.repository'
 import { TypeOrmExModule } from '@shares/modules'
 import { PermissionRepository } from '@repositories/permission.repository'
 import { RolePermissionRepository } from '@repositories/role-permission.repository'
@@ -35,6 +36,7 @@ const commonRepositories = [
     ProposalFileRepository,
     PermissionRepository,
     RolePermissionRepository,
+    ShareholderRepository,
 ]
 
 @Global()

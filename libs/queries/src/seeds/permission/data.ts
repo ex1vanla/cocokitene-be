@@ -108,5 +108,10 @@ export const permissionData: InsertPermissionDto[] = [
     {
         key: PermissionEnum.DETAIL_PROFILE,
         description: 'the user with this right can see detail profile',
+       
+    },
+    {
+        key: PermissionEnum.LIST_SHAREHOLDERS,
+        description:'the user with this right can see list shareholders in the my company',
     },
 ]
