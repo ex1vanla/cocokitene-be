@@ -114,4 +114,14 @@ export const permissionData: InsertPermissionDto[] = [
         description:
             'the user with this right can see list shareholders in the my company',
     },
+    {
+        key: PermissionEnum.EDIT_SHAREHOLDERS,
+        description:
+            'the user with this right can update shareholders in the my company',
+    },
+    {
+        key: PermissionEnum.DETAIL_SHAREHOLDERS,
+        description:
+            'the user with this right can see detail shareholders in the my company',
+    },
 ]
