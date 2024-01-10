@@ -1,4 +1,3 @@
-import { GetAllUsersDto } from '@dtos/user.dto'
 import {
     Controller,
     Get,
@@ -14,9 +13,10 @@ import { User } from '@entities/user.entity'
 import { PermissionEnum } from '@shares/constants'
 import { Permission } from '@shares/decorators/permission.decorator'
 import { ShareholderService } from './shareholder.service'
+import { GetAllShareholderDto } from '@dtos/shareholder.dto'
 
-@Controller('shareholder')
-@ApiTags('shareholder')
+@Controller('shareholders')
+@ApiTags('shareholders')
 export class ShareholderController {
     constructor(private readonly shareholderService: ShareholderService) {}
 
@@ -26,7 +26,7 @@ export class ShareholderController {
     @UseGuards(JwtAuthGuard)
     @Permission(PermissionEnum.LIST_SHAREHOLDERS)
     async getAllSharehoderByCompany(
-        @Query() getAllShareholderDto: GetAllUsersDto,
+        @Query() getAllShareholderDto: GetAllShareholderDto,
         @UserScope() user: User,
     ) {
         const companyId = user?.companyId
