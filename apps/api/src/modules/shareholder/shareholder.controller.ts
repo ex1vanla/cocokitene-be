@@ -46,9 +46,9 @@ export class ShareholderController {
     @ApiBearerAuth()
     async getShareholderById(
         @Param('id') shareholderId: number,
-        @UserScope() shareholder: User,
+        @UserScope() user: User,
     ) {
-        const companyId = shareholder?.companyId
+        const companyId = user?.companyId
         const shareholderDetails =
             await this.shareholderService.getShareholderById(
                 companyId,
