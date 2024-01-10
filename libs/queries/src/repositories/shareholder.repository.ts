@@ -53,7 +53,7 @@ export class ShareholderRepository extends Repository<User> {
         companyId: number,
         shareholderId: number,
     ): Promise<User> {
-        const user = await this.createQueryBuilder('users')
+        const shareholder = await this.createQueryBuilder('users')
             .select([
                 'users.username',
                 'users.email',
@@ -73,7 +73,8 @@ export class ShareholderRepository extends Repository<User> {
             .andWhere('users.id = :shareholderId', {
                 shareholderId,
             })
+            .andWhere('users.shareQuantity IS NOT NULL')
             .getOne()
-        return user
+        return shareholder
     }
 }
