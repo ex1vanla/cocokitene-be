@@ -48,4 +48,32 @@ export class ShareholderRepository extends Repository<User> {
 
         return paginate(queryBuilder, { page, limit })
     }
+
+    async getShareholderById(
+        companyId: number,
+        shareholderId: number,
+    ): Promise<User> {
+        const user = await this.createQueryBuilder('users')
+            .select([
+                'users.username',
+                'users.email',
+                'users.phone',
+                'users.walletAddress',
+                'users.defaultAvatarHashColor',
+                'users.avatar',
+                'users.shareQuantity',
+            ])
+            .leftJoin('users.company', 'company')
+            .addSelect(['company.id', 'company.companyName'])
+            .leftJoin('users.userStatus', 'userStatus')
+            .addSelect(['userStatus.id', 'userStatus.status'])
+            .where('users.companyId = :companyId', {
+                companyId,
+            })
+            .andWhere('users.id = :shareholderId', {
+                shareholderId,
+            })
+            .getOne()
+        return user
+    }
 }

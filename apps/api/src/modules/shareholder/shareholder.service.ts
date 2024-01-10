@@ -1,11 +1,20 @@
+import { UserRoleService } from '@api/modules/user-roles/user-role.service'
 import { GetAllShareholderDto } from '@dtos/shareholder.dto'
 
 import { User } from '@entities/user.entity'
-import { forwardRef, Inject, Injectable } from '@nestjs/common'
+import {
+    forwardRef,
+    HttpException,
+    HttpStatus,
+    Inject,
+    Injectable,
+} from '@nestjs/common'
 import { ShareholderRepository } from '@repositories/shareholder.repository'
 import { Pagination } from 'nestjs-typeorm-paginate'
 
 import { CompanyService } from '@api/modules/companys/company.service'
+import { httpErrors } from '@shares/exception-filter'
+import { DetailShareholderReponse } from './shareholder.interface'
 
 @Injectable()
 export class ShareholderService {
@@ -13,6 +22,7 @@ export class ShareholderService {
         private readonly shareholderRepository: ShareholderRepository,
         @Inject(forwardRef(() => CompanyService))
         private readonly companyService: CompanyService,
+        private readonly userRoleService: UserRoleService,
     ) {}
 
     async getAllShareholderCompany(
@@ -25,5 +35,38 @@ export class ShareholderService {
         )
 
         return users
+    }
+
+    async getShareholderById(
+        companyId: number,
+        shareholderId: number,
+    ): Promise<DetailShareholderReponse> {
+        const existedCompany = await this.companyService.getCompanyById(
+            companyId,
+        )
+        if (!existedCompany) {
+            throw new HttpException(
+                httpErrors.COMPANY_NOT_FOUND,
+                HttpStatus.NOT_FOUND,
+            )
+        }
+        const existedShareholder =
+            await this.shareholderRepository.getShareholderById(
+                companyId,
+                shareholderId,
+            )
+        if (!existedShareholder) {
+            throw new HttpException(
+                httpErrors.USER_NOT_FOUND,
+                HttpStatus.NOT_FOUND,
+            )
+        }
+        const rolesByShareholderId =
+            await this.userRoleService.getRolesByUserId(shareholderId)
+
+        return {
+            ...existedShareholder,
+            roles: rolesByShareholderId,
+        }
     }
 }

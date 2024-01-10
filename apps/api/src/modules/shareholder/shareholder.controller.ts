@@ -3,6 +3,7 @@ import {
     Get,
     HttpCode,
     HttpStatus,
+    Param,
     Query,
     UseGuards,
 } from '@nestjs/common'
@@ -36,5 +37,23 @@ export class ShareholderController {
                 companyId,
             )
         return shareholders
+    }
+
+    @Get('/:id')
+    @UseGuards(JwtAuthGuard)
+    @Permission(PermissionEnum.DETAIL_SHAREHOLDERS)
+    @HttpCode(HttpStatus.OK)
+    @ApiBearerAuth()
+    async getShareholderById(
+        @Param('id') shareholderId: number,
+        @UserScope() shareholder: User,
+    ) {
+        const companyId = shareholder?.companyId
+        const shareholderDetails =
+            await this.shareholderService.getShareholderById(
+                companyId,
+                shareholderId,
+            )
+        return shareholderDetails
     }
 }
