@@ -237,4 +237,13 @@ export const httpErrors = {
         message: 'Reset password token has expired. Please try again',
         code: 'RESET_PASSWORD_TOKEN_00002',
     },
+    //shareholder
+    SHAREHOLDER_NOT_FOUND: {
+        message: 'Shareholder not found. Please try again',
+        code: 'SHAREHOLDER_00001',
+    },
+    SHAREHOLDER_UPDATE_FAILED: {
+        message: 'Shareholder update failed. Please try again',
+        code: 'SHAREHOLDER_00002',
+    },
 }
