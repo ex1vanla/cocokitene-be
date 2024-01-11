@@ -1,4 +1,7 @@
-import { GetAllShareholderDto } from '@dtos/shareholder.dto'
+import {
+    GetAllShareholderDto,
+    UpdateShareholderDto,
+} from '@dtos/shareholder.dto'
 
 import { User } from '@entities/user.entity'
 import { CustomRepository } from '@shares/decorators'
@@ -75,6 +78,39 @@ export class ShareholderRepository extends Repository<User> {
             })
             .andWhere('users.shareQuantity IS NOT NULL')
             .getOne()
+        return shareholder
+    }
+
+    async updateShareholder(
+        companyId: number,
+        shareholderId: number,
+        updateShareholderDto: UpdateShareholderDto,
+    ): Promise<User> {
+        await this.createQueryBuilder('users')
+            .update(User)
+            .set({
+                username: updateShareholderDto.username,
+                walletAddress: updateShareholderDto.walletAddress,
+                shareQuantity: updateShareholderDto.shareQuantity,
+                email: updateShareholderDto.email,
+                phone: updateShareholderDto.phone,
+                statusId: updateShareholderDto.statusId,
+                avatar: updateShareholderDto.avatar,
+            })
+            .where('users.id = :shareholderId', {
+                shareholderId,
+            })
+            .andWhere('users.company_id = :companyId', {
+                companyId: companyId,
+            })
+            .execute()
+
+        const shareholder = await this.findOne({
+            where: {
+                id: shareholderId,
+            },
+        })
+
         return shareholder
     }
 }

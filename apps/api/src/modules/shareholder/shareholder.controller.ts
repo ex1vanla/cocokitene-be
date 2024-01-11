@@ -1,9 +1,11 @@
 import {
+    Body,
     Controller,
     Get,
     HttpCode,
     HttpStatus,
     Param,
+    Patch,
     Query,
     UseGuards,
 } from '@nestjs/common'
@@ -14,7 +16,10 @@ import { User } from '@entities/user.entity'
 import { PermissionEnum } from '@shares/constants'
 import { Permission } from '@shares/decorators/permission.decorator'
 import { ShareholderService } from './shareholder.service'
-import { GetAllShareholderDto } from '@dtos/shareholder.dto'
+import {
+    GetAllShareholderDto,
+    UpdateShareholderDto,
+} from '@dtos/shareholder.dto'
 
 @Controller('shareholders')
 @ApiTags('shareholders')
@@ -55,5 +60,24 @@ export class ShareholderController {
                 shareholderId,
             )
         return shareholderDetails
+    }
+
+    @Patch(':id')
+    @UseGuards(JwtAuthGuard)
+    @Permission(PermissionEnum.EDIT_SHAREHOLDERS)
+    @ApiBearerAuth()
+    @HttpCode(HttpStatus.OK)
+    async updateShareholder(
+        @Param('id') shareholderId: number,
+        @Body() updateShareholderDto: UpdateShareholderDto,
+        @UserScope() user: User,
+    ) {
+        const companyId = user?.companyId
+        const updateUser = await this.shareholderService.updateShareholder(
+            companyId,
+            shareholderId,
+            updateShareholderDto,
+        )
+        return updateUser
     }
 }

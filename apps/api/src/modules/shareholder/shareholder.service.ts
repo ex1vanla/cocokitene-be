@@ -1,5 +1,8 @@
 import { UserRoleService } from '@api/modules/user-roles/user-role.service'
-import { GetAllShareholderDto } from '@dtos/shareholder.dto'
+import {
+    GetAllShareholderDto,
+    UpdateShareholderDto,
+} from '@dtos/shareholder.dto'
 
 import { User } from '@entities/user.entity'
 import {
@@ -57,7 +60,7 @@ export class ShareholderService {
             )
         if (!existedShareholder) {
             throw new HttpException(
-                httpErrors.USER_NOT_FOUND,
+                httpErrors.SHAREHOLDER_NOT_FOUND,
                 HttpStatus.NOT_FOUND,
             )
         }
@@ -68,5 +71,53 @@ export class ShareholderService {
             ...existedShareholder,
             roles: rolesByShareholderId,
         }
+    }
+
+    async updateShareholder(
+        companyId: number,
+        shareholderId: number,
+        updateShareholderDto: UpdateShareholderDto,
+    ) {
+        const existedCompany = await this.companyService.getCompanyById(
+            companyId,
+        )
+        if (!existedCompany) {
+            throw new HttpException(
+                httpErrors.COMPANY_NOT_FOUND,
+                HttpStatus.NOT_FOUND,
+            )
+        }
+        let existedShareholder = await this.shareholderRepository.findOne({
+            where: {
+                id: shareholderId,
+                companyId: companyId,
+            },
+        })
+        if (!existedShareholder) {
+            throw new HttpException(
+                httpErrors.SHAREHOLDER_NOT_FOUND,
+                HttpStatus.NOT_FOUND,
+            )
+        }
+
+        //Update shareholder
+        try {
+            existedShareholder =
+                await this.shareholderRepository.updateShareholder(
+                    companyId,
+                    shareholderId,
+                    updateShareholderDto,
+                )
+        } catch (error) {
+            throw new HttpException(
+                httpErrors.SHAREHOLDER_UPDATE_FAILED,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            )
+        }
+
+        const { roleIds } = updateShareholderDto
+        await this.userRoleService.updateUserRole(shareholderId, roleIds)
+
+        return existedShareholder
     }
 }
