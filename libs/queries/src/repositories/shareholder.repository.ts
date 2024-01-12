@@ -109,6 +109,18 @@ export class ShareholderRepository extends Repository<User> {
             where: {
                 id: shareholderId,
             },
+            select: [
+                'id',
+                'username',
+                'email',
+                'walletAddress',
+                'avatar',
+                'statusId',
+                'companyId',
+                'shareQuantity',
+                'defaultAvatarHashColor',
+                'phone',
+            ],
         })
 
         return shareholder
