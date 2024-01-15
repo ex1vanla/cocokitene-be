@@ -62,7 +62,7 @@ export class ShareholderController {
         return shareholderDetails
     }
 
-    @Patch(':id')
+    @Patch('/:id')
     @UseGuards(JwtAuthGuard)
     @Permission(PermissionEnum.EDIT_SHAREHOLDERS)
     @ApiBearerAuth()
