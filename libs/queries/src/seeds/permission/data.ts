@@ -82,9 +82,14 @@ export const permissionData: InsertPermissionDto[] = [
             'the user with this right can see list status of user in the system',
     },
     {
-        key: PermissionEnum.LIST_ROLES,
+        key: PermissionEnum.LIST_ROLES_NORMAL,
         description:
-            'the user with this right can see list role of user in the system',
+            'the user with this right can see list role normal of user in the system',
+    },
+    {
+        key: PermissionEnum.LIST_ROLES_INTERNAL,
+        description:
+            'the user with this right can see list role internal of user in the system',
     },
     {
         key: PermissionEnum.LIST_PERMISSIONS,

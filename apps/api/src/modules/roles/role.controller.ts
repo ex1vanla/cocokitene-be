@@ -22,11 +22,11 @@ import { User } from '@entities/user.entity'
 export class RoleController {
     constructor(private readonly roleService: RoleService) {}
 
-    @Get('')
+    @Get('/normal-role')
     @HttpCode(HttpStatus.OK)
     @ApiBearerAuth()
     @UseGuards(JwtAuthGuard)
-    @Permission(PermissionEnum.LIST_ROLES)
+    @Permission(PermissionEnum.LIST_ROLES_NORMAL)
     async getAllNormalRoles(
         @Query() getAllNormalRolesDto: GetAllNormalRolesDto,
         @UserScope() user: User,
@@ -37,6 +37,19 @@ export class RoleController {
             companyId,
         )
         return normalRoles
+    }
+
+    @Get('/interal-role')
+    @HttpCode(HttpStatus.OK)
+    @ApiBearerAuth()
+    @UseGuards(JwtAuthGuard)
+    @Permission(PermissionEnum.LIST_ROLES_INTERNAL)
+    async getAllInternalRoleInCompany(@UserScope() user: User) {
+        const companyId = user?.companyId
+        const roles = await this.roleService.getAllInternalRoleInCompany(
+            companyId,
+        )
+        return roles
     }
 
     @Post('')
