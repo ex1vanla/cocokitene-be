@@ -39,7 +39,7 @@ export class RoleController {
         return normalRoles
     }
 
-    @Get('/interal-role')
+    @Get('/internal-role')
     @HttpCode(HttpStatus.OK)
     @ApiBearerAuth()
     @UseGuards(JwtAuthGuard)
