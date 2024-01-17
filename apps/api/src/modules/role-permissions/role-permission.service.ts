@@ -203,6 +203,15 @@ export class RolePermissionService {
                 ])
             }),
         ])
+        Object.keys(rolePermissions).forEach((permissionName) => {
+            listRoles.forEach(() => {
+                rolePermissions[permissionName] = Object.fromEntries(
+                    Object.entries(rolePermissions[permissionName]).sort(
+                        ([a], [b]) => a.localeCompare(b),
+                    ),
+                )
+            })
+        })
         return rolePermissions
     }
 }
