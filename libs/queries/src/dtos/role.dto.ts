@@ -57,3 +57,7 @@ export class CreateRoleDto {
 export class RoleDto extends OmitType(CreateRoleDto, ['companyId']) {}
 
 export class GetAllNormalRolesDto extends GetAllDto {}
+export class GetAllInternalRoleDto extends OmitType(GetAllDto, [
+    'page',
+    'limit',
+]) {}

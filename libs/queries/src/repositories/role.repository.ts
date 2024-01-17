@@ -2,7 +2,7 @@ import { Role } from '@entities/role.entity'
 import { PermissionEnum } from '@shares/constants/permission.const'
 import { CustomRepository } from '@shares/decorators'
 import { Repository } from 'typeorm'
-import { GetAllNormalRolesDto } from '@dtos/role.dto'
+import { GetAllInternalRoleDto, GetAllNormalRolesDto } from '@dtos/role.dto'
 import { paginate, Pagination } from 'nestjs-typeorm-paginate'
 import { RoleEnum } from '@shares/constants'
 import { HttpException, HttpStatus } from '@nestjs/common'
@@ -74,12 +74,22 @@ export class RoleRepository extends Repository<Role> {
         return paginate(queryBuilder, { page, limit })
     }
 
-    async getAllInternalRoleInCompany(companyId: number): Promise<Role[]> {
+    async getAllInternalRoleInCompany(
+        getAllInternalRoleDto: GetAllInternalRoleDto,
+        companyId: number,
+    ): Promise<Role[]> {
+        const { searchQuery } = getAllInternalRoleDto
         const queryBuilder = this.createQueryBuilder('roles')
             .select(['roles.id', 'roles.roleName', 'roles.description'])
             .where('roles.companyId = :companyId', {
                 companyId: companyId,
             })
+
+        if (searchQuery) {
+            queryBuilder.andWhere('roles.roleName like :searchQuery', {
+                searchQuery: `%${searchQuery}%`,
+            })
+        }
 
         const roles = await queryBuilder.getMany()
         return roles
