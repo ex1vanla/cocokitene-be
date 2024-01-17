@@ -16,6 +16,7 @@ import { PermissionService } from '@api/modules/permissions/permission.service'
 import { RolePermission } from '@entities/role-permission.entity'
 import { httpErrors } from '@shares/exception-filter'
 import { StatePermisisionForRolesEnum } from '@shares/constants'
+import { GetAllPermissionDto } from '@dtos/permissions.dto'
 
 @Injectable()
 export class RolePermissionService {
@@ -167,7 +168,11 @@ export class RolePermissionService {
         }
     }
 
-    async getAllRoleWithPermissions(companyId: number): Promise<any> {
+    async getAllRoleWithPermissions(
+        getAllPermissionDto: GetAllPermissionDto,
+        companyId: number,
+    ): Promise<any> {
+        const { searchQuery } = getAllPermissionDto
         const existedCompany = await this.companyService.getCompanyById(
             companyId,
         )
@@ -179,7 +184,9 @@ export class RolePermissionService {
         }
 
         // list permission
-        const listPermissions = await this.permissionService.getAllPermissions()
+        const listPermissions = await this.permissionService.getAllPermissions({
+            searchQuery: searchQuery,
+        })
 
         // list role
         const listRoles = await this.roleService.getAllInternalRoleInCompany(

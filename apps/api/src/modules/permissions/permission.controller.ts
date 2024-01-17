@@ -1,8 +1,9 @@
-import { Controller, Get, HttpCode, HttpStatus } from '@nestjs/common'
+import { Controller, Get, HttpCode, HttpStatus, Query } from '@nestjs/common'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import { PermissionEnum } from '@shares/constants'
 import { PermissionService } from '@api/modules/permissions/permission.service'
 import { Permission } from '@shares/decorators/permission.decorator'
+import { GetAllPermissionDto } from '@dtos/permissions.dto'
 
 @Controller('permissions')
 @ApiTags('permissions')
@@ -12,8 +13,10 @@ export class PermissionController {
     @HttpCode(HttpStatus.OK)
     @ApiBearerAuth()
     @Permission(PermissionEnum.LIST_PERMISSIONS)
-    async getAllPermissions() {
-        const permissions = await this.permissionService.getAllPermissions()
+    async getAllPermissions(@Query() getAllPermissionDto: GetAllPermissionDto) {
+        const permissions = await this.permissionService.getAllPermissions(
+            getAllPermissionDto,
+        )
         return permissions
     }
 }
