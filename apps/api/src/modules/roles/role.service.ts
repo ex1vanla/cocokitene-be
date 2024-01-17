@@ -1,6 +1,10 @@
 import { Role } from '@entities/role.entity'
 import { RoleRepository } from '@repositories/role.repository'
-import { CreateRoleDto, GetAllNormalRolesDto } from '@dtos/role.dto'
+import {
+    CreateRoleDto,
+    GetAllInternalRoleDto,
+    GetAllNormalRolesDto,
+} from '@dtos/role.dto'
 import { Pagination } from 'nestjs-typeorm-paginate'
 import { RoleEnum } from '@shares/constants'
 import {
@@ -56,8 +60,12 @@ export class RoleService {
     }
     // list role for screen setting-role
 
-    async getAllInternalRoleInCompany(companyId: number): Promise<Role[]> {
+    async getAllInternalRoleInCompany(
+        getAllInternalRoleDto: GetAllInternalRoleDto,
+        companyId: number,
+    ): Promise<Role[]> {
         const roles = await this.roleRepository.getAllInternalRoleInCompany(
+            getAllInternalRoleDto,
             companyId,
         )
         return roles

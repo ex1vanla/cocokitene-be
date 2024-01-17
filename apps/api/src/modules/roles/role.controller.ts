@@ -14,7 +14,11 @@ import { JwtAuthGuard } from '@shares/guards/jwt-auth.guard'
 import { Permission } from '@shares/decorators/permission.decorator'
 import { PermissionEnum } from '@shares/constants'
 import { UserScope } from '@shares/decorators/user.decorator'
-import { GetAllNormalRolesDto, RoleDto } from '@dtos/role.dto'
+import {
+    GetAllInternalRoleDto,
+    GetAllNormalRolesDto,
+    RoleDto,
+} from '@dtos/role.dto'
 import { User } from '@entities/user.entity'
 
 @Controller('roles')
@@ -44,9 +48,13 @@ export class RoleController {
     @ApiBearerAuth()
     @UseGuards(JwtAuthGuard)
     @Permission(PermissionEnum.LIST_ROLES_INTERNAL)
-    async getAllInternalRoleInCompany(@UserScope() user: User) {
+    async getAllInternalRoleInCompany(
+        @Query() getAllInternalRoleDto: GetAllInternalRoleDto,
+        @UserScope() user: User,
+    ) {
         const companyId = user?.companyId
         const roles = await this.roleService.getAllInternalRoleInCompany(
+            getAllInternalRoleDto,
             companyId,
         )
         return roles

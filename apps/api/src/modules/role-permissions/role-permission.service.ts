@@ -183,6 +183,7 @@ export class RolePermissionService {
 
         // list role
         const listRoles = await this.roleService.getAllInternalRoleInCompany(
+            { searchQuery: '' },
             companyId,
         )
         const rolePermissions = {}
