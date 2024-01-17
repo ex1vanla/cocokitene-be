@@ -15,6 +15,7 @@ import { CompanyService } from '@api/modules/companys/company.service'
 import { PermissionService } from '@api/modules/permissions/permission.service'
 import { RolePermission } from '@entities/role-permission.entity'
 import { httpErrors } from '@shares/exception-filter'
+import { StatePermisisionForRolesEnum } from '@shares/constants'
 
 @Injectable()
 export class RolePermissionService {
@@ -30,7 +31,7 @@ export class RolePermissionService {
     async updateRoleForPermission(
         roleForPermissionDto: RoleForPermissionDto,
         companyId: number,
-    ): Promise<any> {
+    ): Promise<string> {
         const existedCompany = await this.companyService.getCompanyById(
             companyId,
         )
@@ -41,41 +42,58 @@ export class RolePermissionService {
             )
         }
 
-        const updatedListRolePermissions = {}
-        const listRoles = await this.roleService.getAllInternalRoleInCompany(
-            companyId,
-        )
-
-        const listPermissions = await this.permissionService.getAllPermissions()
-
+        const { assignmentRoleOfPermission } = roleForPermissionDto
         await Promise.all([
-            ...roleForPermissionDto.assignmentRoleOfPermission.map(
-                (permissionRoleDto) =>
-                    this.updateRolePermission(
-                        permissionRoleDto.permissionId,
-                        permissionRoleDto.roleIds,
+            ...assignmentRoleOfPermission.map(
+                async (stateRolePermissionDto) => {
+                    const { permissionId, changeStatePermissionForRole } =
+                        stateRolePermissionDto
+                    const removePermissionRoles: number[] = []
+                    const updatePermissionRoles: number[] = []
+                    console.log(
+                        'removePermissionRoles--',
+                        removePermissionRoles,
+                    )
+                    console.log(
+                        'updatePermissionRoles--',
+                        updatePermissionRoles,
+                    )
+                    await Promise.all([
+                        ...changeStatePermissionForRole.map(async (item) => {
+                            if (
+                                item.state ==
+                                StatePermisisionForRolesEnum.ENABLED
+                            ) {
+                                updatePermissionRoles.push(item.roleId)
+                            } else {
+                                removePermissionRoles.push(item.roleId)
+                            }
+                        }),
+                    ])
+                    console.log(
+                        'removePermissionRoles--',
+                        removePermissionRoles,
+                    )
+                    console.log(
+                        'updatePermissionRoles--',
+                        updatePermissionRoles,
+                    )
+                    console.log('------------')
+
+                    await this.updateRolePermission(
+                        permissionId,
+                        removePermissionRoles,
+                        [],
                     ),
+                        await this.updateRolePermission(
+                            permissionId,
+                            [],
+                            updatePermissionRoles,
+                        )
+                },
             ),
         ])
-
-        await Promise.all([
-            ...listPermissions.map(async (permission) => {
-                const permissionId = permission.id,
-                    permissionName = permission.key
-                updatedListRolePermissions[permissionName] = {}
-                await Promise.all([
-                    ...listRoles.map(async (role) => {
-                        updatedListRolePermissions[permissionName][
-                            role.roleName
-                        ] = await this.getRolePermisionByPermissionIdAndRoleId(
-                            permissionId,
-                            role.id,
-                        )
-                    }),
-                ])
-            }),
-        ])
-        return updatedListRolePermissions
+        return 'updated role permisison successfully!!!'
     }
 
     async getRolePermisionByPermissionIdAndRoleId(
@@ -92,43 +110,38 @@ export class RolePermissionService {
         return existedRolePermission ? 1 : 0
     }
 
-    async updateRolePermission(
-        permissionId: number,
-        newRoleIds: number[],
-    ): Promise<void> {
-        const listRoleIds = await this.getListRoleIdByPermissionIdAndCompanyId(
-            permissionId,
-        )
-        // list roleId need  add
-        const roleIdToAdds = newRoleIds.filter(
-            (roleId) => !listRoleIds.includes(roleId),
-        )
-        // list roleId need remove
-        const roleIdToRemoves = listRoleIds.filter(
-            (roleId) => !newRoleIds.includes(roleId),
-        )
-        await Promise.all([
-            ...roleIdToRemoves.map((roleIdToRemove) =>
-                this.rolePermissionRepository.removeRolePermission(
-                    roleIdToRemove,
-                    permissionId,
-                ),
-            ),
-            ...roleIdToAdds.map((roleIdToAdd) =>
-                this.createRolePermission({
-                    roleId: roleIdToAdd,
-                    permissionId: permissionId,
-                }),
-            ),
-        ])
-    }
-
     async getListRoleIdByPermissionIdAndCompanyId(
         permissionId: number,
     ): Promise<number[]> {
         return await this.rolePermissionRepository.getListRoleIdByPermissionIdAndCompanyId(
             permissionId,
         )
+    }
+    async updateRolePermission(
+        permissionId: number,
+        removeRoleIds?: number[],
+        newRoleIds?: number[],
+    ): Promise<void> {
+        if (removeRoleIds && removeRoleIds.length > 0) {
+            await Promise.all([
+                ...removeRoleIds.map((roleIdToRemove) =>
+                    this.rolePermissionRepository.removeRolePermission(
+                        roleIdToRemove,
+                        permissionId,
+                    ),
+                ),
+            ])
+        }
+        if (newRoleIds && newRoleIds.length > 0) {
+            await Promise.all([
+                ...newRoleIds.map((newRoleId) =>
+                    this.rolePermissionRepository.createRolePermission({
+                        roleId: newRoleId,
+                        permissionId: permissionId,
+                    }),
+                ),
+            ])
+        }
     }
 
     async createRolePermission(

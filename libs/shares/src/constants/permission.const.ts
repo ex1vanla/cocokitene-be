@@ -26,3 +26,8 @@ export enum PermissionEnum {
     DETAIL_SHAREHOLDERS = 'detail_shareholders',
     EDIT_SHAREHOLDERS = 'edit_shareholders',
 }
+
+export enum StatePermisisionForRolesEnum {
+    DISABLED = 0,
+    ENABLED = 1,
+}

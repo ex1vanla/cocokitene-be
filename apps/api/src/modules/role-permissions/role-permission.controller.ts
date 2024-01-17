@@ -33,12 +33,12 @@ export class RolePermissionController {
         @UserScope() user: User,
     ) {
         const companyId = user?.companyId
-        const listIdRoleForPermission =
+        const updatedRoleForPermission =
             await this.rolePermissionService.updateRoleForPermission(
                 roleForPermissionDto,
                 companyId,
             )
-        return listIdRoleForPermission
+        return updatedRoleForPermission
     }
 
     @Get('')
