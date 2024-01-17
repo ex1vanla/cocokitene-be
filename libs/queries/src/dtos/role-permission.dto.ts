@@ -7,8 +7,27 @@ import {
 } from 'class-validator'
 import { ApiProperty } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
+import { StatePermisisionForRolesEnum } from '@shares/constants'
 
-export class RoleIdsOfPermisisonDto {
+export class ChangeStatePermissionRoleDto {
+    @IsInt()
+    @Type(() => Number)
+    @IsNotEmpty()
+    @ApiProperty({
+        example: 1,
+        required: true,
+    })
+    roleId: number
+
+    @IsNumber()
+    @ApiProperty({
+        required: true,
+        example: StatePermisisionForRolesEnum.ENABLED,
+    })
+    state: StatePermisisionForRolesEnum
+}
+
+export class StateRoleOfPermissionDto {
     @IsInt()
     @Type(() => Number)
     @IsNotEmpty()
@@ -20,22 +39,24 @@ export class RoleIdsOfPermisisonDto {
     permissionId: number
 
     @IsArray()
-    @IsNumber({}, { each: true })
-    @ApiProperty({
-        required: true,
-        example: [1, 2],
+    @ValidateNested({
+        each: true,
     })
-    roleIds: number[]
+    @Type(() => ChangeStatePermissionRoleDto)
+    @ApiProperty({
+        type: [ChangeStatePermissionRoleDto],
+    })
+    changeStatePermissionForRole: ChangeStatePermissionRoleDto[]
 }
 
 export class RoleForPermissionDto {
     @IsArray()
     @ValidateNested({ each: true })
-    @Type(() => RoleIdsOfPermisisonDto)
+    @Type(() => StateRoleOfPermissionDto)
     @ApiProperty({
-        type: [RoleIdsOfPermisisonDto],
+        type: [StateRoleOfPermissionDto],
     })
-    assignmentRoleOfPermission: RoleIdsOfPermisisonDto[]
+    assignmentRoleOfPermission: StateRoleOfPermissionDto[]
 }
 
 export class CreateRolePermissonDto {
