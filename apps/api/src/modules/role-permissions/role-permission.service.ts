@@ -71,15 +71,6 @@ export class RolePermissionService {
                             }
                         }),
                     ])
-                    console.log(
-                        'removePermissionRoles--',
-                        removePermissionRoles,
-                    )
-                    console.log(
-                        'updatePermissionRoles--',
-                        updatePermissionRoles,
-                    )
-                    console.log('------------')
 
                     await this.updateRolePermission(
                         permissionId,
@@ -184,9 +175,10 @@ export class RolePermissionService {
         }
 
         // list permission
-        const listPermissions = await this.permissionService.getAllPermissions({
-            searchQuery: searchQuery,
-        })
+        const listPermissions =
+            await this.permissionService.getAllNormalPermissions({
+                searchQuery: searchQuery,
+            })
 
         // list role
         const listRoles = await this.roleService.getAllInternalRoleInCompany(

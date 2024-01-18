@@ -9,14 +9,31 @@ import { GetAllPermissionDto } from '@dtos/permissions.dto'
 @ApiTags('permissions')
 export class PermissionController {
     constructor(private readonly permissionService: PermissionService) {}
-    @Get('')
+    @Get('/normal-permission')
     @HttpCode(HttpStatus.OK)
     @ApiBearerAuth()
     @Permission(PermissionEnum.LIST_PERMISSIONS)
-    async getAllPermissions(@Query() getAllPermissionDto: GetAllPermissionDto) {
-        const permissions = await this.permissionService.getAllPermissions(
-            getAllPermissionDto,
-        )
-        return permissions
+    async getAllNormalPermissions(
+        @Query() getAllPermissionDto: GetAllPermissionDto,
+    ) {
+        const filterdNormalPermissions =
+            await this.permissionService.getAllNormalPermissions(
+                getAllPermissionDto,
+            )
+        return filterdNormalPermissions
+    }
+
+    @Get('/internal-permission')
+    @HttpCode(HttpStatus.OK)
+    @ApiBearerAuth()
+    @Permission(PermissionEnum.LIST_PERMISSIONS)
+    async getAllInternalPermissions(
+        @Query() getAllPermissionDto: GetAllPermissionDto,
+    ) {
+        const internlaPermissions =
+            await this.permissionService.getAllInternalPermissions(
+                getAllPermissionDto,
+            )
+        return internlaPermissions
     }
 }
