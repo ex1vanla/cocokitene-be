@@ -255,4 +255,8 @@ export const httpErrors = {
         message: 'Update Plan failed. Please try again',
         code: 'PLAN_00002',
     },
+    PLAN_CREATE_FAILED: {
+        message: 'Create Plan failed. Please try again',
+        code: 'PLAN_00002',
+    },
 }

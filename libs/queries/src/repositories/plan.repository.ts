@@ -1,7 +1,7 @@
 import { Plan } from '@entities/plan.entity'
 import { CustomRepository } from '@shares/decorators'
 import { Repository } from 'typeorm'
-import { GetAllPlanDto, UpdatePlanDto } from '@dtos/plan.dto'
+import { CreatePlanDto, GetAllPlanDto, UpdatePlanDto } from '@dtos/plan.dto'
 import { paginate, Pagination } from 'nestjs-typeorm-paginate'
 import { HttpException, HttpStatus } from '@nestjs/common'
 @CustomRepository(Plan)
@@ -55,5 +55,13 @@ export class PlanRepository extends Repository<Plan> {
                 HttpStatus.INTERNAL_SERVER_ERROR,
             )
         }
+    }
+
+    async createPlan(createPlanDto: CreatePlanDto): Promise<Plan> {
+        const plan = await this.create({
+            ...createPlanDto,
+        })
+        await plan.save()
+        return plan
     }
 }

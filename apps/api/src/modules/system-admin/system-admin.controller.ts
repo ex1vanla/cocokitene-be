@@ -15,7 +15,7 @@ import { CreateCompanyDto, GetAllCompanyDto } from '@dtos/company.dto'
 import { SystemAdminService } from '@api/modules/system-admin/system-admin.service'
 import { GetAllCompanyStatusDto, UpdateCompanyDto } from '@dtos/company.dto'
 import { SuperAdminDto } from '@dtos/user.dto'
-import { GetAllPlanDto, UpdatePlanDto } from '@dtos/plan.dto'
+import { GetAllPlanDto, UpdatePlanDto, CreatePlanDto } from '@dtos/plan.dto'
 import { SystemAdminGuard } from '@shares/guards/systemadmin.guard'
 import { GetAllUserStatusDto } from '@dtos/user-status.dto'
 
@@ -148,5 +148,14 @@ export class SystemAdminController {
             updatePlanDto,
         )
         return updatedPlan
+    }
+
+    @Post('/plan')
+    @UseGuards(SystemAdminGuard)
+    @ApiBearerAuth()
+    @UseGuards(SystemAdminGuard)
+    async createPlan(@Body() createPlanDto: CreatePlanDto) {
+        const plan = await this.systemAdminService.createPlan(createPlanDto)
+        return plan
     }
 }
