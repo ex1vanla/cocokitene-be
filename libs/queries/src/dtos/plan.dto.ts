@@ -53,3 +53,5 @@ export class UpdatePlanDto {
     })
     maxShareholderAccount: number
 }
+
+export class CreatePlanDto extends UpdatePlanDto {}

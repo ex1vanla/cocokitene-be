@@ -12,7 +12,7 @@ import { Company } from '@entities/company.entity'
 import { httpErrors } from '@shares/exception-filter'
 import { SuperAdminDto } from '@dtos/user.dto'
 import { User } from '@sentry/node'
-import { GetAllPlanDto, UpdatePlanDto } from '@dtos/plan.dto'
+import { CreatePlanDto, GetAllPlanDto, UpdatePlanDto } from '@dtos/plan.dto'
 import { PlanService } from '@api/modules/plans/plan.service'
 import { CompanyStatusService } from '@api/modules/company-status/company-status.service'
 import { RoleService } from '@api/modules/roles/role.service'
@@ -141,5 +141,10 @@ export class SystemAdminService {
             updatePlanDto,
         )
         return updatePlan
+    }
+
+    async createPlan(createPlanDto: CreatePlanDto) {
+        const plan = await this.planService.createPlan(createPlanDto)
+        return plan
     }
 }

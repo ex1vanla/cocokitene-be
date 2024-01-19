@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
-import { GetAllPlanDto, UpdatePlanDto } from '@dtos/plan.dto'
+import { CreatePlanDto, GetAllPlanDto, UpdatePlanDto } from '@dtos/plan.dto'
 import { Pagination } from 'nestjs-typeorm-paginate'
 import { Plan } from '@entities/plan.entity'
 import { PlanRepository } from '@repositories/plan.repository'
@@ -73,6 +73,20 @@ export class PlanService {
                     code: httpErrors.PLAN_UPDATE_FAILED.code,
                     message: error.message,
                 },
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            )
+        }
+    }
+
+    async createPlan(createPlanDto: CreatePlanDto): Promise<Plan> {
+        try {
+            const createdPlan = await this.planRepository.createPlan(
+                createPlanDto,
+            )
+            return createdPlan
+        } catch (error) {
+            throw new HttpException(
+                httpErrors.PLAN_CREATE_FAILED,
                 HttpStatus.INTERNAL_SERVER_ERROR,
             )
         }
