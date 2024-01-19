@@ -246,4 +246,13 @@ export const httpErrors = {
         message: 'Shareholder update failed. Please try again',
         code: 'SHAREHOLDER_00002',
     },
+    //Plan
+    PLAN_NOT_FOUND: {
+        message: 'Plan not found. Please try again',
+        code: 'PLAN_00001',
+    },
+    PLAN_UPDATE_FAILED: {
+        message: 'Update Plan failed. Please try again',
+        code: 'PLAN_00002',
+    },
 }
