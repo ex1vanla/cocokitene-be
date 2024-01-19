@@ -12,13 +12,14 @@ import { Company } from '@entities/company.entity'
 import { httpErrors } from '@shares/exception-filter'
 import { SuperAdminDto } from '@dtos/user.dto'
 import { User } from '@sentry/node'
-import { GetAllPlanDto } from '@dtos/plan.dto'
+import { GetAllPlanDto, UpdatePlanDto } from '@dtos/plan.dto'
 import { PlanService } from '@api/modules/plans/plan.service'
 import { CompanyStatusService } from '@api/modules/company-status/company-status.service'
 import { RoleService } from '@api/modules/roles/role.service'
 import { GetAllUserStatusDto } from '@dtos/user-status.dto'
 import { UserStatusService } from '@api/modules/user-status/user-status.service'
 import { SystemAdminRepository } from '@repositories/system-admin.repository'
+import { Plan } from '@entities/plan.entity'
 
 @Injectable()
 export class SystemAdminService {
@@ -124,5 +125,21 @@ export class SystemAdminService {
             getAllUserStatusDto,
         )
         return userStatus
+    }
+
+    async getPlanId(planId: number) {
+        const plan = await this.planService.getPlanById(planId)
+        return plan
+    }
+
+    async updatePlan(
+        planId: number,
+        updatePlanDto: UpdatePlanDto,
+    ): Promise<Plan> {
+        const updatePlan = await this.planService.updatePlan(
+            planId,
+            updatePlanDto,
+        )
+        return updatePlan
     }
 }
