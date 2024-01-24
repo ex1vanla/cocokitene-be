@@ -6,22 +6,12 @@ import {
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm'
-import {
-    TRANSACTION_STATUS,
-    TRANSACTION_TYPE,
-} from '@shares/constants/transaction.const'
+import { TRANSACTION_STATUS } from '@shares/constants/transaction.const'
 
 @Entity('transactions')
 export class Transaction extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number
-
-    @Column({
-        nullable: false,
-        type: 'enum',
-        enum: TRANSACTION_TYPE,
-    })
-    type: TRANSACTION_TYPE
 
     @Column({
         name: 'chain_id',
