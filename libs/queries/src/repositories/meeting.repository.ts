@@ -7,7 +7,7 @@ import {
 } from 'nestjs-typeorm-paginate'
 import { Meeting } from '@entities/meeting.entity'
 import { CreateMeetingDto, GetAllMeetingDto, UpdateMeetingDto } from '../dtos'
-import { MeetingType } from '@shares/constants/meeting.const'
+import { MeetingType, StatusMeeting } from '@shares/constants/meeting.const'
 
 @CustomRepository(Meeting)
 export class MeetingRepository extends Repository<Meeting> {
@@ -218,5 +218,14 @@ export class MeetingRepository extends Repository<Meeting> {
             companyId,
         )
         return meeting
+    }
+
+    async findMeetingByStatus(status: StatusMeeting): Promise<Meeting[]> {
+        const meetings = await this.find({
+            where: {
+                status: status,
+            },
+        })
+        return meetings
     }
 }

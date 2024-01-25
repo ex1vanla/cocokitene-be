@@ -7,7 +7,9 @@
   "compilerOptions": {
     "webpack": true,
     "tsConfigPath": "apps/api/tsconfig.app.json",
-    "assets": ["modules/emails/templates/**"],
+    "assets": [
+      "modules/emails/templates/**"
+    ],
     "watchAssets": true
   },
   "projects": {
@@ -36,6 +38,15 @@
       "sourceRoot": "libs/shares/src",
       "compilerOptions": {
         "tsConfigPath": "libs/shares/tsconfig.lib.json"
+      }
+    },
+    "cronjob": {
+      "type": "application",
+      "root": "apps/cronjob",
+      "entryFile": "main",
+      "sourceRoot": "apps/cronjob/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/cronjob/tsconfig.app.json"
       }
     }
   }

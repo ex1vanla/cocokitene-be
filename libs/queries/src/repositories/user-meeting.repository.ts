@@ -28,7 +28,7 @@ export class UserMeetingRepository extends Repository<UserMeeting> {
         meetingId: number,
         role: MeetingRole,
     ): Promise<UserMeeting[]> {
-        const userMeetingList = await this.find({
+        const userMeetingEnded = await this.find({
             where: {
                 meetingId,
                 role,
@@ -51,7 +51,7 @@ export class UserMeetingRepository extends Repository<UserMeeting> {
             },
         })
 
-        return userMeetingList
+        return userMeetingEnded
     }
 
     async getListUserIdPaticipantsByMeetingIdAndMeetingRole(
