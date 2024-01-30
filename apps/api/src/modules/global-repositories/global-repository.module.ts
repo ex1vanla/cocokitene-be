@@ -17,6 +17,7 @@ import { ShareholderRepository } from '@repositories/shareholder.repository'
 import { TypeOrmExModule } from '@shares/modules'
 import { PermissionRepository } from '@repositories/permission.repository'
 import { RolePermissionRepository } from '@repositories/role-permission.repository'
+import { TransactionRepository } from '@repositories/transaction.repository'
 
 const commonRepositories = [
     UserRepository,
@@ -37,6 +38,7 @@ const commonRepositories = [
     PermissionRepository,
     RolePermissionRepository,
     ShareholderRepository,
+    TransactionRepository,
 ]
 
 @Global()

@@ -1,18 +1,18 @@
 import { Injectable } from '@nestjs/common'
 import { MeetingService } from '@api/modules/meetings/meeting.service'
-import { ListMeetingEnded, MeetingEnded } from '../cronjob/cronjob.interface'
 import { MeetingRole, StatusMeeting } from '@shares/constants/meeting.const'
 import { UserMeetingService } from '@api/modules/user-meetings/user-meeting.service'
-import { ProposalFileService } from '@api/modules/proposal-files/proposal-file.service'
+// import { ProposalFileService } from '@api/modules/proposal-files/proposal-file.service'
 import { enumToArray } from '@shares/utils/enum'
 import { VotingService } from '@api/modules/votings/voting.service'
+import { ListMeetingEnded } from '../cronjob/cronjob.interface'
 
 @Injectable()
 export class TransactionService {
     constructor(
         private readonly meetingService: MeetingService,
         private readonly userMeetingService: UserMeetingService,
-        private readonly proposalFileService: ProposalFileService,
+        // private readonly proposalFileService: ProposalFileService,
         private readonly votingService: VotingService,
     ) {}
     async handleAllEndedMeeting(): Promise<ListMeetingEnded[]> {
@@ -27,9 +27,9 @@ export class TransactionService {
 
         // console.log('ListMeetingEnd :',listMeetingEnd)
 
+        let listVotingOfProposal = []
         await Promise.all([
             ...listMeetingEnd.map(async (meeting) => {
-                let listVotingOfProposal = []
                 const listProposal = meeting.proposals
                 const listProposalFiles = listProposal.flatMap(
                     (proposal) => proposal.proposalFiles,
@@ -53,6 +53,14 @@ export class TransactionService {
                         ),
                     ),
                 )
+
+                console.log({
+                    hosts,
+                    controlBoards,
+                    directors,
+                    administrativeCouncils,
+                    shareholders,
+                })
 
                 listProposal.forEach(async (item) => {
                     const listVote =
