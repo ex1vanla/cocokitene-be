@@ -227,14 +227,4 @@ export class VotingService {
             )
         }
     }
-
-    async getListVotedOfProposal(proposalId: number): Promise<Voting[]> {
-        const listVoted = await this.votingRepository.find({
-            where: {
-                proposalId: proposalId,
-            },
-        })
-
-        return listVoted
-    }
 }
