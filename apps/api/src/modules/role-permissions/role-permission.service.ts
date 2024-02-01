@@ -51,14 +51,7 @@ export class RolePermissionService {
                         stateRolePermissionDto
                     const removePermissionRoles: number[] = []
                     const updatePermissionRoles: number[] = []
-                    console.log(
-                        'removePermissionRoles--',
-                        removePermissionRoles,
-                    )
-                    console.log(
-                        'updatePermissionRoles--',
-                        updatePermissionRoles,
-                    )
+
                     await Promise.all([
                         ...changeStatePermissionForRole.map(async (item) => {
                             if (

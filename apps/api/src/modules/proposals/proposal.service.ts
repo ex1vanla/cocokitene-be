@@ -272,4 +272,14 @@ export class ProposalService {
             notVoteYetQuantity,
         }
     }
+
+    async getInternalListProposalByMeetingId(
+        meetingId: number,
+    ): Promise<Proposal[]> {
+        const listProposals =
+            await this.proposalRepository.getInternalListProposalByMeetingId(
+                meetingId,
+            )
+        return listProposals
+    }
 }

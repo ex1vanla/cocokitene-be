@@ -585,11 +585,4 @@ export class MeetingService {
             )
         return meeting
     }
-
-    async findMeetingByStatus(status: StatusMeeting): Promise<Meeting[]> {
-        const meetings = await this.meetingRepository.findMeetingByStatus(
-            status,
-        )
-        return meetings
-    }
 }

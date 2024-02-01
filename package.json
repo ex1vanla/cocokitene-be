@@ -7,7 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "prebuild": "rimraf dist",
-    "build": "nest build",
+    "build": "\"nest build api\" \"nest build cronjob\" \"nest build queries\" \"nest build share\"",
     "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "format:lint-staged": "lint-staged",
     "start": "nest start",
@@ -18,7 +18,9 @@
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "prepare": "husky install && chmod ug+x .husky/*",
     "start-api:dev": "npm run start:dev api",
-    "start-api:prod": "node dist/apps/api/main"
+    "start-api:prod": "node dist/apps/api/main",
+    "console:dev": "ts-node -r tsconfig-paths/register apps/cronjob/src/main.ts",
+    "console:prod": "node dist/apps/cronjob/main"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.418.0",
@@ -53,6 +55,7 @@
     "@nestjs/cli": "^8.0.0",
     "@nestjs/schematics": "^8.0.0",
     "@nestjs/testing": "^8.0.0",
+    "@types/cron": "^2.4.0",
     "@types/express": "^4.17.13",
     "@types/jest": "27.5.0",
     "@types/node": "^16.0.0",

@@ -220,12 +220,38 @@ export class MeetingRepository extends Repository<Meeting> {
         return meeting
     }
 
-    async findMeetingByStatus(status: StatusMeeting): Promise<Meeting[]> {
-        const meetings = await this.find({
-            where: {
+    async findMeetingByStatusAndEndTimeVoting(
+        status: StatusMeeting,
+        meetingIdsAppearedInTransaction,
+    ): Promise<Meeting[]> {
+        const queryBuilder = this.createQueryBuilder('meetings').select([
+            'meetings.id',
+            'meetings.title',
+            'meetings.startTime',
+            'meetings.endTime',
+            'meetings.endVotingTime',
+            'meetings.meetingLink',
+            'meetings.status',
+            'meetings.companyId',
+        ])
+        if (
+            meetingIdsAppearedInTransaction &&
+            meetingIdsAppearedInTransaction.length > 0
+        ) {
+            queryBuilder.where(
+                'meetings.id NOT IN (:...meetingIdsAppearedInTransaction)',
+                { meetingIdsAppearedInTransaction },
+            )
+        }
+        queryBuilder
+            .andWhere('meetings.status = :status', {
                 status: status,
-            },
-        })
+            })
+            .andWhere('meetings.endVotingTime < :currentDateTime', {
+                currentDateTime: new Date(),
+            })
+
+        const meetings = await queryBuilder.getMany()
         return meetings
     }
 }

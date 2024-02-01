@@ -37,3 +37,23 @@ export class ProposalFileDto extends OmitType(CreateProposalFileDto, [
     })
     id?: number
 }
+
+export class FileOfProposalDto extends OmitType(CreateProposalFileDto, [
+    'uid',
+]) {
+    @IsNotEmpty()
+    @IsNumber()
+    @ApiProperty({
+        required: true,
+        example: 1,
+    })
+    transactionId: number
+
+    @IsNotEmpty()
+    @IsNumber()
+    @ApiProperty({
+        required: true,
+        example: 1,
+    })
+    proposalFileId: number
+}

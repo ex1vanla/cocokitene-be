@@ -39,4 +39,15 @@ export class ProposalFileRepository extends Repository<ProposalFile> {
     async deleteProposalFile(proposalFileId: number): Promise<void> {
         await this.delete(proposalFileId)
     }
+
+    async getInternalListProposalFileByProposalId(
+        proposalId: number,
+    ): Promise<ProposalFile[]> {
+        const listProposalFiles = await this.find({
+            where: {
+                proposalId: proposalId,
+            },
+        })
+        return listProposalFiles
+    }
 }
