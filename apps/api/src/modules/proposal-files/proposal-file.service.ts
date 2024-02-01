@@ -92,6 +92,4 @@ export class ProposalFileService {
             )
         }
     }
-
-    async
 }
