@@ -8,9 +8,10 @@ export class ParticipantMeetingTransactionRepository extends Repository<Particip
     async createParticipantMeetingTransaction(
         participantDto: ParticipantDto,
     ): Promise<ParticipantMeetingTransaction> {
-        const { username, userId, status, role } = participantDto
+        const { username, transactionId, userId, status, role } = participantDto
 
         const createParticipantMeetingTransaction = await this.create({
+            transactionId,
             userId,
             username,
             status,

@@ -218,6 +218,7 @@ export class TransactionService {
                         ...meetingEnd.participants.map((participant) =>
                             this.participantMeetingTransactionRepository.createParticipantMeetingTransaction(
                                 {
+                                    transactionId: createdTransaction.id,
                                     userId: participant.userId,
                                     username: participant.username,
                                     status: participant.status,

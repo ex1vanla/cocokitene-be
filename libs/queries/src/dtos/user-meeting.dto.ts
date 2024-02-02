@@ -46,4 +46,11 @@ export class ParticipantDto extends OmitType(CreateUserMeetingDto, [
         example: 'leopaul',
     })
     username: string
+
+    @IsNumber()
+    @ApiProperty({
+        required: true,
+        example: 1,
+    })
+    transactionId: number
 }
