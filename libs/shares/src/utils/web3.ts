@@ -3,6 +3,16 @@ import { USER_LOGIN_BASE_MESSAGE } from '@shares/constants/auth.const'
 /* eslint-disable @typescript-eslint/no-var-requires */
 const Web3 = require('web3')
 
+export const sleep = (milliseconds: number) => {
+    return new Promise((resolve) => setTimeout(resolve, milliseconds))
+}
+
+export const timeOut = async (fn: any, time: number) => {
+    await fn()
+    await sleep(time)
+    await timeOut(fn, time)
+}
+
 export const isValidSignature = (
     account: string,
     signature: string,

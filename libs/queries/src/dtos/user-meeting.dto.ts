@@ -1,9 +1,9 @@
-import { ApiProperty } from '@nestjs/swagger'
+import { ApiProperty, OmitType } from '@nestjs/swagger'
 import {
     MeetingRole,
     UserMeetingStatusEnum,
 } from '@shares/constants/meeting.const'
-import { IsEnum, IsNumber, IsOptional } from 'class-validator'
+import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator'
 
 export class CreateUserMeetingDto {
     @IsNumber()
@@ -34,4 +34,23 @@ export class CreateUserMeetingDto {
         enum: MeetingRole,
     })
     status?: UserMeetingStatusEnum
+}
+
+export class ParticipantDto extends OmitType(CreateUserMeetingDto, [
+    'meetingId',
+]) {
+    @IsString()
+    @IsOptional()
+    @ApiProperty({
+        required: true,
+        example: 'leopaul',
+    })
+    username: string
+
+    @IsNumber()
+    @ApiProperty({
+        required: true,
+        example: 1,
+    })
+    transactionId: number
 }

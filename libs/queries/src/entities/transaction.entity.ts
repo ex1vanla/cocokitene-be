@@ -3,10 +3,13 @@ import {
     Column,
     CreateDateColumn,
     Entity,
+    OneToMany,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm'
 import { TRANSACTION_STATUS } from '@shares/constants/transaction.const'
+import { ProposalTransaction } from '@entities/proposal-transaction.entity'
+import { FileOfProposalTransaction } from '@entities/file-of-proposal-transaction.entity'
 
 @Entity('transactions')
 export class Transaction extends BaseEntity {
@@ -25,25 +28,65 @@ export class Transaction extends BaseEntity {
         name: 'contract_address',
         type: 'varchar',
         length: 255,
-        nullable: false,
+        nullable: true,
     })
     contractAddress: string
+
+    @Column({
+        name: 'title_meeting',
+        type: 'varchar',
+        length: 255,
+        nullable: true,
+    })
+    titleMeeting: string
 
     @Column({
         name: 'meeting_id',
         type: 'integer',
         width: 11,
-        nullable: true,
+        nullable: false,
     })
     meetingId: number
 
     @Column({
-        name: 'user_id',
+        name: 'company_id',
         type: 'integer',
         width: 11,
         nullable: true,
     })
-    userId: number
+    companyId: number
+
+    @Column({
+        name: 'shareholder_total',
+        type: 'integer',
+        width: 11,
+        nullable: true,
+    })
+    shareholdersTotal: number
+
+    @Column({
+        name: 'shareholders_joined',
+        type: 'integer',
+        width: 11,
+        nullable: true,
+    })
+    shareholdersJoined: number
+
+    @Column({
+        name: 'joined_meeting_shares',
+        type: 'integer',
+        width: 11,
+        nullable: true,
+    })
+    joinedMeetingShares: number
+
+    @Column({
+        name: 'total_meeting_shares',
+        type: 'integer',
+        width: 11,
+        nullable: true,
+    })
+    totalMeetingShares: number
 
     @Column({
         nullable: false,
@@ -52,6 +95,18 @@ export class Transaction extends BaseEntity {
         default: TRANSACTION_STATUS.PENDING,
     })
     status: TRANSACTION_STATUS
+
+    @OneToMany(
+        () => ProposalTransaction,
+        (proposalTransaction) => proposalTransaction.transaction,
+    )
+    proposalTransactions: ProposalTransaction[]
+
+    @OneToMany(
+        () => FileOfProposalTransaction,
+        (fileOfProposalTransaction) => fileOfProposalTransaction.transaction,
+    )
+    fileOfProposals: FileOfProposalTransaction[]
 
     @Column({ name: 'tx_hash', type: 'varchar', length: 255, nullable: true })
     txHash: string

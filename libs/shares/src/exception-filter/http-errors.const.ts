@@ -259,4 +259,26 @@ export const httpErrors = {
         message: 'Create Plan failed. Please try again',
         code: 'PLAN_00002',
     },
+    //transaction
+    TRANSACTION_CREATE_FAILED: {
+        message: 'Create transaction failed. Please try again',
+        code: 'TRANSACTION_00001',
+    },
+    //participant-meeting-transaction
+    PARTICIPANT_MEETING_TRANSACTION_CREATED_FAILED: {
+        message:
+            'Create participant meeting transaction failed. Please try again',
+        code: 'PARTICIPANT_MEETING_TRANSACTION_00001',
+    },
+    //proposal-transaction
+    PROPOSAL_TRANSACTION_CREATED_FAILED: {
+        message: 'Create proposal transaction failed. Please try again',
+        code: 'PROPOSAL_TRANSACTION_00001',
+    },
+    //file of proposal transaction
+    FILE_OF_PROPOSAL_TRANSACTION_CREATED_FAILED: {
+        message:
+            'Created file of proposal transaction failed. Please try again',
+        code: 'FILE_OF_PROPOSAL_TRANSACTION_00001',
+    },
 }

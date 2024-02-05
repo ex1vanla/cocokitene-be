@@ -110,6 +110,7 @@ export class AuthService {
                 username: user.username,
                 email: user.email,
                 companyId: user.companyId,
+                avatar: user.avatar,
                 permissionKeys,
             }
 

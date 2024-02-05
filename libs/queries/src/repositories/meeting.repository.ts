@@ -7,7 +7,7 @@ import {
 } from 'nestjs-typeorm-paginate'
 import { Meeting } from '@entities/meeting.entity'
 import { CreateMeetingDto, GetAllMeetingDto, UpdateMeetingDto } from '../dtos'
-import { MeetingType } from '@shares/constants/meeting.const'
+import { MeetingType, StatusMeeting } from '@shares/constants/meeting.const'
 
 @CustomRepository(Meeting)
 export class MeetingRepository extends Repository<Meeting> {
@@ -218,5 +218,40 @@ export class MeetingRepository extends Repository<Meeting> {
             companyId,
         )
         return meeting
+    }
+
+    async findMeetingByStatusAndEndTimeVoting(
+        status: StatusMeeting,
+        meetingIdsAppearedInTransaction,
+    ): Promise<Meeting[]> {
+        const queryBuilder = this.createQueryBuilder('meetings').select([
+            'meetings.id',
+            'meetings.title',
+            'meetings.startTime',
+            'meetings.endTime',
+            'meetings.endVotingTime',
+            'meetings.meetingLink',
+            'meetings.status',
+            'meetings.companyId',
+        ])
+        if (
+            meetingIdsAppearedInTransaction &&
+            meetingIdsAppearedInTransaction.length > 0
+        ) {
+            queryBuilder.where(
+                'meetings.id NOT IN (:...meetingIdsAppearedInTransaction)',
+                { meetingIdsAppearedInTransaction },
+            )
+        }
+        queryBuilder
+            .andWhere('meetings.status = :status', {
+                status: status,
+            })
+            .andWhere('meetings.endVotingTime < :currentDateTime', {
+                currentDateTime: new Date(),
+            })
+
+        const meetings = await queryBuilder.getMany()
+        return meetings
     }
 }

@@ -193,3 +193,29 @@ export class ProposalDtoUpdate {
     @ApiProperty({ required: false })
     notVoteYetQuantity?: number = 0
 }
+export class ResultVoteProposalDto extends OmitType(ProposalDto, [
+    'type',
+    'oldDescription',
+    'description',
+    'title',
+    'files',
+    'id',
+]) {
+    @IsNotEmpty()
+    @IsNumber()
+    @Type(() => Number)
+    @ApiProperty({
+        required: true,
+        example: 1,
+    })
+    proposalId?: number
+
+    @IsNotEmpty()
+    @IsNumber()
+    @Type(() => Number)
+    @ApiProperty({
+        required: true,
+        example: 1,
+    })
+    transactionId: number
+}

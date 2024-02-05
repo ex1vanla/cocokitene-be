@@ -18,6 +18,9 @@ import { TypeOrmExModule } from '@shares/modules'
 import { PermissionRepository } from '@repositories/permission.repository'
 import { RolePermissionRepository } from '@repositories/role-permission.repository'
 import { TransactionRepository } from '@repositories/transaction.repository'
+import { FileOfProposalTransactionRepository } from '@repositories/file-of-proposal-transaction.repository'
+import { ParticipantMeetingTransactionRepository } from '@repositories/participant-meeting-transaction.repository'
+import { ProposalTransactionRepository } from '@repositories/proposal-transaction.repository'
 
 const commonRepositories = [
     UserRepository,
@@ -38,7 +41,10 @@ const commonRepositories = [
     PermissionRepository,
     RolePermissionRepository,
     ShareholderRepository,
+    FileOfProposalTransactionRepository,
     TransactionRepository,
+    ParticipantMeetingTransactionRepository,
+    ProposalTransactionRepository,
 ]
 
 @Global()

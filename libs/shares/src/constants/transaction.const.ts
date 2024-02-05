@@ -4,3 +4,8 @@ export enum TRANSACTION_STATUS {
     SUCCESS = '3',
     FAILED = '4',
 }
+
+export enum TRANSACTION_TYPE {
+    CREATE_MEETING = '1',
+    UPDATE_MEETING = '2',
+}

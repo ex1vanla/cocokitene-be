@@ -140,4 +140,14 @@ export class ProposalRepository extends Repository<Proposal> {
             })
         return paginateRaw(queryBuilder, options)
     }
+    async getInternalListProposalByMeetingId(
+        meetingId: number,
+    ): Promise<Proposal[]> {
+        const listProposals = await this.find({
+            where: {
+                meetingId: meetingId,
+            },
+        })
+        return listProposals
+    }
 }
