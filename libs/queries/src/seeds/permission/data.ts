@@ -52,7 +52,7 @@ export const permissionData: InsertPermissionDto[] = [
         description: 'the user with this right can send email to shareholders',
     },
     {
-        key: PermissionEnum.PARTICIPATE_MEETING,
+        key: PermissionEnum.SHAREHOLDERS_MGT,
         description:
             'the user with this right can participate in the meeting of company',
     },
