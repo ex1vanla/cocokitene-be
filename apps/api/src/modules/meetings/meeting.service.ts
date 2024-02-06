@@ -62,7 +62,6 @@ export class MeetingService {
                 companyId,
                 getAllMeetingDto,
             )
-
         const idsMeeting = listMeetingsResponse.map((meeting) => meeting.id)
         await Promise.all([
             ...idsMeeting.map((id) => this.standardStatusMeeting(id)),
