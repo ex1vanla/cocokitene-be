@@ -39,9 +39,9 @@ export const permissionData: InsertPermissionDto[] = [
             'the user with this right can see information of meeting detail',
     },
     {
-        key: PermissionEnum.LIST_MEETING,
+        key: PermissionEnum.SHAREHOLDERS_MTG,
         description:
-            'the user with this right can see a list users in the system',
+            'the user with this right can see a list meetings in the system',
     },
     {
         key: PermissionEnum.DELETE_MEETING,
@@ -50,11 +50,6 @@ export const permissionData: InsertPermissionDto[] = [
     {
         key: PermissionEnum.SEND_MAIL_TO_SHAREHOLDER,
         description: 'the user with this right can send email to shareholders',
-    },
-    {
-        key: PermissionEnum.SHAREHOLDERS_MGT,
-        description:
-            'the user with this right can participate in the meeting of company',
     },
     {
         key: PermissionEnum.VOTING_PROPOSAL,

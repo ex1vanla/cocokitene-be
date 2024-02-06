@@ -40,7 +40,7 @@ export class MeetingController {
     @HttpCode(HttpStatus.OK)
     @ApiBearerAuth()
     @UseGuards(JwtAuthGuard)
-    @Permission(PermissionEnum.LIST_MEETING)
+    @Permission(PermissionEnum.SHAREHOLDERS_MTG)
     async getAllMeetings(
         @Query() getAllMeetingDto: GetAllMeetingDto,
         @UserScope() user: User,
@@ -72,7 +72,7 @@ export class MeetingController {
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.CREATED)
     @ApiBearerAuth()
-    @Permission(PermissionEnum.SHAREHOLDERS_MGT)
+    @Permission(PermissionEnum.SHAREHOLDERS_MTG)
     async userAttendanceMeeting(
         @Body() attendMeetingDto: AttendMeetingDto,
         @UserScope() user: User,
