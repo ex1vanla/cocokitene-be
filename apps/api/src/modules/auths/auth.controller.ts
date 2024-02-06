@@ -13,6 +13,7 @@ import {
     ForgotPasswordDto,
     LoginByPassword,
     LoginDto,
+    LoginUserByPassword,
     RefreshTokenDto,
     SystemAdminRefreshTokenDto,
 } from 'libs/queries/src/dtos/auth.dto'
@@ -31,6 +32,16 @@ export class AuthController {
     @HttpCode(HttpStatus.OK)
     async login(@Body() loginDto: LoginDto) {
         const loginData = await this.authService.login(loginDto)
+        return loginData
+    }
+
+    //LoginUser By Email-Password
+    @Post('login-by-password')
+    @HttpCode(HttpStatus.OK)
+    async loginUserByPassword(@Body() loginByPassword: LoginUserByPassword) {
+        const loginData = await this.authService.loginUserByPassword(
+            loginByPassword,
+        )
         return loginData
     }
 

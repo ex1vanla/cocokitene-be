@@ -62,7 +62,7 @@ export class SystemAdminController {
     @Get('/plans')
     @HttpCode(HttpStatus.OK)
     @ApiBearerAuth()
-    @UseGuards(SystemAdminGuard)
+    // @UseGuards(SystemAdminGuard)
     async getAllPlans(@Query() getAllPlanDto: GetAllPlanDto) {
         const plans = await this.systemAdminService.getAllPlans(getAllPlanDto)
         return plans

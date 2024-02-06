@@ -24,13 +24,21 @@ export const httpErrors = {
         message: 'User not active. Please try again',
         code: 'USER_00003',
     },
+    USER_CREATE_FAILED: {
+        message: 'User create failed. Please try again',
+        code: 'USER_00004',
+    },
+    USER_WRONG_LOGIN: {
+        message: 'Login false. Please check (email or WallerAddress)',
+        code: 'USER_00005',
+    },
     USER_UPDATE_FAILED: {
         message: 'User update failed. Please try again',
         code: 'USER_00006',
     },
-    USER_CREATE_FAILED: {
-        message: 'User create failed. Please try again',
-        code: 'USER_00004',
+    USER_INVALID_PASSWORD: {
+        message: 'Password of user invalid credentials. Please try again',
+        code: 'USER_00007',
     },
 
     // user status error

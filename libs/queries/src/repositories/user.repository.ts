@@ -294,4 +294,22 @@ export class UserRepository extends Repository<User> {
         })
         return user
     }
+
+    async findUserByEmailInCompany({
+        email,
+        companyId,
+    }: {
+        email: string
+        companyId: number
+    }): Promise<User> {
+        const user = await this.createQueryBuilder('users')
+            .where('users.companyId = :companyId', {
+                companyId,
+            })
+            .andWhere('users.email= :email', {
+                email,
+            })
+            .getOne()
+        return user
+    }
 }

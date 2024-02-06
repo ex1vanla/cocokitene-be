@@ -30,6 +30,7 @@ import {
     ForgotPasswordDto,
     LoginByPassword,
     LoginDto,
+    LoginUserByPassword,
     RefreshTokenDto,
     SystemAdminRefreshTokenDto,
 } from 'libs/queries/src/dtos/auth.dto'
@@ -40,7 +41,12 @@ import { SystemAdmin } from '@entities/system-admin.entity'
 import { ResetPasswordDto } from '@dtos/password.dto'
 import { EmailService } from '@api/modules/emails/email.service'
 import { ChangePasswordDto } from '@dtos/system-admin.dto'
-import { comparePassword, hashPassword } from '@shares/utils'
+import {
+    comparePassword,
+    comparePasswordUser,
+    hashPassword,
+} from '@shares/utils'
+import { CompanyRepository } from '@repositories/company.repository'
 
 @Injectable()
 export class AuthService {
@@ -51,6 +57,7 @@ export class AuthService {
         private readonly userRoleService: UserRoleService,
         private readonly systemAdminRepository: SystemAdminRepository,
         private readonly emailService: EmailService,
+        private readonly companyRepository: CompanyRepository,
     ) {}
 
     async login(loginDto: LoginDto): Promise<LoginResponseData> {
@@ -334,5 +341,48 @@ export class AuthService {
         existedSystemAdmin.password = hashedNewPassword
         await existedSystemAdmin.save()
         return 'Change Password successfully!!!'
+    }
+
+    async loginUserByPassword(
+        loginByPassword: LoginUserByPassword,
+    ): Promise<LoginResponseData> {
+        const { companyName, email, password } = loginByPassword
+
+        const company = await this.companyRepository.getCompanyByName(
+            companyName,
+        )
+        if (!company) {
+            throw new HttpException(
+                httpErrors.COMPANY_NOT_FOUND,
+                HttpStatus.NOT_FOUND,
+            )
+        }
+
+        const user = await this.userRepository.findUserByEmailInCompany({
+            email,
+            companyId: company.id,
+        })
+
+        if (!user) {
+            throw new HttpException(
+                httpErrors.USER_WRONG_LOGIN,
+                HttpStatus.NOT_FOUND,
+            )
+        }
+
+        const checkPassword = await comparePasswordUser(password, user.password)
+        if (!checkPassword) {
+            throw new HttpException(
+                httpErrors.USER_INVALID_PASSWORD,
+                HttpStatus.FORBIDDEN,
+            )
+        }
+        const { userData, accessToken, refreshToken } =
+            await this.generateResponseLoginData(user)
+        return {
+            userData,
+            accessToken,
+            refreshToken,
+        }
     }
 }

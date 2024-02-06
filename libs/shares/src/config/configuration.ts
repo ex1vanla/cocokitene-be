@@ -26,6 +26,7 @@ interface Configuration {
         accessTokenExpireInSec: number
         refreshTokenExpireInSec: number
         secretSystemAdminPasswordKey: string
+        secretUserPasswordKey: string
         systemAdminAccessJwtSecretKey: string
         systemAdminRefreshJwtSecretKey: string
         systemAdminAccessTokenExpireInSec: number
@@ -79,6 +80,7 @@ export default (): Configuration => ({
             10,
         ),
         secretSystemAdminPasswordKey: process.env.PASSWORD_SECRET_KEY,
+        secretUserPasswordKey: process.env.PASSWORD_SECRET_KEY_USER,
         systemAdminAccessJwtSecretKey:
             process.env.SYSTEM_ADMIN_ACCESS_JWT_SECRET_KEY || '',
         systemAdminRefreshJwtSecretKey:

@@ -75,3 +75,26 @@ export class ForgotPasswordDto {
     })
     email: string
 }
+
+export class LoginUserByPassword {
+    @IsString()
+    @IsNotEmpty()
+    @ApiProperty({
+        example: 'Cty TTM',
+    })
+    companyName: string
+
+    @IsEmail()
+    @IsNotEmpty()
+    @ApiProperty({
+        example: 'nguyenkien123ns@gmail.com',
+    })
+    email: string
+
+    @IsString()
+    @IsNotEmpty()
+    @ApiProperty({
+        example: 'nguyenkien',
+    })
+    password: string
+}
