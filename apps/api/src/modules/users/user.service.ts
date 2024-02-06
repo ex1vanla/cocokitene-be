@@ -23,7 +23,11 @@ import { CompanyService } from '@api/modules/companys/company.service'
 import { UserRoleService } from '@api/modules/user-roles/user-role.service'
 import { uuid } from '@shares/utils/uuid'
 import { RoleEnum } from '@shares/constants'
-import { generateRandomHexColor } from '@shares/utils'
+import {
+    createRandomPassword,
+    generateRandomHexColor,
+    hashPasswordUser,
+} from '@shares/utils'
 import { Like } from 'typeorm'
 
 @Injectable()
@@ -244,13 +248,17 @@ export class UserService {
         }
         //createUser
         let createdUser: User
-
+        let defaultPassword = ''
         try {
             createdUser = await this.userRepository.createUser(
                 companyId,
                 createUserDto,
             )
-
+            defaultPassword = createRandomPassword(8)
+            const hashedDefaultPassword = await hashPasswordUser(
+                defaultPassword,
+            )
+            createdUser.password = hashedDefaultPassword
             createdUser.nonce = uuid()
             createdUser.defaultAvatarHashColor = generateRandomHexColor()
             await createdUser.save()
@@ -276,7 +284,7 @@ export class UserService {
                 HttpStatus.INTERNAL_SERVER_ERROR,
             )
         }
-        return createdUser
+        return { ...createdUser, password: defaultPassword }
     }
 
     async createSuperAdminCompany(
