@@ -22,6 +22,11 @@ import { ChangePasswordDto } from '@dtos/system-admin.dto'
 import { SystemAdminGuard } from '@shares/guards/systemadmin.guard'
 import { SystemAdminScope } from '@shares/decorators/system-admin.decorator'
 import { SystemAdmin } from '@entities/system-admin.entity'
+import { JwtAuthGuard } from '@shares/guards/jwt-auth.guard'
+import { Permission } from '@shares/decorators/permission.decorator'
+import { PermissionEnum } from '@shares/constants'
+import { UserScope } from '@shares/decorators/user.decorator'
+import { User } from '@sentry/node'
 
 @Controller('auths')
 @ApiTags('auths')
@@ -115,5 +120,22 @@ export class AuthController {
             changePasswordDto,
         )
         return changePassword
+    }
+
+    @Post('/user/change-password')
+    @UseGuards(JwtAuthGuard)
+    @HttpCode(HttpStatus.OK)
+    @ApiBearerAuth()
+    @Permission(PermissionEnum.EDIT_PROFILE)
+    async createUser(
+        @Body() changePasswordDto: ChangePasswordDto,
+        @UserScope() user: User,
+    ) {
+        const userId = +user?.id
+        const changeUserPassword = await this.authService.changeUserPassword(
+            userId,
+            changePasswordDto,
+        )
+        return changeUserPassword
     }
 }

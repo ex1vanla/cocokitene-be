@@ -45,6 +45,7 @@ import {
     comparePassword,
     comparePasswordUser,
     hashPassword,
+    hashPasswordUser,
 } from '@shares/utils'
 import { CompanyRepository } from '@repositories/company.repository'
 
@@ -384,5 +385,39 @@ export class AuthService {
             accessToken,
             refreshToken,
         }
+    }
+
+    async changeUserPassword(
+        userId: number,
+        ChangePasswordDto: ChangePasswordDto,
+    ) {
+        const { currentPassword, newPassword } = ChangePasswordDto
+        const existedUser = await this.userRepository.findOne({
+            where: {
+                id: userId,
+            },
+        })
+        if (!existedUser) {
+            throw new HttpException(
+                httpErrors.USER_NOT_FOUND,
+                HttpStatus.NOT_FOUND,
+            )
+        }
+        //checkPassword
+        const checkPassword = await comparePasswordUser(
+            currentPassword,
+            existedUser.password,
+        )
+        if (!checkPassword) {
+            throw new HttpException(
+                httpErrors.USER_INVALID_PASSWORD,
+                HttpStatus.FORBIDDEN,
+            )
+        }
+
+        const hashedNewPassword = await hashPasswordUser(newPassword)
+        existedUser.password = hashedNewPassword
+        await existedUser.save()
+        return 'Change Password Successfully!!!!'
     }
 }
