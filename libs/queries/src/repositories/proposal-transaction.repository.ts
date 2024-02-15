@@ -32,8 +32,18 @@ export class ProposalTransactionRepository extends Repository<ProposalTransactio
         const proposalTransactions = await this.find({
             where: {
                 meetingId: meetingId,
-            },
-        })
-        return proposalTransactions
-    }
+            }
+            })
+            return proposalTransactions
+        }
+
+    // async getProposalTransactionsByTransactionId(
+    //     transactionId: number,
+    // ): Promise<ProposalTransaction[]> {
+    //     const proposalTransactions = await this.find({
+    //         where: {
+    //             transactionId: transactionId,
+    //         },
+    //     })
+    // }
 }

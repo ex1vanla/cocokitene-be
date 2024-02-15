@@ -20,7 +20,9 @@
     "start-api:dev": "npm run start:dev api",
     "start-api:prod": "node dist/apps/api/main",
     "console:dev": "ts-node -r tsconfig-paths/register apps/cronjob/src/main.ts",
-    "console:prod": "node dist/apps/cronjob/main"
+    "console:prod": "node dist/apps/cronjob/main",
+    "postinstall": "npm run typechain",
+    "typechain": "typechain --out-dir libs/shares/src/abis/types --target=web3-v1 \"libs/shares/src/abis/json/*.json\""
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.418.0",
@@ -35,6 +37,8 @@
     "@nestjs/swagger": "^5.2.1",
     "@nestjs/typeorm": "^10.0.0",
     "@sentry/node": "^7.69.0",
+    "@typechain/web3-v1": "^6.0.7",
+    "@types/web3": "^1.2.2",
     "bcrypt": "^5.1.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
@@ -47,7 +51,7 @@
     "rxjs": "^7.2.0",
     "swagger-ui-express": "^5.0.0",
     "typeorm": "^0.3.17",
-    "web3": "^4.1.1"
+    "web3": "^1.8.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.6.6",

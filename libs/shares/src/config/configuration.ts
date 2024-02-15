@@ -42,6 +42,10 @@ interface Configuration {
         }
         baseUrl: string
     }
+    crawler: {
+        adminAddress: string
+        adminPrivateKey: string
+    }
     s3: {
         accessKeyId: string
         secretAccessKey: string
@@ -106,6 +110,10 @@ export default (): Configuration => ({
             password: process.env.EMAIL_PASSWORD,
         },
         baseUrl: process.env.BASE_URL,
+    },
+    crawler: {
+        adminAddress: process.env.ADMIN_ADDRESS || '',
+        adminPrivateKey: process.env.ADMIN_PRIVATE_KEY || '',
     },
     s3: {
         accessKeyId: process.env.S3_ACCESS_KEY || '',

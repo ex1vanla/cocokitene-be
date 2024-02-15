@@ -75,4 +75,36 @@ export class TransactionRepository extends Repository<Transaction> {
 
         return meetingIds
     }
+    async findTransactionByStatus(
+        transactionStatus: TRANSACTION_STATUS,
+    ): Promise<Transaction[]> {
+        const transactions = await this.find({
+            where: {
+                status: transactionStatus,
+            },
+        })
+        return transactions
+    }
+
+    async updateTransaction(
+        id: number,
+        updateOptions: Partial<Transaction>,
+    ): Promise<void> {
+        await this.createQueryBuilder('transactions')
+            .update(Transaction)
+            .set(updateOptions)
+            .where('transactions.id = :id', { id })
+            .execute()
+    }
+
+    async updateTransactionByMeetingId(
+        meetingId: number,
+        updateOptions: Partial<Transaction>,
+    ) {
+        await this.createQueryBuilder('transactions')
+            .update(Transaction)
+            .set(updateOptions)
+            .where('transactions.meeting_id = :meetingId', { meetingId })
+            .execute()
+    }
 }

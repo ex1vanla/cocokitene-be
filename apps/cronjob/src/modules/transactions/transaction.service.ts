@@ -19,6 +19,7 @@ import { TransactionRepository } from '@repositories/transaction.repository'
 import {
     CONTRACT_TYPE,
     SupportedChainId,
+    TRANSACTION_STATUS,
     TRANSACTION_TYPE,
 } from '@shares/constants'
 import { httpErrors } from '@shares/exception-filter'
@@ -30,6 +31,7 @@ import {
     dateTimeToEpochTime,
     getChainId,
     getContractAddress,
+    sendCreateMeetingTransaction,
 } from '@shares/utils'
 import { Transaction } from '@entities/transaction.entity'
 
@@ -438,6 +440,60 @@ export class TransactionService {
                         HttpStatus.INTERNAL_SERVER_ERROR,
                     )
             }
+        }
+    }
+    async handleCheckTransaction() {
+        const transactionList =
+            await this.transactionRepository.findTransactionByStatus(
+                TRANSACTION_STATUS.PENDING,
+            )
+        if (!transactionList || transactionList?.length === 0) {
+            console.log('No transactions found: ' + new Date())
+            return
+        }
+        const txPromises = []
+        for (const transaction of transactionList) {
+            if (transaction.type === TRANSACTION_TYPE.CREATE_MEETING) {
+                txPromises.push(
+                    sendCreateMeetingTransaction({
+                        meetingId: transaction.meetingId,
+                        titleMeeting: transaction.titleMeeting,
+                        startTimeMeeting: transaction.startTimeMeeting,
+                        endTimeMeeting: transaction.endTimeMeeting,
+                        meetingLink: transaction.meetingLink,
+                        companyId: transaction.companyId,
+                        chainId: transaction.chainId,
+                        shareholdersJoined: transaction.shareholdersJoined,
+                        shareholdersTotal: transaction.shareholdersTotal,
+                        joinedMeetingShares: transaction.joinedMeetingShares,
+                        totalMeetingShares: transaction.totalMeetingShares,
+                        contractAddress: transaction.contractAddress,
+                    }),
+                )
+            }
+        }
+        console.log('Starting sending transation..........')
+        const txResults = await Promise.all(txPromises)
+        //update status transaction
+        if (txResults && txResults.length > 0) {
+            const updateTransactionPromises = []
+            txResults.map((txResult, index) => {
+                if (txResult) {
+                    console.log(
+                        'Sent transaction: ' + txResult?.transactionHash,
+                    )
+                    updateTransactionPromises.push(
+                        this.transactionRepository.updateTransaction(
+                            transactionList[index].id,
+                            {
+                                txHash: txResult?.transactionHash,
+                                status: TRANSACTION_STATUS.PROCESSING,
+                            },
+                        ),
+                    )
+                }
+            })
+            await Promise.all(updateTransactionPromises)
         }
     }
 }

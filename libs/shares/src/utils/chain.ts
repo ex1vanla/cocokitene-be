@@ -1,4 +1,5 @@
-import { SupportedChainId } from '@shares/constants'
+import { ChainType, SupportedChainId } from '@shares/constants'
+import configuration from '@shares/config/configuration'
 
 export const getChainId = (): SupportedChainId => {
     return configuration().common.networkEnv === ChainType.MAINNET

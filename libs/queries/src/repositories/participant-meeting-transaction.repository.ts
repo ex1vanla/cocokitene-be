@@ -30,4 +30,14 @@ export class ParticipantMeetingTransactionRepository extends Repository<Particip
         })
         return participantMeetings
     }
+    // async getParticipantMeetingTransactionByTransactionId(
+    //     transactionId: number,
+    // ): Promise<ParticipantMeetingTransaction[]> {
+    //     const participantTransactions = await this.find({
+    //         where: {
+    //             transactionId: transactionId,
+    //         },
+    //     })
+    //     return participantTransactions
+    // }
 }

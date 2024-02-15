@@ -12,6 +12,8 @@ import { TransactionRepository } from '@repositories/transaction.repository'
 import { ParticipantMeetingTransactionRepository } from '@repositories/participant-meeting-transaction.repository'
 import { ProposalTransactionRepository } from '@repositories/proposal-transaction.repository'
 import { FileOfProposalTransactionRepository } from '@repositories/file-of-proposal-transaction.repository'
+import { BlockModule } from '../block/block.module'
+import { MeetingCrawler } from './meeting-crawler'
 const Repositories = TypeOrmExModule.forCustomRepository([
     UserMeetingRepository,
     MeetingRepository,
@@ -26,10 +28,11 @@ const Repositories = TypeOrmExModule.forCustomRepository([
     imports: [
         ConfigModule.forRoot(),
         ScheduleModule.forRoot(),
+        BlockModule,
         Repositories,
         TransactionModule,
     ],
-    providers: [CronjobService],
+    providers: [CronjobService, MeetingCrawler],
     exports: [CronjobService],
 })
 export class CronjobModule {}
