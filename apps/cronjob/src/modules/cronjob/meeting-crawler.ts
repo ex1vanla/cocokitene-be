@@ -3,7 +3,8 @@ import { BlockService } from '../block/block.service'
 import { TransactionRepository } from '@repositories/transaction.repository'
 import { TRANSACTION_STATUS } from '@shares/constants'
 import { MEETING_EVENT } from '@shares/constants'
-
+import { Injectable } from '@nestjs/common'
+@Injectable()
 export class MeetingCrawler extends BaseCrawler {
     constructor(
         blockService: BlockService,

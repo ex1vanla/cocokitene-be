@@ -33,6 +33,6 @@ const Repositories = TypeOrmExModule.forCustomRepository([
         TransactionModule,
     ],
     providers: [CronjobService, MeetingCrawler],
-    exports: [CronjobService],
+    exports: [CronjobService, MeetingCrawler],
 })
 export class CronjobModule {}

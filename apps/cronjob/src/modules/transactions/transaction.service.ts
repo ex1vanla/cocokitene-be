@@ -451,11 +451,11 @@ export class TransactionService {
             console.log('No transactions found: ' + new Date())
             return
         }
-        const txPromises = []
-        for (const transaction of transactionList) {
-            if (transaction.type === TRANSACTION_TYPE.CREATE_MEETING) {
-                txPromises.push(
-                    sendCreateMeetingTransaction({
+        // const txPromises = []
+        await Promise.all([
+            ...transactionList.map(async (transaction) => {
+                if (transaction.type === TRANSACTION_TYPE.CREATE_MEETING) {
+                    const txResult = await sendCreateMeetingTransaction({
                         meetingId: transaction.meetingId,
                         titleMeeting: transaction.titleMeeting,
                         startTimeMeeting: transaction.startTimeMeeting,
@@ -468,32 +468,21 @@ export class TransactionService {
                         joinedMeetingShares: transaction.joinedMeetingShares,
                         totalMeetingShares: transaction.totalMeetingShares,
                         contractAddress: transaction.contractAddress,
-                    }),
-                )
-            }
-        }
-        console.log('Starting sending transation..........')
-        const txResults = await Promise.all(txPromises)
-        //update status transaction
-        if (txResults && txResults.length > 0) {
-            const updateTransactionPromises = []
-            txResults.map((txResult, index) => {
-                if (txResult) {
-                    console.log(
-                        'Sent transaction: ' + txResult?.transactionHash,
-                    )
-                    updateTransactionPromises.push(
-                        this.transactionRepository.updateTransaction(
-                            transactionList[index].id,
+                    })
+                    if (txResult) {
+                        console.log(
+                            'Sent transaction: ' + txResult?.transactionHash,
+                        )
+                        await this.transactionRepository.updateTransaction(
+                            transaction.id,
                             {
                                 txHash: txResult?.transactionHash,
                                 status: TRANSACTION_STATUS.PROCESSING,
                             },
-                        ),
-                    )
+                        )
+                    }
                 }
-            })
-            await Promise.all(updateTransactionPromises)
-        }
+            }),
+        ])
     }
 }
