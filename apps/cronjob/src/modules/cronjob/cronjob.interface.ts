@@ -5,12 +5,14 @@ import {
 } from '@shares/constants/meeting.const'
 
 export interface participant {
+    meetingId: number
     userId: number
     username: string
     role: MeetingRole
     status: UserMeetingStatusEnum
 }
 export interface ResultVoteProposal {
+    meetingId: number
     proposalId: number
     votedQuantity: number
     unVotedQuantity: number
@@ -18,6 +20,7 @@ export interface ResultVoteProposal {
 }
 
 export interface ListFileOfProposal {
+    meetingId: number
     proposalFileId: number
     proposalId: number
     url: string

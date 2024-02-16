@@ -8,14 +8,12 @@ export class FileOfProposalTransactionRepository extends Repository<FileOfPropos
     async createFileOfProposalTransaction(
         fileOfProposalDto: FileOfProposalDto,
     ): Promise<FileOfProposalTransaction> {
-        const { url, proposalFileId, proposalId, transactionId } =
-            fileOfProposalDto
+        const { url, proposalFileId, meetingId } = fileOfProposalDto
 
         const createFileOfProposalTransaction = await this.create({
             url,
             proposalFileId,
-            proposalId,
-            transactionId,
+            meetingId,
         })
         return await createFileOfProposalTransaction.save()
     }

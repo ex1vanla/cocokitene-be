@@ -10,8 +10,8 @@ import {
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm'
-import { Transaction } from '@entities/transaction.entity'
 import { Proposal } from '@entities/proposal.entity'
+import { Meeting } from '@entities/meeting.entity'
 
 @Entity('proposal_transactions')
 export class ProposalTransaction extends BaseEntity {
@@ -20,11 +20,11 @@ export class ProposalTransaction extends BaseEntity {
 
     @Column({
         nullable: false,
-        name: 'transaction_id',
+        name: 'meeting_id',
         type: 'integer',
         width: 11,
     })
-    transactionId: number
+    meetingId: number
 
     @Column({
         nullable: false,
@@ -58,12 +58,11 @@ export class ProposalTransaction extends BaseEntity {
     })
     notVoteYetQuantity: number
 
-    @ManyToOne(
-        () => Transaction,
-        (transaction) => transaction.proposalTransactions,
-    )
-    @JoinColumn({ name: 'transaction_id' })
-    transaction: Transaction
+    @ManyToOne(() => Meeting)
+    @JoinColumn({
+        name: 'meeting_id',
+    })
+    meeting: Meeting
 
     @OneToOne(() => Proposal)
     @JoinColumn({

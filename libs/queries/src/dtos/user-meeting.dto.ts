@@ -1,4 +1,4 @@
-import { ApiProperty, OmitType } from '@nestjs/swagger'
+import { ApiProperty } from '@nestjs/swagger'
 import {
     MeetingRole,
     UserMeetingStatusEnum,
@@ -36,9 +36,7 @@ export class CreateUserMeetingDto {
     status?: UserMeetingStatusEnum
 }
 
-export class ParticipantDto extends OmitType(CreateUserMeetingDto, [
-    'meetingId',
-]) {
+export class ParticipantDto extends CreateUserMeetingDto {
     @IsString()
     @IsOptional()
     @ApiProperty({
@@ -46,11 +44,4 @@ export class ParticipantDto extends OmitType(CreateUserMeetingDto, [
         example: 'leopaul',
     })
     username: string
-
-    @IsNumber()
-    @ApiProperty({
-        required: true,
-        example: 1,
-    })
-    transactionId: number
 }

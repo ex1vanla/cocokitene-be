@@ -13,7 +13,7 @@ import {
     MeetingRole,
     UserMeetingStatusEnum,
 } from '@shares/constants/meeting.const'
-import { Transaction } from '@entities/transaction.entity'
+import { Meeting } from '@entities/meeting.entity'
 
 @Entity('participant_meeting_transactions')
 export class ParticipantMeetingTransaction extends BaseEntity {
@@ -49,15 +49,17 @@ export class ParticipantMeetingTransaction extends BaseEntity {
 
     @Column({
         nullable: false,
-        name: 'transaction_id',
+        name: 'meeting_id',
         type: 'integer',
         width: 11,
     })
-    transactionId: number
+    meetingId: number
 
-    @ManyToOne(() => Transaction, (transaction) => transaction.fileOfProposals)
-    @JoinColumn({ name: 'transaction_id' })
-    transaction: Transaction
+    @ManyToOne(() => Meeting)
+    @JoinColumn({
+        name: 'meeting_id',
+    })
+    meeting: Meeting
 
     @DeleteDateColumn()
     deletedAt: Date

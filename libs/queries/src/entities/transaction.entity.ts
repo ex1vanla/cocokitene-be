@@ -96,20 +96,20 @@ export class Transaction extends BaseEntity {
     })
     status: TRANSACTION_STATUS
 
+    @Column({ name: 'tx_hash', type: 'varchar', length: 255, nullable: true })
+    txHash: string
+
     @OneToMany(
         () => ProposalTransaction,
-        (proposalTransaction) => proposalTransaction.transaction,
+        (proposalTransaction) => proposalTransaction.meeting,
     )
     proposalTransactions: ProposalTransaction[]
 
     @OneToMany(
         () => FileOfProposalTransaction,
-        (fileOfProposalTransaction) => fileOfProposalTransaction.transaction,
+        (fileOfProposalTransaction) => fileOfProposalTransaction.meeting,
     )
     fileOfProposals: FileOfProposalTransaction[]
-
-    @Column({ name: 'tx_hash', type: 'varchar', length: 255, nullable: true })
-    txHash: string
 
     @CreateDateColumn({ name: 'created_at' })
     createdAt: Date

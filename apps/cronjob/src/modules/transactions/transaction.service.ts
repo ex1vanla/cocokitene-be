@@ -21,7 +21,6 @@ import { httpErrors } from '@shares/exception-filter'
 import { ParticipantMeetingTransactionRepository } from '@repositories/participant-meeting-transaction.repository'
 import { ProposalTransactionRepository } from '@repositories/proposal-transaction.repository'
 import { FileOfProposalTransactionRepository } from '@repositories/file-of-proposal-transaction.repository'
-import { Transaction } from '@entities/transaction.entity'
 
 @Injectable()
 export class TransactionService {
@@ -67,10 +66,11 @@ export class TransactionService {
                             proposalId = proposal.id
 
                         listResultProposals.push({
-                            proposalId,
-                            votedQuantity,
-                            unVotedQuantity,
-                            notVoteYetQuantity,
+                            meetingId: meeting.id,
+                            proposalId: proposalId,
+                            votedQuantity: votedQuantity,
+                            unVotedQuantity: unVotedQuantity,
+                            notVoteYetQuantity: notVoteYetQuantity,
                         })
 
                         const listProposalFile =
@@ -83,6 +83,7 @@ export class TransactionService {
                                     proposalId = item.proposalId,
                                     url = item.url
                                 listResultProposalFiles.push({
+                                    meetingId: meeting.id,
                                     proposalFileId: proposalFileId,
                                     proposalId: proposalId,
                                     url: url,
@@ -143,6 +144,7 @@ export class TransactionService {
                 await Promise.all([
                     ...hosts.map((host) =>
                         participants.push({
+                            meetingId: meeting.id,
                             userId: host.user.id,
                             username: host.user.username,
                             role: MeetingRole.HOST,
@@ -151,6 +153,8 @@ export class TransactionService {
                     ),
                     ...controlBoards.map((controlBoard) =>
                         participants.push({
+                            meetingId: meeting.id,
+
                             userId: controlBoard.user.id,
                             username: controlBoard.user.username,
                             role: MeetingRole.CONTROL_BOARD,
@@ -159,6 +163,8 @@ export class TransactionService {
                     ),
                     ...directors.map((director) =>
                         participants.push({
+                            meetingId: meeting.id,
+
                             userId: director.user.id,
                             username: director.user.username,
                             role: MeetingRole.DIRECTOR,
@@ -167,6 +173,8 @@ export class TransactionService {
                     ),
                     ...administrativeCouncils.map((administrativeCouncil) =>
                         participants.push({
+                            meetingId: meeting.id,
+
                             userId: administrativeCouncil.user.id,
                             username: administrativeCouncil.user.username,
                             role: MeetingRole.ADMINISTRATIVE_COUNCIL,
@@ -175,6 +183,8 @@ export class TransactionService {
                     ),
                     ...shareholders.map((shareholder) =>
                         participants.push({
+                            meetingId: meeting.id,
+
                             userId: shareholder.user.id,
                             username: shareholder.user.username,
                             role: MeetingRole.SHAREHOLDER,
@@ -194,19 +204,17 @@ export class TransactionService {
                     joinedMeetingShares: joinedMeetingShares,
                     totalMeetingShares: totalMeetingShares,
                 }
-                let createdTransaction: Transaction
                 try {
-                    createdTransaction =
-                        await this.transactionRepository.createTransaction({
-                            meetingId: meetingEnd.id,
-                            titleMeeting: meetingEnd.titleMeeting,
-                            totalMeetingShares: meetingEnd.totalMeetingShares,
-                            joinedMeetingShares: meetingEnd.joinedMeetingShares,
-                            shareholdersTotal: meetingEnd.shareholdersTotal,
-                            shareholdersJoined: meetingEnd.shareholdersJoined,
-                            companyId: meetingEnd.companyId,
-                            chainId: SupportedChainId.SEPOLIA,
-                        })
+                    await this.transactionRepository.createTransaction({
+                        meetingId: meetingEnd.id,
+                        titleMeeting: meetingEnd.titleMeeting,
+                        totalMeetingShares: meetingEnd.totalMeetingShares,
+                        joinedMeetingShares: meetingEnd.joinedMeetingShares,
+                        shareholdersTotal: meetingEnd.shareholdersTotal,
+                        shareholdersJoined: meetingEnd.shareholdersJoined,
+                        companyId: meetingEnd.companyId,
+                        chainId: SupportedChainId.SEPOLIA,
+                    })
                 } catch (error) {
                     throw new HttpException(
                         httpErrors.TRANSACTION_CREATE_FAILED,
@@ -218,7 +226,7 @@ export class TransactionService {
                         ...meetingEnd.participants.map((participant) =>
                             this.participantMeetingTransactionRepository.createParticipantMeetingTransaction(
                                 {
-                                    transactionId: createdTransaction.id,
+                                    meetingId: participant.meetingId,
                                     userId: participant.userId,
                                     username: participant.username,
                                     status: participant.status,
@@ -232,7 +240,7 @@ export class TransactionService {
                                     {
                                         proposalId:
                                             listResultProposal.proposalId,
-                                        transactionId: createdTransaction.id,
+                                        meetingId: meetingEnd.id,
                                         votedQuantity:
                                             listResultProposal.votedQuantity ??
                                             0,
@@ -250,9 +258,7 @@ export class TransactionService {
                                 this.fileOfProposalTransactionRepository.createFileOfProposalTransaction(
                                     {
                                         url: listResultProposalFile.url,
-                                        transactionId: createdTransaction.id,
-                                        proposalId:
-                                            listResultProposalFile.proposalId,
+                                        meetingId: meetingEnd.id,
                                         proposalFileId:
                                             listResultProposalFile.proposalFileId,
                                     },

@@ -217,5 +217,5 @@ export class ResultVoteProposalDto extends OmitType(ProposalDto, [
         required: true,
         example: 1,
     })
-    transactionId: number
+    meetingId: number
 }

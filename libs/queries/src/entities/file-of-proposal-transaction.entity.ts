@@ -10,9 +10,8 @@ import {
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm'
-import { Transaction } from '@entities/transaction.entity'
-import { Proposal } from '@entities/proposal.entity'
 import { ProposalFile } from '@entities/proposal-file'
+import { Meeting } from '@entities/meeting.entity'
 
 @Entity('file_of_proposal_transactions')
 export class FileOfProposalTransaction extends BaseEntity {
@@ -29,32 +28,20 @@ export class FileOfProposalTransaction extends BaseEntity {
 
     @Column({
         nullable: false,
-        name: 'transaction_id',
+        name: 'meeting_id',
         type: 'integer',
         width: 11,
     })
-    transactionId: number
-
-    @Column({
-        nullable: false,
-        name: 'proposal_id',
-        type: 'integer',
-        width: 11,
-    })
-    proposalId: number
+    meetingId: number
 
     @Column({ nullable: false, name: 'url', type: 'varchar', length: 255 })
     url: string
 
-    @ManyToOne(() => Transaction, (transaction) => transaction.fileOfProposals)
-    @JoinColumn({ name: 'transaction_id' })
-    transaction: Transaction
-
-    @ManyToOne(() => Proposal)
+    @ManyToOne(() => Meeting)
     @JoinColumn({
-        name: 'proposal_id',
+        name: 'meeting_id',
     })
-    proposal: Proposal
+    meeting: Meeting
 
     @OneToOne(() => ProposalFile)
     @JoinColumn({
