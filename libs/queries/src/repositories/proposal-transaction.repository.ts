@@ -13,12 +13,12 @@ export class ProposalTransactionRepository extends Repository<ProposalTransactio
             notVoteYetQuantity,
             votedQuantity,
             unVotedQuantity,
-            transactionId,
+            meetingId,
         } = resultVoteProposalDto
 
         const createProposalTransaction = await this.create({
             proposalId,
-            transactionId,
+            meetingId,
             votedQuantity,
             unVotedQuantity,
             notVoteYetQuantity,

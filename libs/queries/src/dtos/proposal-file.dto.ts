@@ -40,6 +40,7 @@ export class ProposalFileDto extends OmitType(CreateProposalFileDto, [
 
 export class FileOfProposalDto extends OmitType(CreateProposalFileDto, [
     'uid',
+    'proposalId',
 ]) {
     @IsNotEmpty()
     @IsNumber()
@@ -47,7 +48,7 @@ export class FileOfProposalDto extends OmitType(CreateProposalFileDto, [
         required: true,
         example: 1,
     })
-    transactionId: number
+    meetingId: number
 
     @IsNotEmpty()
     @IsNumber()
