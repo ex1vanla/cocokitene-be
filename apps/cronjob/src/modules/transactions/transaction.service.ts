@@ -33,7 +33,6 @@ import {
     getContractAddress,
     sendCreateMeetingTransaction,
 } from '@shares/utils'
-import { Transaction } from '@entities/transaction.entity'
 
 @Injectable()
 export class TransactionService {
@@ -303,7 +302,8 @@ export class TransactionService {
     async handleDataAfterEventSuccessfulCreatedMeeting() {
         //Get the id of the meeting that has a listening event to create a successful meeting,
         const transactionsCreateMeetingSuccessful =
-            await this.transactionRepository.gettransactionsCreateMeetingSuccessful()
+            await this.transactionRepository.getTransactionsCreateMeetingSuccessful()
+
         if (
             !transactionsCreateMeetingSuccessful ||
             transactionsCreateMeetingSuccessful.length == 0
@@ -313,10 +313,12 @@ export class TransactionService {
             )
             return
         }
+
         console.log(
-            'transactionsCreateMeetingSuccessful------',
+            'transactionsCreateMeetingSuccessful----',
             transactionsCreateMeetingSuccessful,
         )
+
         const maximumNumberTransactionCallFuncBlockchain =
                 configuration().transaction
                     .maximumNumberTransactionPerCallFuncBlockchain,
@@ -390,21 +392,24 @@ export class TransactionService {
 
     async createTransactionSecondaryAndUpdate(
         type: TRANSACTION_TYPE,
-        transaction: Transaction,
+        transaction: any,
         chainId: SupportedChainId,
     ) {
         try {
             await this.transactionRepository.createTransaction({
-                meetingId: transaction.meetingId,
-                titleMeeting: transaction.titleMeeting,
-                meetingLink: transaction.meetingLink,
-                totalMeetingShares: transaction.totalMeetingShares,
-                joinedMeetingShares: transaction.joinedMeetingShares,
-                shareholdersTotal: transaction.shareholdersTotal,
-                shareholdersJoined: transaction.shareholdersJoined,
-                startTimeMeeting: transaction.startTimeMeeting,
-                endTimeMeeting: transaction.endTimeMeeting,
-                companyId: transaction.companyId,
+                meetingId: transaction.transactions_meeting_id,
+                titleMeeting: transaction.transactions_title_meeting,
+                meetingLink: transaction.transactions_meeting_link,
+                totalMeetingShares:
+                    transaction.transactions_total_meeting_shares,
+                joinedMeetingShares:
+                    transaction.transactions_joined_meeting_shares,
+                shareholdersTotal: transaction.transactions_shareholder_total,
+                shareholdersJoined:
+                    transaction.transactions_shareholders_joined,
+                startTimeMeeting: transaction.transactions_start_time_meeting,
+                endTimeMeeting: transaction.transactions_end_time_meeting,
+                companyId: transaction.transactions_company_id,
                 chainId: chainId,
                 type: type,
                 contractAddress: getContractAddress({

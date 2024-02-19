@@ -52,17 +52,31 @@ export class TransactionRepository extends Repository<Transaction> {
         return meetingIds
     }
 
-    async gettransactionsCreateMeetingSuccessful(): Promise<Transaction[]> {
-        const meetingIds = await this.createQueryBuilder('transaction')
-            .select('DISTINCT transaction.meetingId', 'meetingId')
-            .where('transaction.type = :type', {
+    async getTransactionsCreateMeetingSuccessful(): Promise<Transaction[]> {
+        const meetingIds = await this.createQueryBuilder('transactions')
+            .select([
+                'transactions.meetingId',
+                'transactions.companyId',
+                'transactions.contractAddress',
+                'transactions.meetingLink',
+                'transactions.titleMeeting',
+                'transactions.startTimeMeeting',
+                'transactions.endTimeMeeting',
+                'transactions.shareholdersTotal',
+                'transactions.shareholdersJoined',
+                'transactions.joinedMeetingShares',
+                'transactions.totalMeetingShares',
+                'transactions.status',
+                'transactions.type',
+            ])
+            .where('transactions.type = :type', {
                 type: TRANSACTION_TYPE.CREATE_MEETING,
             })
-            .andWhere('transaction.status = :status', {
+            .andWhere('transactions.status = :status', {
                 status: TRANSACTION_STATUS.SUCCESS,
             })
             .andWhere(
-                'NOT EXISTS (SELECT 1 FROM transactions t WHERE t.meetingId = transaction.meetingId AND t.type IN (:...types))',
+                'NOT EXISTS (SELECT 1 FROM transactions AS t  WHERE t.meeting_id = transactions.meetingId AND t.type IN (:...types))',
                 {
                     types: [
                         TRANSACTION_TYPE.UPDATE_PROPOSAL_MEETING,
@@ -72,9 +86,9 @@ export class TransactionRepository extends Repository<Transaction> {
                 },
             )
             .getRawMany()
-
         return meetingIds
     }
+
     async findTransactionByStatus(
         transactionStatus: TRANSACTION_STATUS,
     ): Promise<Transaction[]> {

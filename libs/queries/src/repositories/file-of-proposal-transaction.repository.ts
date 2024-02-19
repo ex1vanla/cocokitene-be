@@ -37,5 +37,4 @@ export class FileOfProposalTransactionRepository extends Repository<FileOfPropos
     //             transactionId: transactionId,
     //         },
     //     })
-       
 }

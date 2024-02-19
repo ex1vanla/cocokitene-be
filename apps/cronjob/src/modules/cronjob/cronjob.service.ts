@@ -17,17 +17,7 @@ export class CronjobService {
         private readonly transactionService: TransactionService,
         private readonly meetingCrawler: MeetingCrawler,
     ) {}
-    // @Cron(CronExpression.EVERY_30_SECONDS)
-    // @Cron(CronExpression.EVERY_SECOND)
-    // async handleAllEndedMeeting() {
-    //     await this.transactionService.handleAllEndedMeeting()
-    // }
 
-    // @Cron(CronExpression.EVERY_SECOND)
-    @Cron(CronExpression.EVERY_30_SECONDS)
-    async handleDataAfterEventSuccessfulCreatedMeeting() {
-        await this.transactionService.handleDataAfterEventSuccessfulCreatedMeeting()
-    }
     getConfigCrawlerByContractType(type: CONTRACT_TYPE): ConfigCrawler {
         const chainId = getChainId()
         const contractArray = CONTRACT_BY_CHAIN[chainId]
@@ -49,16 +39,22 @@ export class CronjobService {
         await this.transactionService.handleAllEndedMeeting()
     }
 
-    @Cron(CronExpression.EVERY_3_HOURS)
+    @Cron(CronExpression.EVERY_SECOND)
     async handlePendingTransaction() {
         await this.transactionService.handleCheckTransaction()
     }
 
-    @Cron(CronExpression.EVERY_5_HOURS)
+    @Cron(CronExpression.EVERY_SECOND)
     async crawlMeetingEvent() {
         const config = await this.getConfigCrawlerByContractType(
             CONTRACT_TYPE.MEETING,
         )
         await this.meetingCrawler.scan(config)
+    }
+
+    // @Cron(CronExpression.EVERY_SECOND)
+    @Cron(CronExpression.EVERY_SECOND)
+    async handleDataAfterEventSuccessfulCreatedMeeting() {
+        await this.transactionService.handleDataAfterEventSuccessfulCreatedMeeting()
     }
 }
