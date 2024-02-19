@@ -272,6 +272,20 @@ export const httpErrors = {
         message: 'Create transaction failed. Please try again',
         code: 'TRANSACTION_00001',
     },
+    TRANSACTION_CREATE_PROPOSAL_FAILED: {
+        message: 'Create transaction proposal failed. Please try again',
+        code: 'TRANSACTION_00002',
+    },
+    TRANSACTION_CREATE_FILE_OF_PROPOSAL_FAILED: {
+        message: 'Create transaction file or proposal failed. Please try again',
+        code: 'TRANSACTION_00003',
+    },
+    TRANSACTION_CREATE_PARTICIPANT_MEETING_FAILED: {
+        message:
+            'Create transaction participant meeting failed. Please try again',
+        code: 'TRANSACTION_00004',
+    },
+
     //participant-meeting-transaction
     PARTICIPANT_MEETING_TRANSACTION_CREATED_FAILED: {
         message:

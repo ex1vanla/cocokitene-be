@@ -3,6 +3,7 @@ import {
     MeetingRole,
     UserMeetingStatusEnum,
 } from '@shares/constants/meeting.const'
+import { SupportedChainId } from '@shares/constants'
 
 export interface participant {
     meetingId: number
@@ -30,6 +31,9 @@ export interface MeetingEnded extends Partial<Meeting> {
     id: number
     companyId: number
     titleMeeting: string
+    startTimeMeeting: number
+    endTimeMeeting: number
+    meetingLink: string
     participants: participant[]
     listResultProposals: ResultVoteProposal[]
     listResultProposalFiles: ListFileOfProposal[]
@@ -37,4 +41,13 @@ export interface MeetingEnded extends Partial<Meeting> {
     shareholdersJoined: number
     joinedMeetingShares: number
     totalMeetingShares: number
+}
+
+export interface ConfigCrawler {
+    contract: string
+    provider: string
+    chainId: SupportedChainId
+    abi: any
+    startBlock: number
+    name: string
 }

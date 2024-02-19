@@ -7,7 +7,10 @@ import {
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm'
-import { TRANSACTION_STATUS } from '@shares/constants/transaction.const'
+import {
+    TRANSACTION_STATUS,
+    TRANSACTION_TYPE,
+} from '@shares/constants/transaction.const'
 import { ProposalTransaction } from '@entities/proposal-transaction.entity'
 import { FileOfProposalTransaction } from '@entities/file-of-proposal-transaction.entity'
 
@@ -33,6 +36,14 @@ export class Transaction extends BaseEntity {
     contractAddress: string
 
     @Column({
+        name: 'meeting_link',
+        type: 'varchar',
+        length: 255,
+        nullable: false,
+    })
+    meetingLink: string
+
+    @Column({
         name: 'title_meeting',
         type: 'varchar',
         length: 255,
@@ -47,6 +58,22 @@ export class Transaction extends BaseEntity {
         nullable: false,
     })
     meetingId: number
+
+    @Column({
+        name: 'start_time_meeting',
+        type: 'integer',
+        width: 11,
+        nullable: false,
+    })
+    startTimeMeeting: number
+
+    @Column({
+        name: 'end_time_meeting',
+        type: 'integer',
+        width: 11,
+        nullable: false,
+    })
+    endTimeMeeting: number
 
     @Column({
         name: 'company_id',
@@ -98,6 +125,12 @@ export class Transaction extends BaseEntity {
 
     @Column({ name: 'tx_hash', type: 'varchar', length: 255, nullable: true })
     txHash: string
+    @Column({
+        nullable: false,
+        type: 'enum',
+        enum: TRANSACTION_TYPE,
+    })
+    type: TRANSACTION_TYPE
 
     @OneToMany(
         () => ProposalTransaction,

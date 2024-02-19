@@ -17,4 +17,15 @@ export class FileOfProposalTransactionRepository extends Repository<FileOfPropos
         })
         return await createFileOfProposalTransaction.save()
     }
+
+    async getFileOfProposalTransactionsByMeetingId(
+        meetingId: number,
+    ): Promise<FileOfProposalTransaction[]> {
+        const fileOfProposalTransactions = await this.find({
+            where: {
+                meetingId: meetingId,
+            },
+        })
+        return fileOfProposalTransactions
+    }
 }

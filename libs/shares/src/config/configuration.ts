@@ -49,6 +49,9 @@ interface Configuration {
         bucketName: string
         expiresIn: number
     }
+    transaction: {
+        maximumNumberTransactionPerCallFuncBlockchain: number
+    }
 }
 
 export default (): Configuration => ({
@@ -110,5 +113,12 @@ export default (): Configuration => ({
         region: process.env.S3_REGION || '',
         bucketName: process.env.S3_BUCKET_NAME || '',
         expiresIn: parseInt(process.env.S3_URL_EXPIRES_IN_SEC, 10) || 300,
+    },
+    transaction: {
+        maximumNumberTransactionPerCallFuncBlockchain:
+            parseInt(
+                process.env.MAXIMUM_NUMBER_TRANSACTION_PER_CALL_FUNC_BLOCKCHAIN,
+                10,
+            ) || 100,
     },
 })
