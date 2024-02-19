@@ -3,6 +3,10 @@ import configuration from '@shares/config/configuration'
 import { Meeting } from '@shares/abis/types'
 import { getContract, getWeb3Instance } from '@shares/utils/web3'
 import { MEETING_ABI } from '@shares/abis'
+import { ProposalDataSendToBlockchainDto } from '@dtos/proposal.dto'
+import BN from 'bn.js'
+import { UserMeetingDataSendToBlockchainDto } from '@dtos/user-meeting.dto'
+import { FileOfProposalDataSendToBlockchainDto } from '@dtos/proposal-file.dto'
 
 export const sendCreateMeetingTransaction = async ({
     meetingId,
@@ -74,6 +78,206 @@ export const sendCreateMeetingTransaction = async ({
             )
             .send({ from: adminAddress, gas: estimateGas })
 
+        return txResult
+    } catch (error) {
+        // throw new Error(error);
+        console.log('error-----', error)
+        return
+    }
+}
+
+export const sendUpdateProposalMeetingTransaction = async ({
+    meetingId,
+    chainId,
+    contractAddress,
+    newProposalData,
+    countProcessNumber,
+}: {
+    meetingId: number
+    chainId: SupportedChainId
+    contractAddress: string
+    newProposalData: ProposalDataSendToBlockchainDto[]
+    countProcessNumber: number
+}) => {
+    try {
+        const provider = RPC_URLS[chainId]
+        const adminAddress = configuration().crawler.adminAddress
+        const adminPrivateKey = configuration().crawler.adminPrivateKey
+        const meetingContractInstance: Meeting = getContract(
+            MEETING_ABI,
+            contractAddress,
+            provider,
+        )
+        const formattedNewProposalArray: [
+            string | number | BN,
+            string,
+            string | number | BN,
+            string | number | BN,
+            string | number | BN,
+        ][] = newProposalData.map((item) => [
+            item.proposalId,
+            item.titleProposal,
+            item.votedQuantity,
+            item.unVotedQuantity,
+            item.notVoteYetQuantity,
+        ])
+        console.log('---------------')
+        console.log(`${meetingId}`)
+        console.log('formattedNewProposalArray----', formattedNewProposalArray)
+        console.log('----------------')
+        const estimateGas = await meetingContractInstance.methods
+            .addProposalsNoSign(
+                meetingId,
+                formattedNewProposalArray,
+                countProcessNumber,
+            )
+            .estimateGas({
+                from: adminAddress,
+            })
+
+        //add private key
+        const web3Instance = getWeb3Instance(provider)
+        await web3Instance.eth.accounts.wallet.add(adminPrivateKey)
+        const txResult = await meetingContractInstance.methods
+            .addProposalsNoSign(
+                meetingId,
+                formattedNewProposalArray,
+                countProcessNumber,
+            )
+            .send({
+                from: adminAddress,
+                gas: estimateGas,
+            })
+        return txResult
+    } catch (error) {
+        // throw new Error(error);
+        console.log('error-----', error)
+        return
+    }
+}
+
+export const sendUpdateParticipantMeetingTransaction = async ({
+    meetingId,
+    chainId,
+    contractAddress,
+    newUserParticipateMeetingData,
+    countProcessNumber,
+}: {
+    meetingId: number
+    chainId: SupportedChainId
+    contractAddress: string
+    newUserParticipateMeetingData: UserMeetingDataSendToBlockchainDto[]
+    countProcessNumber: number
+}) => {
+    try {
+        const provider = RPC_URLS[chainId]
+        const adminAddress = configuration().crawler.adminAddress
+        const adminPrivateKey = configuration().crawler.adminPrivateKey
+        const meetingContractInstance: Meeting = getContract(
+            MEETING_ABI,
+            contractAddress,
+            provider,
+        )
+
+        const formattedNewUserParticipateMeetingArray: [
+            string | number | BN,
+            string,
+            string,
+            string,
+        ][] = newUserParticipateMeetingData.map((item) => [
+            item.userId,
+            item.username,
+            item.role,
+            item.status,
+        ])
+
+        const estimateGas = await meetingContractInstance.methods
+            .addUserNoSign(
+                meetingId,
+                formattedNewUserParticipateMeetingArray,
+                countProcessNumber,
+            )
+            .estimateGas({
+                from: adminAddress,
+            })
+        // add private key
+        const web3Instance = getWeb3Instance(provider)
+        await web3Instance.eth.accounts.wallet.add(adminPrivateKey)
+
+        const txResult = await meetingContractInstance.methods
+            .addUserNoSign(
+                meetingId,
+                formattedNewUserParticipateMeetingArray,
+                countProcessNumber,
+            )
+            .send({
+                from: adminAddress,
+                gas: estimateGas,
+            })
+
+        return txResult
+    } catch (error) {
+        // throw new Error(error);
+        console.log('error-----', error)
+        return
+    }
+}
+
+export const sendUpdateFileMeetingTransaction = async ({
+    meetingId,
+    chainId,
+    contractAddress,
+    newFileOfProposalData,
+    countProcessNumber,
+}: {
+    meetingId: number
+    chainId: SupportedChainId
+    contractAddress: string
+    newFileOfProposalData: FileOfProposalDataSendToBlockchainDto[]
+    countProcessNumber: number
+}) => {
+    try {
+        const provider = RPC_URLS[chainId]
+        const adminAddress = configuration().crawler.adminAddress
+        const adminPrivateKey = configuration().crawler.adminPrivateKey
+
+        const meetingContractInstance: Meeting = getContract(
+            MEETING_ABI,
+            contractAddress,
+            provider,
+        )
+        const formattedNewFileOfProposalDataArray: [
+            string | number | BN,
+            string,
+        ][] = newFileOfProposalData.map((item) => [
+            item.proposalFileId,
+            item.url,
+        ])
+
+        const estimateGas = await meetingContractInstance.methods
+            .addFileNoSign(
+                meetingId,
+                formattedNewFileOfProposalDataArray,
+                countProcessNumber,
+            )
+            .estimateGas({
+                from: adminAddress,
+            })
+
+        // add private key
+        const web3Instance = getWeb3Instance(provider)
+        await web3Instance.eth.accounts.wallet.add(adminPrivateKey)
+
+        const txResult = await meetingContractInstance.methods
+            .addFileNoSign(
+                meetingId,
+                formattedNewFileOfProposalDataArray,
+                countProcessNumber,
+            )
+            .send({
+                from: adminAddress,
+                gas: estimateGas,
+            })
         return txResult
     } catch (error) {
         // throw new Error(error);

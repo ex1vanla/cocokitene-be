@@ -27,6 +27,14 @@ export class ProposalTransaction extends BaseEntity {
     meetingId: number
 
     @Column({
+        name: 'title_proposal',
+        type: 'varchar',
+        length: 255,
+        nullable: false,
+    })
+    titleProposal: string
+
+    @Column({
         nullable: false,
         name: 'proposal_id',
         type: 'integer',

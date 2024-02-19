@@ -111,14 +111,16 @@ export class TransactionRepository extends Repository<Transaction> {
             .execute()
     }
 
-    async updateTransactionByMeetingId(
+    async updateTransactionByMeetingIdAndType(
         meetingId: number,
+        type: TRANSACTION_TYPE,
         updateOptions: Partial<Transaction>,
     ) {
         await this.createQueryBuilder('transactions')
             .update(Transaction)
             .set(updateOptions)
             .where('transactions.meeting_id = :meetingId', { meetingId })
+            .andWhere('transactions.type = :type', { type })
             .execute()
     }
 }

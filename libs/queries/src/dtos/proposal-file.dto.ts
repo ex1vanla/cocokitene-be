@@ -1,5 +1,6 @@
 import { ApiProperty, OmitType } from '@nestjs/swagger'
 import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator'
+import { Type } from 'class-transformer'
 
 export class CreateProposalFileDto {
     @IsOptional()
@@ -57,4 +58,21 @@ export class FileOfProposalDto extends OmitType(CreateProposalFileDto, [
         example: 1,
     })
     proposalFileId: number
+}
+export class FileOfProposalDataSendToBlockchainDto {
+    @IsNotEmpty()
+    @IsNumber()
+    @Type(() => Number)
+    @ApiProperty({
+        required: true,
+        example: 1,
+    })
+    proposalFileId: number
+
+    @IsNotEmpty()
+    @IsString()
+    @ApiProperty({
+        required: true,
+    })
+    url: string
 }

@@ -29,12 +29,12 @@ export class ProposalTransactionRepository extends Repository<ProposalTransactio
     async getProposalTransactionsByMeetingId(
         meetingId: number,
     ): Promise<ProposalTransaction[]> {
-        const proposalTransactions = await this.find({
+        const listProposalTransactions = await this.find({
             where: {
                 meetingId: meetingId,
             },
         })
-        return proposalTransactions
+        return listProposalTransactions
     }
 
     // async getProposalTransactionsByTransactionId(

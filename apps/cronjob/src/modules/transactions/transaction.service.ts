@@ -31,7 +31,11 @@ import {
     dateTimeToEpochTime,
     getChainId,
     getContractAddress,
+    groupObject,
     sendCreateMeetingTransaction,
+    sendUpdateFileMeetingTransaction,
+    sendUpdateParticipantMeetingTransaction,
+    sendUpdateProposalMeetingTransaction,
 } from '@shares/utils'
 
 @Injectable()
@@ -74,10 +78,12 @@ export class TransactionService {
                         const votedQuantity = proposal.votedQuantity,
                             unVotedQuantity = proposal.unVotedQuantity,
                             notVoteYetQuantity = proposal.notVoteYetQuantity,
-                            proposalId = proposal.id
+                            proposalId = proposal.id,
+                            titleProposal = proposal.title
 
                         listResultProposals.push({
                             meetingId: meeting.id,
+                            titleProposal: titleProposal,
                             proposalId: proposalId,
                             votedQuantity: votedQuantity,
                             unVotedQuantity: unVotedQuantity,
@@ -204,7 +210,7 @@ export class TransactionService {
                     ),
                 ])
                 const meetingEnd: MeetingEnded = {
-                    id: meeting.id,
+                    meetingId: meeting.id,
                     companyId: companyId,
                     titleMeeting: meeting.title,
                     meetingLink: meeting.meetingLink,
@@ -264,7 +270,8 @@ export class TransactionService {
                                     {
                                         proposalId:
                                             listResultProposal.proposalId,
-                                        meetingId: meetingEnd.id,
+                                        meetingId: meetingEnd.meetingId,
+                                        title: listResultProposal.titleProposal,
                                         votedQuantity:
                                             listResultProposal.votedQuantity ??
                                             0,
@@ -282,7 +289,7 @@ export class TransactionService {
                                 this.fileOfProposalTransactionRepository.createFileOfProposalTransaction(
                                     {
                                         url: listResultProposalFile.url,
-                                        meetingId: meetingEnd.id,
+                                        meetingId: meetingEnd.meetingId,
                                         proposalFileId:
                                             listResultProposalFile.proposalFileId,
                                     },
@@ -448,19 +455,24 @@ export class TransactionService {
         }
     }
     async handleCheckTransaction() {
-        const transactionList =
+        const transactionsList =
             await this.transactionRepository.findTransactionByStatus(
                 TRANSACTION_STATUS.PENDING,
             )
-        if (!transactionList || transactionList?.length === 0) {
+        if (!transactionsList || transactionsList?.length === 0) {
             console.log('No transactions found: ' + new Date())
             return
         }
-        // const txPromises = []
-        await Promise.all([
-            ...transactionList.map(async (transaction) => {
-                if (transaction.type === TRANSACTION_TYPE.CREATE_MEETING) {
-                    const txResult = await sendCreateMeetingTransaction({
+        //get current chainId
+
+        const maximumNumberTransactionCallFuncBlockchain =
+            configuration().transaction
+                .maximumNumberTransactionPerCallFuncBlockchain
+        const txPromises = []
+        for (const transaction of transactionsList) {
+            if (transaction.type === TRANSACTION_TYPE.CREATE_MEETING) {
+                txPromises.push(
+                    sendCreateMeetingTransaction({
                         meetingId: transaction.meetingId,
                         titleMeeting: transaction.titleMeeting,
                         startTimeMeeting: transaction.startTimeMeeting,
@@ -473,21 +485,116 @@ export class TransactionService {
                         joinedMeetingShares: transaction.joinedMeetingShares,
                         totalMeetingShares: transaction.totalMeetingShares,
                         contractAddress: transaction.contractAddress,
-                    })
-                    if (txResult) {
-                        console.log(
-                            'Sent transaction: ' + txResult?.transactionHash,
-                        )
-                        await this.transactionRepository.updateTransaction(
-                            transaction.id,
+                    }),
+                )
+            }
+            if (transaction.type === TRANSACTION_TYPE.UPDATE_PROPOSAL_MEETING) {
+                const proposals =
+                    await this.proposalTransactionRepository.getProposalTransactionsByMeetingId(
+                        transaction.meetingId,
+                    )
+                const groupedProposals = groupObject(
+                    proposals,
+                    maximumNumberTransactionCallFuncBlockchain,
+                )
+                const countCallFuncAddProposals = Math.ceil(
+                    proposals.length /
+                        maximumNumberTransactionCallFuncBlockchain,
+                )
+                for (let i = 1; i <= countCallFuncAddProposals; i++) {
+                    txPromises.push(
+                        sendUpdateProposalMeetingTransaction({
+                            meetingId: transaction.meetingId,
+                            chainId: transaction.chainId,
+                            contractAddress: transaction.contractAddress,
+                            newProposalData: groupedProposals[i - 1],
+                            countProcessNumber: i,
+                        }),
+                    )
+                }
+            }
+            if (
+                transaction.type ===
+                TRANSACTION_TYPE.UPDATE_FILE_PROPOSAL_MEETING
+            ) {
+                const fileOfProposals =
+                    await this.fileOfProposalTransactionRepository.getFileOfProposalTransactionsByMeetingId(
+                        transaction.meetingId,
+                    )
+                const groupedFileOfProposals = groupObject(
+                    fileOfProposals,
+                    maximumNumberTransactionCallFuncBlockchain,
+                )
+                const countCallFuncFileOfProposal = Math.ceil(
+                    fileOfProposals.length /
+                        maximumNumberTransactionCallFuncBlockchain,
+                )
+                for (let i = 1; i <= countCallFuncFileOfProposal; i++) {
+                    txPromises.push(
+                        sendUpdateFileMeetingTransaction({
+                            meetingId: transaction.meetingId,
+                            chainId: transaction.chainId,
+                            contractAddress: transaction.contractAddress,
+                            newFileOfProposalData:
+                                groupedFileOfProposals[i - 1],
+                            countProcessNumber: i,
+                        }),
+                    )
+                }
+            }
+            if (
+                transaction.type ===
+                TRANSACTION_TYPE.UPDATE_USER_PARTICIPATE_MEETING
+            ) {
+                const participantMeetingTransactions =
+                    await this.participantMeetingTransactionRepository.getParticipantsMeetingTransactionsByMeetingId(
+                        transaction.meetingId,
+                    )
+                const groupedParticipantMeetings = groupObject(
+                    participantMeetingTransactions,
+                    maximumNumberTransactionCallFuncBlockchain,
+                )
+                const countCallFuncParticipant = Math.ceil(
+                    participantMeetingTransactions.length /
+                        maximumNumberTransactionCallFuncBlockchain,
+                )
+                for (let i = 1; i <= countCallFuncParticipant; i++) {
+                    txPromises.push(
+                        sendUpdateParticipantMeetingTransaction({
+                            meetingId: transaction.meetingId,
+                            chainId: transaction.chainId,
+                            contractAddress: transaction.contractAddress,
+                            newUserParticipateMeetingData:
+                                groupedParticipantMeetings[i - 1],
+                            countProcessNumber: i,
+                        }),
+                    )
+                }
+            }
+        }
+
+        console.log('Starting sending transation..........')
+        const txResults = await Promise.all(txPromises)
+        // update status transaction
+        if (txResults && txResults.length > 0) {
+            const updateTransactionPromises = []
+            txResults.map((txResult, index) => {
+                if (txResult) {
+                    console.log(
+                        'Sent transaction: ' + txResult?.transactionHash,
+                    )
+                    updateTransactionPromises.push(
+                        this.transactionRepository.updateTransaction(
+                            transactionsList[index].id,
                             {
                                 txHash: txResult?.transactionHash,
                                 status: TRANSACTION_STATUS.PROCESSING,
                             },
-                        )
-                    }
+                        ),
+                    )
                 }
-            }),
-        ])
+            })
+            await Promise.all(updateTransactionPromises)
+        }
     }
 }
