@@ -44,7 +44,7 @@ export class CronjobService {
         await this.transactionService.handleCheckTransaction()
     }
 
-    @Cron(CronExpression.EVERY_5_MINUTES)
+    @Cron(CronExpression.EVERY_MINUTE)
     async crawlMeetingEvent() {
         const config = await this.getConfigCrawlerByContractType(
             CONTRACT_TYPE.MEETING,
@@ -52,7 +52,7 @@ export class CronjobService {
         await this.meetingCrawler.scan(config)
     }
 
-    @Cron(CronExpression.EVERY_10_MINUTES)
+    @Cron(CronExpression.EVERY_5_MINUTES)
     async handleDataAfterEventSuccessfulCreatedMeeting() {
         await this.transactionService.handleDataAfterEventSuccessfulCreatedMeeting()
     }

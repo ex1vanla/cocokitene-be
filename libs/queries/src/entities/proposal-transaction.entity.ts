@@ -30,7 +30,7 @@ export class ProposalTransaction extends BaseEntity {
         name: 'title_proposal',
         type: 'varchar',
         length: 255,
-        nullable: false,
+        nullable: true,
     })
     titleProposal: string
 

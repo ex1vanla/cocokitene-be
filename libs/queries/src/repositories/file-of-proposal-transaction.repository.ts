@@ -28,13 +28,4 @@ export class FileOfProposalTransactionRepository extends Repository<FileOfPropos
         })
         return fileOfProposalTransactions
     }
-
-    // async getFileOfProposalTransactionsByTransactionId(
-    //     transactionId: number,
-    // ): Promise<FileOfProposalTransaction[]> {
-    //     const fileOfProposalTransactions = await this.find({
-    //         where: {
-    //             transactionId: transactionId,
-    //         },
-    //     })
 }

@@ -217,6 +217,14 @@ export class ResultVoteProposalDto extends OmitType(ProposalDto, [
         example: 1,
     })
     meetingId: number
+
+    @IsNotEmpty()
+    @IsString()
+    @ApiProperty({
+        required: true,
+        example: 'Approve the final budget',
+    })
+    titleProposal: string
 }
 
 export class ProposalDataSendToBlockchainDto {
@@ -232,7 +240,7 @@ export class ProposalDataSendToBlockchainDto {
     @IsNotEmpty()
     @IsString()
     @ApiProperty({
-        required: true,
+        required: false,
         example: 'Approve the final budget',
     })
     titleProposal: string

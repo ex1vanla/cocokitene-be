@@ -14,10 +14,12 @@ export class ProposalTransactionRepository extends Repository<ProposalTransactio
             votedQuantity,
             unVotedQuantity,
             meetingId,
+            titleProposal,
         } = resultVoteProposalDto
 
         const createProposalTransaction = await this.create({
             proposalId,
+            titleProposal,
             meetingId,
             votedQuantity,
             unVotedQuantity,
@@ -36,14 +38,4 @@ export class ProposalTransactionRepository extends Repository<ProposalTransactio
         })
         return listProposalTransactions
     }
-
-    // async getProposalTransactionsByTransactionId(
-    //     transactionId: number,
-    // ): Promise<ProposalTransaction[]> {
-    //     const proposalTransactions = await this.find({
-    //         where: {
-    //             transactionId: transactionId,
-    //         },
-    //     })
-    // }
 }

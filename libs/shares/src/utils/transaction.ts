@@ -77,7 +77,6 @@ export const sendCreateMeetingTransaction = async ({
                 totalMeetingShares,
             )
             .send({ from: adminAddress, gas: estimateGas })
-
         return txResult
     } catch (error) {
         // throw new Error(error);
@@ -114,17 +113,16 @@ export const sendUpdateProposalMeetingTransaction = async ({
             string | number | BN,
             string | number | BN,
             string | number | BN,
-        ][] = newProposalData.map((item) => [
-            item.proposalId,
-            item.titleProposal,
-            item.votedQuantity,
-            item.unVotedQuantity,
-            item.notVoteYetQuantity,
-        ])
-        console.log('---------------')
-        console.log(`${meetingId}`)
-        console.log('formattedNewProposalArray----', formattedNewProposalArray)
-        console.log('----------------')
+        ][] = newProposalData
+            ? newProposalData.map((item) => [
+                  item.proposalId,
+                  item.titleProposal,
+                  item.votedQuantity,
+                  item.unVotedQuantity,
+                  item.notVoteYetQuantity,
+              ])
+            : []
+
         const estimateGas = await meetingContractInstance.methods
             .addProposalsNoSign(
                 meetingId,
@@ -184,12 +182,14 @@ export const sendUpdateParticipantMeetingTransaction = async ({
             string,
             string,
             string,
-        ][] = newUserParticipateMeetingData.map((item) => [
-            item.userId,
-            item.username,
-            item.role,
-            item.status,
-        ])
+        ][] = newUserParticipateMeetingData
+            ? newUserParticipateMeetingData.map((item) => [
+                  item.userId,
+                  item.username,
+                  item.role,
+                  item.status,
+              ])
+            : []
 
         const estimateGas = await meetingContractInstance.methods
             .addUserNoSign(
@@ -249,10 +249,12 @@ export const sendUpdateFileMeetingTransaction = async ({
         const formattedNewFileOfProposalDataArray: [
             string | number | BN,
             string,
-        ][] = newFileOfProposalData.map((item) => [
-            item.proposalFileId,
-            item.url,
-        ])
+        ][] = newFileOfProposalData
+            ? newFileOfProposalData.map((item) => [
+                  item.proposalFileId,
+                  item.url,
+              ])
+            : []
 
         const estimateGas = await meetingContractInstance.methods
             .addFileNoSign(

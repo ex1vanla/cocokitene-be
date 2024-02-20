@@ -58,7 +58,7 @@ export class TransactionService {
                 StatusMeeting.HAPPENED,
                 meetingIdsAppearedInTransaction,
             )
-        if (!listMeetingEnd || listMeetingEnd.length == 0) {
+        if (!listMeetingEnd || listMeetingEnd?.length == 0) {
             console.log('No meeting ends found: ' + new Date())
             return
         }
@@ -191,7 +191,6 @@ export class TransactionService {
                     ...administrativeCouncils.map((administrativeCouncil) =>
                         participants.push({
                             meetingId: meeting.id,
-
                             userId: administrativeCouncil.user.id,
                             username: administrativeCouncil.user.username,
                             role: MeetingRole.ADMINISTRATIVE_COUNCIL,
@@ -228,7 +227,7 @@ export class TransactionService {
                 const currentChainId = getChainId()
                 try {
                     await this.transactionRepository.createTransaction({
-                        meetingId: meetingEnd.id,
+                        meetingId: meetingEnd.meetingId,
                         titleMeeting: meetingEnd.titleMeeting,
                         meetingLink: meetingEnd.meetingLink,
                         totalMeetingShares: meetingEnd.totalMeetingShares,
@@ -271,6 +270,8 @@ export class TransactionService {
                                         proposalId:
                                             listResultProposal.proposalId,
                                         meetingId: meetingEnd.meetingId,
+                                        titleProposal:
+                                            listResultProposal.titleProposal,
                                         title: listResultProposal.titleProposal,
                                         votedQuantity:
                                             listResultProposal.votedQuantity ??
@@ -307,13 +308,12 @@ export class TransactionService {
     }
 
     async handleDataAfterEventSuccessfulCreatedMeeting() {
-        //Get the id of the meeting that has a listening event to create a successful meeting,
         const transactionsCreateMeetingSuccessful =
             await this.transactionRepository.getTransactionsCreateMeetingSuccessful()
 
         if (
             !transactionsCreateMeetingSuccessful ||
-            transactionsCreateMeetingSuccessful.length == 0
+            transactionsCreateMeetingSuccessful?.length == 0
         ) {
             console.log(
                 'No meeting creation event has been successful: ' + new Date(),
@@ -321,28 +321,22 @@ export class TransactionService {
             return
         }
 
-        console.log(
-            'transactionsCreateMeetingSuccessful----',
-            transactionsCreateMeetingSuccessful,
-        )
-
         const maximumNumberTransactionCallFuncBlockchain =
                 configuration().transaction
                     .maximumNumberTransactionPerCallFuncBlockchain,
             currentChainId = getChainId()
         await Promise.all([
             ...transactionsCreateMeetingSuccessful.map(async (transaction) => {
-                const { meetingId } = transaction
                 const [proposals, fileOfProposals, participants] =
                     await Promise.all([
                         this.proposalTransactionRepository.getProposalTransactionsByMeetingId(
-                            meetingId,
+                            transaction.transactions_meeting_id,
                         ),
                         this.fileOfProposalTransactionRepository.getFileOfProposalTransactionsByMeetingId(
-                            meetingId,
+                            transaction.transactions_meeting_id,
                         ),
                         this.participantMeetingTransactionRepository.getParticipantsMeetingTransactionsByMeetingId(
-                            meetingId,
+                            transaction.transactions_meeting_id,
                         ),
                     ])
 

@@ -52,8 +52,8 @@ export class TransactionRepository extends Repository<Transaction> {
         return meetingIds
     }
 
-    async getTransactionsCreateMeetingSuccessful(): Promise<Transaction[]> {
-        const meetingIds = await this.createQueryBuilder('transactions')
+    async getTransactionsCreateMeetingSuccessful(): Promise<any> {
+        const transactions = await this.createQueryBuilder('transactions')
             .select([
                 'transactions.meetingId',
                 'transactions.companyId',
@@ -86,7 +86,7 @@ export class TransactionRepository extends Repository<Transaction> {
                 },
             )
             .getRawMany()
-        return meetingIds
+        return transactions
     }
 
     async findTransactionByStatus(
