@@ -3,6 +3,8 @@ import { Transaction } from '@entities/transaction.entity'
 import { CustomRepository } from '@shares/decorators'
 import { CreateTransactionDto } from '@dtos/transaction.dto'
 import { TRANSACTION_STATUS, TRANSACTION_TYPE } from '@shares/constants'
+import { TransactionMapper } from '@shares/mappers'
+import { TransactionResponseData } from '@dtos/mapper.dto'
 
 @CustomRepository(Transaction)
 export class TransactionRepository extends Repository<Transaction> {
@@ -52,17 +54,33 @@ export class TransactionRepository extends Repository<Transaction> {
         return meetingIds
     }
 
-    async gettransactionsCreateMeetingSuccessful(): Promise<Transaction[]> {
-        const meetingIds = await this.createQueryBuilder('transaction')
-            .select('DISTINCT transaction.meetingId', 'meetingId')
-            .where('transaction.type = :type', {
+    async getTransactionsCreateMeetingSuccessful(): Promise<
+        TransactionResponseData[]
+    > {
+        const transactions = await this.createQueryBuilder('transactions')
+            .select([
+                'transactions.meetingId',
+                'transactions.companyId',
+                'transactions.contractAddress',
+                'transactions.meetingLink',
+                'transactions.titleMeeting',
+                'transactions.startTimeMeeting',
+                'transactions.endTimeMeeting',
+                'transactions.shareholdersTotal',
+                'transactions.shareholdersJoined',
+                'transactions.joinedMeetingShares',
+                'transactions.totalMeetingShares',
+                'transactions.status',
+                'transactions.type',
+            ])
+            .where('transactions.type = :type', {
                 type: TRANSACTION_TYPE.CREATE_MEETING,
             })
-            .andWhere('transaction.status = :status', {
+            .andWhere('transactions.status = :status', {
                 status: TRANSACTION_STATUS.SUCCESS,
             })
             .andWhere(
-                'NOT EXISTS (SELECT 1 FROM transactions t WHERE t.meetingId = transaction.meetingId AND t.type IN (:...types))',
+                'NOT EXISTS (SELECT 1 FROM transactions AS t  WHERE t.meeting_id = transactions.meetingId AND t.type IN (:...types))',
                 {
                     types: [
                         TRANSACTION_TYPE.UPDATE_PROPOSAL_MEETING,
@@ -73,6 +91,69 @@ export class TransactionRepository extends Repository<Transaction> {
             )
             .getRawMany()
 
-        return meetingIds
+        const mappedTransactions = transactions.map((transaction) => {
+            return TransactionMapper({
+                transactions_title_meeting:
+                    transaction.transactions_title_meeting,
+                transactions_chain_id: transaction.transactions_chain_id,
+                transactions_contract_address:
+                    transaction.transactions_contract_address,
+                transactions_meeting_link:
+                    transaction.transactions_meeting_link,
+                transactions_meeting_id: transaction.transactions_meeting_id,
+                transactions_start_time_meeting:
+                    transaction.transactions_start_time_meeting,
+                transactions_end_time_meeting:
+                    transaction.transactions_end_time_meeting,
+                transactions_company_id: transaction.transactions_company_id,
+                transactions_shareholder_total:
+                    transaction.transactions_shareholder_total,
+                transactions_shareholders_joined:
+                    transaction.transactions_shareholders_joined,
+                transactions_joined_meeting_shares:
+                    transaction.transactions_joined_meeting_shares,
+                transactions_total_meeting_shares:
+                    transaction.transactions_total_meeting_shares,
+                transactions_status: transaction.transactions_status,
+                transactions_type: transaction.transactions_type,
+            })
+        })
+        console.log('mappedTransactions---', mappedTransactions)
+        return mappedTransactions
+    }
+
+    async findTransactionByStatus(
+        transactionStatus: TRANSACTION_STATUS,
+    ): Promise<Transaction[]> {
+        const transactions = await this.find({
+            where: {
+                status: transactionStatus,
+            },
+        })
+        return transactions
+    }
+
+    async updateTransaction(
+        id: number,
+        updateOptions: Partial<Transaction>,
+    ): Promise<void> {
+        await this.createQueryBuilder('transactions')
+            .update(Transaction)
+            .set(updateOptions)
+            .where('transactions.id = :id', { id })
+            .execute()
+    }
+
+    async updateTransactionByMeetingIdAndType(
+        meetingId: number,
+        type: TRANSACTION_TYPE,
+        updateOptions: Partial<Transaction>,
+    ) {
+        await this.createQueryBuilder('transactions')
+            .update(Transaction)
+            .set(updateOptions)
+            .where('transactions.meeting_id = :meetingId', { meetingId })
+            .andWhere('transactions.type = :type', { type })
+            .execute()
     }
 }

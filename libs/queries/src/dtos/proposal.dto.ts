@@ -197,7 +197,6 @@ export class ResultVoteProposalDto extends OmitType(ProposalDto, [
     'type',
     'oldDescription',
     'description',
-    'title',
     'files',
     'id',
 ]) {
@@ -218,4 +217,49 @@ export class ResultVoteProposalDto extends OmitType(ProposalDto, [
         example: 1,
     })
     meetingId: number
+
+    @IsNotEmpty()
+    @IsString()
+    @ApiProperty({
+        required: true,
+        example: 'Approve the final budget',
+    })
+    titleProposal: string
+}
+
+export class ProposalDataSendToBlockchainDto {
+    @IsNotEmpty()
+    @IsNumber()
+    @Type(() => Number)
+    @ApiProperty({
+        required: true,
+        example: 1,
+    })
+    proposalId: number
+
+    @IsNotEmpty()
+    @IsString()
+    @ApiProperty({
+        required: false,
+        example: 'Approve the final budget',
+    })
+    titleProposal: string
+
+    @IsNotEmpty()
+    @IsNumber()
+    @Type(() => Number)
+    @ApiProperty({ required: true })
+    votedQuantity: number
+
+    @IsNotEmpty()
+    @IsNumber()
+    @Type(() => Number)
+    @ApiProperty({ required: true })
+    unVotedQuantity: number
+
+    @IsNotEmpty()
+    @IsNumber()
+    @Type(() => Number)
+    @ApiProperty({ required: true })
+    notVoteYetQuantity: number
 }

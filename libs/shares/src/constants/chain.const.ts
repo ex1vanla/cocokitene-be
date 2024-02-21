@@ -14,7 +14,7 @@ type RpcUrlsType = {
 }
 
 export const RPC_URLS: RpcUrlsType = {
-    [SupportedChainId.MAINNET]: ``,
-    [SupportedChainId.GOERLI]: ``,
-    [SupportedChainId.SEPOLIA]: ``,
+    [SupportedChainId.MAINNET]: `https://mainnet.infura.io/v3/b843ac9a94d3488fb75a8613c656a71f`,
+    [SupportedChainId.GOERLI]: `https://goerli.infura.io/v3/b843ac9a94d3488fb75a8613c656a71f`,
+    [SupportedChainId.SEPOLIA]: `https://sepolia.infura.io/v3/b843ac9a94d3488fb75a8613c656a71f`,
 }

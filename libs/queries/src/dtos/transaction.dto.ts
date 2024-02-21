@@ -2,6 +2,7 @@ import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator'
 import { ApiProperty } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
 import { TRANSACTION_TYPE } from '@shares/constants'
+
 export class CreateTransactionDto {
     @IsNumber()
     @Type(() => Number)

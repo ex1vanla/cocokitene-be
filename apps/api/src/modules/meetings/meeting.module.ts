@@ -36,23 +36,23 @@ export class MeetingModule implements NestModule {
             .apply(MeetingStatusMiddleware)
             .exclude(
                 {
-                    path: 'meetings',
+                    path: '/api/meetings',
                     method: RequestMethod.POST,
                 },
                 {
-                    path: 'meetings',
+                    path: '/api/meetings',
                     method: RequestMethod.GET,
                 },
                 {
-                    path: 'meetings/:id/participants',
+                    path: '/api/meetings/:id/participants',
                     method: RequestMethod.GET,
                 },
                 {
-                    path: 'meetings/attendance-meeting',
+                    path: '/api/meetings/attendance-meeting',
                     method: RequestMethod.POST,
                 },
                 {
-                    path: 'meetings/send-email',
+                    path: '/api/meetings/send-email',
                     method: RequestMethod.POST,
                 },
             )

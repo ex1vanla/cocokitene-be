@@ -15,6 +15,7 @@ export interface participant {
 export interface ResultVoteProposal {
     meetingId: number
     proposalId: number
+    titleProposal: string
     votedQuantity: number
     unVotedQuantity: number
     notVoteYetQuantity: number
@@ -28,7 +29,7 @@ export interface ListFileOfProposal {
 }
 
 export interface MeetingEnded extends Partial<Meeting> {
-    id: number
+    meetingId: number
     companyId: number
     titleMeeting: string
     startTimeMeeting: number
