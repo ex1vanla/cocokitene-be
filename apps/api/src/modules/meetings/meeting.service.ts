@@ -195,17 +195,17 @@ export class MeetingService {
             meetingInvitations,
             resolutions,
             amendmentResolutions,
-            hosts,
-            controlBoards,
-            directors,
-            administrativeCouncils,
-            shareholders,
+            participants,
         } = createMeetingDto
 
-        const totalShares =
-            await this.userService.getTotalSharesHolderByShareholderIds(
-                shareholders,
-            )
+        let totalShares = 0
+
+        if (participants?.['SHAREHOLDER']) {
+            totalShares =
+                await this.userService.getTotalSharesHolderByShareholderIds(
+                    participants['SHAREHOLDER'],
+                )
+        }
 
         try {
             await Promise.all([
@@ -247,41 +247,50 @@ export class MeetingService {
                         notVoteYetQuantity: totalShares,
                     }),
                 ),
-                ...hosts.map((host) =>
-                    this.userMeetingService.createUserMeeting({
-                        userId: host,
-                        meetingId: createdMeeting.id,
-                        role: MeetingRole.HOST,
-                    }),
-                ),
-                ...controlBoards.map((controlBoard) =>
-                    this.userMeetingService.createUserMeeting({
-                        userId: controlBoard,
-                        meetingId: createdMeeting.id,
-                        role: MeetingRole.CONTROL_BOARD,
-                    }),
-                ),
-                ...directors.map((director) =>
-                    this.userMeetingService.createUserMeeting({
-                        userId: director,
-                        meetingId: createdMeeting.id,
-                        role: MeetingRole.DIRECTOR,
-                    }),
-                ),
-                ...administrativeCouncils.map((administrativeCouncil) =>
-                    this.userMeetingService.createUserMeeting({
-                        userId: administrativeCouncil,
-                        meetingId: createdMeeting.id,
-                        role: MeetingRole.ADMINISTRATIVE_COUNCIL,
-                    }),
-                ),
-                ...shareholders.map((shareholder) =>
-                    this.userMeetingService.createUserMeeting({
-                        userId: shareholder,
-                        meetingId: createdMeeting.id,
-                        role: MeetingRole.SHAREHOLDER,
-                    }),
-                ),
+                Object.keys(participants).forEach((item) => {
+                    participants[item].map((i) =>
+                        this.userMeetingService.createUserMeeting({
+                            userId: i,
+                            meetingId: createdMeeting.id,
+                            role: item,
+                        }),
+                    )
+                }),
+                // ...hosts.map((host) =>
+                //     this.userMeetingService.createUserMeeting({
+                //         userId: host,
+                //         meetingId: createdMeeting.id,
+                //         role: MeetingRole.HOST,
+                //     }),
+                // ),
+                // ...controlBoards.map((controlBoard) =>
+                //     this.userMeetingService.createUserMeeting({
+                //         userId: controlBoard,
+                //         meetingId: createdMeeting.id,
+                //         role: MeetingRole.CONTROL_BOARD,
+                //     }),
+                // ),
+                // ...directors.map((director) =>
+                //     this.userMeetingService.createUserMeeting({
+                //         userId: director,
+                //         meetingId: createdMeeting.id,
+                //         role: MeetingRole.DIRECTOR,
+                //     }),
+                // ),
+                // ...administrativeCouncils.map((administrativeCouncil) =>
+                //     this.userMeetingService.createUserMeeting({
+                //         userId: administrativeCouncil,
+                //         meetingId: createdMeeting.id,
+                //         role: MeetingRole.ADMINISTRATIVE_COUNCIL,
+                //     }),
+                // ),
+                // ...shareholders.map((shareholder) =>
+                //     this.userMeetingService.createUserMeeting({
+                //         userId: shareholder,
+                //         meetingId: createdMeeting.id,
+                //         role: MeetingRole.SHAREHOLDER,
+                //     }),
+                // ),
             ])
         } catch (error) {
             throw new HttpException(

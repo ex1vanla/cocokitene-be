@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger'
+import { ApiProperty, OmitType } from '@nestjs/swagger'
 import {
     MeetingRole,
     UserMeetingStatusEnum,
@@ -27,12 +27,20 @@ export class CreateUserMeetingDto {
     })
     meetingId: number
 
-    @IsEnum(MeetingRole)
+    // @IsEnum(MeetingRole)
+    // @ApiProperty({
+    //     required: true,
+    //     enum: MeetingRole,
+    // })
+    // role: MeetingRole
+
+    @IsString()
+    @IsNotEmpty()
     @ApiProperty({
         required: true,
-        enum: MeetingRole,
+        example: 'ADMIN',
     })
-    role: MeetingRole
+    role: string
 
     @IsOptional()
     @IsEnum(MeetingRole)
@@ -43,7 +51,18 @@ export class CreateUserMeetingDto {
     status?: UserMeetingStatusEnum
 }
 
-export class ParticipantDto extends CreateUserMeetingDto {
+// export class ParticipantDto extends CreateUserMeetingDto {
+export class ParticipantDto extends OmitType(CreateUserMeetingDto, [
+    'meetingId',
+    'role',
+]) {
+    @IsEnum(MeetingRole)
+    @ApiProperty({
+        required: true,
+        enum: MeetingRole,
+    })
+    role: MeetingRole
+
     @IsString()
     @IsOptional()
     @ApiProperty({

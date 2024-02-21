@@ -96,8 +96,10 @@ export class MeetingController {
         @Body() createMeetingDto: CreateMeetingDto,
         @UserScope() user: User,
     ) {
+        console.log('Test')
         const userId = user?.id
         const companyId = user?.companyId
+        console.log('createMeetingDto', createMeetingDto)
 
         const meeting = await this.meetingService.createMeeting(
             createMeetingDto,
