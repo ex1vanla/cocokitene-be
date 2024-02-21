@@ -18,12 +18,10 @@ import { Meeting } from '@entities/meeting.entity'
 import { UserMeeting } from '@entities/user-meeting.entity'
 import { UserMeetingRepository } from '@repositories/user-meeting.repository'
 import {
-    MeetingRole,
     StatusMeeting,
     UserMeetingStatusEnum,
 } from '@shares/constants/meeting.const'
 import { httpErrors } from '@shares/exception-filter'
-import { enumToArray } from '@shares/utils/enum'
 import {
     AttendMeetingDto,
     CreateMeetingDto,
@@ -202,7 +200,7 @@ export class MeetingService {
 
         let totalShares = 0
 
-        if (participants?.['SHAREHOLDER']) {
+        if (participants['SHAREHOLDER']) {
             totalShares =
                 await this.userService.getTotalSharesHolderByShareholderIds(
                     participants['SHAREHOLDER'],
@@ -285,20 +283,59 @@ export class MeetingService {
             )
         }
 
-        const [
-            hosts,
-            controlBoards,
-            directors,
-            administrativeCouncils,
-            shareholders,
-        ] = await Promise.all(
-            enumToArray(MeetingRole).map((role) =>
-                this.userMeetingService.getUserMeetingByMeetingIdAndRole(
-                    meetingId,
-                    role,
-                ),
-            ),
+        const listRoleOfCompany = await this.roleService.getAllNormalRoles(
+            { page: 1, limit: 10 },
+            companyId,
         )
+        const participants = {}
+        let shareholdersTotal = 0
+        let shareholdersJoined = 0
+        let totalMeetingShares = 0
+        let joinedMeetingShares = 0
+
+        listRoleOfCompany.items.forEach(async (item) => {
+            participants[item.roleName] = []
+            const userListRole =
+                await this.userMeetingService.getUserMeetingByMeetingIdAndRole(
+                    meetingId,
+                    item.roleName,
+                )
+            participants[item.roleName] = [...userListRole]
+            if (participants['SHAREHOLDER']) {
+                shareholdersTotal = participants['SHAREHOLDER'].length
+                shareholdersJoined = participants['SHAREHOLDER'].reduce(
+                    (accumulator, currentValue) => {
+                        accumulator =
+                            currentValue.status ===
+                            UserMeetingStatusEnum.PARTICIPATE
+                                ? accumulator + 1
+                                : accumulator
+                        return accumulator
+                    },
+                    0,
+                )
+                totalMeetingShares = participants['SHAREHOLDER'].reduce(
+                    (accumulator, currentValue) => {
+                        accumulator += Number(currentValue.user.shareQuantity)
+                        return accumulator
+                    },
+                    0,
+                )
+
+                joinedMeetingShares = participants['SHAREHOLDER'].reduce(
+                    (accumulator, currentValue) => {
+                        accumulator =
+                            currentValue.status ===
+                            UserMeetingStatusEnum.PARTICIPATE
+                                ? accumulator +
+                                  Number(currentValue.user.shareQuantity)
+                                : accumulator
+                        return accumulator
+                    },
+                    0,
+                )
+            }
+        })
 
         // const userMeeting = await this.userMeetingRepository.findOne({
         //     where: {
@@ -324,36 +361,6 @@ export class MeetingService {
         //         ...usersWithStatusMeetingIsAbcense.map((userMeeting)=> this.userMeetingService.saveStatusUserMeeting(userMeeting)),
         //     ])
         // }
-
-        const shareholdersTotal = shareholders.length
-        const shareholdersJoined = shareholders.reduce(
-            (accumulator, currentValue) => {
-                accumulator =
-                    currentValue.status === UserMeetingStatusEnum.PARTICIPATE
-                        ? accumulator + 1
-                        : accumulator
-                return accumulator
-            },
-            0,
-        )
-        const totalMeetingShares = shareholders.reduce(
-            (accumulator, currentValue) => {
-                accumulator += Number(currentValue.user.shareQuantity)
-                return accumulator
-            },
-            0,
-        )
-
-        const joinedMeetingShares = shareholders.reduce(
-            (accumulator, currentValue) => {
-                accumulator =
-                    currentValue.status === UserMeetingStatusEnum.PARTICIPATE
-                        ? accumulator + Number(currentValue.user.shareQuantity)
-                        : accumulator
-                return accumulator
-            },
-            0,
-        )
 
         // handle vote result with current user
         const listProposals: ProposalItemDetailMeeting[] = []
@@ -386,11 +393,7 @@ export class MeetingService {
 
         return {
             ...meeting,
-            hosts,
-            controlBoards,
-            directors,
-            administrativeCouncils,
-            shareholders,
+            participants,
             shareholdersTotal,
             shareholdersJoined,
             joinedMeetingShares,
@@ -454,12 +457,10 @@ export class MeetingService {
             meetingInvitations,
             resolutions,
             amendmentResolutions,
-            hosts,
-            controlBoards,
-            directors,
-            administrativeCouncils,
-            shareholders,
+            participants,
         } = updateMeetingDto
+
+        const shareholders = participants['SHAREHOLDER'] || []
 
         const totalShares =
             await this.userService.getTotalSharesHolderByShareholderIds(
@@ -481,31 +482,13 @@ export class MeetingService {
                 shareholders,
             ),
             await Promise.all([
-                this.userMeetingService.updateUserMeeting(
-                    meetingId,
-                    MeetingRole.HOST,
-                    hosts,
-                ),
-                this.userMeetingService.updateUserMeeting(
-                    meetingId,
-                    MeetingRole.CONTROL_BOARD,
-                    controlBoards,
-                ),
-                this.userMeetingService.updateUserMeeting(
-                    meetingId,
-                    MeetingRole.DIRECTOR,
-                    directors,
-                ),
-                this.userMeetingService.updateUserMeeting(
-                    meetingId,
-                    MeetingRole.ADMINISTRATIVE_COUNCIL,
-                    administrativeCouncils,
-                ),
-                this.userMeetingService.updateUserMeeting(
-                    meetingId,
-                    MeetingRole.SHAREHOLDER,
-                    shareholders,
-                ),
+                Object.keys(participants).forEach((role) => {
+                    this.userMeetingService.updateUserMeeting(
+                        meetingId,
+                        role,
+                        participants[role],
+                    )
+                }),
             ]),
         ])
         return existedMeeting
