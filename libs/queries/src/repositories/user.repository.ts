@@ -275,7 +275,7 @@ export class UserRepository extends Repository<User> {
             .update(User)
             .set({
                 username: updateOwnProfileDto.username,
-                walletAddress: updateOwnProfileDto.walletAddress,
+                walletAddress: updateOwnProfileDto.walletAddress || null,
                 email: updateOwnProfileDto.email,
                 phone: updateOwnProfileDto.phone,
                 avatar: updateOwnProfileDto.avatar,

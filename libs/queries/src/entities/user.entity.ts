@@ -56,7 +56,7 @@ export class User extends BaseEntity {
         name: 'wallet_address',
         type: 'varchar',
         length: 255,
-        nullable: false,
+        nullable: true,
         unique: true,
     })
     walletAddress: string
