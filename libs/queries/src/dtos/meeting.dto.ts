@@ -4,6 +4,7 @@ import {
     IsInt,
     IsNotEmpty,
     IsNumber,
+    IsObject,
     IsOptional,
     IsString,
     ValidateNested,
@@ -137,45 +138,52 @@ export class CreateMeetingDto {
     @Type(() => ProposalDto)
     amendmentResolutions: ProposalDto[]
 
-    @IsArray()
-    @IsNumber({}, { each: true })
-    @ApiProperty({
-        required: true,
-        example: [1, 2],
-    })
-    hosts: number[]
+    // @IsArray()
+    // @IsNumber({}, { each: true })
+    // @ApiProperty({
+    //     required: true,
+    //     example: [1, 2],
+    // })
+    // hosts: number[]
 
-    @IsArray()
-    @IsNumber({}, { each: true })
-    @ApiProperty({
-        required: true,
-        example: [1, 2],
-    })
-    controlBoards: number[]
+    // @IsArray()
+    // @IsNumber({}, { each: true })
+    // @ApiProperty({
+    //     required: true,
+    //     example: [1, 2],
+    // })
+    // controlBoards: number[]
 
-    @IsArray()
-    @IsNumber({}, { each: true })
-    @ApiProperty({
-        required: true,
-        example: [1, 2, 3],
-    })
-    directors: number[]
+    // @IsArray()
+    // @IsNumber({}, { each: true })
+    // @ApiProperty({
+    //     required: true,
+    //     example: [1, 2, 3],
+    // })
+    // directors: number[]
 
-    @IsArray()
-    @IsNumber({}, { each: true })
-    @ApiProperty({
-        required: true,
-        example: [1, 2, 3, 4, 5],
-    })
-    administrativeCouncils: number[]
+    // @IsArray()
+    // @IsNumber({}, { each: true })
+    // @ApiProperty({
+    //     required: true,
+    //     example: [1, 2, 3, 4, 5],
+    // })
+    // administrativeCouncils: number[]
 
-    @IsArray()
-    @IsNumber({}, { each: true })
+    // @IsArray()
+    // @IsNumber({}, { each: true })
+    // @ApiProperty({
+    //     required: true,
+    //     example: [1, 2, 3, 4],
+    // })
+    // shareholders: number[]
+
+    @IsObject()
     @ApiProperty({
         required: true,
-        example: [1, 2, 3, 4],
+        example: { ADMIN: [1, 2, 3] },
     })
-    shareholders: number[]
+    participants: { [key: string]: number[] }
 }
 
 export class IdMeetingDto {

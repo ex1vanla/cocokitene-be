@@ -3,7 +3,13 @@ import {
     MeetingRole,
     UserMeetingStatusEnum,
 } from '@shares/constants/meeting.const'
-import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator'
+import {
+    IsEnum,
+    IsNotEmpty,
+    IsNumber,
+    IsOptional,
+    IsString,
+} from 'class-validator'
 
 export class CreateUserMeetingDto {
     @IsNumber()
@@ -20,12 +26,20 @@ export class CreateUserMeetingDto {
     })
     meetingId: number
 
-    @IsEnum(MeetingRole)
+    // @IsEnum(MeetingRole)
+    // @ApiProperty({
+    //     required: true,
+    //     enum: MeetingRole,
+    // })
+    // role: MeetingRole
+
+    @IsString()
+    @IsNotEmpty()
     @ApiProperty({
         required: true,
-        enum: MeetingRole,
+        example: 'ADMIN',
     })
-    role: MeetingRole
+    role: string
 
     @IsOptional()
     @IsEnum(MeetingRole)
@@ -38,7 +52,15 @@ export class CreateUserMeetingDto {
 
 export class ParticipantDto extends OmitType(CreateUserMeetingDto, [
     'meetingId',
+    'role',
 ]) {
+    @IsEnum(MeetingRole)
+    @ApiProperty({
+        required: true,
+        enum: MeetingRole,
+    })
+    role: MeetingRole
+
     @IsString()
     @IsOptional()
     @ApiProperty({
