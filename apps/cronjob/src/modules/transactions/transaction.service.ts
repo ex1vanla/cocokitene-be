@@ -37,6 +37,7 @@ import {
     sendUpdateParticipantMeetingTransaction,
     sendUpdateProposalMeetingTransaction,
 } from '@shares/utils'
+import { TransactionResponseData } from '@dtos/mapper.dto'
 
 @Injectable()
 export class TransactionService {
@@ -200,7 +201,6 @@ export class TransactionService {
                     ...shareholders.map((shareholder) =>
                         participants.push({
                             meetingId: meeting.id,
-
                             userId: shareholder.user.id,
                             username: shareholder.user.username,
                             role: MeetingRole.SHAREHOLDER,
@@ -330,13 +330,13 @@ export class TransactionService {
                 const [proposals, fileOfProposals, participants] =
                     await Promise.all([
                         this.proposalTransactionRepository.getProposalTransactionsByMeetingId(
-                            transaction.transactions_meeting_id,
+                            transaction.meetingId,
                         ),
                         this.fileOfProposalTransactionRepository.getFileOfProposalTransactionsByMeetingId(
-                            transaction.transactions_meeting_id,
+                            transaction.meetingId,
                         ),
                         this.participantMeetingTransactionRepository.getParticipantsMeetingTransactionsByMeetingId(
-                            transaction.transactions_meeting_id,
+                            transaction.meetingId,
                         ),
                     ])
 
@@ -393,24 +393,21 @@ export class TransactionService {
 
     async createTransactionSecondaryAndUpdate(
         type: TRANSACTION_TYPE,
-        transaction: any,
+        transaction: TransactionResponseData,
         chainId: SupportedChainId,
     ) {
         try {
             await this.transactionRepository.createTransaction({
-                meetingId: transaction.transactions_meeting_id,
-                titleMeeting: transaction.transactions_title_meeting,
-                meetingLink: transaction.transactions_meeting_link,
-                totalMeetingShares:
-                    transaction.transactions_total_meeting_shares,
-                joinedMeetingShares:
-                    transaction.transactions_joined_meeting_shares,
-                shareholdersTotal: transaction.transactions_shareholder_total,
-                shareholdersJoined:
-                    transaction.transactions_shareholders_joined,
-                startTimeMeeting: transaction.transactions_start_time_meeting,
-                endTimeMeeting: transaction.transactions_end_time_meeting,
-                companyId: transaction.transactions_company_id,
+                meetingId: transaction.meetingId,
+                titleMeeting: transaction.titleMeeting,
+                meetingLink: transaction.meetingLink,
+                totalMeetingShares: transaction.totalMeetingShares,
+                joinedMeetingShares: transaction.joinedMeetingShares,
+                shareholdersTotal: transaction.shareholdersTotal,
+                shareholdersJoined: transaction.shareholdersJoined,
+                startTimeMeeting: transaction.startTimeMeeting,
+                endTimeMeeting: transaction.endTimeMeeting,
+                companyId: transaction.companyId,
                 chainId: chainId,
                 type: type,
                 contractAddress: getContractAddress({
