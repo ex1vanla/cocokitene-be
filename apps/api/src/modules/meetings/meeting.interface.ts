@@ -8,14 +8,10 @@ export interface ProposalItemDetailMeeting extends Proposal {
 }
 
 export interface DetailMeetingResponse extends Partial<Meeting> {
-    hosts: Partial<UserMeeting>[]
-    controlBoards: Partial<UserMeeting>[]
-    directors: Partial<UserMeeting>[]
-    administrativeCouncils: Partial<UserMeeting>[]
-    shareholders: Partial<UserMeeting>[]
     shareholdersTotal: number
     shareholdersJoined: number
     joinedMeetingShares: number
     totalMeetingShares: number
     proposals: ProposalItemDetailMeeting[]
+    participants: { [key: string]: Partial<UserMeeting>[] }
 }

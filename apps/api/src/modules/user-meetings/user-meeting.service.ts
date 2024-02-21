@@ -44,7 +44,8 @@ export class UserMeetingService {
 
     async getUserMeetingByMeetingIdAndRole(
         meetingId: number,
-        role: MeetingRole,
+        // role: MeetingRole,
+        role: string,
     ): Promise<UserMeeting[]> {
         const userMeetings =
             await this.userMeetingRepository.getUserMeetingByMeetingIdAndRole(
@@ -56,7 +57,7 @@ export class UserMeetingService {
     }
     async updateUserMeeting(
         meetingId: number,
-        meetingRole: MeetingRole,
+        meetingRole: string,
         newIdPaticipants: number[],
     ): Promise<number[]> {
         const listUserIds =
@@ -148,7 +149,7 @@ export class UserMeetingService {
 
     async getListUserIdPaticipantsByMeetingIdAndMeetingRole(
         meetingId: number,
-        meetingRole: MeetingRole,
+        meetingRole: string,
     ): Promise<number[]> {
         return await this.userMeetingRepository.getListUserIdPaticipantsByMeetingIdAndMeetingRole(
             meetingId,

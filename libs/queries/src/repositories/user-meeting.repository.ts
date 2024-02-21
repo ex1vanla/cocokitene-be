@@ -2,10 +2,7 @@ import { Like, Repository } from 'typeorm'
 import { CustomRepository } from '@shares/decorators'
 import { UserMeeting } from '@entities/user-meeting.entity'
 import { CreateUserMeetingDto } from '@dtos/user-meeting.dto'
-import {
-    MeetingRole,
-    UserMeetingStatusEnum,
-} from '@shares/constants/meeting.const'
+import { UserMeetingStatusEnum } from '@shares/constants/meeting.const'
 
 @CustomRepository(UserMeeting)
 export class UserMeetingRepository extends Repository<UserMeeting> {
@@ -26,7 +23,7 @@ export class UserMeetingRepository extends Repository<UserMeeting> {
 
     async getUserMeetingByMeetingIdAndRole(
         meetingId: number,
-        role: MeetingRole,
+        role: string,
     ): Promise<UserMeeting[]> {
         const userMeetingEnded = await this.find({
             where: {
@@ -56,7 +53,7 @@ export class UserMeetingRepository extends Repository<UserMeeting> {
 
     async getListUserIdPaticipantsByMeetingIdAndMeetingRole(
         meetingId: number,
-        meetingRole: MeetingRole,
+        meetingRole: string,
     ): Promise<number[]> {
         const listUserMeetingFollowRoles = await this.find({
             where: {
@@ -73,7 +70,7 @@ export class UserMeetingRepository extends Repository<UserMeeting> {
     async removeUserFromMeeting(
         userId: number,
         meetingId: number,
-        meetingRole: MeetingRole,
+        meetingRole: string,
     ) {
         const existeduserMeeting = await this.findOne({
             where: {
