@@ -118,7 +118,6 @@ export class TransactionRepository extends Repository<Transaction> {
                 transactions_type: transaction.transactions_type,
             })
         })
-        console.log('mappedTransactions---', mappedTransactions)
         return mappedTransactions
     }
 
