@@ -37,6 +37,7 @@ import { GetAllDto } from '@dtos/base.dto'
 import { UserService } from '@api/modules/users/user.service'
 import { User } from '@entities/user.entity'
 import { PermissionEnum } from '@shares/constants'
+import { RoleService } from '../roles/role.service'
 
 @Injectable()
 export class MeetingService {
@@ -50,6 +51,7 @@ export class MeetingService {
         @Inject(forwardRef(() => VotingService))
         private readonly votingService: VotingService,
         private readonly userService: UserService,
+        private readonly roleService: RoleService,
     ) {}
 
     async getAllMeetings(
@@ -256,41 +258,6 @@ export class MeetingService {
                         }),
                     )
                 }),
-                // ...hosts.map((host) =>
-                //     this.userMeetingService.createUserMeeting({
-                //         userId: host,
-                //         meetingId: createdMeeting.id,
-                //         role: MeetingRole.HOST,
-                //     }),
-                // ),
-                // ...controlBoards.map((controlBoard) =>
-                //     this.userMeetingService.createUserMeeting({
-                //         userId: controlBoard,
-                //         meetingId: createdMeeting.id,
-                //         role: MeetingRole.CONTROL_BOARD,
-                //     }),
-                // ),
-                // ...directors.map((director) =>
-                //     this.userMeetingService.createUserMeeting({
-                //         userId: director,
-                //         meetingId: createdMeeting.id,
-                //         role: MeetingRole.DIRECTOR,
-                //     }),
-                // ),
-                // ...administrativeCouncils.map((administrativeCouncil) =>
-                //     this.userMeetingService.createUserMeeting({
-                //         userId: administrativeCouncil,
-                //         meetingId: createdMeeting.id,
-                //         role: MeetingRole.ADMINISTRATIVE_COUNCIL,
-                //     }),
-                // ),
-                // ...shareholders.map((shareholder) =>
-                //     this.userMeetingService.createUserMeeting({
-                //         userId: shareholder,
-                //         meetingId: createdMeeting.id,
-                //         role: MeetingRole.SHAREHOLDER,
-                //     }),
-                // ),
             ])
         } catch (error) {
             throw new HttpException(
@@ -518,10 +485,21 @@ export class MeetingService {
         ])
         return existedMeeting
     }
-    async getAllMeetingParticipant(meetingId: number, filter: GetAllDto) {
+    async getAllMeetingParticipant(
+        meetingId: number,
+        filter: GetAllDto,
+        user: User,
+    ) {
+        const companyId = user?.companyId
+        const listRoleOfCompany = await this.roleService.getAllNormalRoles(
+            { page: 1, limit: 10 },
+            companyId,
+        )
+
         return this.userMeetingRepository.getAllParticipantInMeeting(
             meetingId,
             filter.searchQuery,
+            listRoleOfCompany.items,
         )
     }
 

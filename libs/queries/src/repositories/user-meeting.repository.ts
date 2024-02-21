@@ -110,7 +110,11 @@ export class UserMeetingRepository extends Repository<UserMeeting> {
         return userMeeting
     }
 
-    async getAllParticipantInMeeting(meetingId: number, searchValue: string) {
+    async getAllParticipantInMeeting(
+        meetingId: number,
+        searchValue: string,
+        listRoleOfCompany: any[],
+    ) {
         const base = {
             meetingId: meetingId,
         }
@@ -137,13 +141,11 @@ export class UserMeetingRepository extends Repository<UserMeeting> {
             },
         })
 
-        const rs = {
-            hosts: [],
-            controlBoards: [],
-            directors: [],
-            shareholders: [],
-            administrativeCouncils: [],
-        }
+        const rs = {}
+        listRoleOfCompany.forEach((item) => {
+            rs[item.roleName] = []
+        })
+
         participants.map((item) => {
             const participant = {
                 defaultAvatarHashColor: item.user.defaultAvatarHashColor,
@@ -151,25 +153,26 @@ export class UserMeetingRepository extends Repository<UserMeeting> {
                 name: item.user.username,
                 joined: item.status === UserMeetingStatusEnum.PARTICIPATE,
             }
-            switch (item.role) {
-                case MeetingRole.HOST:
-                    rs.hosts.push(participant)
-                    break
-                case MeetingRole.CONTROL_BOARD:
-                    rs.controlBoards.push(participant)
-                    break
-                case MeetingRole.DIRECTOR:
-                    rs.directors.push(participant)
-                    break
-                case MeetingRole.SHAREHOLDER:
-                    rs.shareholders.push(participant)
-                    break
-                case MeetingRole.ADMINISTRATIVE_COUNCIL:
-                    rs.administrativeCouncils.push(participant)
+            rs[item.role].push(participant)
+            // switch (item.role) {
+            //     case MeetingRole.HOST:
+            //         rs.hosts.push(participant)
+            //         break
+            //     case MeetingRole.CONTROL_BOARD:
+            //         rs.controlBoards.push(participant)
+            //         break
+            //     case MeetingRole.DIRECTOR:
+            //         rs.directors.push(participant)
+            //         break
+            //     case MeetingRole.SHAREHOLDER:
+            //         rs.shareholders.push(participant)
+            //         break
+            //     case MeetingRole.ADMINISTRATIVE_COUNCIL:
+            //         rs.administrativeCouncils.push(participant)
 
-                default:
-                    break
-            }
+            //     default:
+            //         break
+            // }
         })
         return rs
     }
