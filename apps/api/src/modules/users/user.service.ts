@@ -163,6 +163,15 @@ export class UserService {
                 updateUserDto,
             )
         } catch (error) {
+            if (error.sqlMessage.includes('Duplicate entry')) {
+                throw new HttpException(
+                    {
+                        message: error.sqlMessage.split('for')[0],
+                        code: httpErrors.USER_UPDATE_FAILED.code,
+                    },
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                )
+            }
             throw new HttpException(
                 httpErrors.USER_UPDATE_FAILED,
                 HttpStatus.INTERNAL_SERVER_ERROR,
@@ -263,6 +272,15 @@ export class UserService {
             createdUser.defaultAvatarHashColor = generateRandomHexColor()
             await createdUser.save()
         } catch (error) {
+            if (error.sqlMessage.includes('Duplicate entry')) {
+                throw new HttpException(
+                    {
+                        message: error.sqlMessage.split('for')[0],
+                        code: httpErrors.USER_CREATE_FAILED.code,
+                    },
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                )
+            }
             throw new HttpException(
                 httpErrors.USER_CREATE_FAILED,
                 HttpStatus.INTERNAL_SERVER_ERROR,
@@ -357,6 +375,15 @@ export class UserService {
                 updateOwnProfileDto,
             )
         } catch (error) {
+            if (error.sqlMessage.includes('Duplicate entry')) {
+                throw new HttpException(
+                    {
+                        message: error.sqlMessage.split('for')[0],
+                        code: httpErrors.PROFILE_UPDATE_FAILED.code,
+                    },
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                )
+            }
             throw new HttpException(
                 httpErrors.PROFILE_UPDATE_FAILED,
                 HttpStatus.INTERNAL_SERVER_ERROR,

@@ -115,9 +115,13 @@ export class MeetingController {
     async getMeetingParticipants(
         @Param('id') meetingId: number,
         @Query() filter: GetAllDto,
-        // @UserScope() user: User,
+        @UserScope() user: User,
     ) {
-        return this.meetingService.getAllMeetingParticipant(meetingId, filter)
+        return this.meetingService.getAllMeetingParticipant(
+            meetingId,
+            filter,
+            user,
+        )
     }
 
     @Get('/:id')

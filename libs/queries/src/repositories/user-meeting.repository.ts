@@ -2,10 +2,7 @@ import { Like, Repository } from 'typeorm'
 import { CustomRepository } from '@shares/decorators'
 import { UserMeeting } from '@entities/user-meeting.entity'
 import { CreateUserMeetingDto } from '@dtos/user-meeting.dto'
-import {
-    MeetingRole,
-    UserMeetingStatusEnum,
-} from '@shares/constants/meeting.const'
+import { UserMeetingStatusEnum } from '@shares/constants/meeting.const'
 
 @CustomRepository(UserMeeting)
 export class UserMeetingRepository extends Repository<UserMeeting> {
@@ -26,7 +23,7 @@ export class UserMeetingRepository extends Repository<UserMeeting> {
 
     async getUserMeetingByMeetingIdAndRole(
         meetingId: number,
-        role: MeetingRole,
+        role: string,
     ): Promise<UserMeeting[]> {
         const userMeetingEnded = await this.find({
             where: {
@@ -56,7 +53,7 @@ export class UserMeetingRepository extends Repository<UserMeeting> {
 
     async getListUserIdPaticipantsByMeetingIdAndMeetingRole(
         meetingId: number,
-        meetingRole: MeetingRole,
+        meetingRole: string,
     ): Promise<number[]> {
         const listUserMeetingFollowRoles = await this.find({
             where: {
@@ -73,7 +70,7 @@ export class UserMeetingRepository extends Repository<UserMeeting> {
     async removeUserFromMeeting(
         userId: number,
         meetingId: number,
-        meetingRole: MeetingRole,
+        meetingRole: string,
     ) {
         const existeduserMeeting = await this.findOne({
             where: {
@@ -110,7 +107,11 @@ export class UserMeetingRepository extends Repository<UserMeeting> {
         return userMeeting
     }
 
-    async getAllParticipantInMeeting(meetingId: number, searchValue: string) {
+    async getAllParticipantInMeeting(
+        meetingId: number,
+        searchValue: string,
+        listRoleOfCompany: any[],
+    ) {
         const base = {
             meetingId: meetingId,
         }
@@ -137,13 +138,11 @@ export class UserMeetingRepository extends Repository<UserMeeting> {
             },
         })
 
-        const rs = {
-            hosts: [],
-            controlBoards: [],
-            directors: [],
-            shareholders: [],
-            administrativeCouncils: [],
-        }
+        const rs = {}
+        listRoleOfCompany.forEach((item) => {
+            rs[item.roleName] = []
+        })
+
         participants.map((item) => {
             const participant = {
                 defaultAvatarHashColor: item.user.defaultAvatarHashColor,
@@ -151,25 +150,26 @@ export class UserMeetingRepository extends Repository<UserMeeting> {
                 name: item.user.username,
                 joined: item.status === UserMeetingStatusEnum.PARTICIPATE,
             }
-            switch (item.role) {
-                case MeetingRole.HOST:
-                    rs.hosts.push(participant)
-                    break
-                case MeetingRole.CONTROL_BOARD:
-                    rs.controlBoards.push(participant)
-                    break
-                case MeetingRole.DIRECTOR:
-                    rs.directors.push(participant)
-                    break
-                case MeetingRole.SHAREHOLDER:
-                    rs.shareholders.push(participant)
-                    break
-                case MeetingRole.ADMINISTRATIVE_COUNCIL:
-                    rs.administrativeCouncils.push(participant)
+            rs[item.role].push(participant)
+            // switch (item.role) {
+            //     case MeetingRole.HOST:
+            //         rs.hosts.push(participant)
+            //         break
+            //     case MeetingRole.CONTROL_BOARD:
+            //         rs.controlBoards.push(participant)
+            //         break
+            //     case MeetingRole.DIRECTOR:
+            //         rs.directors.push(participant)
+            //         break
+            //     case MeetingRole.SHAREHOLDER:
+            //         rs.shareholders.push(participant)
+            //         break
+            //     case MeetingRole.ADMINISTRATIVE_COUNCIL:
+            //         rs.administrativeCouncils.push(participant)
 
-                default:
-                    break
-            }
+            //     default:
+            //         break
+            // }
         })
         return rs
     }
