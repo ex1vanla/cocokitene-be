@@ -1,4 +1,5 @@
 import { ApiProperty, OmitType } from '@nestjs/swagger'
+import { Type } from 'class-transformer'
 import {
     MeetingRole,
     UserMeetingStatusEnum,
@@ -10,7 +11,6 @@ import {
     IsOptional,
     IsString,
 } from 'class-validator'
-import { Type } from 'class-transformer'
 
 export class CreateUserMeetingDto {
     @IsNumber()
