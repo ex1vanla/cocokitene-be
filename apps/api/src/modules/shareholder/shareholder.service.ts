@@ -109,15 +109,6 @@ export class ShareholderService {
                     updateShareholderDto,
                 )
         } catch (error) {
-            if (error.sqlMessage.includes('Duplicate entry')) {
-                throw new HttpException(
-                    {
-                        message: error.sqlMessage.split('for')[0],
-                        code: httpErrors.SHAREHOLDER_UPDATE_FAILED.code,
-                    },
-                    HttpStatus.INTERNAL_SERVER_ERROR,
-                )
-            }
             throw new HttpException(
                 httpErrors.SHAREHOLDER_UPDATE_FAILED,
                 HttpStatus.INTERNAL_SERVER_ERROR,

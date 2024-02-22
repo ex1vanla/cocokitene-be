@@ -1,6 +1,9 @@
 import { Meeting } from '@entities/meeting.entity'
 import { User } from '@entities/user.entity'
-import { UserMeetingStatusEnum } from '@shares/constants/meeting.const'
+import {
+    MeetingRole,
+    UserMeetingStatusEnum,
+} from '@shares/constants/meeting.const'
 import {
     BaseEntity,
     Column,
@@ -32,21 +35,13 @@ export class UserMeeting extends BaseEntity {
     })
     status: UserMeetingStatusEnum
 
-    // @Column({
-    //     name: 'role',
-    //     type: 'enum',
-    //     enum: MeetingRole,
-    //     nullable: false,
-    // })
-    // role: MeetingRole
-
     @Column({
         name: 'role',
-        type: 'varchar',
-        length: 255,
+        type: 'enum',
+        enum: MeetingRole,
         nullable: false,
     })
-    role: string
+    role: MeetingRole
 
     @ManyToOne(() => User)
     @JoinColumn({
