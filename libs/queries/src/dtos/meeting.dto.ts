@@ -1,8 +1,9 @@
 import {
+    IsArray,
     IsEnum,
     IsInt,
     IsNotEmpty,
-    IsObject,
+    IsNumber,
     IsOptional,
     IsString,
     ValidateNested,
@@ -136,12 +137,45 @@ export class CreateMeetingDto {
     @Type(() => ProposalDto)
     amendmentResolutions: ProposalDto[]
 
-    @IsObject()
+    @IsArray()
+    @IsNumber({}, { each: true })
     @ApiProperty({
         required: true,
-        example: { ADMIN: [1, 2, 3] },
+        example: [1, 2],
     })
-    participants: { [key: string]: number[] }
+    hosts: number[]
+
+    @IsArray()
+    @IsNumber({}, { each: true })
+    @ApiProperty({
+        required: true,
+        example: [1, 2],
+    })
+    controlBoards: number[]
+
+    @IsArray()
+    @IsNumber({}, { each: true })
+    @ApiProperty({
+        required: true,
+        example: [1, 2, 3],
+    })
+    directors: number[]
+
+    @IsArray()
+    @IsNumber({}, { each: true })
+    @ApiProperty({
+        required: true,
+        example: [1, 2, 3, 4, 5],
+    })
+    administrativeCouncils: number[]
+
+    @IsArray()
+    @IsNumber({}, { each: true })
+    @ApiProperty({
+        required: true,
+        example: [1, 2, 3, 4],
+    })
+    shareholders: number[]
 }
 
 export class IdMeetingDto {
@@ -266,10 +300,48 @@ export class UpdateMeetingDto {
     @Type(() => ProposalDto)
     amendmentResolutions?: ProposalDto[]
 
-    @IsObject()
+    @IsArray()
+    @IsOptional()
+    @IsNumber({}, { each: true })
     @ApiProperty({
-        required: true,
-        example: { ADMIN: [1, 2, 3] },
+        required: false,
+        example: [1, 2],
     })
-    participants: { [key: string]: number[] }
+    hosts?: number[]
+
+    @IsArray()
+    @IsOptional()
+    @IsNumber({}, { each: true })
+    @ApiProperty({
+        required: false,
+        example: [1, 2],
+    })
+    controlBoards?: number[]
+
+    @IsArray()
+    @IsOptional()
+    @IsNumber({}, { each: true })
+    @ApiProperty({
+        required: false,
+        example: [1, 2, 10],
+    })
+    directors?: number[]
+
+    @IsArray()
+    @IsOptional()
+    @IsNumber({}, { each: true })
+    @ApiProperty({
+        required: false,
+        example: [1, 2, 3, 4, 5],
+    })
+    administrativeCouncils?: number[]
+
+    @IsArray()
+    @IsOptional()
+    @IsNumber({}, { each: true })
+    @ApiProperty({
+        required: false,
+        example: [1, 2, 3, 4],
+    })
+    shareholders?: number[]
 }

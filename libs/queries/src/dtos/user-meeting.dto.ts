@@ -1,5 +1,4 @@
-import { ApiProperty, OmitType } from '@nestjs/swagger'
-import { Type } from 'class-transformer'
+import { ApiProperty } from '@nestjs/swagger'
 import {
     MeetingRole,
     UserMeetingStatusEnum,
@@ -11,6 +10,7 @@ import {
     IsOptional,
     IsString,
 } from 'class-validator'
+import { Type } from 'class-transformer'
 
 export class CreateUserMeetingDto {
     @IsNumber()
@@ -27,20 +27,12 @@ export class CreateUserMeetingDto {
     })
     meetingId: number
 
-    // @IsEnum(MeetingRole)
-    // @ApiProperty({
-    //     required: true,
-    //     enum: MeetingRole,
-    // })
-    // role: MeetingRole
-
-    @IsString()
-    @IsNotEmpty()
+    @IsEnum(MeetingRole)
     @ApiProperty({
         required: true,
-        example: 'ADMIN',
+        enum: MeetingRole,
     })
-    role: string
+    role: MeetingRole
 
     @IsOptional()
     @IsEnum(MeetingRole)
@@ -51,18 +43,7 @@ export class CreateUserMeetingDto {
     status?: UserMeetingStatusEnum
 }
 
-// export class ParticipantDto extends CreateUserMeetingDto {
-export class ParticipantDto extends OmitType(CreateUserMeetingDto, [
-    'meetingId',
-    'role',
-]) {
-    @IsEnum(MeetingRole)
-    @ApiProperty({
-        required: true,
-        enum: MeetingRole,
-    })
-    role: MeetingRole
-
+export class ParticipantDto extends CreateUserMeetingDto {
     @IsString()
     @IsOptional()
     @ApiProperty({

@@ -90,7 +90,7 @@ export class ShareholderRepository extends Repository<User> {
             .update(User)
             .set({
                 username: updateShareholderDto.username,
-                walletAddress: updateShareholderDto.walletAddress || null,
+                walletAddress: updateShareholderDto.walletAddress,
                 shareQuantity: updateShareholderDto.shareQuantity,
                 email: updateShareholderDto.email,
                 phone: updateShareholderDto.phone,
