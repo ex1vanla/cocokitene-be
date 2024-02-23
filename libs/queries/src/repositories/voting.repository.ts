@@ -17,4 +17,15 @@ export class VotingRepository extends Repository<Voting> {
         await createdVoting.save()
         return createdVoting
     }
+
+    async getInternalListVotingByProposalId(
+        proposalId: number,
+    ): Promise<Voting[]> {
+        const votings = await this.find({
+            where: {
+                proposalId: proposalId,
+            },
+        })
+        return votings
+    }
 }

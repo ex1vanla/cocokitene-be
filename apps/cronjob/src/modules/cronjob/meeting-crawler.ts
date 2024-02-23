@@ -7,12 +7,16 @@ import {
     TRANSACTION_TYPE,
 } from '@shares/constants'
 import { Injectable } from '@nestjs/common'
+import { MeetingRepository } from '@repositories/meeting.repository'
+import { ProposalRepository } from '@repositories/proposal.repository'
 
 @Injectable()
 export class MeetingCrawler extends BaseCrawler {
     constructor(
         blockService: BlockService,
         private readonly transactionRepository: TransactionRepository,
+        private readonly meetingRepository: MeetingRepository,
+        private readonly proposalRepository: ProposalRepository,
     ) {
         super(blockService)
     }
@@ -30,6 +34,9 @@ export class MeetingCrawler extends BaseCrawler {
                 break
             case MEETING_EVENT.UPDATE_PARTICIPANT_MEETING:
                 await this.onUpdateParticipantMeetingTransaction(event)
+                break
+            case MEETING_EVENT.UPDATE_PARTICIPANT_PROPOSAL:
+                await this.onUpdateParticipantProposal(event)
                 break
             default:
                 break
@@ -80,6 +87,25 @@ export class MeetingCrawler extends BaseCrawler {
         await this.transactionRepository.updateTransactionByMeetingIdAndType(
             +id_meeting,
             TRANSACTION_TYPE.UPDATE_USER_PARTICIPATE_MEETING,
+            {
+                status: TRANSACTION_STATUS.SUCCESS,
+            },
+        )
+    }
+
+    async onUpdateParticipantProposal(event: any): Promise<void> {
+        const { id_proposal, step } = event['returnValues']
+        console.log({ id_proposal, step })
+        // find meeting id what contain proposal id
+        const proposal = await this.proposalRepository.getProposalByProposalId(
+            +id_proposal,
+        )
+
+        const meetingId = proposal.meetingId
+        //update transaction
+        await this.transactionRepository.updateTransactionByMeetingIdAndType(
+            +meetingId,
+            TRANSACTION_TYPE.UPDATE_USER_PROPOSAL_MEETING,
             {
                 status: TRANSACTION_STATUS.SUCCESS,
             },

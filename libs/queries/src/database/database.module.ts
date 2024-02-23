@@ -16,6 +16,7 @@ import {
     UserRole,
     UserStatus,
     Voting,
+    VotingTransaction,
 } from '@entities/index'
 import { Module } from '@nestjs/common'
 import { ConfigModule, ConfigService } from '@nestjs/config'
@@ -59,6 +60,7 @@ import { ProposalFile } from '@entities/proposal-file'
                         FileOfProposalTransaction,
                         ParticipantMeetingTransaction,
                         ProposalTransaction,
+                        VotingTransaction,
                     ],
                     timezone: 'Z',
                     synchronize: configService.get('database.synchronize'),

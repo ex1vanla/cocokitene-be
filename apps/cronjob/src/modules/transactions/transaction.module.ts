@@ -9,6 +9,8 @@ import { TransactionRepository } from '@repositories/transaction.repository'
 import { ParticipantMeetingTransactionRepository } from '@repositories/participant-meeting-transaction.repository'
 import { ProposalTransactionRepository } from '@repositories/proposal-transaction.repository'
 import { FileOfProposalTransactionRepository } from '@repositories/file-of-proposal-transaction.repository'
+import { VotingTransactionRepository } from '@repositories/voting-transaction.repository'
+import { VotingRepository } from '@repositories/voting.repository'
 
 const Repositories = TypeOrmExModule.forCustomRepository([
     UserMeetingRepository,
@@ -19,6 +21,8 @@ const Repositories = TypeOrmExModule.forCustomRepository([
     ParticipantMeetingTransactionRepository,
     ProposalTransactionRepository,
     FileOfProposalTransactionRepository,
+    VotingTransactionRepository,
+    VotingRepository,
 ])
 
 @Module({
