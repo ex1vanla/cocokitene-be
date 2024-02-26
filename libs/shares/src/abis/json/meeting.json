@@ -20,6 +20,12 @@
     },
     {
         "anonymous": false,
+        "inputs": [],
+        "name": "EIP712DomainChanged",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
         "inputs": [
             {
                 "indexed": false,
@@ -159,6 +165,25 @@
             {
                 "indexed": false,
                 "internalType": "uint256",
+                "name": "id_proposal",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "step",
+                "type": "uint256"
+            }
+        ],
+        "name": "UpdateParticipantProposal",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint256",
                 "name": "id_meeting",
                 "type": "uint256"
             },
@@ -268,7 +293,7 @@
                         "type": "uint256"
                     }
                 ],
-                "internalType": "struct BaseMeeting.ProposalData[]",
+                "internalType": "struct BaseMeeting.ProposalMeetingData[]",
                 "name": "_newProposals",
                 "type": "tuple[]"
             },
@@ -324,6 +349,41 @@
             }
         ],
         "name": "addUserNoSign",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "_proposal_id",
+                "type": "uint256"
+            },
+            {
+                "components": [
+                    {
+                        "internalType": "uint256",
+                        "name": "user_id",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "result",
+                        "type": "string"
+                    }
+                ],
+                "internalType": "struct BaseMeeting.ParticipantVotingData[]",
+                "name": "_newParticipantProposals",
+                "type": "tuple[]"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_step",
+                "type": "uint256"
+            }
+        ],
+        "name": "addUserProposalNoSign",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -421,6 +481,49 @@
         "name": "createNoSign",
         "outputs": [],
         "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "eip712Domain",
+        "outputs": [
+            {
+                "internalType": "bytes1",
+                "name": "fields",
+                "type": "bytes1"
+            },
+            {
+                "internalType": "string",
+                "name": "name",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "version",
+                "type": "string"
+            },
+            {
+                "internalType": "uint256",
+                "name": "chainId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "address",
+                "name": "verifyingContract",
+                "type": "address"
+            },
+            {
+                "internalType": "bytes32",
+                "name": "salt",
+                "type": "bytes32"
+            },
+            {
+                "internalType": "uint256[]",
+                "name": "extensions",
+                "type": "uint256[]"
+            }
+        ],
+        "stateMutability": "view",
         "type": "function"
     },
     {
@@ -549,7 +652,7 @@
                                 "type": "uint256"
                             }
                         ],
-                        "internalType": "struct BaseMeeting.ProposalData[]",
+                        "internalType": "struct BaseMeeting.ProposalMeetingData[]",
                         "name": "proposals",
                         "type": "tuple[]"
                     },
@@ -629,7 +732,7 @@
                 "type": "uint256"
             }
         ],
-        "name": "getProposalData",
+        "name": "getProposalMeetingData",
         "outputs": [
             {
                 "components": [
@@ -659,7 +762,7 @@
                         "type": "uint256"
                     }
                 ],
-                "internalType": "struct BaseMeeting.ProposalData[]",
+                "internalType": "struct BaseMeeting.ProposalMeetingData[]",
                 "name": "",
                 "type": "tuple[]"
             }
@@ -785,6 +888,32 @@
         "name": "renounceOwnership",
         "outputs": [],
         "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "totalMeeting",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "totalProposal",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
         "type": "function"
     },
     {

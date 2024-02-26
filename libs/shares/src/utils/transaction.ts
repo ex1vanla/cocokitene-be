@@ -7,6 +7,7 @@ import { ProposalDataSendToBlockchainDto } from '@dtos/proposal.dto'
 import BN from 'bn.js'
 import { UserMeetingDataSendToBlockchainDto } from '@dtos/user-meeting.dto'
 import { FileOfProposalDataSendToBlockchainDto } from '@dtos/proposal-file.dto'
+import { VotingDataSendToBlockchainDto } from '@dtos/voting.dto'
 
 export const sendCreateMeetingTransaction = async ({
     meetingId,
@@ -255,7 +256,6 @@ export const sendUpdateFileMeetingTransaction = async ({
                   item.url,
               ])
             : []
-
         const estimateGas = await meetingContractInstance.methods
             .addFileNoSign(
                 meetingId,
@@ -274,6 +274,65 @@ export const sendUpdateFileMeetingTransaction = async ({
             .addFileNoSign(
                 meetingId,
                 formattedNewFileOfProposalDataArray,
+                countProcessNumber,
+            )
+            .send({
+                from: adminAddress,
+                gas: estimateGas,
+            })
+        return txResult
+    } catch (error) {
+        // throw new Error(error);
+        console.log('error-----', error)
+        return
+    }
+}
+
+export const sendUpdateParticipantProposal = async ({
+    proposalId,
+    chainId,
+    contractAddress,
+    newVotingData,
+    countProcessNumber,
+}: {
+    proposalId: number
+    chainId: SupportedChainId
+    contractAddress: string
+    newVotingData: VotingDataSendToBlockchainDto[]
+    countProcessNumber: number
+}) => {
+    try {
+        const provider = RPC_URLS[chainId]
+        const adminAddress = configuration().crawler.adminAddress
+        const adminPrivateKey = configuration().crawler.adminPrivateKey
+        const meetingContractInstance: Meeting = getContract(
+            MEETING_ABI,
+            contractAddress,
+            provider,
+        )
+        const formattedNewVotingDataArray: [
+            userId: number | string | BN,
+            result: string,
+        ][] = newVotingData
+            ? newVotingData.map((item) => [item.userId, item.result])
+            : []
+
+        const web3Instance = getWeb3Instance(provider)
+        await web3Instance.eth.accounts.wallet.add(adminPrivateKey)
+        const estimateGas = await meetingContractInstance.methods
+            .addUserProposalNoSign(
+                proposalId,
+                formattedNewVotingDataArray,
+                countProcessNumber,
+            )
+            .estimateGas({
+                from: adminAddress,
+            })
+
+        const txResult = await meetingContractInstance.methods
+            .addUserProposalNoSign(
+                proposalId,
+                formattedNewVotingDataArray,
                 countProcessNumber,
             )
             .send({

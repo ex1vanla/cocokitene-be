@@ -285,6 +285,11 @@ export const httpErrors = {
             'Create transaction participant meeting failed. Please try again',
         code: 'TRANSACTION_00004',
     },
+    TRANSACTION_CREATE_VOTING_PROPOSAL_FAILED: {
+        message:
+            'Create transaction result voting proposal failed. Please try again',
+        code: 'TRANSACTION_00005',
+    },
 
     //participant-meeting-transaction
     PARTICIPANT_MEETING_TRANSACTION_CREATED_FAILED: {
