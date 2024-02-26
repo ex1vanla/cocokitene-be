@@ -4,7 +4,6 @@
 
 import type BN from 'bn.js'
 import type { ContractOptions } from 'web3-eth-contract'
-// @ts-ignore
 import type { EventLog } from 'web3-core'
 import type { EventEmitter } from 'events'
 import type {
@@ -28,6 +27,7 @@ export type CreateMeeting = ContractEventLog<{
     0: string
     1: string
 }>
+export type EIP712DomainChanged = ContractEventLog<{}>
 export type Initialized = ContractEventLog<{
     version: string
     0: string
@@ -66,6 +66,12 @@ export type UpdateMeeting = ContractEventLog<{
 }>
 export type UpdateParticipantMeeting = ContractEventLog<{
     id_meeting: string
+    step: string
+    0: string
+    1: string
+}>
+export type UpdateParticipantProposal = ContractEventLog<{
+    id_proposal: string
     step: string
     0: string
     1: string
@@ -118,6 +124,12 @@ export interface Meeting extends BaseContract {
             _step: number | string | BN,
         ): NonPayableTransactionObject<void>
 
+        addUserProposalNoSign(
+            _proposal_id: number | string | BN,
+            _newParticipantProposals: [number | string | BN, string][],
+            _step: number | string | BN,
+        ): NonPayableTransactionObject<void>
+
         addValidator(_newValidator: string): NonPayableTransactionObject<void>
 
         checkIsCreated(
@@ -139,6 +151,23 @@ export interface Meeting extends BaseContract {
             _total_meeting_shares: number | string | BN,
             _joined_meeting_shares: number | string | BN,
         ): NonPayableTransactionObject<void>
+
+        eip712Domain(): NonPayableTransactionObject<{
+            fields: string
+            name: string
+            version: string
+            chainId: string
+            verifyingContract: string
+            salt: string
+            extensions: string[]
+            0: string
+            1: string
+            2: string
+            3: string
+            4: string
+            5: string
+            6: string[]
+        }>
 
         getFileData(
             _meetind_id: number | string | BN,
@@ -168,7 +197,7 @@ export interface Meeting extends BaseContract {
             ]
         >
 
-        getProposalData(
+        getProposalMeetingData(
             _meetind_id: number | string | BN,
         ): NonPayableTransactionObject<
             [string, string, string, string, string][]
@@ -192,6 +221,10 @@ export interface Meeting extends BaseContract {
 
         renounceOwnership(): NonPayableTransactionObject<void>
 
+        totalMeeting(): NonPayableTransactionObject<string>
+
+        totalProposal(): NonPayableTransactionObject<string>
+
         transferOwnership(newOwner: string): NonPayableTransactionObject<void>
 
         unpause(): NonPayableTransactionObject<void>
@@ -214,6 +247,12 @@ export interface Meeting extends BaseContract {
         CreateMeeting(
             options?: EventOptions,
             cb?: Callback<CreateMeeting>,
+        ): EventEmitter
+
+        EIP712DomainChanged(cb?: Callback<EIP712DomainChanged>): EventEmitter
+        EIP712DomainChanged(
+            options?: EventOptions,
+            cb?: Callback<EIP712DomainChanged>,
         ): EventEmitter
 
         Initialized(cb?: Callback<Initialized>): EventEmitter
@@ -266,6 +305,14 @@ export interface Meeting extends BaseContract {
             cb?: Callback<UpdateParticipantMeeting>,
         ): EventEmitter
 
+        UpdateParticipantProposal(
+            cb?: Callback<UpdateParticipantProposal>,
+        ): EventEmitter
+        UpdateParticipantProposal(
+            options?: EventOptions,
+            cb?: Callback<UpdateParticipantProposal>,
+        ): EventEmitter
+
         UpdateProposalMeeting(
             cb?: Callback<UpdateProposalMeeting>,
         ): EventEmitter
@@ -282,6 +329,13 @@ export interface Meeting extends BaseContract {
         event: 'CreateMeeting',
         options: EventOptions,
         cb: Callback<CreateMeeting>,
+    ): void
+
+    once(event: 'EIP712DomainChanged', cb: Callback<EIP712DomainChanged>): void
+    once(
+        event: 'EIP712DomainChanged',
+        options: EventOptions,
+        cb: Callback<EIP712DomainChanged>,
     ): void
 
     once(event: 'Initialized', cb: Callback<Initialized>): void
@@ -343,6 +397,16 @@ export interface Meeting extends BaseContract {
         event: 'UpdateParticipantMeeting',
         options: EventOptions,
         cb: Callback<UpdateParticipantMeeting>,
+    ): void
+
+    once(
+        event: 'UpdateParticipantProposal',
+        cb: Callback<UpdateParticipantProposal>,
+    ): void
+    once(
+        event: 'UpdateParticipantProposal',
+        options: EventOptions,
+        cb: Callback<UpdateParticipantProposal>,
     ): void
 
     once(

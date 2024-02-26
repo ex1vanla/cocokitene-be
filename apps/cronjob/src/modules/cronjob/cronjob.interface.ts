@@ -4,6 +4,7 @@ import {
     UserMeetingStatusEnum,
 } from '@shares/constants/meeting.const'
 import { SupportedChainId } from '@shares/constants'
+import { VoteProposalResult } from '@shares/constants/proposal.const'
 
 export interface participant {
     meetingId: number
@@ -19,6 +20,12 @@ export interface ResultVoteProposal {
     votedQuantity: number
     unVotedQuantity: number
     notVoteYetQuantity: number
+}
+export interface ResultVoting {
+    userId: number
+    votingId: number
+    result: VoteProposalResult
+    proposalId: number
 }
 
 export interface ListFileOfProposal {
@@ -38,6 +45,7 @@ export interface MeetingEnded extends Partial<Meeting> {
     participants: participant[]
     listResultProposals: ResultVoteProposal[]
     listResultProposalFiles: ListFileOfProposal[]
+    listResultVotings: ResultVoting[]
     shareholdersTotal: number
     shareholdersJoined: number
     joinedMeetingShares: number
