@@ -142,9 +142,9 @@ export class CreateUserDto {
     shareQuantity: number
 
     @IsString()
-    @IsNotEmpty()
+    @IsOptional()
     @ApiProperty({
-        required: true,
+        required: false,
         example: '0868071819',
     })
     phone: string
