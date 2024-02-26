@@ -347,10 +347,10 @@ export class AuthService {
     async loginUserByPassword(
         loginByPassword: LoginUserByPassword,
     ): Promise<LoginResponseData> {
-        const { companyName, email, password } = loginByPassword
+        const { taxOfCompany, email, password } = loginByPassword
 
-        const company = await this.companyRepository.getCompanyByName(
-            companyName,
+        const company = await this.companyRepository.getCompanyByTaxCompany(
+            taxOfCompany,
         )
         if (!company) {
             throw new HttpException(

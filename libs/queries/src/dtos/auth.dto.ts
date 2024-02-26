@@ -80,9 +80,9 @@ export class LoginUserByPassword {
     @IsString()
     @IsNotEmpty()
     @ApiProperty({
-        example: 'Cty TTM',
+        example: '0123456789',
     })
-    companyName: string
+    taxOfCompany: string
 
     @IsEmail()
     @IsNotEmpty()

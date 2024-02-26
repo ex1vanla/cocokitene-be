@@ -7,10 +7,10 @@ import { UpdateCompanyDto } from '@dtos/company.dto'
 import { HttpException, HttpStatus } from '@nestjs/common'
 @CustomRepository(Company)
 export class CompanyRepository extends Repository<Company> {
-    async getCompanyByName(name): Promise<Company> {
+    async getCompanyByTaxCompany(tax): Promise<Company> {
         const company = await this.findOne({
             where: {
-                companyName: name,
+                taxNumber: tax,
             },
         })
         return company
