@@ -27,7 +27,7 @@ export class Company extends BaseEntity {
     companyName: string
 
     @Column({
-        nullable: false,
+        nullable: true,
         name: 'company_short_name',
         type: 'varchar',
         length: 255,
@@ -118,7 +118,7 @@ export class Company extends BaseEntity {
     logo: string
 
     @Column({
-        nullable: false,
+        nullable: true,
         type: 'varchar',
         length: 255,
         name: 'business_type',

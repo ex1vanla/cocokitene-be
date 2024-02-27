@@ -146,10 +146,10 @@ export class CreateCompanyDto {
     address: string
 
     @IsString()
-    @IsNotEmpty()
+    @IsOptional()
     @ApiProperty({
         example: 'NAB',
-        required: true,
+        required: false,
     })
     companyShortName: string
 
@@ -194,10 +194,10 @@ export class CreateCompanyDto {
     taxNumber: string
 
     @IsString()
-    @IsNotEmpty()
+    @IsOptional()
     @ApiProperty({
         example: 'service',
-        required: true,
+        required: false,
     })
     businessType: string
 
