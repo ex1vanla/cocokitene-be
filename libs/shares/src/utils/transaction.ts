@@ -8,6 +8,7 @@ import BN from 'bn.js'
 import { UserMeetingDataSendToBlockchainDto } from '@dtos/user-meeting.dto'
 import { FileOfProposalDataSendToBlockchainDto } from '@dtos/proposal-file.dto'
 import { VotingDataSendToBlockchainDto } from '@dtos/voting.dto'
+import { FileOfMeetingDataSendToBlockchainDto } from '@dtos/meeting-file.dto'
 
 export const sendCreateMeetingTransaction = async ({
     meetingId,
@@ -224,7 +225,7 @@ export const sendUpdateParticipantMeetingTransaction = async ({
     }
 }
 
-export const sendUpdateFileMeetingTransaction = async ({
+export const sendUpdateFileOfProposalMeetingTransaction = async ({
     meetingId,
     chainId,
     contractAddress,
@@ -257,7 +258,7 @@ export const sendUpdateFileMeetingTransaction = async ({
               ])
             : []
         const estimateGas = await meetingContractInstance.methods
-            .addFileNoSign(
+            .addFileProposalNoSign(
                 meetingId,
                 formattedNewFileOfProposalDataArray,
                 countProcessNumber,
@@ -271,7 +272,7 @@ export const sendUpdateFileMeetingTransaction = async ({
         await web3Instance.eth.accounts.wallet.add(adminPrivateKey)
 
         const txResult = await meetingContractInstance.methods
-            .addFileNoSign(
+            .addFileProposalNoSign(
                 meetingId,
                 formattedNewFileOfProposalDataArray,
                 countProcessNumber,
@@ -333,6 +334,67 @@ export const sendUpdateParticipantProposal = async ({
             .addUserProposalNoSign(
                 proposalId,
                 formattedNewVotingDataArray,
+                countProcessNumber,
+            )
+            .send({
+                from: adminAddress,
+                gas: estimateGas,
+            })
+        return txResult
+    } catch (error) {
+        // throw new Error(error);
+        console.log('error-----', error)
+        return
+    }
+}
+
+export const sendUpdateFileOfMeetingTransaction = async ({
+    meetingId,
+    chainId,
+    contractAddress,
+    newFileOfMeetingData,
+    countProcessNumber,
+}: {
+    meetingId: number
+    chainId: SupportedChainId
+    contractAddress: string
+    newFileOfMeetingData: FileOfMeetingDataSendToBlockchainDto[]
+    countProcessNumber: number
+}) => {
+    try {
+        const provider = RPC_URLS[chainId]
+        const adminAddress = configuration().crawler.adminAddress
+        const adminPrivateKey = configuration().crawler.adminPrivateKey
+
+        const meetingContractInstance: Meeting = getContract(
+            MEETING_ABI,
+            contractAddress,
+            provider,
+        )
+        const formattedNewFileOfMeetingDataArray: [
+            string | number | BN,
+            string,
+        ][] = newFileOfMeetingData
+            ? newFileOfMeetingData.map((item) => [item.meetingFileId, item.url])
+            : []
+        const estimateGas = await meetingContractInstance.methods
+            .addFileMeetingNoSign(
+                meetingId,
+                formattedNewFileOfMeetingDataArray,
+                countProcessNumber,
+            )
+            .estimateGas({
+                from: adminAddress,
+            })
+
+        // add private key
+        const web3Instance = getWeb3Instance(provider)
+        await web3Instance.eth.accounts.wallet.add(adminPrivateKey)
+
+        const txResult = await meetingContractInstance.methods
+            .addFileMeetingNoSign(
+                meetingId,
+                formattedNewFileOfMeetingDataArray,
                 countProcessNumber,
             )
             .send({

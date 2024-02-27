@@ -1,5 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import {
+    ListFileOfMeeting,
     ListFileOfProposal,
     MeetingEnded,
     participant,
@@ -34,7 +35,8 @@ import {
     getContractAddress,
     groupObject,
     sendCreateMeetingTransaction,
-    sendUpdateFileMeetingTransaction,
+    sendUpdateFileOfMeetingTransaction,
+    sendUpdateFileOfProposalMeetingTransaction,
     sendUpdateParticipantMeetingTransaction,
     sendUpdateParticipantProposal,
     sendUpdateProposalMeetingTransaction,
@@ -42,6 +44,8 @@ import {
 import { TransactionResponseData } from '@dtos/mapper.dto'
 import { VotingTransactionRepository } from '@repositories/voting-transaction.repository'
 import { VotingRepository } from '@repositories/voting.repository'
+import { MeetingFileRepository } from '@repositories/meeting-file.repository'
+import { FileOfMeetingTransactionRepository } from '@repositories/file-of-meeting-transaction.repository'
 
 @Injectable()
 export class TransactionService {
@@ -51,11 +55,13 @@ export class TransactionService {
         private readonly proposalRepository: ProposalRepository,
         private readonly proposalFileRepository: ProposalFileRepository,
         private readonly votingRepository: VotingRepository,
+        private readonly meetingFileRepository: MeetingFileRepository,
         private readonly transactionRepository: TransactionRepository,
         private readonly participantMeetingTransactionRepository: ParticipantMeetingTransactionRepository,
         private readonly proposalTransactionRepository: ProposalTransactionRepository,
         private readonly fileOfProposalTransactionRepository: FileOfProposalTransactionRepository,
         private readonly votingTransactionRepository: VotingTransactionRepository,
+        private readonly fileOfMeetingTransactionRepository: FileOfMeetingTransactionRepository,
     ) {}
     async handleAllEndedMeeting(): Promise<void> {
         const meetingIdsAppearedInTransaction =
@@ -76,7 +82,19 @@ export class TransactionService {
                     await this.proposalRepository.getInternalListProposalByMeetingId(
                         meeting.id,
                     )
-
+                const meetingFiles =
+                    await this.meetingFileRepository.getMeetingFilesByMeetingId(
+                        meeting.id,
+                    )
+                const listMeetingFiles: ListFileOfMeeting[] = meetingFiles.map(
+                    (meetingFile) => {
+                        return {
+                            meetingId: meetingFile.meetingId,
+                            meetingFileId: meetingFile.id,
+                            url: meetingFile.url,
+                        }
+                    },
+                )
                 const listResultProposalFiles: ListFileOfProposal[] = [],
                     listResultProposals: ResultVoteProposal[] = [],
                     listResultVotings: ResultVoting[] = []
@@ -242,6 +260,7 @@ export class TransactionService {
                     listResultProposals: listResultProposals,
                     listResultProposalFiles: listResultProposalFiles,
                     listResultVotings: listResultVotings,
+                    listResultMeetingFiles: listMeetingFiles,
                     shareholdersTotal: shareholdersTotal,
                     shareholdersJoined: shareholdersJoined,
                     joinedMeetingShares: joinedMeetingShares,
@@ -331,6 +350,18 @@ export class TransactionService {
                                     },
                                 ),
                         ),
+                        ...meetingEnd.listResultMeetingFiles.map(
+                            (listResultMeetingFile) =>
+                                this.fileOfMeetingTransactionRepository.createFileOfMeetingTransaction(
+                                    {
+                                        url: listResultMeetingFile.url,
+                                        meetingId:
+                                            listResultMeetingFile.meetingId,
+                                        meetingFileId:
+                                            listResultMeetingFile.meetingFileId,
+                                    },
+                                ),
+                        ),
                     ])
                 } catch (error) {
                     throw new HttpException(
@@ -362,18 +393,25 @@ export class TransactionService {
             currentChainId = getChainId()
         await Promise.all([
             ...transactionsCreateMeetingSuccessful.map(async (transaction) => {
-                const [proposals, fileOfProposals, participants] =
-                    await Promise.all([
-                        this.proposalTransactionRepository.getProposalTransactionsByMeetingId(
-                            transaction.meetingId,
-                        ),
-                        this.fileOfProposalTransactionRepository.getFileOfProposalTransactionsByMeetingId(
-                            transaction.meetingId,
-                        ),
-                        this.participantMeetingTransactionRepository.getParticipantsMeetingTransactionsByMeetingId(
-                            transaction.meetingId,
-                        ),
-                    ])
+                const [
+                    proposals,
+                    fileOfProposals,
+                    participants,
+                    fileOfMeetings,
+                ] = await Promise.all([
+                    this.proposalTransactionRepository.getProposalTransactionsByMeetingId(
+                        transaction.meetingId,
+                    ),
+                    this.fileOfProposalTransactionRepository.getFileOfProposalTransactionsByMeetingId(
+                        transaction.meetingId,
+                    ),
+                    this.participantMeetingTransactionRepository.getParticipantsMeetingTransactionsByMeetingId(
+                        transaction.meetingId,
+                    ),
+                    this.fileOfMeetingTransactionRepository.getFileOfMeetingTransactionsByMeetingId(
+                        transaction.meetingId,
+                    ),
+                ])
 
                 const countCallFuncAddProposals = Math.ceil(
                         proposals.length /
@@ -386,10 +424,15 @@ export class TransactionService {
                     countCallFuncParticipant = Math.ceil(
                         participants.length /
                             maximumNumberTransactionCallFuncBlockchain,
+                    ),
+                    countCallFuncFileOfMeeting = Math.ceil(
+                        fileOfMeetings.length /
+                            maximumNumberTransactionCallFuncBlockchain,
                     )
                 const addProposalsPromises = []
                 const fileOfProposalPromises = []
                 const participantPromises = []
+                const fileOfMeetingPromises = []
                 for (let i = 0; i < countCallFuncAddProposals; i++) {
                     addProposalsPromises.push(
                         this.createTransactionSecondaryAndUpdate(
@@ -417,10 +460,21 @@ export class TransactionService {
                         ),
                     )
                 }
+                for (let i = 0; i < countCallFuncFileOfMeeting; i++) {
+                    fileOfMeetingPromises.push(
+                        this.createTransactionSecondaryAndUpdate(
+                            TRANSACTION_TYPE.UPDATE_FILE_OF_MEETING,
+                            transaction,
+                            currentChainId,
+                        ),
+                    )
+                }
+
                 await Promise.all([
                     ...addProposalsPromises,
                     ...fileOfProposalPromises,
                     ...participantPromises,
+                    ...fileOfMeetingPromises,
                 ])
             }),
         ])
@@ -590,12 +644,54 @@ export class TransactionService {
                     )
                     for (let i = 1; i <= countCallFuncFileOfProposal; i++) {
                         const txPromises =
-                            await sendUpdateFileMeetingTransaction({
+                            await sendUpdateFileOfProposalMeetingTransaction({
                                 meetingId: transaction.meetingId,
                                 chainId: transaction.chainId,
                                 contractAddress: transaction.contractAddress,
                                 newFileOfProposalData:
                                     groupedFileOfProposals[i - 1],
+                                countProcessNumber: i,
+                            })
+                        if (txPromises) {
+                            console.log(
+                                'Sent transaction: ' +
+                                    txPromises?.transactionHash,
+                            )
+
+                            await this.transactionRepository.updateTransaction(
+                                transaction.id,
+                                {
+                                    txHash: txPromises?.transactionHash,
+                                    status: TRANSACTION_STATUS.PROCESSING,
+                                },
+                            )
+                        }
+                    }
+                }
+
+                if (
+                    transaction.type === TRANSACTION_TYPE.UPDATE_FILE_OF_MEETING
+                ) {
+                    const fileOfMeetings =
+                        await this.fileOfMeetingTransactionRepository.getFileOfMeetingTransactionsByMeetingId(
+                            transaction.meetingId,
+                        )
+                    const groupedFileOfMeetings = groupObject(
+                        fileOfMeetings,
+                        maximumNumberTransactionCallFuncBlockchain,
+                    )
+                    const countCallFuncFileOfMeeting = Math.ceil(
+                        fileOfMeetings.length /
+                            maximumNumberTransactionCallFuncBlockchain,
+                    )
+                    for (let i = 1; i <= countCallFuncFileOfMeeting; i++) {
+                        const txPromises =
+                            await sendUpdateFileOfMeetingTransaction({
+                                meetingId: transaction.meetingId,
+                                chainId: transaction.chainId,
+                                contractAddress: transaction.contractAddress,
+                                newFileOfMeetingData:
+                                    groupedFileOfMeetings[i - 1],
                                 countProcessNumber: i,
                             })
                         if (txPromises) {

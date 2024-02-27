@@ -34,6 +34,11 @@ export interface ListFileOfProposal {
     proposalId: number
     url: string
 }
+export interface ListFileOfMeeting {
+    meetingId: number
+    meetingFileId: number
+    url: string
+}
 
 export interface MeetingEnded extends Partial<Meeting> {
     meetingId: number
@@ -46,6 +51,7 @@ export interface MeetingEnded extends Partial<Meeting> {
     listResultProposals: ResultVoteProposal[]
     listResultProposalFiles: ListFileOfProposal[]
     listResultVotings: ResultVoting[]
+    listResultMeetingFiles: ListFileOfMeeting[]
     shareholdersTotal: number
     shareholdersJoined: number
     joinedMeetingShares: number

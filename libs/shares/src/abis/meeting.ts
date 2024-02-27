@@ -124,7 +124,26 @@ export const MEETING_ABI: any = [
                 type: 'uint256',
             },
         ],
-        name: 'UpdateFileMeeting',
+        name: 'UpdateFileOfMeeting',
+        type: 'event',
+    },
+    {
+        anonymous: false,
+        inputs: [
+            {
+                indexed: false,
+                internalType: 'uint256',
+                name: 'id_meeting',
+                type: 'uint256',
+            },
+            {
+                indexed: false,
+                internalType: 'uint256',
+                name: 'step',
+                type: 'uint256',
+            },
+        ],
+        name: 'UpdateFileOfProposalMeeting',
         type: 'event',
     },
     {
@@ -218,6 +237,29 @@ export const MEETING_ABI: any = [
                 components: [
                     {
                         internalType: 'uint256',
+                        name: 'meeting_file_id',
+                        type: 'uint256',
+                    },
+                    { internalType: 'string', name: 'url', type: 'string' },
+                ],
+                internalType: 'struct BaseMeeting.FileOfMeetingData[]',
+                name: '_newFileMeetings',
+                type: 'tuple[]',
+            },
+            { internalType: 'uint256', name: '_step', type: 'uint256' },
+        ],
+        name: 'addFileMeetingNoSign',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+    },
+    {
+        inputs: [
+            { internalType: 'uint256', name: '_meeting_id', type: 'uint256' },
+            {
+                components: [
+                    {
+                        internalType: 'uint256',
                         name: 'proposal_file_id',
                         type: 'uint256',
                     },
@@ -229,7 +271,7 @@ export const MEETING_ABI: any = [
             },
             { internalType: 'uint256', name: '_step', type: 'uint256' },
         ],
-        name: 'addFileNoSign',
+        name: 'addFileProposalNoSign',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
@@ -404,9 +446,32 @@ export const MEETING_ABI: any = [
     },
     {
         inputs: [
-            { internalType: 'uint256', name: '_meetind_id', type: 'uint256' },
+            { internalType: 'uint256', name: '_meeting_id', type: 'uint256' },
         ],
-        name: 'getFileData',
+        name: 'getFileMeetingData',
+        outputs: [
+            {
+                components: [
+                    {
+                        internalType: 'uint256',
+                        name: 'meeting_file_id',
+                        type: 'uint256',
+                    },
+                    { internalType: 'string', name: 'url', type: 'string' },
+                ],
+                internalType: 'struct BaseMeeting.FileOfMeetingData[]',
+                name: '',
+                type: 'tuple[]',
+            },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+    },
+    {
+        inputs: [
+            { internalType: 'uint256', name: '_meeting_id', type: 'uint256' },
+        ],
+        name: 'getFileProposalData',
         outputs: [
             {
                 components: [
@@ -427,7 +492,7 @@ export const MEETING_ABI: any = [
     },
     {
         inputs: [
-            { internalType: 'uint256', name: '_meetind_id', type: 'uint256' },
+            { internalType: 'uint256', name: '_meeting_id', type: 'uint256' },
         ],
         name: 'getMeetingData',
         outputs: [
@@ -454,6 +519,11 @@ export const MEETING_ABI: any = [
                         internalType: 'uint256',
                         name: 'company_id',
                         type: 'uint256',
+                    },
+                    {
+                        internalType: 'string[]',
+                        name: 'files',
+                        type: 'string[]',
                     },
                     { internalType: 'bool', name: 'exsited', type: 'bool' },
                     {
@@ -569,6 +639,28 @@ export const MEETING_ABI: any = [
                         name: 'length_file_of_proposals',
                         type: 'uint256',
                     },
+                    {
+                        components: [
+                            {
+                                internalType: 'uint256',
+                                name: 'meeting_file_id',
+                                type: 'uint256',
+                            },
+                            {
+                                internalType: 'string',
+                                name: 'url',
+                                type: 'string',
+                            },
+                        ],
+                        internalType: 'struct BaseMeeting.FileOfMeetingData[]',
+                        name: 'file_of_meetings',
+                        type: 'tuple[]',
+                    },
+                    {
+                        internalType: 'uint256',
+                        name: 'length_file_of_meetings',
+                        type: 'uint256',
+                    },
                 ],
                 internalType: 'struct BaseMeeting.MeetingData',
                 name: '',
@@ -580,7 +672,7 @@ export const MEETING_ABI: any = [
     },
     {
         inputs: [
-            { internalType: 'uint256', name: '_meetind_id', type: 'uint256' },
+            { internalType: 'uint256', name: '_meeting_id', type: 'uint256' },
         ],
         name: 'getProposalMeetingData',
         outputs: [
@@ -618,7 +710,7 @@ export const MEETING_ABI: any = [
     },
     {
         inputs: [
-            { internalType: 'uint256', name: '_meetind_id', type: 'uint256' },
+            { internalType: 'uint256', name: '_meeting_id', type: 'uint256' },
         ],
         name: 'getUserInfoData',
         outputs: [

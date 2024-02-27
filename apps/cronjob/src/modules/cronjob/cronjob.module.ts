@@ -15,6 +15,7 @@ import { FileOfProposalTransactionRepository } from '@repositories/file-of-propo
 import { BlockModule } from '../block/block.module'
 import { MeetingCrawler } from './meeting-crawler'
 import { VotingTransactionRepository } from '@repositories/voting-transaction.repository'
+import { FileOfMeetingTransactionRepository } from '@repositories/file-of-meeting-transaction.repository'
 const Repositories = TypeOrmExModule.forCustomRepository([
     UserMeetingRepository,
     MeetingRepository,
@@ -25,6 +26,7 @@ const Repositories = TypeOrmExModule.forCustomRepository([
     ProposalTransactionRepository,
     FileOfProposalTransactionRepository,
     VotingTransactionRepository,
+    FileOfMeetingTransactionRepository,
 ])
 @Module({
     imports: [

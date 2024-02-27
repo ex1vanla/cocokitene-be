@@ -7,6 +7,7 @@ import {
     IsString,
 } from 'class-validator'
 import { FileTypes } from '@shares/constants/meeting.const'
+import { Type } from 'class-transformer'
 
 export class CreateMeetingFileDto {
     @IsNotEmpty()
@@ -42,4 +43,35 @@ export class MeetingFileDto extends OmitType(CreateMeetingFileDto, [
         example: 1,
     })
     id?: number
+}
+
+export class FileOfMeetingDataSendToBlockchainDto {
+    @IsNotEmpty()
+    @IsNumber()
+    @Type(() => Number)
+    @ApiProperty({
+        required: true,
+        example: 1,
+    })
+    meetingFileId: number
+
+    @IsNotEmpty()
+    @IsString()
+    @ApiProperty({
+        required: true,
+    })
+    url: string
+}
+
+export class CreateFileOfMeetingTransactionDto extends OmitType(
+    CreateMeetingFileDto,
+    ['fileType'],
+) {
+    @IsNotEmpty()
+    @IsNumber()
+    @ApiProperty({
+        required: true,
+        example: 1,
+    })
+    meetingFileId: number
 }

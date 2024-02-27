@@ -29,8 +29,11 @@ export class MeetingCrawler extends BaseCrawler {
             case MEETING_EVENT.UPDATE_PROPOSAL_MEETING:
                 await this.onUpdateProposalMeetingTransaction(event)
                 break
-            case MEETING_EVENT.UPDATE_FILE_MEETING:
+            case MEETING_EVENT.UPDATE_FILE_OF_PROPOSAL_MEETING:
                 await this.onUpdateFileOfProposalMeetingTransaction(event)
+                break
+            case MEETING_EVENT.UPDATE_FILE_OF_MEETING:
+                await this.onUpdateFileOfMeetingTransaction(event)
                 break
             case MEETING_EVENT.UPDATE_PARTICIPANT_MEETING:
                 await this.onUpdateParticipantMeetingTransaction(event)
@@ -106,6 +109,17 @@ export class MeetingCrawler extends BaseCrawler {
         await this.transactionRepository.updateTransactionByMeetingIdAndType(
             +meetingId,
             TRANSACTION_TYPE.UPDATE_USER_PROPOSAL_MEETING,
+            {
+                status: TRANSACTION_STATUS.SUCCESS,
+            },
+        )
+    }
+    async onUpdateFileOfMeetingTransaction(event: any): Promise<any> {
+        const { id_meeting, step } = event['returnValues']
+        console.log({ id_meeting, step })
+        await this.transactionRepository.updateTransactionByMeetingIdAndType(
+            +id_meeting,
+            TRANSACTION_TYPE.UPDATE_FILE_OF_MEETING,
             {
                 status: TRANSACTION_STATUS.SUCCESS,
             },

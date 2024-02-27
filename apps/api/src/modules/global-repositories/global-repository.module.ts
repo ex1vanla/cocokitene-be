@@ -22,6 +22,7 @@ import { FileOfProposalTransactionRepository } from '@repositories/file-of-propo
 import { ParticipantMeetingTransactionRepository } from '@repositories/participant-meeting-transaction.repository'
 import { ProposalTransactionRepository } from '@repositories/proposal-transaction.repository'
 import { VotingTransactionRepository } from '@repositories/voting-transaction.repository'
+import { FileOfMeetingTransactionRepository } from '@repositories/file-of-meeting-transaction.repository'
 
 const commonRepositories = [
     UserRepository,
@@ -47,6 +48,7 @@ const commonRepositories = [
     ParticipantMeetingTransactionRepository,
     ProposalTransactionRepository,
     VotingTransactionRepository,
+    FileOfMeetingTransactionRepository,
 ]
 
 @Global()

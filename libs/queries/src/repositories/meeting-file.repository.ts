@@ -51,4 +51,15 @@ export class MeetingFileRepository extends Repository<MeetingFile> {
     async deleteMeetingFile(meetingFileId: number): Promise<void> {
         await this.delete(meetingFileId)
     }
+
+    async getMeetingFilesByMeetingId(
+        meetingId: number,
+    ): Promise<MeetingFile[]> {
+        const meetingFile = await this.find({
+            where: {
+                meetingId: meetingId,
+            },
+        })
+        return meetingFile
+    }
 }

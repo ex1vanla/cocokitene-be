@@ -54,7 +54,13 @@ export type Unpaused = ContractEventLog<{
     account: string
     0: string
 }>
-export type UpdateFileMeeting = ContractEventLog<{
+export type UpdateFileOfMeeting = ContractEventLog<{
+    id_meeting: string
+    step: string
+    0: string
+    1: string
+}>
+export type UpdateFileOfProposalMeeting = ContractEventLog<{
     id_meeting: string
     step: string
     0: string
@@ -95,7 +101,13 @@ export interface Meeting extends BaseContract {
 
         UPDATE_MEETING_TYPEHASH(): NonPayableTransactionObject<string>
 
-        addFileNoSign(
+        addFileMeetingNoSign(
+            _meeting_id: number | string | BN,
+            _newFileMeetings: [number | string | BN, string][],
+            _step: number | string | BN,
+        ): NonPayableTransactionObject<void>
+
+        addFileProposalNoSign(
             _meeting_id: number | string | BN,
             _newFileProposals: [number | string | BN, string][],
             _step: number | string | BN,
@@ -169,12 +181,16 @@ export interface Meeting extends BaseContract {
             6: string[]
         }>
 
-        getFileData(
-            _meetind_id: number | string | BN,
+        getFileMeetingData(
+            _meeting_id: number | string | BN,
+        ): NonPayableTransactionObject<[string, string][]>
+
+        getFileProposalData(
+            _meeting_id: number | string | BN,
         ): NonPayableTransactionObject<[string, string][]>
 
         getMeetingData(
-            _meetind_id: number | string | BN,
+            _meeting_id: number | string | BN,
         ): NonPayableTransactionObject<
             [
                 string,
@@ -183,6 +199,7 @@ export interface Meeting extends BaseContract {
                 string,
                 string,
                 string,
+                string[],
                 boolean,
                 string,
                 string,
@@ -194,17 +211,19 @@ export interface Meeting extends BaseContract {
                 string,
                 [string, string][],
                 string,
+                [string, string][],
+                string,
             ]
         >
 
         getProposalMeetingData(
-            _meetind_id: number | string | BN,
+            _meeting_id: number | string | BN,
         ): NonPayableTransactionObject<
             [string, string, string, string, string][]
         >
 
         getUserInfoData(
-            _meetind_id: number | string | BN,
+            _meeting_id: number | string | BN,
         ): NonPayableTransactionObject<[string, string, string, string][]>
 
         getValidators(): NonPayableTransactionObject<string[]>
@@ -285,10 +304,18 @@ export interface Meeting extends BaseContract {
         Unpaused(cb?: Callback<Unpaused>): EventEmitter
         Unpaused(options?: EventOptions, cb?: Callback<Unpaused>): EventEmitter
 
-        UpdateFileMeeting(cb?: Callback<UpdateFileMeeting>): EventEmitter
-        UpdateFileMeeting(
+        UpdateFileOfMeeting(cb?: Callback<UpdateFileOfMeeting>): EventEmitter
+        UpdateFileOfMeeting(
             options?: EventOptions,
-            cb?: Callback<UpdateFileMeeting>,
+            cb?: Callback<UpdateFileOfMeeting>,
+        ): EventEmitter
+
+        UpdateFileOfProposalMeeting(
+            cb?: Callback<UpdateFileOfProposalMeeting>,
+        ): EventEmitter
+        UpdateFileOfProposalMeeting(
+            options?: EventOptions,
+            cb?: Callback<UpdateFileOfProposalMeeting>,
         ): EventEmitter
 
         UpdateMeeting(cb?: Callback<UpdateMeeting>): EventEmitter
@@ -375,11 +402,21 @@ export interface Meeting extends BaseContract {
     once(event: 'Unpaused', cb: Callback<Unpaused>): void
     once(event: 'Unpaused', options: EventOptions, cb: Callback<Unpaused>): void
 
-    once(event: 'UpdateFileMeeting', cb: Callback<UpdateFileMeeting>): void
+    once(event: 'UpdateFileOfMeeting', cb: Callback<UpdateFileOfMeeting>): void
     once(
-        event: 'UpdateFileMeeting',
+        event: 'UpdateFileOfMeeting',
         options: EventOptions,
-        cb: Callback<UpdateFileMeeting>,
+        cb: Callback<UpdateFileOfMeeting>,
+    ): void
+
+    once(
+        event: 'UpdateFileOfProposalMeeting',
+        cb: Callback<UpdateFileOfProposalMeeting>,
+    ): void
+    once(
+        event: 'UpdateFileOfProposalMeeting',
+        options: EventOptions,
+        cb: Callback<UpdateFileOfProposalMeeting>,
     ): void
 
     once(event: 'UpdateMeeting', cb: Callback<UpdateMeeting>): void
