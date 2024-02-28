@@ -33,31 +33,30 @@ export class CronjobService {
             name: contract.description,
         }
     }
-    //
+
     @Cron(CronExpression.EVERY_SECOND)
     async handleAllEndedMeeting() {
         await this.transactionService.handleAllEndedMeeting()
     }
 
-    @Cron(CronExpression.EVERY_5_SECONDS)
+    @Cron(CronExpression.EVERY_MINUTE)
     async handlePendingTransaction() {
         await this.transactionService.handleCheckTransaction()
     }
 
-    @Cron(CronExpression.EVERY_10_SECONDS)
+    @Cron(CronExpression.EVERY_SECOND)
     async crawlMeetingEvent() {
         const config = await this.getConfigCrawlerByContractType(
             CONTRACT_TYPE.MEETING,
         )
         await this.meetingCrawler.scan(config)
     }
-
-    @Cron(CronExpression.EVERY_30_SECONDS)
+    @Cron(CronExpression.EVERY_10_SECONDS)
     async handleDataAfterEventSuccessfulCreatedMeeting() {
         await this.transactionService.handleDataAfterEventSuccessfulCreatedMeeting()
     }
 
-    @Cron(CronExpression.EVERY_MINUTE)
+    @Cron(CronExpression.EVERY_30_SECONDS)
     async handleDataAfterEventSuccessfulUpdateProposalMeeting() {
         await this.transactionService.handleDataAfterEventSuccessfulUpdateProposalMeeting()
     }
