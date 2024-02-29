@@ -196,7 +196,7 @@ export class UserRepository extends Repository<User> {
             .update(User)
             .set({
                 username: updateUserDto.username,
-                walletAddress: updateUserDto.walletAddress,
+                walletAddress: updateUserDto.walletAddress || null,
                 email: updateUserDto.email,
                 statusId: updateUserDto.statusId,
                 phone: updateUserDto.phone,
@@ -244,6 +244,7 @@ export class UserRepository extends Repository<User> {
     ): Promise<User> {
         const user = await this.create({
             ...createUserDto,
+            walletAddress: createUserDto.walletAddress || null,
             companyId,
         })
         await user.save()
