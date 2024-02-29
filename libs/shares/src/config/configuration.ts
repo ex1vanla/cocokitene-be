@@ -56,6 +56,13 @@ interface Configuration {
     transaction: {
         maximumNumberTransactionPerCallFuncBlockchain: number
     }
+    cronjob: {
+        cronJobHandleEndedMeeting: string
+        cronJobHandlePendingTransaction: string
+        cronJobCrawlMeetingEvent: string
+        cronJobHandleDataAfterEventSuccessfulCreateMeeting: string
+        cronJobHandleDataAfterEventSuccessfulUpdateProposalMeeting: string
+    }
 }
 
 export default (): Configuration => ({
@@ -128,5 +135,17 @@ export default (): Configuration => ({
                 process.env.MAXIMUM_NUMBER_TRANSACTION_PER_CALL_FUNC_BLOCKCHAIN,
                 10,
             ) || 100,
+    },
+    cronjob: {
+        cronJobHandleEndedMeeting: process.env.CRON_JOB_HANDLE_ENDED_MEETING,
+        cronJobCrawlMeetingEvent: process.env.CRON_JOB_CRAWL_MEETING_EVENT,
+        cronJobHandlePendingTransaction:
+            process.env.CRON_JOB_HANDLE_PENDING_TRANSACTION,
+        cronJobHandleDataAfterEventSuccessfulCreateMeeting:
+            process.env
+                .CRON_JOB_HANDLE_DATA_AFTER_EVENT_SUCCESSFUL_CREATE_MEETING,
+        cronJobHandleDataAfterEventSuccessfulUpdateProposalMeeting:
+            process.env
+                .CRON_JOB_HANDLE_DATA_AFTER_EVENT_SUCCESSFUL_UPDATE_PROPOSAL_MEETING,
     },
 })
