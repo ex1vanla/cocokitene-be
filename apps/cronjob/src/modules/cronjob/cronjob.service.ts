@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { Cron } from '@nestjs/schedule'
+import { Cron, CronExpression } from '@nestjs/schedule'
 import { TransactionService } from '../transactions/transaction.service'
 import {
     ABI_BY_TYPE,
@@ -10,7 +10,6 @@ import {
 import { ConfigCrawler } from './cronjob.interface'
 import { getChainId } from '@shares/utils'
 import { MeetingCrawler } from './meeting-crawler'
-import configuration from '@shares/config/configuration'
 
 @Injectable()
 export class CronjobService {
@@ -35,33 +34,30 @@ export class CronjobService {
         }
     }
 
-    @Cron(configuration().cronjob.cronJobHandleEndedMeeting)
+    @Cron(CronExpression.EVERY_SECOND)
     async handleAllEndedMeeting() {
         await this.transactionService.handleAllEndedMeeting()
     }
 
-    @Cron(configuration().cronjob.cronJobHandlePendingTransaction)
+    @Cron(CronExpression.EVERY_30_SECONDS)
     async handlePendingTransaction() {
         await this.transactionService.handleCheckTransaction()
     }
-    @Cron(configuration().cronjob.cronJobCrawlMeetingEvent)
+
+    @Cron(CronExpression.EVERY_SECOND)
     async crawlMeetingEvent() {
         const config = await this.getConfigCrawlerByContractType(
             CONTRACT_TYPE.MEETING,
         )
         await this.meetingCrawler.scan(config)
     }
-    @Cron(
-        configuration().cronjob
-            .cronJobHandleDataAfterEventSuccessfulCreateMeeting,
-    )
+
+    @Cron(CronExpression.EVERY_5_SECONDS)
     async handleDataAfterEventSuccessfulCreatedMeeting() {
         await this.transactionService.handleDataAfterEventSuccessfulCreatedMeeting()
     }
-    @Cron(
-        configuration().cronjob
-            .cronJobHandleDataAfterEventSuccessfulUpdateProposalMeeting,
-    )
+
+    @Cron(CronExpression.EVERY_5_SECONDS)
     async handleDataAfterEventSuccessfulUpdateProposalMeeting() {
         await this.transactionService.handleDataAfterEventSuccessfulUpdateProposalMeeting()
     }

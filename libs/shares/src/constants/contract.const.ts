@@ -30,7 +30,7 @@ export const CONTRACT_BY_CHAIN: ContractByChain = {
     ],
     [SupportedChainId.SEPOLIA]: [
         {
-            address: '0x51Ca48f8eE0050D5881932d6b35E6Eb5d1B5363D',
+            address: '0x8Cc08371d4496063671CdDf99b5e11F3f149763E',
             startBlock: 5384000,
             description: 'Meeting contract testnet',
             type: CONTRACT_TYPE.MEETING,

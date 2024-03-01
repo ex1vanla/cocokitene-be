@@ -44,10 +44,6 @@ export const permissionData: InsertPermissionDto[] = [
             'the user with this right can see a list meetings in the system',
     },
     {
-        key: PermissionEnum.DELETE_MEETING,
-        description: 'the user with this right can delete a meeting of company',
-    },
-    {
         key: PermissionEnum.SEND_MAIL_TO_SHAREHOLDER,
         description: 'the user with this right can send email to shareholders',
     },
@@ -60,16 +56,6 @@ export const permissionData: InsertPermissionDto[] = [
         key: PermissionEnum.EDIT_PROPOSAL,
         description:
             'the user with this right can edit proposal in the meeting of company',
-    },
-    {
-        key: PermissionEnum.DELETE_PROPOSAL,
-        description:
-            'the user with this right can delete proposal in the meeting of company',
-    },
-    {
-        key: PermissionEnum.LIST_PROPOSAL,
-        description:
-            'the user with this right can see list proposal in the meeting of company',
     },
     {
         key: PermissionEnum.LIST_USER_STATUS,

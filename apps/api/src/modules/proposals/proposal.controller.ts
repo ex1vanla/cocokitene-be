@@ -1,7 +1,5 @@
 import {
     Controller,
-    Delete,
-    Get,
     HttpCode,
     HttpStatus,
     Param,
@@ -13,7 +11,6 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import { JwtAuthGuard } from '@shares/guards/jwt-auth.guard'
 import { PermissionEnum } from '@shares/constants'
 import { Permission } from '@shares/decorators/permission.decorator'
-import { GetAllProposalDto } from '@dtos/proposal.dto'
 import { ProposalService } from '@api/modules/proposals/proposal.service'
 import { UserScope } from '@shares/decorators/user.decorator'
 import { User } from '@entities/user.entity'
@@ -49,40 +46,40 @@ export class ProposalController {
         return proposal
     }
 
-    @Delete(':proposalId')
-    @UseGuards(JwtAuthGuard)
-    @HttpCode(HttpStatus.OK)
-    @Permission(PermissionEnum.DELETE_PROPOSAL)
-    @ApiBearerAuth()
-    @HttpCode(HttpStatus.OK)
-    async deleteProposal(
-        @Param('proposalId') proposalId: number,
-        @UserScope() user: User,
-    ) {
-        const companyId = user?.companyId
-        const result = await this.proposalService.deleteProposal(
-            companyId,
-            proposalId,
-        )
-        return result
-    }
+    // @Delete(':proposalId')
+    // @UseGuards(JwtAuthGuard)
+    // @HttpCode(HttpStatus.OK)
+    // @Permission(PermissionEnum.DELETE_PROPOSAL)
+    // @ApiBearerAuth()
+    // @HttpCode(HttpStatus.OK)
+    // async deleteProposal(
+    //     @Param('proposalId') proposalId: number,
+    //     @UserScope() user: User,
+    // ) {
+    //     const companyId = user?.companyId
+    //     const result = await this.proposalService.deleteProposal(
+    //         companyId,
+    //         proposalId,
+    //     )
+    //     return result
+    // }
 
-    @Get(':meetingId')
-    @HttpCode(HttpStatus.OK)
-    @ApiBearerAuth()
-    @UseGuards(JwtAuthGuard)
-    @Permission(PermissionEnum.LIST_PROPOSAL)
-    async getAllProposals(
-        @Param('meetingId') meetingId: number,
-        @Query() getAllProposalDto: GetAllProposalDto,
-        @UserScope() user: User,
-    ) {
-        const userId = user?.id
-        const proposals = await this.proposalService.getAllProposal(
-            meetingId,
-            userId,
-            getAllProposalDto,
-        )
-        return proposals
-    }
+    // @Get(':meetingId')
+    // @HttpCode(HttpStatus.OK)
+    // @ApiBearerAuth()
+    // @UseGuards(JwtAuthGuard)
+    // @Permission(PermissionEnum.LIST_PROPOSAL)
+    // async getAllProposals(
+    //     @Param('meetingId') meetingId: number,
+    //     @Query() getAllProposalDto: GetAllProposalDto,
+    //     @UserScope() user: User,
+    // ) {
+    //     const userId = user?.id
+    //     const proposals = await this.proposalService.getAllProposal(
+    //         meetingId,
+    //         userId,
+    //         getAllProposalDto,
+    //     )
+    //     return proposals
+    // }
 }

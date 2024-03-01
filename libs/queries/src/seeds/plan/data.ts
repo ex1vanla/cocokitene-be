@@ -6,27 +6,28 @@ export class InsertPlanDto extends PartialType(Plan) {
 }
 export const planData: InsertPlanDto[] = [
     {
-        planName: 'free',
-        description: 'it will help children be more active',
-        maxStorage: 2,
-        maxMeeting: 2,
+        planName: '月払い',
+        description: '毎月に支払い',
+        maxStorage: 80,
+        maxMeeting: 100,
+        price: 1000,
+        maxShareholderAccount: 300,
+    },
+    {
+        planName: '試用',
+        description:
+            'こちらは試用版です、一ヶ月間が切れると自動的に無料版に切り替え',
+        maxStorage: 40,
+        maxMeeting: 30,
         price: 0,
-        maxShareholderAccount: 3,
+        maxShareholderAccount: 150,
     },
     {
-        planName: 'trial',
-        description: 'it will help children be more active',
-        maxStorage: 4,
-        maxMeeting: 4,
-        price: 15,
-        maxShareholderAccount: 10,
-    },
-    {
-        planName: 'pay_of_month',
-        description: 'it will help children be more active',
+        planName: '無料版',
+        description: '無料版です',
         maxStorage: 10,
         maxMeeting: 10,
-        price: 100,
+        price: 0,
         maxShareholderAccount: 30,
     },
 ]
