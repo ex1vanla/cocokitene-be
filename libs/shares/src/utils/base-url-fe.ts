@@ -3,5 +3,5 @@ export const baseUrlFe = (
     ipAddress: string,
     language?: string,
 ): string => {
-    return `http:${ipAddress}:${port}/${language}`
+    return `http://${ipAddress}:${port}/${language}`
 }
