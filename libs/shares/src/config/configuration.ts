@@ -40,7 +40,6 @@ interface Configuration {
             user: string
             password: string
         }
-        // baseUrl: string
     }
     crawler: {
         adminAddress: string
@@ -63,8 +62,12 @@ interface Configuration {
         cronJobHandleDataAfterEventSuccessfulCreateMeeting: string
         cronJobHandleDataAfterEventSuccessfulUpdateProposalMeeting: string
     }
-    network: {
-        networkInterface: string
+    fe: {
+        port: number
+        ipAddress: string
+        baseFeUrl: string
+        languageEn: string
+        languageJa: string
     }
 }
 
@@ -119,7 +122,6 @@ export default (): Configuration => ({
             user: process.env.EMAIL_USER,
             password: process.env.EMAIL_PASSWORD,
         },
-        // baseUrl: process.env.BASE_URL,
     },
     crawler: {
         adminAddress: process.env.ADMIN_ADDRESS || '',
@@ -151,7 +153,11 @@ export default (): Configuration => ({
             process.env
                 .CRON_JOB_HANDLE_DATA_AFTER_EVENT_SUCCESSFUL_UPDATE_PROPOSAL_MEETING,
     },
-    network: {
-        networkInterface: process.env.TARGET_INTERFACE_NETWORK,
+    fe: {
+        port: parseInt(process.env.FE_PORT, 10) || 3000,
+        ipAddress: process.env.IP_ADDRESS,
+        baseFeUrl: process.env.BASE_FE_URL,
+        languageEn: process.env.LANGUAGE_EN || 'en',
+        languageJa: process.env.LANGUAGE_JA || 'ja',
     },
 })

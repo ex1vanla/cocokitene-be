@@ -9,7 +9,7 @@ import { IdMeetingDto } from 'libs/queries/src/dtos/meeting.dto'
 import { UserMeetingService } from '@api/modules/user-meetings/user-meeting.service'
 import { SystemAdmin } from '@entities/system-admin.entity'
 import configuration from '@shares/config/configuration'
-import { getIpAddress } from '@shares/utils'
+import { baseUrlFe } from '@shares/utils'
 
 @Injectable()
 export class EmailService {
@@ -70,8 +70,12 @@ export class EmailService {
     async sendEmailConfirmResetPassword(systemAdmin: SystemAdmin) {
         const resetPasswordToken = systemAdmin.resetPasswordToken,
             emailSystemAdmin = systemAdmin.email,
-            ipAddress = getIpAddress()
-        const resetLink = `http://${ipAddress}:3000/en/reset-password?token=${resetPasswordToken}`
+            fePort = configuration().fe.port,
+            ipAddress = configuration().fe.ipAddress,
+            languageEn = configuration().fe.languageEn,
+            baseUrl = baseUrlFe(fePort, ipAddress, languageEn)
+
+        const resetLink = `${baseUrl}/reset-password?token=${resetPasswordToken}`
         if (!emailSystemAdmin) {
             console.log('koo co email')
             return
