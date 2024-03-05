@@ -12,7 +12,41 @@
 <h1>Please attend the meeting</h1>
 <p>Hello guys</p>
 <p>You are invited to attend the following meeting:</p>
-<p><strong>Name of meeting:</strong> {{ meetingTitle }}</p>
+<p><strong>Name of mee<!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Admin and Company Information</title>
+  </head>
+  <body>
+
+  <h1>Super Admin Information</h1>
+  <ul>
+    <li><strong>Username:</strong> {{superAdmin.username}}</li>
+    <li><strong>Email:</strong> {{superAdmin.email}}</li>
+    <li><strong>Wallet Address:</strong> {{superAdmin.walletAddress}}</li>
+    <li><strong>Role:</strong> {{superAdmin.role}}</li>
+  </ul>
+
+  <h1>Company Information</h1>
+  <ul>
+    <li><strong>Company Name:</strong> {{company.companyName}}</li>
+    <li><strong>Description:</strong> {{company.description}}</li>
+    <li><strong>Address:</strong> {{company.address}}</li>
+    <li><strong>Company Shortname:</strong> {{company.companyShortname}}</li>
+    <li><strong>Company Email:</strong> {{company.emailCompany}}</li>
+    <li><strong>Date of Incorporation:</strong> {{company.dateOfCorporation}}</li>
+    <li><strong>Phone:</strong> {{company.phone}}</li>
+    <li><strong>Fax:</strong> {{company.fax}}</li>
+    <li><strong>Tax Number:</strong> {{company.taxNumber}}</li>
+    <li><strong>Business Type:</strong> {{company.businessType}}</li>
+    <li><strong>Representative User:</strong> {{company.representativeUser}}</li>
+  </ul>
+
+  </body>
+  </html>
+  ting:</strong> {{ meetingTitle }}</p>
 <p><strong>Meeting start at  :</strong> {{ meetingStartTime }}</p>
 <p><strong> and end at:</strong> {{ meetingEndTime }}</p>
 <p>Below are links related to the meeting:</p>

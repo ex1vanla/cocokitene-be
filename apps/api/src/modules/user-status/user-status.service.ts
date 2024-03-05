@@ -15,4 +15,8 @@ export class UserStatusService {
         )
         return userStatus
     }
+
+    async getStatusById(statusId: number): Promise<UserStatus> {
+        return await this.userStatusRepository.getUserStatusById(statusId)
+    }
 }
