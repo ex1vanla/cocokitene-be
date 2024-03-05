@@ -25,6 +25,14 @@ import { PlanService } from '@api/modules/plans/plan.service'
 import { User } from '@entities/user.entity'
 import { PermissionService } from '@api/modules/permissions/permission.service'
 import { RolePermissionService } from '@api/modules/role-permissions/role-permission.service'
+import { EmailService } from '@api/modules/emails/email.service'
+import {
+    createRandomPassword,
+    generateRandomHexColor,
+    hashPasswordUser,
+} from '@shares/utils'
+import { uuid } from '@shares/utils/uuid'
+import { SystemAdmin } from '@entities/system-admin.entity'
 
 @Injectable()
 export class CompanyService {
@@ -40,6 +48,7 @@ export class CompanyService {
         @Inject(forwardRef(() => PermissionService))
         private readonly permissionService: PermissionService,
         private readonly rolePermissionService: RolePermissionService,
+        private readonly emailService: EmailService,
     ) {}
     async getAllCompanys(
         getAllCompanyDto: GetAllCompanyDto,
@@ -89,7 +98,10 @@ export class CompanyService {
         return existedCompany
     }
 
-    async createCompany(createCompanyDto: CreateCompanyDto): Promise<Company> {
+    async createCompany(
+        createCompanyDto: CreateCompanyDto,
+        systemAdmin: SystemAdmin,
+    ): Promise<Company> {
         // check email and wallet address existed super admin
         const superAdminEmail = createCompanyDto.superAdminCompany.email
         const superAdminWalletAddress =
@@ -128,6 +140,8 @@ export class CompanyService {
         }
         const { superAdminCompany } = createCompanyDto
 
+        let defaultPassword = ''
+
         const createdSuperAdminCompany =
             await this.userService.createSuperAdminCompany({
                 username: superAdminCompany.username,
@@ -136,7 +150,14 @@ export class CompanyService {
                 statusId: superAdminCompany.statusId,
                 companyId: createdCompany.id,
             })
+        defaultPassword = createRandomPassword(8)
+        const hashedDefaultPassword = await hashPasswordUser(defaultPassword)
 
+        createdSuperAdminCompany.password = hashedDefaultPassword
+        createdSuperAdminCompany.nonce = uuid()
+        createdSuperAdminCompany.defaultAvatarHashColor =
+            generateRandomHexColor()
+        await createdSuperAdminCompany.save()
         await Promise.all(
             enumToArray(RoleEnum).map((role) =>
                 this.roleService.createCompanyRole(role, createdCompany.id),
@@ -165,6 +186,19 @@ export class CompanyService {
             userId: createdSuperAdminCompany.id,
             roleId: roleSuperAdminOfCompany.id,
         })
+        try {
+            await this.emailService.sendEmailWhenCreatedCompanySuccesfully(
+                createdSuperAdminCompany,
+                createdCompany,
+                systemAdmin,
+                defaultPassword,
+            )
+        } catch (error) {
+            throw new HttpException(
+                httpErrors.EMAIL_SEND_INFORMATION_TO_SUPER_ADMIN_FAILED,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            )
+        }
 
         return createdCompany
     }

@@ -20,6 +20,7 @@ import { GetAllUserStatusDto } from '@dtos/user-status.dto'
 import { UserStatusService } from '@api/modules/user-status/user-status.service'
 import { SystemAdminRepository } from '@repositories/system-admin.repository'
 import { Plan } from '@entities/plan.entity'
+import { SystemAdmin } from '@entities/system-admin.entity'
 
 @Injectable()
 export class SystemAdminService {
@@ -113,9 +114,13 @@ export class SystemAdminService {
         return companyStatuses
     }
 
-    async createCompany(createCompanyDto: CreateCompanyDto) {
+    async createCompany(
+        createCompanyDto: CreateCompanyDto,
+        systemAdmin: SystemAdmin,
+    ) {
         const company = await this.companyService.createCompany(
             createCompanyDto,
+            systemAdmin,
         )
         return company
     }

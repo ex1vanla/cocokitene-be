@@ -8,6 +8,7 @@ import { UserStatusModule } from '@api/modules/user-status/user-status.module'
 import { PlanModule } from '@api/modules/plans/plan.module'
 import { RolePermissionModule } from '@api/modules/role-permissions/role-permission.module'
 import { PermissionModule } from '@api/modules/permissions/permission.module'
+import { EmailModule } from '@api/modules/emails/email.module'
 
 @Module({
     imports: [
@@ -18,6 +19,7 @@ import { PermissionModule } from '@api/modules/permissions/permission.module'
         PlanModule,
         forwardRef(() => RolePermissionModule),
         PermissionModule,
+        EmailModule,
     ],
     controllers: [CompanyController],
     providers: [CompanyService],

@@ -1,6 +1,12 @@
 import { CreateUserMeetingDto } from '@dtos/user-meeting.dto'
 import { UserMeeting } from '@entities/user-meeting.entity'
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
+import {
+    forwardRef,
+    HttpException,
+    HttpStatus,
+    Inject,
+    Injectable,
+} from '@nestjs/common'
 import { UserMeetingRepository } from '@repositories/user-meeting.repository'
 import {
     MeetingRole,
@@ -14,6 +20,8 @@ import { User } from '@entities/user.entity'
 export class UserMeetingService {
     constructor(
         private readonly userMeetingRepository: UserMeetingRepository,
+        // private readonly userService: UserService,
+        @Inject(forwardRef(() => UserService))
         private readonly userService: UserService,
     ) {}
 

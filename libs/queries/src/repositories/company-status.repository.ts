@@ -36,4 +36,13 @@ export class CompanyStatusRepository extends Repository<CompanyStatus> {
         }
         return paginate(queryBuilder, { page, limit })
     }
+
+    async getCompanyStatusById(statusId: number): Promise<CompanyStatus> {
+        const companyStatus = await this.findOne({
+            where: {
+                id: statusId,
+            },
+        })
+        return companyStatus
+    }
 }
