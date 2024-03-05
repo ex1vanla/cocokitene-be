@@ -33,4 +33,13 @@ export class UserStatusRepository extends Repository<UserStatus> {
         }
         return paginate(queryBuilder, { page, limit })
     }
+
+    async getUserStatusById(statusId: number): Promise<UserStatus> {
+        const userStatus = await this.findOne({
+            where: {
+                id: statusId,
+            },
+        })
+        return userStatus
+    }
 }

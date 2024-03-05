@@ -209,6 +209,11 @@ export const httpErrors = {
         message: 'super admin not found. Please try again',
         code: 'SUPER_ADMIN_00003',
     },
+    EMAIL_SEND_INFORMATION_TO_SUPER_ADMIN_FAILED: {
+        message:
+            'Send information of super admin to super admin failed. Please try again',
+        code: 'SUPER_ADMIN_00004',
+    },
     // user-role
     USER_ROLE_CREATE_FAILED: {
         message: 'user_role created failed. Please try again',

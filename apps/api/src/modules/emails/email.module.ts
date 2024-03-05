@@ -5,6 +5,8 @@ import { ConfigService } from '@nestjs/config'
 import { join } from 'path'
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter'
 import { UserMeetingModule } from '@api/modules/user-meetings/user-meeting.module'
+import { UserStatusModule } from '@api/modules/user-status/user-status.module'
+import { CompanyStatusModule } from '@api/modules/company-status/company-status.module'
 
 @Module({
     imports: [
@@ -30,6 +32,8 @@ import { UserMeetingModule } from '@api/modules/user-meetings/user-meeting.modul
             inject: [ConfigService],
         }),
         UserMeetingModule,
+        UserStatusModule,
+        CompanyStatusModule,
     ],
 
     providers: [EmailService],

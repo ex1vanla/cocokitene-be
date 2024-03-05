@@ -18,4 +18,9 @@ export class CompanyStatusService {
             )
         return comapnyStatus
     }
+    async getCompanyStatusById(statusId: number): Promise<CompanyStatus> {
+        const companyStatus =
+            await this.companyStatusRepository.getCompanyStatusById(statusId)
+        return companyStatus
+    }
 }
