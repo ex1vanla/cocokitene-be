@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registration Information</title>
+</head>
+<body>
+
+<h1>Registration  Company Information</h1>
+
+<ul>
+  <li><strong>Username:</strong> {{username}}</li>
+  <li><strong>Company Name:</strong> {{companyName}}</li>
+  <li><strong>Phone:</strong> {{phone}}</li>
+  <li><strong>Email:</strong> {{email}}</li>
+  {{#if user.note}}
+    <li><strong>Note:</strong> {{note}}</li>
+  {{/if}}
+</ul>
+
+</body>
+</html>

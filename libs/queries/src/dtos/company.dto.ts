@@ -249,3 +249,45 @@ export class GetAllCompanyDto extends GetAllDto {
     })
     sortOrder?: Sort_By_Order
 }
+
+export class RegisterCompanyDto {
+    @IsString()
+    @IsNotEmpty()
+    @ApiProperty({
+        example: 'Mr Phuong',
+        required: true,
+    })
+    representativeUser: string
+
+    @IsString()
+    @IsNotEmpty()
+    @ApiProperty({
+        example: 'kiennv@trithucmoi.co',
+        required: true,
+    })
+    email: string
+
+    @IsString()
+    @IsNotEmpty()
+    @ApiProperty({
+        example: 'NAB Innovation Centre Vietnam',
+        required: true,
+    })
+    companyName: string
+
+    @IsNotEmpty()
+    @IsString()
+    @ApiProperty({
+        example: '0989898989',
+        required: true,
+    })
+    phone: string
+
+    @IsOptional()
+    @IsString()
+    @ApiProperty({
+        example: 'day la thong tin cong ty cua toi',
+        required: false,
+    })
+    note?: string
+}

@@ -1,4 +1,10 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
+import {
+    forwardRef,
+    HttpException,
+    HttpStatus,
+    Inject,
+    Injectable,
+} from '@nestjs/common'
 import {
     CreateCompanyDto,
     GetAllCompanyDto,
@@ -25,7 +31,9 @@ import { SystemAdmin } from '@entities/system-admin.entity'
 @Injectable()
 export class SystemAdminService {
     constructor(
+        @Inject(forwardRef(() => CompanyService))
         private readonly companyService: CompanyService,
+        @Inject(forwardRef(() => UserService))
         private readonly userService: UserService,
         private readonly planService: PlanService,
         private readonly companyStatusService: CompanyStatusService,
@@ -151,5 +159,11 @@ export class SystemAdminService {
     async createPlan(createPlanDto: CreatePlanDto) {
         const plan = await this.planService.createPlan(createPlanDto)
         return plan
+    }
+
+    async getAllSystemAdmin(): Promise<SystemAdmin[]> {
+        const systemAdmins =
+            await this.systemAdminRepository.getAllSystemAdmin()
+        return systemAdmins
     }
 }

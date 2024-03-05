@@ -8,6 +8,7 @@ import { UserMeetingModule } from '@api/modules/user-meetings/user-meeting.modul
 import { UserStatusModule } from '@api/modules/user-status/user-status.module'
 import { CompanyStatusModule } from '@api/modules/company-status/company-status.module'
 import { UserRoleModule } from '@api/modules/user-roles/user-role.module'
+import { SystemAdminModule } from '@api/modules/system-admin/system-admin.module'
 
 @Module({
     imports: [
@@ -39,6 +40,7 @@ import { UserRoleModule } from '@api/modules/user-roles/user-role.module'
         UserStatusModule,
         CompanyStatusModule,
         UserRoleModule,
+        SystemAdminModule,
     ],
 
     providers: [EmailService],

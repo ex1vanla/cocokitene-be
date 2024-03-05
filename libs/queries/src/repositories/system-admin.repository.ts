@@ -30,4 +30,14 @@ export class SystemAdminRepository extends Repository<SystemAdmin> {
         })
         return systemAdmin
     }
+
+    async getAllSystemAdmin(): Promise<SystemAdmin[]> {
+        const queryBuilder = this.createQueryBuilder('system_admins').select([
+            'system_admins.id',
+            'system_admins.username',
+            'system_admins.email',
+        ])
+        const systemAdmins = await queryBuilder.getMany()
+        return systemAdmins
+    }
 }

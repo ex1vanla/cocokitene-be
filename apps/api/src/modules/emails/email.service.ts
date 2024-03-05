@@ -15,6 +15,8 @@ import { UserStatusService } from '@api/modules/user-status/user-status.service'
 import { CompanyStatusService } from '@api/modules/company-status/company-status.service'
 import { CompanyStatusEnum, UserStatusEnum } from '@shares/constants'
 import { UserRoleService } from '@api/modules/user-roles/user-role.service'
+import { RegisterCompanyDto } from '@dtos/company.dto'
+import { SystemAdminService } from '@api/modules/system-admin/system-admin.service'
 
 @Injectable()
 export class EmailService {
@@ -27,6 +29,7 @@ export class EmailService {
         private readonly userStatusService: UserStatusService,
         private readonly companyStatusService: CompanyStatusService,
         private readonly userRoleService: UserRoleService,
+        private readonly systemAdminService: SystemAdminService,
     ) {}
 
     async sendEmailMeeting(idMeetingDto: IdMeetingDto, companyId: number) {
@@ -233,6 +236,23 @@ export class EmailService {
                         : 'Inactive',
                 roleOfUser: roleOfUser,
                 shareQuantity: shareQuantity,
+            },
+        })
+    }
+    async sendEmailRegisterCompany(registerCompanyDto: RegisterCompanyDto) {
+        const systemAdmin = await this.systemAdminService.getAllSystemAdmin()[0]
+        const { note, companyName, phone, representativeUser, email } =
+            registerCompanyDto
+        await this.mailerService.sendMail({
+            to: systemAdmin.email,
+            subject: 'Register Company Information',
+            template: './register-info-company-from-user-landing-page',
+            context: {
+                username: representativeUser,
+                companyName: companyName,
+                phone: phone,
+                email: email,
+                note: note,
             },
         })
     }

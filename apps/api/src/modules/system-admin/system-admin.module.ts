@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common'
+import { forwardRef, Module } from '@nestjs/common'
 import { SystemAdminController } from '@api/modules/system-admin/system-admin.controller'
 import { SystemAdminService } from '@api/modules/system-admin/system-admin.service'
 import { CompanyModule } from '@api/modules/companys/company.module'
@@ -10,8 +10,8 @@ import { UserStatusModule } from '@api/modules/user-status/user-status.module'
 
 @Module({
     imports: [
-        CompanyModule,
-        UserModule,
+        forwardRef(() => CompanyModule),
+        forwardRef(() => UserModule),
         PlanModule,
         CompanyStatusModule,
         RoleModule,
