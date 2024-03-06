@@ -197,6 +197,7 @@ export class UserRepository extends Repository<User> {
             .set({
                 username: updateUserDto.username,
                 walletAddress: updateUserDto.walletAddress || null,
+                shareQuantity: updateUserDto.shareQuantity || null,
                 email: updateUserDto.email,
                 statusId: updateUserDto.statusId,
                 phone: updateUserDto.phone,
@@ -226,6 +227,7 @@ export class UserRepository extends Repository<User> {
                 'users.walletAddress',
                 'users.defaultAvatarHashColor',
                 'users.avatar',
+                'users.shareQuantity',
             ])
             .leftJoin('users.company', 'company')
             .addSelect(['company.id', 'company.companyName'])
@@ -245,6 +247,7 @@ export class UserRepository extends Repository<User> {
         const user = await this.create({
             ...createUserDto,
             walletAddress: createUserDto.walletAddress || null,
+            shareQuantity: createUserDto.shareQuantity || null,
             companyId,
         })
         await user.save()

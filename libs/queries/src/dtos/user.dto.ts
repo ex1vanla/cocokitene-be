@@ -139,7 +139,7 @@ export class CreateUserDto {
         required: false,
         example: 100,
     })
-    shareQuantity: number
+    shareQuantity?: number
 
     @IsString()
     @IsOptional()
