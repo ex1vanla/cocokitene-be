@@ -257,7 +257,7 @@ export class RegisterCompanyDto {
         example: 'Mr Phuong',
         required: true,
     })
-    representativeUser: string
+    username: string
 
     @IsString()
     @IsNotEmpty()
@@ -273,7 +273,7 @@ export class RegisterCompanyDto {
         example: 'NAB Innovation Centre Vietnam',
         required: true,
     })
-    companyName: string
+    company: string
 
     @IsNotEmpty()
     @IsString()

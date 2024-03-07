@@ -7,6 +7,7 @@ import { PlanModule } from '@api/modules/plans/plan.module'
 import { CompanyStatusModule } from '../company-status/company-status.module'
 import { RoleModule } from '@api/modules/roles/role.module'
 import { UserStatusModule } from '@api/modules/user-status/user-status.module'
+import { EmailModule } from '@api/modules/emails/email.module'
 
 @Module({
     imports: [
@@ -15,7 +16,9 @@ import { UserStatusModule } from '@api/modules/user-status/user-status.module'
         PlanModule,
         CompanyStatusModule,
         RoleModule,
+
         UserStatusModule,
+        forwardRef(() => EmailModule),
     ],
     controllers: [SystemAdminController],
     providers: [SystemAdminService],

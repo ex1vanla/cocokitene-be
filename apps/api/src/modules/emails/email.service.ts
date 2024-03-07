@@ -216,10 +216,9 @@ export class EmailService {
             },
         })
 
-        const cc_emails = configuration().email.cc_emails
         await this.mailerService.sendMail({
             to: email,
-            cc: cc_emails,
+            cc: emailSuperAdmin,
             subject: 'Account successfully created',
             template: './send-information-create-user-side-user',
             context: {
@@ -240,16 +239,18 @@ export class EmailService {
         })
     }
     async sendEmailRegisterCompany(registerCompanyDto: RegisterCompanyDto) {
-        const systemAdmin = await this.systemAdminService.getAllSystemAdmin()[0]
-        const { note, companyName, phone, representativeUser, email } =
-            registerCompanyDto
+        const cc_emails = configuration().email.cc_emails
+        const emailServer = configuration().email.auth.user
+        cc_emails.push(emailServer)
+        const { note, company, phone, username, email } = registerCompanyDto
         await this.mailerService.sendMail({
-            to: systemAdmin.email,
+            to: email,
+            cc: cc_emails,
             subject: 'Register Company Information',
             template: './register-info-company-from-user-landing-page',
             context: {
-                username: representativeUser,
-                companyName: companyName,
+                username: username,
+                companyName: company,
                 phone: phone,
                 email: email,
                 note: note,

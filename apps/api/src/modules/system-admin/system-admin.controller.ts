@@ -2,16 +2,22 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import {
     Body,
     Controller,
+    forwardRef,
     Get,
     HttpCode,
     HttpStatus,
+    Inject,
     Param,
     Patch,
     Post,
     Query,
     UseGuards,
 } from '@nestjs/common'
-import { CreateCompanyDto, GetAllCompanyDto } from '@dtos/company.dto'
+import {
+    CreateCompanyDto,
+    GetAllCompanyDto,
+    RegisterCompanyDto,
+} from '@dtos/company.dto'
 import { SystemAdminService } from '@api/modules/system-admin/system-admin.service'
 import { GetAllCompanyStatusDto, UpdateCompanyDto } from '@dtos/company.dto'
 import { SuperAdminDto } from '@dtos/user.dto'
@@ -20,12 +26,16 @@ import { SystemAdminGuard } from '@shares/guards/systemadmin.guard'
 import { GetAllUserStatusDto } from '@dtos/user-status.dto'
 import { SystemAdminScope } from '@shares/decorators/system-admin.decorator'
 import { SystemAdmin } from '@entities/system-admin.entity'
+import { EmailService } from '@api/modules/emails/email.service'
 
 @Controller('system-admin')
 @ApiTags('system-admin')
 export class SystemAdminController {
-    constructor(private readonly systemAdminService: SystemAdminService) {}
-
+    constructor(
+        private readonly systemAdminService: SystemAdminService,
+        @Inject(forwardRef(() => EmailService))
+        private readonly emailService: EmailService,
+    ) {}
     @Get('/get-all-companys')
     @HttpCode(HttpStatus.OK)
     @ApiBearerAuth()
@@ -163,5 +173,15 @@ export class SystemAdminController {
     async createPlan(@Body() createPlanDto: CreatePlanDto) {
         const plan = await this.systemAdminService.createPlan(createPlanDto)
         return plan
+    }
+
+    @Post('/register-company')
+    @HttpCode(HttpStatus.OK)
+    @ApiBearerAuth()
+    async sendEmailRegisterCompany(
+        @Body() registerCompanyDto: RegisterCompanyDto,
+    ) {
+        await this.emailService.sendEmailRegisterCompany(registerCompanyDto)
+        return 'Emails  register information company send to system admin successfully'
     }
 }
