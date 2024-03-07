@@ -29,6 +29,7 @@ import {
     hashPasswordUser,
 } from '@shares/utils'
 import { Like } from 'typeorm'
+import { EmailService } from '@api/modules/emails/email.service'
 
 @Injectable()
 export class UserService {
@@ -37,6 +38,7 @@ export class UserService {
         @Inject(forwardRef(() => CompanyService))
         private readonly companyService: CompanyService,
         private readonly userRoleService: UserRoleService,
+        private readonly emailService: EmailService,
     ) {}
 
     async getUserNonceByUserWalletAddress(
@@ -236,7 +238,11 @@ export class UserService {
         return existedUser
     }
 
-    async createUser(companyId: number, createUserDto: CreateUserDto) {
+    async createUser(
+        companyId: number,
+        createUserDto: CreateUserDto,
+        emailSuperAdmin: string,
+    ) {
         const existedCompany = await this.companyService.getCompanyById(
             companyId,
         )
@@ -280,6 +286,22 @@ export class UserService {
             ])
         } catch (error) {
             throw new HttpException(
+                { message: error.message },
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            )
+        }
+        try {
+            await this.emailService.sendEmailWhenCreateUserSuccessfully(
+                createdUser,
+                defaultPassword,
+                existedCompany.companyName,
+                emailSuperAdmin,
+            )
+        } catch (error) {
+            throw new HttpException(
+                // httpErrors.EMAIL_SEND_TO_CREATED_USER_FAILED,
+                // HttpStatus.INTERNAL_SERVER_ERROR
+
                 { message: error.message },
                 HttpStatus.INTERNAL_SERVER_ERROR,
             )

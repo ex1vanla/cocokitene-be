@@ -7,6 +7,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
 import { UserMeetingModule } from '@api/modules/user-meetings/user-meeting.module'
 import { UserStatusModule } from '@api/modules/user-status/user-status.module'
 import { CompanyStatusModule } from '@api/modules/company-status/company-status.module'
+import { UserRoleModule } from '@api/modules/user-roles/user-role.module'
 
 @Module({
     imports: [
@@ -21,6 +22,9 @@ import { CompanyStatusModule } from '@api/modules/company-status/company-status.
                         pass: configService.get('email.auth.password'),
                     },
                 },
+                defaults: {
+                    from: configService.get('email.auth.user'),
+                },
                 template: {
                     dir: join(__dirname, 'modules/emails/templates'),
                     adapter: new HandlebarsAdapter(),
@@ -34,6 +38,7 @@ import { CompanyStatusModule } from '@api/modules/company-status/company-status.
         UserMeetingModule,
         UserStatusModule,
         CompanyStatusModule,
+        UserRoleModule,
     ],
 
     providers: [EmailService],

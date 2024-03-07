@@ -105,6 +105,7 @@ export class UserController {
         const createdUser = await this.userService.createUser(
             companyId,
             createUserDto,
+            user.email,
         )
         return createdUser
     }

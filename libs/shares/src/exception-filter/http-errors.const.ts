@@ -40,6 +40,11 @@ export const httpErrors = {
         message: 'Password of user invalid credentials. Please try again',
         code: 'USER_00007',
     },
+    EMAIL_SEND_TO_CREATED_USER_FAILED: {
+        message:
+            'Send email to user when create acc by super admin failed. Please try again',
+        code: 'USER_00008',
+    },
 
     // user status error
     USER_STATUS_NOT_EXISTED: {
