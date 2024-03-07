@@ -3,9 +3,10 @@ import { UserService } from '@api/modules/users/user.service'
 import { UserController } from '@api/modules/users/user.controller'
 import { CompanyModule } from '@api/modules/companys/company.module'
 import { UserRoleModule } from '@api/modules/user-roles/user-role.module'
+import { EmailModule } from '@api/modules/emails/email.module'
 
 @Module({
-    imports: [forwardRef(() => CompanyModule), UserRoleModule],
+    imports: [forwardRef(() => CompanyModule), UserRoleModule, EmailModule],
     controllers: [UserController],
     providers: [UserService],
     exports: [UserService],

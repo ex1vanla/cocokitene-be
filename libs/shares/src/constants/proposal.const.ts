@@ -4,7 +4,7 @@ export enum ProposalType {
 }
 
 export enum VoteProposalResult {
-    VOTE = 'vote',
-    UNVOTE = 'un_vote',
-    NO_IDEA = 'no_idea',
+    VOTE = '0',
+    UNVOTE = '1',
+    NO_IDEA = '2',
 }

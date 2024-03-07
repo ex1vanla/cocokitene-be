@@ -14,6 +14,7 @@ import { User } from '@entities/user.entity'
 import { UserStatusService } from '@api/modules/user-status/user-status.service'
 import { CompanyStatusService } from '@api/modules/company-status/company-status.service'
 import { CompanyStatusEnum, UserStatusEnum } from '@shares/constants'
+import { UserRoleService } from '@api/modules/user-roles/user-role.service'
 
 @Injectable()
 export class EmailService {
@@ -25,6 +26,7 @@ export class EmailService {
         private readonly userMeetingService: UserMeetingService,
         private readonly userStatusService: UserStatusService,
         private readonly companyStatusService: CompanyStatusService,
+        private readonly userRoleService: UserRoleService,
     ) {}
 
     async sendEmailMeeting(idMeetingDto: IdMeetingDto, companyId: number) {
@@ -112,7 +114,6 @@ export class EmailService {
                     companyInformation.statusId,
                 )
         await this.mailerService.sendMail({
-            from: emailSystemAdmin,
             to: superAdmin.email,
             subject: 'Super admin information',
             template: './send-information-super-admin',
@@ -173,6 +174,65 @@ export class EmailService {
                 taxNumber: companyInformation.taxNumber,
                 businessType: companyInformation.businessType,
                 representativeUser: companyInformation.representativeUser,
+            },
+        })
+    }
+
+    async sendEmailWhenCreateUserSuccessfully(
+        createdUser: User,
+        password: string,
+        companyName: string,
+        emailSuperAdmin: string,
+    ) {
+        const { email, username, shareQuantity, walletAddress, phone } =
+            createdUser
+        const roleUser = await this.userRoleService.getRolesByUserId(
+            createdUser.id,
+        )
+        const roleOfUser = roleUser.map((role) => role.roleName).join(', ')
+        const statusUser = await this.userStatusService.getStatusById(
+            createdUser.statusId,
+        )
+        await this.mailerService.sendMail({
+            to: emailSuperAdmin,
+            subject: 'New account creation completed',
+            template: './send-information-create-user-side-superadmin',
+            context: {
+                companyName: companyName,
+                username: username,
+                email: email,
+                walletAddress: walletAddress,
+                password: password,
+                phoneUser: phone,
+                statusUser:
+                    statusUser.status === UserStatusEnum.ACTIVE
+                        ? 'Active'
+                        : 'Inactive',
+                roleOfUser: roleOfUser,
+                shareQuantity: shareQuantity,
+            },
+        })
+
+        const cc_emails = configuration().email.cc_emails
+        await this.mailerService.sendMail({
+            to: email,
+            cc: cc_emails,
+            subject: 'Account successfully created',
+            template: './send-information-create-user-side-user',
+            context: {
+                companyName: companyName,
+                username: username,
+                email: email,
+                walletAddress: walletAddress,
+                password: password,
+                phoneUser: phone,
+
+                statusUser:
+                    statusUser.status === UserStatusEnum.ACTIVE
+                        ? 'Active'
+                        : 'Inactive',
+                roleOfUser: roleOfUser,
+                shareQuantity: shareQuantity,
             },
         })
     }
