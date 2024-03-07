@@ -296,13 +296,11 @@ export class UserService {
                 defaultPassword,
                 existedCompany.companyName,
                 emailSuperAdmin,
+                existedCompany.taxNumber,
             )
         } catch (error) {
             throw new HttpException(
-                // httpErrors.EMAIL_SEND_TO_CREATED_USER_FAILED,
-                // HttpStatus.INTERNAL_SERVER_ERROR
-
-                { message: error.message },
+                httpErrors.EMAIL_SEND_TO_CREATED_USER_FAILED,
                 HttpStatus.INTERNAL_SERVER_ERROR,
             )
         }

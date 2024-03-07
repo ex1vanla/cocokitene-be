@@ -9,6 +9,8 @@ import { UserStatusModule } from '@api/modules/user-status/user-status.module'
 import { CompanyStatusModule } from '@api/modules/company-status/company-status.module'
 import { UserRoleModule } from '@api/modules/user-roles/user-role.module'
 import { SystemAdminModule } from '@api/modules/system-admin/system-admin.module'
+import { ShareholderModule } from '@api/modules/shareholder/shareholder.module'
+import { MeetingFileModule } from '@api/modules/meeting-files/meeting-file.module'
 
 @Module({
     imports: [
@@ -41,6 +43,8 @@ import { SystemAdminModule } from '@api/modules/system-admin/system-admin.module
         CompanyStatusModule,
         UserRoleModule,
         SystemAdminModule,
+        ShareholderModule,
+        MeetingFileModule,
     ],
 
     providers: [EmailService],

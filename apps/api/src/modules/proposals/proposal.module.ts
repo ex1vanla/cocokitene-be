@@ -5,7 +5,6 @@ import { VotingModule } from '@api/modules/votings/voting.module'
 import { MeetingModule } from '@api/modules/meetings/meeting.module'
 import { ProposalFileModule } from '@api/modules/proposal-files/proposal-file.module'
 import { UserMeetingModule } from '@api/modules/user-meetings/user-meeting.module'
-import { UserModule } from '@api/modules/users/user.module'
 
 @Module({
     controllers: [ProposalController],
@@ -14,7 +13,7 @@ import { UserModule } from '@api/modules/users/user.module'
     imports: [
         VotingModule,
         UserMeetingModule,
-        UserModule,
+
         forwardRef(() => MeetingModule),
         forwardRef(() => ProposalFileModule),
     ],

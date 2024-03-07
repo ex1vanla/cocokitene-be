@@ -7,7 +7,8 @@ import { MeetingModule } from '@api/modules/meetings/meeting.module'
 
 @Module({
     imports: [
-        UserModule,
+        forwardRef(() => UserModule),
+
         UserMeetingModule,
         RoleModule,
         forwardRef(() => MeetingModule),

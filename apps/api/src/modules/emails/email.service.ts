@@ -4,7 +4,6 @@ import { Injectable } from '@nestjs/common'
 import { UserRepository } from '@repositories/user.repository'
 import { MailerService } from '@nestjs-modules/mailer'
 import { MeetingRepository } from '@repositories/meeting.repository'
-import { IdMeetingDto } from 'libs/queries/src/dtos/meeting.dto'
 import { UserMeetingService } from '@api/modules/user-meetings/user-meeting.service'
 import { SystemAdmin } from '@entities/system-admin.entity'
 import configuration from '@shares/config/configuration'
@@ -16,7 +15,9 @@ import { CompanyStatusService } from '@api/modules/company-status/company-status
 import { CompanyStatusEnum, UserStatusEnum } from '@shares/constants'
 import { UserRoleService } from '@api/modules/user-roles/user-role.service'
 import { RegisterCompanyDto } from '@dtos/company.dto'
-import { SystemAdminService } from '@api/modules/system-admin/system-admin.service'
+import { ShareholderService } from '@api/modules/shareholder/shareholder.service'
+import { FileTypes, MeetingRole } from '@shares/constants/meeting.const'
+import { MeetingFileService } from '@api/modules/meeting-files/meeting-file.service'
 
 @Injectable()
 export class EmailService {
@@ -29,27 +30,32 @@ export class EmailService {
         private readonly userStatusService: UserStatusService,
         private readonly companyStatusService: CompanyStatusService,
         private readonly userRoleService: UserRoleService,
-        private readonly systemAdminService: SystemAdminService,
+        private readonly shareholderService: ShareholderService,
+        private readonly meetingFileService: MeetingFileService,
     ) {}
 
-    async sendEmailMeeting(idMeetingDto: IdMeetingDto, companyId: number) {
-        const { meetingId } = idMeetingDto
-
+    async sendEmailMeeting(meetingId: number, user: User) {
         const idsParticipantsInMeetings =
-            await this.userMeetingService.getAllIdsParticipantsInMeeting(
+            await this.userMeetingService.getUserMeetingByMeetingIdAndRole(
                 meetingId,
+                MeetingRole.SHAREHOLDER,
             )
 
         const participants = await Promise.all(
             idsParticipantsInMeetings.map(async (idsParticipantsInMeeting) => {
                 const user = await this.userRepository.findOne({
                     where: {
-                        id: idsParticipantsInMeeting,
+                        id: idsParticipantsInMeeting.user.id,
                     },
                 })
                 return user
             }),
         )
+        const meetingFiles =
+            await this.meetingFileService.getMeetingFilesByMeetingIdAndType(
+                meetingId,
+                FileTypes.MEETING_INVITATION,
+            )
 
         const meeting = await this.meetingRepository.findOne({
             where: {
@@ -59,22 +65,23 @@ export class EmailService {
         const recipientEmails = participants.map(
             (participant) => participant.email,
         )
-        // console.log('recipientEmails-----', recipientEmails)
-        await Promise.all([
-            recipientEmails.map((recipientEmail) =>
-                this.mailerService.sendMail({
-                    to: recipientEmail,
-                    subject: 'Hello guys, this is meeting information',
-                    template: './send-meeting-invite',
-                    context: {
-                        meetingTitle: meeting.title,
-                        meetingStartTime: meeting.startTime,
-                        meetingEndTime: meeting.endTime || 'unknown',
-                        meetingLink: meeting.meetingLink,
-                    },
-                }),
-            ),
-        ])
+
+        await this.mailerService.sendMail({
+            to: user.email,
+            cc: recipientEmails,
+            subject:
+                'This is information about the meeting you are invited to attend',
+            template: './send-meeting-invite',
+            context: {
+                title: meeting.title,
+                startTime: meeting.startTime,
+                endTime: meeting.endTime,
+                endVotingTime: meeting.endVotingTime,
+                link: meeting.meetingLink,
+                note: meeting.note,
+                files: meetingFiles.map((item) => item.url),
+            },
+        })
     }
 
     async sendEmailConfirmResetPassword(systemAdmin: SystemAdmin) {
@@ -186,6 +193,7 @@ export class EmailService {
         password: string,
         companyName: string,
         emailSuperAdmin: string,
+        taxNumber: string,
     ) {
         const { email, username, shareQuantity, walletAddress, phone } =
             createdUser
@@ -213,6 +221,7 @@ export class EmailService {
                         : 'Inactive',
                 roleOfUser: roleOfUser,
                 shareQuantity: shareQuantity,
+                taxNumber: taxNumber,
             },
         })
 
@@ -235,6 +244,7 @@ export class EmailService {
                         : 'Inactive',
                 roleOfUser: roleOfUser,
                 shareQuantity: shareQuantity,
+                taxNumber: taxNumber,
             },
         })
     }

@@ -1,9 +1,11 @@
 import {
     Body,
     Controller,
+    forwardRef,
     Get,
     HttpCode,
     HttpStatus,
+    Inject,
     Param,
     Patch,
     Post,
@@ -20,7 +22,6 @@ import {
     AttendMeetingDto,
     CreateMeetingDto,
     GetAllMeetingDto,
-    IdMeetingDto,
     UpdateMeetingDto,
 } from 'libs/queries/src/dtos/meeting.dto'
 import { UserScope } from '@shares/decorators/user.decorator'
@@ -33,6 +34,7 @@ import { GetAllDto } from '@dtos/base.dto'
 export class MeetingController {
     constructor(
         private readonly meetingService: MeetingService,
+        @Inject(forwardRef(() => EmailService))
         private readonly emailService: EmailService,
     ) {}
 
@@ -55,16 +57,16 @@ export class MeetingController {
         return meetings
     }
 
-    @Post('/send-email')
+    @Post('/send-email/meeting/:id')
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.OK)
     @ApiBearerAuth()
     @Permission(PermissionEnum.SEND_MAIL_TO_SHAREHOLDER)
     async sendEmailToShareHolder(
-        @Body() idMeetingDto: IdMeetingDto,
+        @Param('id') meetingId: number,
         @UserScope() user: User,
     ) {
-        await this.emailService.sendEmailMeeting(idMeetingDto, user.companyId)
+        await this.emailService.sendEmailMeeting(meetingId, user)
         return 'Emails sent successfully'
     }
 

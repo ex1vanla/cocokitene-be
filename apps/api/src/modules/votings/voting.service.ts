@@ -25,6 +25,7 @@ export class VotingService {
     constructor(
         private readonly votingRepository: VotingRepository,
         private readonly proposalRepository: ProposalRepository,
+        @Inject(forwardRef(() => UserService))
         private readonly userService: UserService,
         private readonly userMeetingService: UserMeetingService,
         @Inject(forwardRef(() => MeetingService))

@@ -10,6 +10,7 @@ import {
 import { MeetingFileRepository } from '@repositories/meeting-file.repository'
 import { httpErrors } from '@shares/exception-filter'
 import { MeetingService } from '@api/modules/meetings/meeting.service'
+import { FileTypes } from '@shares/constants/meeting.const'
 
 @Injectable()
 export class MeetingFileService {
@@ -118,5 +119,27 @@ export class MeetingFileService {
                 HttpStatus.BAD_REQUEST,
             )
         }
+    }
+    async getMeetingFilesByMeetingId(
+        meetingId: number,
+    ): Promise<MeetingFile[]> {
+        const meetingFiles = await this.meetingFileRepository.find({
+            where: {
+                meetingId: meetingId,
+            },
+        })
+        return meetingFiles
+    }
+    async getMeetingFilesByMeetingIdAndType(
+        meetingId: number,
+        fileType: FileTypes,
+    ): Promise<MeetingFile[]> {
+        const meetingFiles = await this.meetingFileRepository.find({
+            where: {
+                meetingId: meetingId,
+                fileType: fileType,
+            },
+        })
+        return meetingFiles
     }
 }

@@ -1,4 +1,3 @@
-import { CompanyModule } from '@api/modules/companys/company.module'
 import { EmailModule } from '@api/modules/emails/email.module'
 import { MeetingFileModule } from '@api/modules/meeting-files/meeting-file.module'
 import { MeetingController } from '@api/modules/meetings/meeting.controller'
@@ -18,12 +17,13 @@ import { MeetingStatusMiddleware } from '@shares/middlewares/meeting-status.midd
 
 @Module({
     imports: [
-        CompanyModule,
-        EmailModule,
+        forwardRef(() => EmailModule),
+
         forwardRef(() => MeetingFileModule),
         ProposalModule,
         UserMeetingModule,
-        UserModule,
+        forwardRef(() => UserModule),
+
         forwardRef(() => VotingModule),
     ],
     controllers: [MeetingController],
