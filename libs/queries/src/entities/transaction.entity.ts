@@ -12,7 +12,7 @@ import {
     TRANSACTION_TYPE,
 } from '@shares/constants/transaction.const'
 import { ProposalTransaction } from '@entities/proposal-transaction.entity'
-import { FileOfProposalTransaction } from '@entities/file-proposal-transaction.entity'
+import { FileProposalTransaction } from '@entities/file-proposal-transaction.entity'
 
 @Entity('transactions')
 export class Transaction extends BaseEntity {
@@ -139,10 +139,10 @@ export class Transaction extends BaseEntity {
     proposalTransactions: ProposalTransaction[]
 
     @OneToMany(
-        () => FileOfProposalTransaction,
-        (fileOfProposalTransaction) => fileOfProposalTransaction.meeting,
+        () => FileProposalTransaction,
+        (fileProposalTransaction) => fileProposalTransaction.meeting,
     )
-    fileOfProposals: FileOfProposalTransaction[]
+    fileOfProposals: FileProposalTransaction[]
 
     @CreateDateColumn({ name: 'created_at' })
     createdAt: Date
