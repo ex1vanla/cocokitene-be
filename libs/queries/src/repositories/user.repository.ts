@@ -316,4 +316,13 @@ export class UserRepository extends Repository<User> {
             .getOne()
         return user
     }
+
+    async getUserByResetPasswordTokenUser(token: string): Promise<User> {
+        const user = await this.findOne({
+            where: {
+                resetPasswordToken: token,
+            },
+        })
+        return user
+    }
 }

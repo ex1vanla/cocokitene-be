@@ -138,4 +138,29 @@ export class AuthController {
         )
         return changeUserPassword
     }
+
+    @Post('/user/forgot-password')
+    @HttpCode(HttpStatus.OK)
+    @ApiBearerAuth()
+    async sendEmailForgotPasswordUser(
+        @Body() forgotPasswordDto: ForgotPasswordDto,
+    ) {
+        await this.authService.sendEmailForgotPasswordUser(forgotPasswordDto)
+        return 'Send reset password token to your email successfully!!!'
+    }
+
+    @Post('/user/email/verify/:token')
+    @HttpCode(HttpStatus.OK)
+    @ApiBearerAuth()
+    async verifyEmailAndResetPasswordUser(
+        @Param('token') linkToken: string,
+        @Body() resetPasswordDto: ResetPasswordDto,
+    ) {
+        const isEmailVerify =
+            await this.authService.verifyEmailAndResetPasswordUser(
+                linkToken,
+                resetPasswordDto,
+            )
+        return isEmailVerify
+    }
 }

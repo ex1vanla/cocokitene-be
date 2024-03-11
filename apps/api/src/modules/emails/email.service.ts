@@ -67,7 +67,6 @@ export class EmailService {
         )
 
         await this.mailerService.sendMail({
-            to: user.email,
             cc: recipientEmails,
             subject:
                 'This is information about the meeting you are invited to attend',
@@ -264,6 +263,31 @@ export class EmailService {
                 phone: phone,
                 email: email,
                 note: note,
+            },
+        })
+    }
+
+    async sendEmailConfirmResetPasswordUser(user: User) {
+        const resetPasswordToken = user.resetPasswordToken,
+            emailUser = user.email,
+            fePort = configuration().fe.port,
+            ipAddress = configuration().fe.ipAddress,
+            languageEn = configuration().fe.languageEn,
+            baseUrl = baseUrlFe(fePort, ipAddress, languageEn)
+
+        const resetLink = `${baseUrl}/reset-password-user?token=${resetPasswordToken}`
+        if (!emailUser) {
+            console.log('koo co email')
+            return
+        }
+        await this.mailerService.sendMail({
+            to: emailUser,
+            subject: 'Forgotten Password',
+            template: './send-reset-password',
+            context: {
+                email: emailUser,
+                username: user.username,
+                resetLink: resetLink,
             },
         })
     }
