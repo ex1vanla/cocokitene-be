@@ -6,25 +6,25 @@
   <title>Document</title>
 </head>
 <body>
-<h1>Hello {{username}},</h1>
-<h1>Below is your account information</h1>
+<h3>Hello,</h3>
+
+
+<h3>Your login account has been successfully created with the following information:</h3>
 
 <ul>
-  <li><strong>Company Name:</strong> {{companyName}}</li>
-  <li><strong>Company Code:</strong> {{taxNumber}}</li>
-  <li><strong>Username:</strong> {{username}}</li>
+  <li><strong>Company code:</strong> {{taxNumber}}</li>
   <li><strong>Email:</strong> {{email}}</li>
-  <li><strong>Wallet Address:</strong> {{walletAddress}}</li>
   <li><strong>Password:</strong> {{password}}</li>
-  <li><strong>Phone:</strong> {{phoneUser}}</li>
-  <li><strong>Status Of User:</strong> {{statusUser}}</li>
-  <li><strong>Role: </strong> {{roleOfUser}}</li>
-  {{#if shareQuantity}}
-    <li><strong>Share Quantity:</strong> {{shareQuantity}}</li>
-  {{/if}}
-
-
+  <li><strong>Username:</strong> {{username}}</li>
+  <h3>URL login: <a href="{{baseUrl}}">Click here</a></h3>
 </ul>
 
+<h3>To view further details, please log in to the system.</h3>
+<h3>Please note, do not share your information and password with any third parties. Kindly change your password after the first login.</h3>
+<h3>Thank you for partnering with us.</h3>
+<h3>For any inquiries, please contact our hotline: {{numberPhoneService}}</h3>
+<h3>Best regards,</h3>
+
+<h3 style="font-weight: bold;">This is an automated email. Please do not reply to this message.</h3>
 </body>
 </html>

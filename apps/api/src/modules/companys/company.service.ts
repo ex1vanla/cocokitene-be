@@ -32,7 +32,6 @@ import {
     hashPasswordUser,
 } from '@shares/utils'
 import { uuid } from '@shares/utils/uuid'
-import { SystemAdmin } from '@entities/system-admin.entity'
 
 @Injectable()
 export class CompanyService {
@@ -98,10 +97,7 @@ export class CompanyService {
         return existedCompany
     }
 
-    async createCompany(
-        createCompanyDto: CreateCompanyDto,
-        systemAdmin: SystemAdmin,
-    ): Promise<Company> {
+    async createCompany(createCompanyDto: CreateCompanyDto): Promise<Company> {
         // check email and wallet address existed super admin
         const superAdminEmail = createCompanyDto.superAdminCompany.email
         const superAdminWalletAddress =
@@ -190,7 +186,6 @@ export class CompanyService {
             await this.emailService.sendEmailWhenCreatedCompanySuccesfully(
                 createdSuperAdminCompany,
                 createdCompany,
-                systemAdmin,
                 defaultPassword,
             )
         } catch (error) {

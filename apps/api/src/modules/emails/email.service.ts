@@ -10,12 +10,7 @@ import configuration from '@shares/config/configuration'
 import { baseUrlFe } from '@shares/utils'
 import { Company } from '@entities/company.entity'
 import { User } from '@entities/user.entity'
-import { UserStatusService } from '@api/modules/user-status/user-status.service'
-import { CompanyStatusService } from '@api/modules/company-status/company-status.service'
-import { CompanyStatusEnum, UserStatusEnum } from '@shares/constants'
-import { UserRoleService } from '@api/modules/user-roles/user-role.service'
 import { RegisterCompanyDto } from '@dtos/company.dto'
-import { ShareholderService } from '@api/modules/shareholder/shareholder.service'
 import { FileTypes, MeetingRole } from '@shares/constants/meeting.const'
 import { MeetingFileService } from '@api/modules/meeting-files/meeting-file.service'
 
@@ -27,14 +22,10 @@ export class EmailService {
         private readonly userRepository: UserRepository,
         private readonly meetingRepository: MeetingRepository,
         private readonly userMeetingService: UserMeetingService,
-        private readonly userStatusService: UserStatusService,
-        private readonly companyStatusService: CompanyStatusService,
-        private readonly userRoleService: UserRoleService,
-        private readonly shareholderService: ShareholderService,
         private readonly meetingFileService: MeetingFileService,
     ) {}
 
-    async sendEmailMeeting(meetingId: number, user: User) {
+    async sendEmailMeeting(meetingId: number) {
         const idsParticipantsInMeetings =
             await this.userMeetingService.getUserMeetingByMeetingIdAndRole(
                 meetingId,
@@ -65,11 +56,16 @@ export class EmailService {
         const recipientEmails = participants.map(
             (participant) => participant.email,
         )
+        const fePort = configuration().fe.port,
+            ipAddress = configuration().fe.ipAddress,
+            languageEn = configuration().fe.languageEn,
+            baseUrl = baseUrlFe(fePort, ipAddress, languageEn),
+            detailMeeting = baseUrl + `/meeting/detail/${meeting.id}`,
+            numberPhoneService = configuration().phone.numberPhone
 
         await this.mailerService.sendMail({
             cc: recipientEmails,
-            subject:
-                'This is information about the meeting you are invited to attend',
+            subject: 'Invitation to Attend Meeting',
             template: './send-meeting-invite',
             context: {
                 title: meeting.title,
@@ -77,7 +73,8 @@ export class EmailService {
                 endTime: meeting.endTime,
                 endVotingTime: meeting.endVotingTime,
                 link: meeting.meetingLink,
-                note: meeting.note,
+                detailMeeting: detailMeeting,
+                numberPhoneService: numberPhoneService,
                 files: meetingFiles.map((item) => item.url),
             },
         })
@@ -111,78 +108,27 @@ export class EmailService {
     async sendEmailWhenCreatedCompanySuccesfully(
         superAdmin: User,
         companyInformation: Company,
-        systemAdmin: SystemAdmin,
         defaultPasswordSuperAdmin: string,
     ) {
-        const emailSystemAdmin = systemAdmin.email,
-            statusSuperAdmin = await this.userStatusService.getStatusById(
-                superAdmin.statusId,
-            ),
-            statusCompany =
-                await this.companyStatusService.getCompanyStatusById(
-                    companyInformation.statusId,
-                )
+        const emailServer = configuration().email.auth.user,
+            numberPhoneService = configuration().phone.numberPhone,
+            fePort = configuration().fe.port,
+            ipAddress = configuration().fe.ipAddress,
+            languageEn = configuration().fe.languageEn,
+            baseUrl = baseUrlFe(fePort, ipAddress, languageEn)
         await this.mailerService.sendMail({
             to: superAdmin.email,
-            subject: 'Super admin information',
+            cc: emailServer,
+            subject: 'Successful Service Registration',
             template: './send-information-super-admin',
             context: {
                 usernameSuperAdmin: superAdmin.username,
                 emailSuperAdmin: superAdmin.email,
-                walletAddressSuperAdmin: superAdmin.walletAddress,
-                roleSuperAdmin: 'Super Admin',
+                numberPhoneService: numberPhoneService,
                 passwordAdmin: defaultPasswordSuperAdmin,
-                statusSuperAdmin:
-                    statusSuperAdmin.status === UserStatusEnum.ACTIVE
-                        ? 'Active'
-                        : 'Inactive',
+                baseUrl: baseUrl,
                 companyName: companyInformation.companyName,
-                statusCompany:
-                    statusCompany.status === CompanyStatusEnum.ACTIVE
-                        ? 'Active'
-                        : 'Inactive',
-                descriptionCompany: companyInformation.description,
-                addressCompany: companyInformation.address,
-                companyShortname: companyInformation.companyShortName,
-                emailCompany: companyInformation.email,
-                dateOfCorporation: companyInformation.dateOfCorporation,
-                phoneCompany: companyInformation.phone,
-                fax: companyInformation.fax,
                 taxNumber: companyInformation.taxNumber,
-                businessType: companyInformation.businessType,
-                representativeUser: companyInformation.representativeUser,
-            },
-        })
-        await this.mailerService.sendMail({
-            to: emailSystemAdmin,
-            subject: 'Company information',
-            template: './send-information-create-company-from-system-admin',
-            context: {
-                systemAdminUsername: systemAdmin.username,
-                usernameSuperAdmin: superAdmin.username,
-                emailSuperAdmin: superAdmin.email,
-                walletAddressSuperAdmin: superAdmin.walletAddress,
-                roleSuperAdmin: 'Super Admin',
-                passwordAdmin: defaultPasswordSuperAdmin,
-                statusSuperAdmin:
-                    statusSuperAdmin.status === UserStatusEnum.ACTIVE
-                        ? 'Active'
-                        : 'Inactive',
-                companyName: companyInformation.companyName,
-                statusCompany:
-                    statusCompany.status === CompanyStatusEnum.ACTIVE
-                        ? 'Active'
-                        : 'Inactive',
-                descriptionCompany: companyInformation.description,
-                addressCompany: companyInformation.address,
-                companyShortname: companyInformation.companyShortName,
-                emailCompany: companyInformation.email,
-                dateOfCorporation: companyInformation.dateOfCorporation,
-                phoneCompany: companyInformation.phone,
-                fax: companyInformation.fax,
-                taxNumber: companyInformation.taxNumber,
-                businessType: companyInformation.businessType,
-                representativeUser: companyInformation.representativeUser,
             },
         })
     }
@@ -190,67 +136,39 @@ export class EmailService {
     async sendEmailWhenCreateUserSuccessfully(
         createdUser: User,
         password: string,
-        companyName: string,
         emailSuperAdmin: string,
         taxNumber: string,
     ) {
         const { email, username, shareQuantity, walletAddress, phone } =
             createdUser
-        const roleUser = await this.userRoleService.getRolesByUserId(
-            createdUser.id,
-        )
-        const roleOfUser = roleUser.map((role) => role.roleName).join(', ')
-        const statusUser = await this.userStatusService.getStatusById(
-            createdUser.statusId,
-        )
-        await this.mailerService.sendMail({
-            to: emailSuperAdmin,
-            subject: 'New account creation completed',
-            template: './send-information-create-user-side-superadmin',
-            context: {
-                companyName: companyName,
-                username: username,
-                email: email,
-                walletAddress: walletAddress,
-                password: password,
-                phoneUser: phone,
-                statusUser:
-                    statusUser.status === UserStatusEnum.ACTIVE
-                        ? 'Active'
-                        : 'Inactive',
-                roleOfUser: roleOfUser,
-                shareQuantity: shareQuantity,
-                taxNumber: taxNumber,
-            },
-        })
+
+        const emailServer = configuration().email.auth.user,
+            fePort = configuration().fe.port,
+            ipAddress = configuration().fe.ipAddress,
+            languageEn = configuration().fe.languageEn,
+            baseUrl = baseUrlFe(fePort, ipAddress, languageEn),
+            numberPhoneService = configuration().phone.numberPhone
 
         await this.mailerService.sendMail({
             to: email,
-            cc: emailSuperAdmin,
-            subject: 'Account successfully created',
+            cc: [emailSuperAdmin, emailServer],
+            subject: 'Successful Account Registration',
             template: './send-information-create-user-side-user',
             context: {
-                companyName: companyName,
                 username: username,
                 email: email,
-                walletAddress: walletAddress,
                 password: password,
-                phoneUser: phone,
-
-                statusUser:
-                    statusUser.status === UserStatusEnum.ACTIVE
-                        ? 'Active'
-                        : 'Inactive',
-                roleOfUser: roleOfUser,
-                shareQuantity: shareQuantity,
+                baseUrl: baseUrl,
+                numberPhoneService: numberPhoneService,
                 taxNumber: taxNumber,
             },
         })
     }
     async sendEmailRegisterCompany(registerCompanyDto: RegisterCompanyDto) {
-        const cc_emails = configuration().email.cc_emails
-        const emailServer = configuration().email.auth.user
+        const cc_emails = configuration().email.cc_emails,
+            emailServer = configuration().email.auth.user
         cc_emails.push(emailServer)
+        const numberPhoneService = configuration().phone.numberPhone
         const { note, company, phone, username, email } = registerCompanyDto
         await this.mailerService.sendMail({
             to: email,
@@ -263,6 +181,7 @@ export class EmailService {
                 phone: phone,
                 email: email,
                 note: note,
+                numberPhoneService: numberPhoneService,
             },
         })
     }

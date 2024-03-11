@@ -304,7 +304,6 @@ export class UserService {
             await this.emailService.sendEmailWhenCreateUserSuccessfully(
                 createdUser,
                 defaultPassword,
-                existedCompany.companyName,
                 emailSuperAdmin,
                 existedCompany.taxNumber,
             )

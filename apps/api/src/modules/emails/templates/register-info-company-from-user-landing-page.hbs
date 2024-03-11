@@ -7,17 +7,22 @@
 </head>
 <body>
 
-<h1>Registration  Company Information</h1>
+<h3>Thank you for submitting your registration information. We have received the following details from you:</h3>
 
 <ul>
   <li><strong>Username:</strong> {{username}}</li>
+  <li><strong>Email:</strong> {{email}}</li>
   <li><strong>Company Name:</strong> {{companyName}}</li>
   <li><strong>Phone:</strong> {{phone}}</li>
-  <li><strong>Email:</strong> {{email}}</li>
   {{#if note}}
     <li><strong>Note:</strong> {{note}}</li>
   {{/if}}
 </ul>
 
+<h3>Our Customer Service team will contact you shortly to provide further assistance and guidance. Thank you for choosing to journey with us.</h3>
+<h3>For any inquiries, please contact our hotline: {{numberPhoneService}}</h3>
+<h3>Best regards,</h3>
+
+<h3 style="font-weight: bold;">This is an automated email. Please do not reply to this message.</h3>
 </body>
 </html>

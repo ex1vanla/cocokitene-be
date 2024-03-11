@@ -71,6 +71,9 @@ interface Configuration {
         languageEn: string
         languageJa: string
     }
+    phone: {
+        numberPhone: string
+    }
 }
 
 export default (): Configuration => ({
@@ -162,5 +165,8 @@ export default (): Configuration => ({
         baseFeUrl: process.env.BASE_FE_URL,
         languageEn: process.env.LANGUAGE_EN || 'en',
         languageJa: process.env.LANGUAGE_JA || 'ja',
+    },
+    phone: {
+        numberPhone: process.env.NUMBER_PHONE,
     },
 })

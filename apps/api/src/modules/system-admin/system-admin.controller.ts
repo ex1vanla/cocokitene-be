@@ -24,8 +24,6 @@ import { SuperAdminDto } from '@dtos/user.dto'
 import { GetAllPlanDto, UpdatePlanDto, CreatePlanDto } from '@dtos/plan.dto'
 import { SystemAdminGuard } from '@shares/guards/systemadmin.guard'
 import { GetAllUserStatusDto } from '@dtos/user-status.dto'
-import { SystemAdminScope } from '@shares/decorators/system-admin.decorator'
-import { SystemAdmin } from '@entities/system-admin.entity'
 import { EmailService } from '@api/modules/emails/email.service'
 
 @Controller('system-admin')
@@ -116,13 +114,9 @@ export class SystemAdminController {
     @UseGuards(SystemAdminGuard)
     @ApiBearerAuth()
     @HttpCode(HttpStatus.OK)
-    async createCompany(
-        @Body() createCompanyDto: CreateCompanyDto,
-        @SystemAdminScope() systemAdmin: SystemAdmin,
-    ) {
+    async createCompany(@Body() createCompanyDto: CreateCompanyDto) {
         const company = await this.systemAdminService.createCompany(
             createCompanyDto,
-            systemAdmin,
         )
         return company
     }

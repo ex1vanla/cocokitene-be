@@ -122,13 +122,9 @@ export class SystemAdminService {
         return companyStatuses
     }
 
-    async createCompany(
-        createCompanyDto: CreateCompanyDto,
-        systemAdmin: SystemAdmin,
-    ) {
+    async createCompany(createCompanyDto: CreateCompanyDto) {
         const company = await this.companyService.createCompany(
             createCompanyDto,
-            systemAdmin,
         )
         return company
     }

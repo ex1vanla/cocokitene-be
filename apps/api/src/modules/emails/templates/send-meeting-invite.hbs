@@ -10,14 +10,17 @@
 </head>
 
   <body>
-    <li><strong>Meeting Name:</strong> {{title}}</li>
-    <li><strong>Start Time:</strong> {{startTime}}</li>
-    <li><strong>End Time:</strong> {{endTime}}</li>
-    <li><strong>End Time Voting:</strong> {{endVotingTime}}</li>
-    <li><strong>Link:</strong> {{link}}</li>
-    {{#if note}}
-      <li><strong>Note:</strong> {{note}}</li>
-    {{/if}}
+
+  <h3>We hope this message finds you well.</h3>
+  <h3>We would like to extend an invitation for you to join us at an upcoming meeting scheduled for:</h3>
+
+  <ul>
+    <li><strong>The purpose of this meeting is to:</strong> {{title}}</li>
+    <li><strong>Start time:</strong> {{startTime}}</li>
+    <li><strong>Expected End Time:</strong> {{endTime}}</li>
+    <li><strong>Voting End Time (if any):</strong> {{endVotingTime}}</li>
+    <li><strong>The meeting will be held:</strong> {{link}}</li>
+    <h3>Please review the attached file.</h3>
     {{#if files.length}}
       <li>Meeting Files:</li>
       <ul>
@@ -27,6 +30,22 @@
       </ul>
 
     {{/if}}
+  </ul>
+  <h3>Further information, please visit: <a href={{detailMeeting}}>Click here</a></h3>
+
+  <h3>Your participation and input are highly valued, as we believe your insights will greatly contribute to the discussion and decision-making process.</h3>
+
+  <h3>
+    Please RSVP to confirm your attendance by the start date at least 3 days.</h3>
+
+  <h3>If you have any questions or require further information, please feel free to contact us or via hotline: {{numberPhoneService}}</h3>
+
+  <h3>Thank you for considering this invitation. We look forward to your presence at the meeting.</h3>
+
+  <h3>Best regards,</h3>
+
+
+
 
 
   </body>

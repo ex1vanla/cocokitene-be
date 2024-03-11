@@ -6,44 +6,24 @@
   <title>Super Admin and Company Information</title>
 </head>
 <body>
-<p>Hello {{usernameSuperAdmin}}, below is your company information</p>
-<h1>Super Admin Information</h1>
+<h3>Hello,</h3>
+
+<h3>Thank you to {{companyName}} for using our services. Below is the information for the administrator account:</h3>
+
 <ul>
-  <li><strong>Username:</strong> {{usernameSuperAdmin}}</li>
+  <li><strong>Company code:</strong> {{taxNumber}}</li>
   <li><strong>Email:</strong> {{emailSuperAdmin}}</li>
-  <li><strong>Wallet Address:</strong> {{walletAddressSuperAdmin}}</li>
-  <li><strong>Status of Super Admin: </strong> {{statusSuperAdmin}}</li>
   <li><strong>Password:</strong> {{passwordAdmin}}</li>
-  {{#if roleSuperAdmin}}
-    <li><strong>Role:</strong> {{roleSuperAdmin}}</li>
-  {{/if}}
+  <li><strong>Username:</strong> {{usernameSuperAdmin}}</li>
+  <h3>System URL login:<a href="{{baseUrl}}"></a></h3>
 </ul>
 
-<p>You are the super admin of the company {{companyName}}, below is your company information</p>
+<h3>To view further details, please log in to the system using the provided information.</h3>
+<h3>Please note, do not share your information and password with any third parties. Kindly change your password after the first login.</h3>
+<h3>Thank you for partnering with us.</h3>
+<h3>For any inquiries, please contact our hotline: {{numberPhoneService}}</h3>
+<h3>Best regards,</h3>
 
-<h1>Company Information</h1>
-<ul>
-  <li><strong>Company Name:</strong> {{companyName}}</li>
-  <li><strong>Status of Company: </strong> {{statusCompany}}</li>
-  {{#if descriptionCompany}}
-    <li><strong>Description:</strong> {{descriptionCompany}}</li>
-  {{/if}}
-  <li><strong>Address:</strong> {{addressCompany}}</li>
-  <li><strong>Company Shortname:</strong> {{companyShortname}}</li>
-  <li><strong>Company Email:</strong> {{emailCompany}}</li>
-  {{#if dateOfCorporation}}
-    <li><strong>Date of Incorporation:</strong> {{dateOfCorporation}}</li>
-  {{/if}}
-  <li><strong>Phone:</strong> {{phoneCompany}}</li>
-  {{#if fax}}
-    <li><strong>Fax:</strong> {{fax}}</li>
-  {{/if}}
-  {{#if taxNumber}}
-    <li><strong>Tax Number:</strong> {{taxNumber}}</li>
-  {{/if}}
-  <li><strong>Business Type:</strong> {{businessType}}</li>
-  <li><strong>Representative User:</strong> {{representativeUser}}</li>
-</ul>
-
+<h3 style="font-weight: bold;">This is an automated email. Please do not reply to this message.</h3>
 </body>
 </html>
