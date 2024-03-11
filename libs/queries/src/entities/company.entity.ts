@@ -77,6 +77,7 @@ export class Company extends BaseEntity {
         name: 'company_tax_number',
         type: 'varchar',
         length: 255,
+        unique: true,
     })
     taxNumber: string
 
@@ -85,6 +86,7 @@ export class Company extends BaseEntity {
         type: 'varchar',
         length: 255,
         nullable: false,
+        unique: true,
     })
     email: string
 

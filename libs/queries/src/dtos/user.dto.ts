@@ -233,11 +233,12 @@ export class CreateSuperAdminCompanyDto {
     })
     username: string
 
-    @IsNotEmpty()
+    // @IsNotEmpty()
+    @IsOptional()
     @IsString()
     @ApiProperty({
         example: '0xc3899509f0A71e69b13c59bf76AB6DAC61B0AaB6',
-        required: true,
+        required: false,
     })
     walletAddress: string
 

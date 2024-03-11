@@ -104,17 +104,18 @@ export class CompanyService {
             createCompanyDto.superAdminCompany.walletAddress
 
         let superAdmin: User
-        superAdmin = await this.userService.getUserByEmail(superAdminEmail)
-        if (superAdmin) {
-            throw new HttpException(
-                httpErrors.SUPER_ADMIN_EXISTED,
-                HttpStatus.BAD_REQUEST,
+        if (superAdminWalletAddress) {
+            superAdmin = await this.userService.getUserByWalletAddress(
+                superAdminWalletAddress,
             )
+            if (superAdmin) {
+                throw new HttpException(
+                    httpErrors.SUPER_ADMIN_EXISTED,
+                    HttpStatus.BAD_REQUEST,
+                )
+            }
         }
-
-        superAdmin = await this.userService.getUserByWalletAddress(
-            superAdminWalletAddress,
-        )
+        superAdmin = await this.userService.getUserByEmail(superAdminEmail)
         if (superAdmin) {
             throw new HttpException(
                 httpErrors.SUPER_ADMIN_EXISTED,
@@ -142,7 +143,7 @@ export class CompanyService {
             await this.userService.createSuperAdminCompany({
                 username: superAdminCompany.username,
                 email: superAdminCompany.email,
-                walletAddress: superAdminCompany.walletAddress,
+                walletAddress: superAdminCompany.walletAddress || null,
                 statusId: superAdminCompany.statusId,
                 companyId: createdCompany.id,
             })
