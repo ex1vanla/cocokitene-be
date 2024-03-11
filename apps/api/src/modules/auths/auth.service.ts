@@ -363,7 +363,6 @@ export class AuthService {
             email,
             companyId: company.id,
         })
-
         if (!user) {
             throw new HttpException(
                 httpErrors.USER_WRONG_LOGIN,
@@ -419,5 +418,61 @@ export class AuthService {
         existedUser.password = hashedNewPassword
         await existedUser.save()
         return 'Change Password Successfully!!!!'
+    }
+
+    async sendEmailForgotPasswordUser(forgotPasswordDto: ForgotPasswordDto) {
+        const { email } = forgotPasswordDto
+        const existedUser = await this.userRepository.getActiveUserByEmail(
+            email,
+        )
+        if (!existedUser) {
+            throw new HttpException(
+                httpErrors.USER_NOT_FOUND,
+                HttpStatus.NOT_FOUND,
+            )
+        }
+        existedUser.resetPasswordToken = generateCryptoToken()
+        existedUser.resetPasswordExpireTime = new Date(
+            Date.now() + TOKEN_VERIFY_EMAIL_EXPIRE_IN_MILISECOND,
+        )
+        await existedUser.save()
+
+        try {
+            await this.emailService.sendEmailConfirmResetPasswordUser(
+                existedUser,
+            )
+        } catch (error) {
+            throw new HttpException(
+                httpErrors.RESET_PASSWORD_TOKEN_SEND_FAILED,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            )
+        }
+    }
+
+    async verifyEmailAndResetPasswordUser(
+        linkToken: string,
+        resetPasswordDto: ResetPasswordDto,
+    ): Promise<string> {
+        const { password, confirmPassword } = resetPasswordDto
+        const existedUser =
+            await this.userRepository.getUserByResetPasswordTokenUser(linkToken)
+        if (!existedUser) {
+            throw new HttpException(
+                httpErrors.USER_NOT_FOUND,
+                HttpStatus.NOT_FOUND,
+            )
+        }
+        const currentTime = new Date()
+        const expiredLinkToken = existedUser.resetPasswordExpireTime
+        if (currentTime > expiredLinkToken) {
+            throw new HttpException(
+                httpErrors.RESET_PASSWORD_TOKEN_EXPIRED,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            )
+        }
+        const newPasswordHashed = await hashPasswordUser(password)
+        existedUser.password = newPasswordHashed
+        await existedUser.save()
+        return 'Reset Password Successfully'
     }
 }
