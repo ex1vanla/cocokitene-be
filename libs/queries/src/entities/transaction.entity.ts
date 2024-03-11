@@ -12,7 +12,7 @@ import {
     TRANSACTION_TYPE,
 } from '@shares/constants/transaction.const'
 import { ProposalTransaction } from '@entities/proposal-transaction.entity'
-import { FileOfProposalTransaction } from '@entities/file-of-proposal-transaction.entity'
+import { FileOfProposalTransaction } from '@entities/file-proposal-transaction.entity'
 
 @Entity('transactions')
 export class Transaction extends BaseEntity {

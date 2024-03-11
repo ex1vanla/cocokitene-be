@@ -13,8 +13,8 @@ import {
 import { ProposalFile } from '@entities/proposal-file'
 import { Meeting } from '@entities/meeting.entity'
 
-@Entity('file_of_proposal_transactions')
-export class FileOfProposalTransaction extends BaseEntity {
+@Entity('file_proposal_transactions')
+export class FileProposalTransaction extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number
 

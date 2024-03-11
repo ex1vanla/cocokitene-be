@@ -8,10 +8,10 @@ import { ProposalFileRepository } from '@repositories/proposal-file.repository'
 import { TransactionRepository } from '@repositories/transaction.repository'
 import { ParticipantMeetingTransactionRepository } from '@repositories/participant-meeting-transaction.repository'
 import { ProposalTransactionRepository } from '@repositories/proposal-transaction.repository'
-import { FileOfProposalTransactionRepository } from '@repositories/file-of-proposal-transaction.repository'
+import { FileProposalTransactionRepository } from '@repositories/file-proposal-transaction.repository'
 import { VotingTransactionRepository } from '@repositories/voting-transaction.repository'
 import { VotingRepository } from '@repositories/voting.repository'
-import { FileOfMeetingTransactionRepository } from '@repositories/file-of-meeting-transaction.repository'
+import { FileMeetingTransactionRepository } from '@repositories/file-meeting-transaction.repository'
 import { MeetingFileRepository } from '@repositories/meeting-file.repository'
 
 const Repositories = TypeOrmExModule.forCustomRepository([
@@ -22,11 +22,11 @@ const Repositories = TypeOrmExModule.forCustomRepository([
     TransactionRepository,
     ParticipantMeetingTransactionRepository,
     ProposalTransactionRepository,
-    FileOfProposalTransactionRepository,
+    FileProposalTransactionRepository,
     VotingTransactionRepository,
     VotingRepository,
     MeetingFileRepository,
-    FileOfMeetingTransactionRepository,
+    FileMeetingTransactionRepository,
 ])
 
 @Module({

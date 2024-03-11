@@ -1,13 +1,13 @@
 import { CustomRepository } from '@shares/decorators'
 import { Repository } from 'typeorm'
-import { FileOfProposalTransaction } from '@entities/file-of-proposal-transaction.entity'
+import { FileProposalTransaction } from '@entities/file-proposal-transaction.entity'
 import { FileOfProposalDto } from '@dtos/proposal-file.dto'
 
-@CustomRepository(FileOfProposalTransaction)
-export class FileOfProposalTransactionRepository extends Repository<FileOfProposalTransaction> {
+@CustomRepository(FileProposalTransaction)
+export class FileProposalTransactionRepository extends Repository<FileProposalTransaction> {
     async createFileOfProposalTransaction(
         fileOfProposalDto: FileOfProposalDto,
-    ): Promise<FileOfProposalTransaction> {
+    ): Promise<FileProposalTransaction> {
         const { url, proposalFileId, meetingId } = fileOfProposalDto
 
         const createFileOfProposalTransaction = await this.create({
@@ -20,7 +20,7 @@ export class FileOfProposalTransactionRepository extends Repository<FileOfPropos
 
     async getFileOfProposalTransactionsByMeetingId(
         meetingId: number,
-    ): Promise<FileOfProposalTransaction[]> {
+    ): Promise<FileProposalTransaction[]> {
         const fileOfProposalTransactions = await this.find({
             where: {
                 meetingId: meetingId,

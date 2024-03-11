@@ -27,7 +27,7 @@ import {
 import { httpErrors } from '@shares/exception-filter'
 import { ParticipantMeetingTransactionRepository } from '@repositories/participant-meeting-transaction.repository'
 import { ProposalTransactionRepository } from '@repositories/proposal-transaction.repository'
-import { FileOfProposalTransactionRepository } from '@repositories/file-of-proposal-transaction.repository'
+import { FileProposalTransactionRepository } from '@repositories/file-proposal-transaction.repository'
 import configuration from '@shares/config/configuration'
 import {
     dateTimeToEpochTime,
@@ -45,7 +45,7 @@ import { TransactionResponseData } from '@dtos/mapper.dto'
 import { VotingTransactionRepository } from '@repositories/voting-transaction.repository'
 import { VotingRepository } from '@repositories/voting.repository'
 import { MeetingFileRepository } from '@repositories/meeting-file.repository'
-import { FileOfMeetingTransactionRepository } from '@repositories/file-of-meeting-transaction.repository'
+import { FileMeetingTransactionRepository } from '@repositories/file-meeting-transaction.repository'
 
 @Injectable()
 export class TransactionService {
@@ -59,9 +59,9 @@ export class TransactionService {
         private readonly transactionRepository: TransactionRepository,
         private readonly participantMeetingTransactionRepository: ParticipantMeetingTransactionRepository,
         private readonly proposalTransactionRepository: ProposalTransactionRepository,
-        private readonly fileOfProposalTransactionRepository: FileOfProposalTransactionRepository,
+        private readonly fileOfProposalTransactionRepository: FileProposalTransactionRepository,
         private readonly votingTransactionRepository: VotingTransactionRepository,
-        private readonly fileOfMeetingTransactionRepository: FileOfMeetingTransactionRepository,
+        private readonly fileOfMeetingTransactionRepository: FileMeetingTransactionRepository,
     ) {}
     async handleAllEndedMeeting(): Promise<void> {
         const meetingIdsAppearedInTransaction =

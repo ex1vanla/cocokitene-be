@@ -1,13 +1,13 @@
 import { Repository } from 'typeorm'
-import { FileOfMeetingTransaction } from '@entities/file-of-meeting-transaction.entity'
+import { FileMeetingTransaction } from '@entities/file-meeting-transaction.entity'
 import { CustomRepository } from '@shares/decorators'
 import { CreateFileOfMeetingTransactionDto } from '@dtos/meeting-file.dto'
 
-@CustomRepository(FileOfMeetingTransaction)
-export class FileOfMeetingTransactionRepository extends Repository<FileOfMeetingTransaction> {
+@CustomRepository(FileMeetingTransaction)
+export class FileMeetingTransactionRepository extends Repository<FileMeetingTransaction> {
     async createFileOfMeetingTransaction(
         createFileOfMeetingTransactionDto: CreateFileOfMeetingTransactionDto,
-    ): Promise<FileOfMeetingTransaction> {
+    ): Promise<FileMeetingTransaction> {
         const { url, meetingFileId, meetingId } =
             createFileOfMeetingTransactionDto
 
@@ -21,7 +21,7 @@ export class FileOfMeetingTransactionRepository extends Repository<FileOfMeeting
 
     async getFileOfMeetingTransactionsByMeetingId(
         meetingId: number,
-    ): Promise<FileOfMeetingTransaction[]> {
+    ): Promise<FileMeetingTransaction[]> {
         const fileOfMeetingTransactions = await this.find({
             where: {
                 meetingId: meetingId,
