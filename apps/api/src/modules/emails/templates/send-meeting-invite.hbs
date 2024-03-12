@@ -11,18 +11,17 @@
 
   <body>
 
-  <h3>We hope this message finds you well.</h3>
-  <h3>We would like to extend an invitation for you to join us at an upcoming meeting scheduled for:</h3>
+  <h3>平素は格別のご高配を賜り、厚く御礼申し上げます。</h3>
+  <h3>この度、下記の通りミーティングを開催する運びとなりました:</h3>
 
   <ul>
-    <li><strong>The purpose of this meeting is to:</strong> {{title}}</li>
-    <li><strong>Start time:</strong> {{startTime}}</li>
-    <li><strong>Expected End Time:</strong> {{endTime}}</li>
-    <li><strong>Voting End Time (if any):</strong> {{endVotingTime}}</li>
-    <li><strong>The meeting will be held:</strong> {{link}}</li>
-    <h3>Please review the attached file.</h3>
+    <li><strong>このミーティングの目的は[総会主題]です。</strong> {{title}}</li>
+    <li><strong>開始時間:</strong> {{startTime}}</li>
+    <li><strong>終了予定時刻:</strong> {{endTime}}</li>
+    <li><strong>投票終了時刻 (もしあれば):</strong> {{endVotingTime}}</li>
+    <li><strong>会議は <a href= {{link}}>MTGリンク</a>で行われます。:</strong></li>
+    <h3>添付ファイルをご確認ください。</h3>
     {{#if files.length}}
-      <li>Meeting Files:</li>
       <ul>
         {{#each files}}
           <li style="margin-left: 10px;"><a href="{{this}}">{{this}}</a></li>
@@ -31,18 +30,18 @@
 
     {{/if}}
   </ul>
-  <h3>Further information, please visit: <a href={{detailMeeting}}>Click here</a></h3>
+  <h3>詳細はこちらをご覧ください: <a href={{detailMeeting}}>ここをクリック</a></h3>
 
-  <h3>Your participation and input are highly valued, as we believe your insights will greatly contribute to the discussion and decision-making process.</h3>
+  <h3>皆様のご参加とご意見は、議論と意思決定プロセスに大いに貢献するものと確信しております。</h3>
 
   <h3>
-    Please RSVP to confirm your attendance by the start date at least 3 days.</h3>
+    参加ご希望の方は、開始日の3日前までにご連絡ください。</h3>
 
-  <h3>If you have any questions or require further information, please feel free to contact us or via hotline: {{numberPhoneService}}</h3>
+  <h3>ご不明な点などございましたら、ホットライン{{numberPhoneService}} までお気軽にお問い合わせください。</h3>
 
-  <h3>Thank you for considering this invitation. We look forward to your presence at the meeting.</h3>
+  <h3>この度はご招待をご検討いただき、誠にありがとうございます。皆様のご出席をお待ちしております。</h3>
 
-  <h3>Best regards,</h3>
+  <h3>よろしくお願いいたします、</h3>
 
 
 

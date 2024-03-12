@@ -65,7 +65,7 @@ export class EmailService {
 
         await this.mailerService.sendMail({
             cc: recipientEmails,
-            subject: 'Invitation to Attend Meeting',
+            subject: '総会招待通知',
             template: './send-meeting-invite',
             context: {
                 title: meeting.title,
@@ -119,7 +119,7 @@ export class EmailService {
         await this.mailerService.sendMail({
             to: superAdmin.email,
             cc: emailServer,
-            subject: 'Successful Service Registration',
+            subject: '会社作成通知',
             template: './send-information-super-admin',
             context: {
                 usernameSuperAdmin: superAdmin.username,
@@ -152,7 +152,7 @@ export class EmailService {
         await this.mailerService.sendMail({
             to: email,
             cc: [emailSuperAdmin, emailServer],
-            subject: 'Successful Account Registration',
+            subject: 'ユーザーアカウント作成通知',
             template: './send-information-create-user-side-user',
             context: {
                 username: username,
@@ -173,7 +173,7 @@ export class EmailService {
         await this.mailerService.sendMail({
             to: email,
             cc: cc_emails,
-            subject: 'Register Company Information',
+            subject: 'サービス登録',
             template: './register-info-company-from-user-landing-page',
             context: {
                 username: username,
