@@ -160,16 +160,52 @@ export class CompanyService {
                 this.roleService.createCompanyRole(role, createdCompany.id),
             ),
         )
-
-        const roleSuperAdminOfCompany =
-            await this.roleService.getRoleByRoleNameAndIdCompany(
+        const [
+            roleSuperAdminOfCompany,
+            roleAdminOfCompany,
+            roleShareholderOfCompany,
+            roleUserAdminOfCompany,
+            listPermissions,
+            listPermissionsBase,
+        ] = await Promise.all([
+            this.roleService.getRoleByRoleNameAndIdCompany(
                 RoleEnum.SUPER_ADMIN,
                 createdCompany.id,
-            )
-        const listPermissions =
-            await this.permissionService.getAllInternalPermissions({
+            ),
+            this.roleService.getRoleByRoleNameAndIdCompany(
+                RoleEnum.ADMIN,
+                createdCompany.id,
+            ),
+            this.roleService.getRoleByRoleNameAndIdCompany(
+                RoleEnum.SHAREHOLDER,
+                createdCompany.id,
+            ),
+            this.roleService.getRoleByRoleNameAndIdCompany(
+                RoleEnum.USER,
+                createdCompany.id,
+            ),
+            this.permissionService.getAllInternalPermissions({
                 searchQuery: '',
-            })
+            }),
+            this.permissionService.getAllPermissionsBase(),
+        ])
+
+        await Promise.all(
+            [
+                roleAdminOfCompany,
+                roleShareholderOfCompany,
+                roleUserAdminOfCompany,
+            ].map(async (role) => {
+                await Promise.all([
+                    ...listPermissionsBase.map((permission) =>
+                        this.rolePermissionService.createRolePermission({
+                            permissionId: permission.id,
+                            roleId: role.id,
+                        }),
+                    ),
+                ])
+            }),
+        )
         await Promise.all([
             ...listPermissions.map((permission) =>
                 this.rolePermissionService.createRolePermission({

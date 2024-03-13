@@ -46,4 +46,22 @@ export class PermissionService {
 
         return internalPermissions
     }
+
+    async getAllPermissionsBase(): Promise<Permission[]> {
+        const permissions = await Promise.all(
+            [
+                PermissionEnum.SHAREHOLDERS_MTG,
+                PermissionEnum.DETAIL_PROFILE,
+                PermissionEnum.DETAIL_ACCOUNT,
+                PermissionEnum.LIST_ACCOUNT,
+                PermissionEnum.DETAIL_MEETING,
+            ].map((permissionName) =>
+                this.permissionRepository.getPermissionByPermissionName(
+                    permissionName,
+                ),
+            ),
+        )
+
+        return permissions
+    }
 }
