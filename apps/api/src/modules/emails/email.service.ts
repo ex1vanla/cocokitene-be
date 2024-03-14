@@ -58,8 +58,8 @@ export class EmailService {
         )
         const fePort = configuration().fe.port,
             ipAddress = configuration().fe.ipAddress,
-            languageEn = configuration().fe.languageEn,
-            baseUrl = baseUrlFe(fePort, ipAddress, languageEn),
+            languageJa = configuration().fe.languageJa,
+            baseUrl = baseUrlFe(fePort, ipAddress, languageJa),
             detailMeeting = baseUrl + `/meeting/detail/${meeting.id}`,
             numberPhoneService = configuration().phone.numberPhone
 
@@ -85,8 +85,8 @@ export class EmailService {
             emailSystemAdmin = systemAdmin.email,
             fePort = configuration().fe.port,
             ipAddress = configuration().fe.ipAddress,
-            languageEn = configuration().fe.languageEn,
-            baseUrl = baseUrlFe(fePort, ipAddress, languageEn)
+            languageJa = configuration().fe.languageJa,
+            baseUrl = baseUrlFe(fePort, ipAddress, languageJa)
 
         const resetLink = `${baseUrl}/reset-password?token=${resetPasswordToken}`
         if (!emailSystemAdmin) {
@@ -114,8 +114,8 @@ export class EmailService {
             numberPhoneService = configuration().phone.numberPhone,
             fePort = configuration().fe.port,
             ipAddress = configuration().fe.ipAddress,
-            languageEn = configuration().fe.languageEn,
-            baseUrl = baseUrlFe(fePort, ipAddress, languageEn)
+            languageJa = configuration().fe.languageJa,
+            baseUrl = baseUrlFe(fePort, ipAddress, languageJa)
         await this.mailerService.sendMail({
             to: superAdmin.email,
             cc: emailServer,
@@ -145,8 +145,8 @@ export class EmailService {
         const emailServer = configuration().email.auth.user,
             fePort = configuration().fe.port,
             ipAddress = configuration().fe.ipAddress,
-            languageEn = configuration().fe.languageEn,
-            baseUrl = baseUrlFe(fePort, ipAddress, languageEn),
+            languageJa = configuration().fe.languageJa,
+            baseUrl = baseUrlFe(fePort, ipAddress, languageJa),
             numberPhoneService = configuration().phone.numberPhone
 
         await this.mailerService.sendMail({
@@ -191,8 +191,8 @@ export class EmailService {
             emailUser = user.email,
             fePort = configuration().fe.port,
             ipAddress = configuration().fe.ipAddress,
-            languageEn = configuration().fe.languageEn,
-            baseUrl = baseUrlFe(fePort, ipAddress, languageEn)
+            languageJa = configuration().fe.languageJa,
+            baseUrl = baseUrlFe(fePort, ipAddress, languageJa)
 
         const resetLink = `${baseUrl}/reset-password-user?token=${resetPasswordToken}`
         if (!emailUser) {
