@@ -835,7 +835,6 @@ export class TransactionService {
                 configuration().transaction
                     .maximumNumberTransactionPerCallFuncBlockchain,
             currentChainId = getChainId()
-
         await Promise.all([
             ...transactionsUpdateProposalMeetingSuccessful.map(
                 async (transaction) => {
@@ -853,7 +852,6 @@ export class TransactionService {
                                     await this.votingTransactionRepository.getVotingTransactionByProposalId(
                                         proposalId,
                                     )
-
                                 const countCallFuncAddUserProposals = Math.ceil(
                                     votingTransactions.length /
                                         maximumNumberTransactionCallFuncBlockchain,
