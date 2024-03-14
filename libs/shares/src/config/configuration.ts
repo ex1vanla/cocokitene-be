@@ -122,7 +122,7 @@ export default (): Configuration => ({
     email: {
         host: process.env.EMAIL_HOST,
         // port: parseInt(process.env.EMAIL_PORT,10),
-        secure: isBoolean(process.env.EMAIL_SECURE),
+        secure: isBoolean(process.env.EMAIL_AUTH),
         auth: {
             user: process.env.EMAIL_USER,
             password: process.env.EMAIL_PASSWORD,
