@@ -18,6 +18,7 @@ import { Pagination } from 'nestjs-typeorm-paginate'
 import { CompanyService } from '@api/modules/companys/company.service'
 import { httpErrors } from '@shares/exception-filter'
 import { DetailShareholderReponse } from './shareholder.interface'
+import { UserService } from '../users/user.service'
 
 @Injectable()
 export class ShareholderService {
@@ -26,6 +27,7 @@ export class ShareholderService {
         @Inject(forwardRef(() => CompanyService))
         private readonly companyService: CompanyService,
         private readonly userRoleService: UserRoleService,
+        private readonly userService: UserService,
     ) {}
 
     async getAllShareholderCompany(
@@ -97,6 +99,36 @@ export class ShareholderService {
             throw new HttpException(
                 httpErrors.SHAREHOLDER_NOT_FOUND,
                 HttpStatus.NOT_FOUND,
+            )
+        }
+
+        let existedShareholder1: User
+        if (updateShareholderDto.walletAddress) {
+            existedShareholder1 = await this.userService.getUserByWalletAddress(
+                updateShareholderDto.walletAddress,
+            )
+            if (
+                existedShareholder1 &&
+                existedShareholder1.walletAddress !==
+                    existedShareholder.walletAddress
+            ) {
+                throw new HttpException(
+                    httpErrors.DUPLICATE_WALLET_ADDRESS,
+                    HttpStatus.BAD_REQUEST,
+                )
+            }
+        }
+
+        existedShareholder1 = await this.userService.getUserByEmail(
+            updateShareholderDto.email,
+        )
+        if (
+            existedShareholder1 &&
+            existedShareholder1.email !== existedShareholder.email
+        ) {
+            throw new HttpException(
+                httpErrors.DUPLICATE_EMAIL_USER,
+                HttpStatus.BAD_REQUEST,
             )
         }
 
