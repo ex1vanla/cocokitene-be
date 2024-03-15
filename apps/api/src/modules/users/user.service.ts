@@ -158,6 +158,29 @@ export class UserService {
         }
 
         //update user
+        let existedUser1: User
+        if (updateUserDto.walletAddress) {
+            existedUser1 = await this.getUserByWalletAddress(
+                updateUserDto.walletAddress,
+            )
+            if (
+                existedUser1 &&
+                existedUser1.walletAddress !== existedUser.walletAddress
+            ) {
+                throw new HttpException(
+                    httpErrors.DUPLICATE_WALLET_ADDRESS,
+                    HttpStatus.BAD_REQUEST,
+                )
+            }
+        }
+        existedUser1 = await this.getUserByEmail(updateUserDto.email)
+        if (existedUser1 && existedUser1.email !== existedUser.email) {
+            throw new HttpException(
+                httpErrors.DUPLICATE_EMAIL_USER,
+                HttpStatus.BAD_REQUEST,
+            )
+        }
+
         try {
             existedUser = await this.userRepository.updateUser(
                 userId,
@@ -255,6 +278,26 @@ export class UserService {
         //createUser
         let createdUser: User
         let defaultPassword = ''
+        let exitedUser: User
+        if (createUserDto.walletAddress) {
+            exitedUser = await this.getUserByWalletAddress(
+                createUserDto.walletAddress,
+            )
+            if (exitedUser) {
+                throw new HttpException(
+                    httpErrors.DUPLICATE_WALLET_ADDRESS,
+                    HttpStatus.BAD_REQUEST,
+                )
+            }
+        }
+        exitedUser = await this.getUserByEmail(createUserDto.email)
+        if (exitedUser) {
+            throw new HttpException(
+                httpErrors.DUPLICATE_EMAIL_USER,
+                HttpStatus.BAD_REQUEST,
+            )
+        }
+
         try {
             createdUser = await this.userRepository.createUser(
                 companyId,
@@ -378,7 +421,31 @@ export class UserService {
             )
         }
 
-        //update profle of user
+        let existedUser1: User
+        if (updateOwnProfileDto.walletAddress) {
+            existedUser1 = await this.getUserByWalletAddress(
+                updateOwnProfileDto.walletAddress,
+            )
+            if (
+                existedUser1 &&
+                existedUser1.walletAddress !== existedUser.walletAddress
+            ) {
+                throw new HttpException(
+                    httpErrors.DUPLICATE_WALLET_ADDRESS,
+                    HttpStatus.BAD_REQUEST,
+                )
+            }
+        }
+
+        existedUser1 = await this.getUserByEmail(updateOwnProfileDto.email)
+        if (existedUser1 && existedUser1.email !== existedUser.email) {
+            throw new HttpException(
+                httpErrors.DUPLICATE_EMAIL_USER,
+                HttpStatus.BAD_REQUEST,
+            )
+        }
+
+        //update profile of user
         try {
             existedUser = await this.userRepository.updateOwnProfile(
                 userId,

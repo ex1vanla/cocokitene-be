@@ -3,7 +3,6 @@ import { CreatePlanDto, GetAllPlanDto, UpdatePlanDto } from '@dtos/plan.dto'
 import { Pagination } from 'nestjs-typeorm-paginate'
 import { Plan } from '@entities/plan.entity'
 import { PlanRepository } from '@repositories/plan.repository'
-import { PlanEnum } from '@shares/constants'
 import { httpErrors } from '@shares/exception-filter'
 
 @Injectable()
@@ -24,7 +23,7 @@ export class PlanService {
         return plans
     }
 
-    async getPlanByPlanName(planName: PlanEnum): Promise<Plan> {
+    async getPlanByPlanName(planName: string): Promise<Plan> {
         const plan = await this.planRepository.findOne({
             where: {
                 planName: planName,
@@ -57,6 +56,14 @@ export class PlanService {
             throw new HttpException(
                 httpErrors.PLAN_NOT_FOUND,
                 HttpStatus.NOT_FOUND,
+            )
+        }
+
+        const planExisted = await this.getPlanByPlanName(updatePlanDto.planName)
+        if (planExisted && planExisted.planName !== existedPlan.planName) {
+            throw new HttpException(
+                httpErrors.DUPLICATE_PLAN_NAME,
+                HttpStatus.BAD_REQUEST,
             )
         }
 

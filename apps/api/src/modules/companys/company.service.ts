@@ -79,6 +79,28 @@ export class CompanyService {
                 HttpStatus.NOT_FOUND,
             )
         }
+        let existedCompany1 =
+            await this.companyRepository.getCompanyByTaxCompany(
+                updateCompanyDto.taxNumber,
+            )
+        if (
+            existedCompany1 &&
+            existedCompany1.taxNumber !== existedCompany.taxNumber
+        ) {
+            throw new HttpException(
+                httpErrors.DUPLICATE_TAX_NUMBER_COMPANY,
+                HttpStatus.BAD_REQUEST,
+            )
+        }
+        existedCompany1 = await this.companyRepository.getCompanyByEmail(
+            updateCompanyDto.email,
+        )
+        if (existedCompany1 && existedCompany1.email !== existedCompany.email) {
+            throw new HttpException(
+                httpErrors.DUPLICATE_EMAIL_COMPANY,
+                HttpStatus.BAD_REQUEST,
+            )
+        }
 
         try {
             existedCompany = await this.companyRepository.updateCompany(
@@ -110,7 +132,7 @@ export class CompanyService {
             )
             if (superAdmin) {
                 throw new HttpException(
-                    httpErrors.SUPER_ADMIN_EXISTED,
+                    httpErrors.DUPLICATE_WALLET_ADDRESS,
                     HttpStatus.BAD_REQUEST,
                 )
             }
@@ -118,13 +140,34 @@ export class CompanyService {
         superAdmin = await this.userService.getUserByEmail(superAdminEmail)
         if (superAdmin) {
             throw new HttpException(
-                httpErrors.SUPER_ADMIN_EXISTED,
+                httpErrors.DUPLICATE_EMAIL_USER,
                 HttpStatus.BAD_REQUEST,
             )
         }
 
         //create company
         let createdCompany: Company
+
+        let company: Company
+        company = await this.companyRepository.getCompanyByTaxCompany(
+            createCompanyDto.taxNumber,
+        )
+        if (company) {
+            throw new HttpException(
+                httpErrors.DUPLICATE_TAX_NUMBER_COMPANY,
+                HttpStatus.BAD_REQUEST,
+            )
+        }
+        company = await this.companyRepository.getCompanyByEmail(
+            createCompanyDto.email,
+        )
+        if (company) {
+            throw new HttpException(
+                httpErrors.DUPLICATE_EMAIL_COMPANY,
+                HttpStatus.BAD_REQUEST,
+            )
+        }
+
         try {
             createdCompany = await this.companyRepository.createCompany(
                 createCompanyDto,

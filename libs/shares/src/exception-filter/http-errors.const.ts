@@ -318,4 +318,25 @@ export const httpErrors = {
             'Created file of proposal transaction failed. Please try again',
         code: 'FILE_OF_PROPOSAL_TRANSACTION_00001',
     },
+    // Duplicate Value
+    DUPLICATE_EMAIL_COMPANY: {
+        message: 'DUPLICATE_EMAIL_COMPANY',
+        code: 'DUPLICATE_00001',
+    },
+    DUPLICATE_TAX_NUMBER_COMPANY: {
+        message: 'DUPLICATE_TAX_NUMBER_COMPANY',
+        code: 'DUPLICATE_00002',
+    },
+    DUPLICATE_WALLET_ADDRESS: {
+        message: 'DUPLICATE_WALLET_ADDRESS',
+        code: 'DUPLICATE_00003',
+    },
+    DUPLICATE_EMAIL_USER: {
+        message: 'DUPLICATE_EMAIL_USER',
+        code: 'DUPLICATE_00004',
+    },
+    DUPLICATE_PLAN_NAME: {
+        message: 'DUPLICATE_PLAN_NAME',
+        code: 'DUPLICATE_00005',
+    },
 }

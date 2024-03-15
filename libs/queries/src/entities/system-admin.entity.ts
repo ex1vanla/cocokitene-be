@@ -16,7 +16,6 @@ export class SystemAdmin extends BaseEntity {
         type: 'varchar',
         length: 255,
         nullable: true,
-        unique: true,
     })
     username: string
 

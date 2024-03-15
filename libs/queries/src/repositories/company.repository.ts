@@ -16,6 +16,15 @@ export class CompanyRepository extends Repository<Company> {
         return company
     }
 
+    async getCompanyByEmail(email): Promise<Company> {
+        const company = await this.findOne({
+            where: {
+                email: email,
+            },
+        })
+        return company
+    }
+
     async getAllCompanys(
         options: GetAllCompanyDto,
     ): Promise<Pagination<Company>> {

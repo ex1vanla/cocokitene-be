@@ -100,6 +100,32 @@ export class SystemAdminService {
             )
         }
 
+        let superAdminExited: User
+        if (superAdminDto.walletAddress) {
+            superAdminExited = await this.userService.getUserByWalletAddress(
+                superAdminDto.walletAddress,
+            )
+            if (
+                superAdminExited &&
+                superAdminExited.walletAddress !== superAdmin.walletAddress
+            ) {
+                throw new HttpException(
+                    httpErrors.DUPLICATE_WALLET_ADDRESS,
+                    HttpStatus.BAD_REQUEST,
+                )
+            }
+        }
+
+        superAdminExited = await this.userService.getUserByEmail(
+            superAdminDto.email,
+        )
+        if (superAdminExited && superAdminExited.email !== superAdmin.email) {
+            throw new HttpException(
+                httpErrors.DUPLICATE_EMAIL_USER,
+                HttpStatus.BAD_REQUEST,
+            )
+        }
+
         const updatedSuperAdminCompany =
             await this.userService.updateSuperAdminCompany(
                 companyId,
@@ -153,6 +179,16 @@ export class SystemAdminService {
     }
 
     async createPlan(createPlanDto: CreatePlanDto) {
+        const planExited = await this.planService.getPlanByPlanName(
+            createPlanDto.planName,
+        )
+        if (planExited) {
+            throw new HttpException(
+                httpErrors.DUPLICATE_PLAN_NAME,
+                HttpStatus.BAD_REQUEST,
+            )
+        }
+
         const plan = await this.planService.createPlan(createPlanDto)
         return plan
     }
