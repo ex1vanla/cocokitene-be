@@ -43,13 +43,17 @@ export const httpErrors = {
     EMAIL_SEND_TO_CREATED_USER_FAILED: {
         message:
             'Send email to user when create acc by super admin failed. Please try again',
-        code: 'USER_00008',
+        code: 'USER_00009',
     },
 
     // user status error
     USER_STATUS_NOT_EXISTED: {
         message: 'User not existed. Please try again',
         code: 'USER_STATUS_00000',
+    },
+    USER_STATUS_INACTIVE: {
+        message: 'USER_STATUS_INACTIVE',
+        code: 'USER_STATUS_00001',
     },
 
     // role error

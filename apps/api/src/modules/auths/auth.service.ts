@@ -69,13 +69,19 @@ export class AuthService {
         // check user exists
         const user = await this.userRepository.getUserByWalletAddress(
             walletAddress,
-            UserStatusEnum.ACTIVE,
         )
 
         if (!user) {
             throw new HttpException(
                 httpErrors.USER_NOT_FOUND,
                 HttpStatus.NOT_FOUND,
+            )
+        }
+
+        if (user.userStatus.status !== UserStatusEnum.ACTIVE) {
+            throw new HttpException(
+                httpErrors.USER_STATUS_INACTIVE,
+                HttpStatus.FORBIDDEN,
             )
         }
         // get message have to sign
@@ -120,6 +126,7 @@ export class AuthService {
                 companyId: user.companyId,
                 avatar: user.avatar,
                 permissionKeys,
+                status: user.userStatus,
             }
 
             accessToken = generateAccessJWT(userData, {
@@ -374,6 +381,13 @@ export class AuthService {
         if (!checkPassword) {
             throw new HttpException(
                 httpErrors.USER_INVALID_PASSWORD,
+                HttpStatus.FORBIDDEN,
+            )
+        }
+
+        if (user.userStatus.status !== UserStatusEnum.ACTIVE) {
+            throw new HttpException(
+                httpErrors.USER_STATUS_INACTIVE,
                 HttpStatus.FORBIDDEN,
             )
         }
