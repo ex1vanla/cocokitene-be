@@ -50,23 +50,14 @@ export class UserRepository extends Repository<User> {
         return user
     }
 
-    async getUserByWalletAddress(
-        walletAddress: string,
-        status?: UserStatusEnum,
-        // isNormalRole?: boolean,
-    ): Promise<User> {
-        const queryBuilder = this.createQueryBuilder('users')
-        if (status) {
-            queryBuilder
-                .leftJoinAndSelect('users.userStatus', 'userStatus')
-                .where('userStatus.status= :status', {
-                    status,
-                })
-        }
-        queryBuilder.andWhere('users.walletAddress= :walletAddress', {
-            walletAddress,
-        })
-        const user = await queryBuilder.getOne()
+    async getUserByWalletAddress(walletAddress: string): Promise<User> {
+        const user = await this.createQueryBuilder('users')
+            .leftJoin('users.userStatus', 'userStatus')
+            .addSelect(['userStatus.id', 'userStatus.status'])
+            .where('users.walletAddress= :walletAddress', {
+                walletAddress,
+            })
+            .getOne()
         return user
     }
 
@@ -307,6 +298,8 @@ export class UserRepository extends Repository<User> {
         companyId: number
     }): Promise<User> {
         const user = await this.createQueryBuilder('users')
+            .leftJoin('users.userStatus', 'userStatus')
+            .addSelect(['userStatus.id', 'userStatus.status'])
             .where('users.companyId = :companyId', {
                 companyId,
             })
