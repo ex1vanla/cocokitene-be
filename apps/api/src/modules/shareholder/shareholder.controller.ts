@@ -37,7 +37,7 @@ export class ShareholderController {
     ) {
         const companyId = user?.companyId
         const shareholders =
-            await this.shareholderService.getAllShareholderCompany(
+            await this.shareholderService.getAllShareholderInCompany(
                 getAllShareholderDto,
                 companyId,
             )
