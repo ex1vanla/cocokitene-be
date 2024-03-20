@@ -5,7 +5,7 @@ import {
 
 import { User } from '@entities/user.entity'
 import { CustomRepository } from '@shares/decorators'
-import { Pagination, paginate } from 'nestjs-typeorm-paginate'
+import { Pagination, paginateRaw } from 'nestjs-typeorm-paginate'
 import { Repository } from 'typeorm'
 
 @CustomRepository(User)
@@ -28,13 +28,20 @@ export class ShareholderRepository extends Repository<User> {
                 'users.createdAt',
                 'users.updatedAt',
                 'users.shareQuantity',
+                'GROUP_CONCAT(role.role ORDER BY role.role ASC ) as listRoleResponse',
             ])
             .leftJoinAndSelect('users.userStatus', 'userStatus')
-
+            .leftJoin('users.userRole', 'userRole')
+            .leftJoin('userRole.role', 'role')
             .where('users.shareQuantity IS NOT NULL')
             .andWhere('users.companyId = :companyId', {
                 companyId,
             })
+            .andWhere('role.companyId = :companyId', { companyId })
+            .having('listRoleResponse LIKE :roleContaining', {
+                roleContaining: '%SHAREHOLDER%',
+            })
+            .groupBy('users.id')
 
         if (searchQuery) {
             queryBuilder
@@ -49,7 +56,7 @@ export class ShareholderRepository extends Repository<User> {
             queryBuilder.orderBy('users.updatedAt', sortOrder)
         }
 
-        return paginate(queryBuilder, { page, limit })
+        return paginateRaw(queryBuilder, { page, limit })
     }
 
     async getShareholderById(

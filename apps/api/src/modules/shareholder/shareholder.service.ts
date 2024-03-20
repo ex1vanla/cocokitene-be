@@ -30,7 +30,7 @@ export class ShareholderService {
         private readonly userService: UserService,
     ) {}
 
-    async getAllShareholderCompany(
+    async getAllShareholderInCompany(
         getAllShareholdersDto: GetAllShareholderDto,
         companyId: number,
     ): Promise<Pagination<User>> {
