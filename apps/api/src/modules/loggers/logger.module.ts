@@ -19,12 +19,20 @@ import { MyLoggerService } from '@api/modules/loggers/logger.service'
                         .getDate()
                         .toString()
                         .padStart(2, '0')}`
+                const customFormat = winston.format.printf(
+                    ({ level, message, timestamp }) => {
+                        const formattedTimestamp = timestamp.toLocaleString()
+
+                        return `${formattedTimestamp} ${level.toUpperCase()} ${message}`
+                    },
+                )
                 const cocokiteneTransport = new winston.transports.File({
                     filename: `${folderName}/cocokitene-${currentDateFormatted}.log`,
                     level: 'debug',
                     format: winston.format.combine(
                         winston.format.timestamp(),
                         winston.format.json(),
+                        customFormat,
                     ),
                     options: { flags: 'a' },
                 })
