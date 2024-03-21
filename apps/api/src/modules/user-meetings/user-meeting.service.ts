@@ -15,7 +15,7 @@ import {
 import { httpErrors } from '@shares/exception-filter'
 import { UserService } from '@api/modules/users/user.service'
 import { User } from '@entities/user.entity'
-
+import { Logger } from 'winston'
 @Injectable()
 export class UserMeetingService {
     constructor(
@@ -23,6 +23,8 @@ export class UserMeetingService {
         // private readonly userService: UserService,
         @Inject(forwardRef(() => UserService))
         private readonly userService: UserService,
+        @Inject('winston')
+        private readonly logger: Logger,
     ) {}
 
     async createUserMeeting(
@@ -40,6 +42,7 @@ export class UserMeetingService {
             // return await createdUserMeeting.save()
             return createdUserMeeting
         } catch (error) {
+            this.logger.error('User meeting failed. Please try again')
             throw new HttpException(
                 {
                     code: httpErrors.USER_MEETING_CREATE_FAILED.code,

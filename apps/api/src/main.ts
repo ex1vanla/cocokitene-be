@@ -9,9 +9,9 @@ import { ResponseTransformInterceptor } from '@shares/interceptors/response.inte
 
 async function bootstrap() {
     const app = await NestFactory.create(ApiModule)
-
     const config = app.get<ConfigService>(ConfigService)
     const globalPrefix = config.get('api.prefix')
+
     app.enableCors()
     app.setGlobalPrefix(globalPrefix)
     // app.useGlobalInterceptors(new SentryInterceptor())
@@ -22,7 +22,6 @@ async function bootstrap() {
             transform: true,
         }),
     )
-
     app.useGlobalFilters(new HttpExceptionFilter())
     app.useGlobalGuards(new JwtAuthGuard(new Reflector()))
     // app.useGlobalGuards(new JwtAuthGuard())
@@ -33,7 +32,6 @@ async function bootstrap() {
         .setVersion('1.0')
         .addBearerAuth()
         .build()
-
     const document = SwaggerModule.createDocument(app, swaggerConfig)
     SwaggerModule.setup('docs', app, document, {
         swaggerOptions: {
@@ -41,7 +39,6 @@ async function bootstrap() {
             operationsSorter: 'alpha',
         },
     })
-
     const port = config.get('api.port')
     await app.listen(port)
     const logger = app.get<Logger>('winston')

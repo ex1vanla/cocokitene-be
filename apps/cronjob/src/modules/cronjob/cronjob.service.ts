@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common'
-import { Cron, CronExpression } from '@nestjs/schedule'
+import { Cron } from '@nestjs/schedule'
 import { TransactionService } from '../transactions/transaction.service'
 import {
     ABI_BY_TYPE,
@@ -38,8 +38,7 @@ export class CronjobService {
         }
     }
 
-    // @Cron(configuration().cronjob.cronJobHandleEndedMeeting)
-    @Cron(CronExpression.EVERY_SECOND)
+    @Cron(configuration().cronjob.cronJobHandleEndedMeeting)
     async handleAllEndedMeeting() {
         await this.transactionService.handleAllEndedMeeting()
     }

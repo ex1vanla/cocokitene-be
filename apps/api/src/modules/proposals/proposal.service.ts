@@ -20,7 +20,7 @@ import { UserMeetingService } from '@api/modules/user-meetings/user-meeting.serv
 import { VoteProposalResult } from '@shares/constants/proposal.const'
 import { CalculateProposal } from '@api/modules/proposals/proposal.interface'
 import { User } from '@entities/user.entity'
-
+import { Logger } from 'winston'
 @Injectable()
 export class ProposalService {
     constructor(
@@ -30,6 +30,8 @@ export class ProposalService {
         private readonly meetingService: MeetingService,
         private readonly proposalFileService: ProposalFileService,
         private readonly userMeetingService: UserMeetingService,
+        @Inject('winston')
+        private readonly logger: Logger,
     ) {}
 
     async createProposal(
@@ -72,6 +74,7 @@ export class ProposalService {
 
             return createdProposal
         } catch (error) {
+            this.logger.error('Proposal create failed. Please try again')
             throw new HttpException(
                 httpErrors.PROPOSAL_CREATE_FAILED,
                 HttpStatus.INTERNAL_SERVER_ERROR,

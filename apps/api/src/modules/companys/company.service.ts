@@ -77,6 +77,7 @@ export class CompanyService {
     ): Promise<Company> {
         let existedCompany = await this.getCompanyById(companyId)
         if (!existedCompany) {
+            this.logger.error('[DAPP] Company not found')
             throw new HttpException(
                 httpErrors.COMPANY_NOT_FOUND,
                 HttpStatus.NOT_FOUND,
@@ -150,6 +151,9 @@ export class CompanyService {
         }
         superAdmin = await this.userService.getUserByEmail(superAdminEmail)
         if (superAdmin) {
+            this.logger.error(
+                '[DAPP] duplicate email super admin when create company',
+            )
             throw new HttpException(
                 httpErrors.DUPLICATE_EMAIL_USER,
                 HttpStatus.BAD_REQUEST,
@@ -164,6 +168,9 @@ export class CompanyService {
             createCompanyDto.taxNumber,
         )
         if (company) {
+            this.logger.error(
+                '[DAPP] duplicate tax number company when create company',
+            )
             throw new HttpException(
                 httpErrors.DUPLICATE_TAX_NUMBER_COMPANY,
                 HttpStatus.BAD_REQUEST,
@@ -173,6 +180,9 @@ export class CompanyService {
             createCompanyDto.email,
         )
         if (company) {
+            this.logger.error(
+                '[DAPP] duplicate email company when create company',
+            )
             throw new HttpException(
                 httpErrors.DUPLICATE_EMAIL_COMPANY,
                 HttpStatus.BAD_REQUEST,

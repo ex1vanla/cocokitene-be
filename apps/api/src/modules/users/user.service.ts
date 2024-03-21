@@ -53,6 +53,7 @@ export class UserService {
             },
         })
         if (!user) {
+            this.logger.error('User not found. Please try again')
             throw new HttpException(
                 httpErrors.USER_NOT_FOUND,
                 HttpStatus.BAD_REQUEST,
@@ -294,6 +295,7 @@ export class UserService {
                 createUserDto.walletAddress,
             )
             if (exitedUser) {
+                this.logger.error('[DAPP] DUPLICATE_WALLET_ADDRESS')
                 throw new HttpException(
                     httpErrors.DUPLICATE_WALLET_ADDRESS,
                     HttpStatus.BAD_REQUEST,
@@ -302,6 +304,7 @@ export class UserService {
         }
         exitedUser = await this.getUserByEmail(createUserDto.email)
         if (exitedUser) {
+            this.logger.error('[DAPP] DUPLICATE_EMAIL_USER')
             throw new HttpException(
                 httpErrors.DUPLICATE_EMAIL_USER,
                 HttpStatus.BAD_REQUEST,
@@ -321,6 +324,10 @@ export class UserService {
             createdUser.nonce = uuid()
             createdUser.defaultAvatarHashColor = generateRandomHexColor()
             await createdUser.save()
+            this.logger.info(
+                '[DAPP] Create user successfully with userId: ' +
+                    createdUser.id,
+            )
         } catch (error) {
             if (error.sqlMessage.includes('Duplicate entry')) {
                 throw new HttpException(

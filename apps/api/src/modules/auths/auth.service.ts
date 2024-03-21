@@ -75,6 +75,7 @@ export class AuthService {
         )
 
         if (!user) {
+            this.logger.error('[DAPP] User not found. Please try again')
             throw new HttpException(
                 httpErrors.USER_NOT_FOUND,
                 HttpStatus.NOT_FOUND,
@@ -82,6 +83,7 @@ export class AuthService {
         }
 
         if (user.userStatus.status !== UserStatusEnum.ACTIVE) {
+            this.logger.error('[DAPP] USER_STATUS_INACTIVE')
             throw new HttpException(
                 httpErrors.USER_STATUS_INACTIVE,
                 HttpStatus.FORBIDDEN,
@@ -189,6 +191,7 @@ export class AuthService {
         const systemAdmin =
             await this.systemAdminRepository.findSystemAdminByEmail(email)
         if (!systemAdmin) {
+            this.logger.error('[DAPP] System admin does not exist')
             throw new HttpException(
                 httpErrors.SYSTEM_ADMIN_NOT_FOUND,
                 HttpStatus.NOT_FOUND,
@@ -199,6 +202,9 @@ export class AuthService {
             systemAdmin.password,
         )
         if (!checkPassword) {
+            this.logger.error(
+                '[DAPP] password of system admin invalid credentials. Please try again',
+            )
             throw new HttpException(
                 httpErrors.SYSTEM_ADMIN_INVALID_PASSWORD,
                 HttpStatus.FORBIDDEN,
@@ -368,6 +374,7 @@ export class AuthService {
             taxOfCompany,
         )
         if (!company) {
+            this.logger.error('[DAPP] Company not found')
             throw new HttpException(
                 httpErrors.COMPANY_NOT_FOUND,
                 HttpStatus.NOT_FOUND,
@@ -379,6 +386,9 @@ export class AuthService {
             companyId: company.id,
         })
         if (!user) {
+            this.logger.error(
+                '[DAPP] Login false. Please check (email or WallerAddress)',
+            )
             throw new HttpException(
                 httpErrors.USER_WRONG_LOGIN,
                 HttpStatus.NOT_FOUND,
@@ -387,6 +397,7 @@ export class AuthService {
 
         const checkPassword = await comparePasswordUser(password, user.password)
         if (!checkPassword) {
+            this.logger.error('[DAPP] Password of user invalid credentials. ')
             throw new HttpException(
                 httpErrors.USER_INVALID_PASSWORD,
                 HttpStatus.FORBIDDEN,
@@ -423,6 +434,7 @@ export class AuthService {
             },
         })
         if (!existedUser) {
+            this.logger.error('[DAPP] User not found')
             throw new HttpException(
                 httpErrors.USER_NOT_FOUND,
                 HttpStatus.NOT_FOUND,
@@ -452,6 +464,7 @@ export class AuthService {
             email,
         )
         if (!existedUser) {
+            this.logger.error('[DAPP] User not found')
             throw new HttpException(
                 httpErrors.USER_NOT_FOUND,
                 HttpStatus.NOT_FOUND,

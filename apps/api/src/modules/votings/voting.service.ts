@@ -87,6 +87,9 @@ export class VotingService {
                 MeetingRole.SHAREHOLDER,
             )
         if (!listIdsShareholders.includes(userId)) {
+            this.logger.error(
+                '[DAPP] user are not a shareholder in this meeting so you do not have the right to vote. Please try again',
+            )
             throw new HttpException(
                 httpErrors.USER_NOT_HAVE_THE_RIGHT_TO_VOTE,
                 HttpStatus.BAD_REQUEST,
@@ -225,6 +228,9 @@ export class VotingService {
             await existedProposal.save()
             return existedProposal
         } else {
+            this.logger.error(
+                '[DAPP] voting failed with proposalId: ' + existedProposal.id,
+            )
             throw new HttpException(
                 httpErrors.VOTING_FAILED,
                 HttpStatus.BAD_REQUEST,

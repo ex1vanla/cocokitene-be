@@ -3,25 +3,21 @@ import { WinstonModule } from 'nest-winston'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import * as winston from 'winston'
 import { MyLoggerService } from '@api/modules/loggers/logger.service'
-
+import * as moment from 'moment'
 @Module({
     imports: [
         WinstonModule.forRootAsync({
             imports: [ConfigModule],
             useFactory: async (configService: ConfigService) => {
                 const folderName = configService.get('log.folderLog')
-                const currentDate = new Date(),
-                    currentDateFormatted = `${currentDate.getFullYear()}-${(
-                        currentDate.getMonth() + 1
-                    )
-                        .toString()
-                        .padStart(2, '0')}-${currentDate
-                        .getDate()
-                        .toString()
-                        .padStart(2, '0')}`
+                // get currentDate
+                const currentDate = moment()
+                const currentDateFormatted = currentDate.format('YYYY-MM-DD')
                 const customFormat = winston.format.printf(
                     ({ level, message, timestamp }) => {
-                        const formattedTimestamp = timestamp.toLocaleString()
+                        const formattedTimestamp = moment(timestamp).format(
+                            'YYYY-MM-DD HH:mm:ss',
+                        )
 
                         return `${formattedTimestamp} ${level.toUpperCase()} ${message}`
                     },
