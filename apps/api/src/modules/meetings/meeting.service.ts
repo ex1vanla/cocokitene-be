@@ -37,6 +37,7 @@ import { GetAllDto } from '@dtos/base.dto'
 import { UserService } from '@api/modules/users/user.service'
 import { User } from '@entities/user.entity'
 import { PermissionEnum } from '@shares/constants'
+import { Logger } from 'winston'
 
 @Injectable()
 export class MeetingService {
@@ -51,6 +52,8 @@ export class MeetingService {
         private readonly votingService: VotingService,
         @Inject(forwardRef(() => UserService))
         private readonly userService: UserService,
+        @Inject('winston')
+        private readonly logger: Logger,
     ) {}
 
     async getAllMeetings(
@@ -184,7 +187,12 @@ export class MeetingService {
                 creatorId,
                 companyId,
             )
+            this.logger.info(
+                '[DAPP] Create meeting successfully with meetingId: ' +
+                    createdMeeting.id,
+            )
         } catch (error) {
+            this.logger.error('[DAPP] Create meeting failed. Please try again')
             throw new HttpException(
                 httpErrors.MEETING_CREATE_FAILED,
                 HttpStatus.INTERNAL_SERVER_ERROR,
@@ -304,11 +312,15 @@ export class MeetingService {
             companyId,
         )
         if (!meeting) {
+            this.logger.error('[DAPP] Meeting not existed. Please try again')
             throw new HttpException(
                 httpErrors.MEETING_NOT_FOUND,
                 HttpStatus.NOT_FOUND,
             )
         }
+        this.logger.info(
+            '[DAPP] Get meeting successfully by meetingId: ' + meeting.id,
+        )
 
         const [
             hosts,
@@ -442,7 +454,15 @@ export class MeetingService {
                 userId,
                 companyId,
             )
+            this.logger.info(
+                '[DAPP] Update meeting successfully with meetingId: ' +
+                    existedMeeting.id,
+            )
         } catch (error) {
+            this.logger.error(
+                '[DAPP] Update meeting failed with meetingId: ' +
+                    existedMeeting.id,
+            )
             throw new HttpException(
                 httpErrors.MEETING_UPDATE_FAILED,
                 HttpStatus.INTERNAL_SERVER_ERROR,

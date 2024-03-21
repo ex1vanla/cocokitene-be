@@ -22,12 +22,15 @@ import { UserMeetingModule } from '@api/modules/user-meetings/user-meeting.modul
 import { PermissionModule } from '@api/modules/permissions/permission.module'
 import { RolePermissionModule } from '@api/modules/role-permissions/role-permission.module'
 import { ShareholderModule } from '@api/modules/shareholder/shareholder.module'
+import { MyLoggerModule } from '@api/modules/loggers/logger.module'
+
 @Module({
     imports: [
         ConfigModule.forRoot({
             isGlobal: true,
             load: [configuration],
         }),
+        MyLoggerModule,
         DatabaseModule,
         GlobalRepository,
         UserModule,

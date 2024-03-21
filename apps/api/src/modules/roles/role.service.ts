@@ -17,7 +17,7 @@ import {
 import { CompanyService } from '@api/modules/companys/company.service'
 import { httpErrors } from '@shares/exception-filter'
 import { RolePermissionService } from '@api/modules/role-permissions/role-permission.service'
-
+import { Logger } from 'winston'
 @Injectable()
 export class RoleService {
     constructor(
@@ -26,6 +26,8 @@ export class RoleService {
         private readonly companyService: CompanyService,
         @Inject(forwardRef(() => RolePermissionService))
         private readonly rolePermissionService: RolePermissionService,
+        @Inject('winston')
+        private readonly logger: Logger,
     ) {}
     async getPermissionsByRoleId(roleIds: number[]): Promise<string[]> {
         const permissionKeys = await this.roleRepository.getPermissionsByRoleId(
@@ -103,6 +105,7 @@ export class RoleService {
             companyId,
             description,
         )
+        this.logger.info('[DAPP] Create role successfully')
         await Promise.all([
             ...idPermissions.map((idPermission) =>
                 this.rolePermissionService.createRolePermission({

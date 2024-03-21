@@ -19,6 +19,7 @@ import {
     MeetingRole,
     UserMeetingStatusEnum,
 } from '@shares/constants/meeting.const'
+import { Logger } from 'winston'
 
 @Injectable()
 export class VotingService {
@@ -30,6 +31,8 @@ export class VotingService {
         private readonly userMeetingService: UserMeetingService,
         @Inject(forwardRef(() => MeetingService))
         private readonly meetingService: MeetingService,
+        @Inject('winston')
+        private readonly logger: Logger,
     ) {}
 
     async findVotingByUserIdAndProposalId(
@@ -134,6 +137,10 @@ export class VotingService {
                         voteProposalDto,
                         shareOfUser,
                     )
+                this.logger.info(
+                    `[DAPP] Voting for proposal successfully with proposalId: ` +
+                        existedProposal.id,
+                )
                 return updateCountVoteExistedProposal
             } else {
                 let createdVoting: Voting
@@ -156,7 +163,14 @@ export class VotingService {
                     await createdVoting.save()
                     await existedProposal.save()
                     return existedProposal
+                    this.logger.info(
+                        '[DAPP] Voting for proposal successfully with proposalId: ' +
+                            proposalId,
+                    )
                 } catch (error) {
+                    this.logger.error(
+                        '[DAPP] Create voting failded. Please send result diffirence',
+                    )
                     throw new HttpException(
                         httpErrors.VOTING_CREATED_FAILED,
                         HttpStatus.INTERNAL_SERVER_ERROR,

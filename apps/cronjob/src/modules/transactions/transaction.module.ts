@@ -13,6 +13,7 @@ import { VotingTransactionRepository } from '@repositories/voting-transaction.re
 import { VotingRepository } from '@repositories/voting.repository'
 import { FileMeetingTransactionRepository } from '@repositories/file-meeting-transaction.repository'
 import { MeetingFileRepository } from '@repositories/meeting-file.repository'
+import { MyLoggerModule } from '@api/modules/loggers/logger.module'
 
 const Repositories = TypeOrmExModule.forCustomRepository([
     UserMeetingRepository,
@@ -30,7 +31,7 @@ const Repositories = TypeOrmExModule.forCustomRepository([
 ])
 
 @Module({
-    imports: [Repositories],
+    imports: [Repositories, MyLoggerModule],
     providers: [TransactionService],
     exports: [TransactionService],
 })

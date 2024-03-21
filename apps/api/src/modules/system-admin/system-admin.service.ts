@@ -27,6 +27,7 @@ import { UserStatusService } from '@api/modules/user-status/user-status.service'
 import { SystemAdminRepository } from '@repositories/system-admin.repository'
 import { Plan } from '@entities/plan.entity'
 import { SystemAdmin } from '@entities/system-admin.entity'
+import { Logger } from 'winston'
 
 @Injectable()
 export class SystemAdminService {
@@ -40,6 +41,8 @@ export class SystemAdminService {
         private readonly roleService: RoleService,
         private readonly userStatusService: UserStatusService,
         private readonly systemAdminRepository: SystemAdminRepository,
+        @Inject('winston')
+        private readonly logger: Logger,
     ) {}
 
     async getAllCompanys(getAllCompanyDto: GetAllCompanyDto) {
@@ -52,6 +55,10 @@ export class SystemAdminService {
     async getCompanyById(companyId: number): Promise<DetailCompanyResponse> {
         const existedCompany = await this.companyService.getCompanyById(
             companyId,
+        )
+        this.logger.info(
+            '[DAPP] get company successfully with companyId: ' +
+                existedCompany.id,
         )
 
         const [superAdmin, plan] = await Promise.all([

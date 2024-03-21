@@ -5,7 +5,7 @@ import configuration from '@shares/config/configuration'
 import { TransactionModule } from '../transactions/transaction.module'
 import { CronjobModule } from '../cronjob/cronjob.module'
 import { ConsoleModule } from 'nestjs-console'
-import { Logger } from '@nestjs/common'
+
 @Module({
     imports: [
         ConfigModule.forRoot({
@@ -17,10 +17,4 @@ import { Logger } from '@nestjs/common'
         ConsoleModule,
     ],
 })
-export class AppConsoleModule {
-    private readonly logger = new Logger(AppConsoleModule.name)
-
-    constructor() {
-        this.logger.log('AppConsoleModule initialized')
-    }
-}
+export class AppConsoleModule {}

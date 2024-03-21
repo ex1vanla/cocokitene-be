@@ -30,7 +30,7 @@ import {
 } from '@shares/utils'
 import { Like } from 'typeorm'
 import { EmailService } from '@api/modules/emails/email.service'
-
+import { Logger } from 'winston'
 @Injectable()
 export class UserService {
     constructor(
@@ -39,6 +39,8 @@ export class UserService {
         private readonly companyService: CompanyService,
         private readonly userRoleService: UserRoleService,
         private readonly emailService: EmailService,
+        @Inject('winston')
+        private readonly logger: Logger,
     ) {}
 
     async getUserNonceByUserWalletAddress(
@@ -187,7 +189,13 @@ export class UserService {
                 companyId,
                 updateUserDto,
             )
+            this.logger.info(
+                '[DAPP] Update user successfully with userId: ' + userId,
+            )
         } catch (error) {
+            this.logger.error(
+                '[DAPP] User update failed with userId: ' + userId,
+            )
             throw new HttpException(
                 httpErrors.USER_UPDATE_FAILED,
                 HttpStatus.INTERNAL_SERVER_ERROR,
@@ -228,11 +236,13 @@ export class UserService {
             userId,
         )
         if (!existedUser) {
+            this.logger.error('[DAPP] User not found. Please try again')
             throw new HttpException(
                 httpErrors.USER_NOT_FOUND,
                 HttpStatus.NOT_FOUND,
             )
         }
+        this.logger.info('[DAPP] Get user successfully with userId: ' + userId)
         const rolesByUserId = await this.userRoleService.getRolesByUserId(
             userId,
         )
@@ -321,7 +331,7 @@ export class UserService {
                     HttpStatus.INTERNAL_SERVER_ERROR,
                 )
             }
-
+            this.logger.error('[DAPP] User create failed. Please try again')
             throw new HttpException(
                 httpErrors.USER_CREATE_FAILED,
                 HttpStatus.INTERNAL_SERVER_ERROR,
