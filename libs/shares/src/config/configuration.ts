@@ -74,6 +74,9 @@ interface Configuration {
     phone: {
         numberPhone: string
     }
+    log: {
+        folderLog: string
+    }
 }
 
 export default (): Configuration => ({
@@ -168,5 +171,8 @@ export default (): Configuration => ({
     },
     phone: {
         numberPhone: process.env.NUMBER_PHONE,
+    },
+    log: {
+        folderLog: process.env.FOLDER_LOG,
     },
 })

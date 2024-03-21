@@ -19,7 +19,7 @@ import { CompanyService } from '@api/modules/companys/company.service'
 import { httpErrors } from '@shares/exception-filter'
 import { DetailShareholderReponse } from './shareholder.interface'
 import { UserService } from '../users/user.service'
-
+import { Logger } from 'winston'
 @Injectable()
 export class ShareholderService {
     constructor(
@@ -28,6 +28,8 @@ export class ShareholderService {
         private readonly companyService: CompanyService,
         private readonly userRoleService: UserRoleService,
         private readonly userService: UserService,
+        @Inject('winston')
+        private readonly logger: Logger,
     ) {}
 
     async getAllShareholderCompany(
@@ -38,7 +40,10 @@ export class ShareholderService {
             getAllShareholdersDto,
             companyId,
         )
-
+        this.logger.info(
+            '[DAPP] Get all shareholder successfully in company with id: ' +
+                companyId,
+        )
         return users
     }
 

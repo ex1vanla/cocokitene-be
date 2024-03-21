@@ -6,7 +6,6 @@ import {
 } from './cronjob.const'
 import { ConfigCrawler } from './cronjob.interface'
 import { getContract, getWeb3Instance, timeOut } from '@shares/utils'
-
 export abstract class BaseCrawler {
     private isCrawlingFlag = false
     constructor(protected blockService: BlockService) {}
@@ -18,6 +17,7 @@ export abstract class BaseCrawler {
     ) {
         const { abi, contract, provider, chainId } = setup
         const contractInstance = await getContract(abi, contract, provider)
+
         console.log('====================================')
         console.log(`ChainId: ${chainId}`)
         console.log(`Cronjob contract address:  ${contractInstance}`)

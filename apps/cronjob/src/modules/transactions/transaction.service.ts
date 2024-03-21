@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common'
 import {
     ListFileOfMeeting,
     ListFileOfProposal,
@@ -46,6 +46,7 @@ import { VotingTransactionRepository } from '@repositories/voting-transaction.re
 import { VotingRepository } from '@repositories/voting.repository'
 import { MeetingFileRepository } from '@repositories/meeting-file.repository'
 import { FileMeetingTransactionRepository } from '@repositories/file-meeting-transaction.repository'
+import { Logger } from 'winston'
 
 @Injectable()
 export class TransactionService {
@@ -62,6 +63,8 @@ export class TransactionService {
         private readonly fileOfProposalTransactionRepository: FileProposalTransactionRepository,
         private readonly votingTransactionRepository: VotingTransactionRepository,
         private readonly fileOfMeetingTransactionRepository: FileMeetingTransactionRepository,
+        @Inject('winston')
+        private readonly logger: Logger, // private readonly myLoggerService: MyLoggerService,
     ) {}
     async handleAllEndedMeeting(): Promise<void> {
         const meetingIdsAppearedInTransaction =
@@ -73,6 +76,7 @@ export class TransactionService {
             )
         if (!listMeetingEnd || listMeetingEnd?.length == 0) {
             console.log('No meeting ends found: ' + new Date())
+            this.logger.debug('[BLC] No meetings found')
             return
         }
         await Promise.all([
@@ -384,6 +388,9 @@ export class TransactionService {
             console.log(
                 'No meeting creation event has been successful: ' + new Date(),
             )
+            this.logger.debug(
+                '[BLC] No meeting creation event has been successful',
+            )
             return
         }
 
@@ -548,6 +555,7 @@ export class TransactionService {
             )
         if (!transactionsList || transactionsList?.length === 0) {
             console.log('No transactions found: ' + new Date())
+            this.logger.debug('[BLC] No transactions found')
             return
         }
         const maximumNumberTransactionCallFuncBlockchain =
@@ -828,6 +836,9 @@ export class TransactionService {
             console.log(
                 'No update proposal meeting event has been successful: ' +
                     new Date(),
+            )
+            this.logger.debug(
+                '[BLC] No update proposal meeting event has been successful',
             )
             return
         }

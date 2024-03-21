@@ -17,6 +17,7 @@ import { RolePermission } from '@entities/role-permission.entity'
 import { httpErrors } from '@shares/exception-filter'
 import { StatePermisisionForRolesEnum } from '@shares/constants'
 import { GetAllPermissionDto } from '@dtos/permissions.dto'
+import { Logger } from 'winston'
 
 @Injectable()
 export class RolePermissionService {
@@ -27,6 +28,8 @@ export class RolePermissionService {
         @Inject(forwardRef(() => CompanyService))
         private readonly companyService: CompanyService,
         private readonly permissionService: PermissionService,
+        @Inject('winston')
+        private readonly logger: Logger,
     ) {}
 
     async updateRoleForPermission(
@@ -78,6 +81,7 @@ export class RolePermissionService {
                 },
             ),
         ])
+        this.logger.info('[DAPP] Update role with permission successfully')
         return 'updated role permisison successfully!!!'
     }
 

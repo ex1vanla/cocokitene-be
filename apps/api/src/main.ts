@@ -12,7 +12,6 @@ async function bootstrap() {
 
     const config = app.get<ConfigService>(ConfigService)
     const globalPrefix = config.get('api.prefix')
-
     app.enableCors()
     app.setGlobalPrefix(globalPrefix)
     // app.useGlobalInterceptors(new SentryInterceptor())
@@ -28,7 +27,6 @@ async function bootstrap() {
     app.useGlobalGuards(new JwtAuthGuard(new Reflector()))
     // app.useGlobalGuards(new JwtAuthGuard())
     // app.useGlobalGuards(new RolesGuard(new Reflector()))
-
     const swaggerConfig = new DocumentBuilder()
         .setTitle('Cocokitene API docs')
         .setDescription('Cocokitene API description')
@@ -46,6 +44,12 @@ async function bootstrap() {
 
     const port = config.get('api.port')
     await app.listen(port)
+    const logger = app.get<Logger>('winston')
+
+    logger.log(
+        'info',
+        `🚀 [DAPP] Api application is running on: ${await app.getUrl()}`,
+    )
     Logger.log(`🚀 Api application is running on: ${await app.getUrl()}`)
 }
 bootstrap()

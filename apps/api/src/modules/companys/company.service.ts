@@ -32,6 +32,7 @@ import {
     hashPasswordUser,
 } from '@shares/utils'
 import { uuid } from '@shares/utils/uuid'
+import { Logger } from 'winston'
 
 @Injectable()
 export class CompanyService {
@@ -48,6 +49,8 @@ export class CompanyService {
         private readonly permissionService: PermissionService,
         private readonly rolePermissionService: RolePermissionService,
         private readonly emailService: EmailService,
+        @Inject('winston')
+        private readonly logger: Logger,
     ) {}
     async getAllCompanys(
         getAllCompanyDto: GetAllCompanyDto,
@@ -107,7 +110,15 @@ export class CompanyService {
                 companyId,
                 updateCompanyDto,
             )
+            this.logger.info(
+                '[DAPP] Update company successfully with companyId: ' +
+                    existedCompany.id,
+            )
         } catch (error) {
+            this.logger.error(
+                '[DAPP] Company update failed with companyId: ' +
+                    existedCompany.id,
+            )
             throw new HttpException(
                 {
                     code: httpErrors.COMPANY_UPDATE_FAILED.code,
@@ -172,7 +183,12 @@ export class CompanyService {
             createdCompany = await this.companyRepository.createCompany(
                 createCompanyDto,
             )
+            this.logger.debug(
+                `[DAPP] Create company succussfully with companyId: ` +
+                    createdCompany.id,
+            )
         } catch (error) {
+            this.logger.error('[DAPP] Company create failed. Please try again')
             throw new HttpException(
                 httpErrors.COMPANY_CREATE_FAILED,
                 HttpStatus.INTERNAL_SERVER_ERROR,
@@ -269,6 +285,10 @@ export class CompanyService {
                 defaultPassword,
             )
         } catch (error) {
+            this.logger.error(
+                `[DAPP] Send information of super admin to super admin failed. Please try again with companyId: ` +
+                    createdCompany.id,
+            )
             throw new HttpException(
                 httpErrors.EMAIL_SEND_INFORMATION_TO_SUPER_ADMIN_FAILED,
                 HttpStatus.INTERNAL_SERVER_ERROR,

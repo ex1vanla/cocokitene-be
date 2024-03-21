@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common'
 import { UserRepository } from '@repositories/user.repository'
 import { ConfigService } from '@nestjs/config'
 
@@ -48,6 +48,7 @@ import {
     hashPasswordUser,
 } from '@shares/utils'
 import { CompanyRepository } from '@repositories/company.repository'
+import { Logger } from 'winston'
 
 @Injectable()
 export class AuthService {
@@ -59,6 +60,8 @@ export class AuthService {
         private readonly systemAdminRepository: SystemAdminRepository,
         private readonly emailService: EmailService,
         private readonly companyRepository: CompanyRepository,
+        @Inject('winston')
+        private readonly logger: Logger,
     ) {}
 
     async login(loginDto: LoginDto): Promise<LoginResponseData> {
@@ -99,6 +102,10 @@ export class AuthService {
 
         const { userData, accessToken, refreshToken } =
             await this.generateResponseLoginData(user)
+        this.logger.info(
+            `[DAPP] User login by walletAddress successfully with walletAddress: ` +
+                userData.walletAddress,
+        )
         return {
             userData,
             accessToken,
@@ -199,6 +206,7 @@ export class AuthService {
         }
         const { systemAdminData, accessToken, refreshToken } =
             await this.generateResponseSystemAdminLoginData(systemAdmin)
+        this.logger.info('[DAPP] System admin login successfully')
         return {
             systemAdminData,
             accessToken,
@@ -393,6 +401,10 @@ export class AuthService {
         }
         const { userData, accessToken, refreshToken } =
             await this.generateResponseLoginData(user)
+        this.logger.info(
+            `[DAPP] User login by email successfully with email: ` +
+                userData.email,
+        )
         return {
             userData,
             accessToken,
