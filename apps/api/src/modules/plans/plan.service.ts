@@ -1,13 +1,18 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common'
 import { CreatePlanDto, GetAllPlanDto, UpdatePlanDto } from '@dtos/plan.dto'
 import { Pagination } from 'nestjs-typeorm-paginate'
 import { Plan } from '@entities/plan.entity'
 import { PlanRepository } from '@repositories/plan.repository'
-import { httpErrors } from '@shares/exception-filter'
+import { httpErrors, messageLog } from '@shares/exception-filter'
+import { Logger } from 'winston'
 
 @Injectable()
 export class PlanService {
-    constructor(private readonly planRepository: PlanRepository) {}
+    constructor(
+        private readonly planRepository: PlanRepository,
+        @Inject('winston')
+        private readonly logger: Logger,
+    ) {}
 
     async getPlanCompany(planId: number): Promise<Plan> {
         const plan = await this.planRepository.findOne({
@@ -72,9 +77,14 @@ export class PlanService {
                 planId,
                 updatePlanDto,
             )
-
+            this.logger.info(
+                `${messageLog.UPDATE_SERVICE_PLAN_SUCCESS.message} ${existedPlan.id}`,
+            )
             return existedPlan
         } catch (error) {
+            this.logger.error(
+                `${messageLog.UPDATE_SERVICE_PLAN_FAILED.message} ${planId}`,
+            )
             throw new HttpException(
                 {
                     code: httpErrors.PLAN_UPDATE_FAILED.code,
@@ -87,11 +97,29 @@ export class PlanService {
 
     async createPlan(createPlanDto: CreatePlanDto): Promise<Plan> {
         try {
+            const planExisted = await this.getPlanByPlanName(
+                createPlanDto.planName,
+            )
+            if (planExisted) {
+                this.logger.error(
+                    `${messageLog.CREATE_SERVICE_PLAN_FAILED_DUPLICATE.message} ${createPlanDto.planName}`,
+                )
+                throw new HttpException(
+                    httpErrors.DUPLICATE_PLAN_NAME,
+                    HttpStatus.BAD_REQUEST,
+                )
+            }
             const createdPlan = await this.planRepository.createPlan(
                 createPlanDto,
             )
+            this.logger.info(
+                `${messageLog.CREATE_SERVICE_PLAN_SUCCESS.message} ${createdPlan.id}`,
+            )
             return createdPlan
         } catch (error) {
+            this.logger.error(
+                `${messageLog.CREATE_SERVICE_PLAN_FAILED.message}`,
+            )
             throw new HttpException(
                 httpErrors.PLAN_CREATE_FAILED,
                 HttpStatus.INTERNAL_SERVER_ERROR,

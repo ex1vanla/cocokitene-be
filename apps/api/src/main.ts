@@ -3,7 +3,7 @@ import { Logger, ValidationPipe } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { NestFactory, Reflector } from '@nestjs/core'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
-import { HttpExceptionFilter } from '@shares/exception-filter'
+import { HttpExceptionFilter, messageLog } from '@shares/exception-filter'
 import { JwtAuthGuard } from '@shares/guards/jwt-auth.guard'
 import { ResponseTransformInterceptor } from '@shares/interceptors/response.interceptor'
 
@@ -45,8 +45,8 @@ async function bootstrap() {
 
     logger.log(
         'info',
-        `🚀 [DAPP] Api application is running on: ${await app.getUrl()}`,
+        `${messageLog.TURN_ON_DAPP.message} ${await app.getUrl()}`,
     )
-    Logger.log(`🚀 Api application is running on: ${await app.getUrl()}`)
+    Logger.log(`${messageLog.TURN_ON_DAPP.message} ${await app.getUrl()}`)
 }
 bootstrap()

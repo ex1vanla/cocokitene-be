@@ -9,7 +9,7 @@ import { VotingRepository } from '@repositories/voting.repository'
 import { ProposalRepository } from '@repositories/proposal.repository'
 import { Voting } from '@entities/voting.entity'
 import { VoteProposalDto } from '@dtos/voting.dto'
-import { httpErrors } from '@shares/exception-filter'
+import { httpErrors, messageLog } from '@shares/exception-filter'
 import { VoteProposalResult } from '@shares/constants/proposal.const'
 import { Proposal } from '@entities/proposal.entity'
 import { UserService } from '@api/modules/users/user.service'
@@ -87,9 +87,6 @@ export class VotingService {
                 MeetingRole.SHAREHOLDER,
             )
         if (!listIdsShareholders.includes(userId)) {
-            this.logger.error(
-                '[DAPP] user are not a shareholder in this meeting so you do not have the right to vote. Please try again',
-            )
             throw new HttpException(
                 httpErrors.USER_NOT_HAVE_THE_RIGHT_TO_VOTE,
                 HttpStatus.BAD_REQUEST,
@@ -141,8 +138,7 @@ export class VotingService {
                         shareOfUser,
                     )
                 this.logger.info(
-                    `[DAPP] Voting for proposal successfully with proposalId: ` +
-                        existedProposal.id,
+                    `${messageLog.VOTING_PROPOSAL_SHAREHOLDER_MEETING_SUCCESS.message} ${existedProposal.id}`,
                 )
                 return updateCountVoteExistedProposal
             } else {
@@ -165,14 +161,13 @@ export class VotingService {
                     }
                     await createdVoting.save()
                     await existedProposal.save()
-                    return existedProposal
                     this.logger.info(
-                        '[DAPP] Voting for proposal successfully with proposalId: ' +
-                            proposalId,
+                        `${messageLog.VOTING_PROPOSAL_SHAREHOLDER_MEETING_SUCCESS.message} ${existedProposal.id}`,
                     )
+                    return existedProposal
                 } catch (error) {
                     this.logger.error(
-                        '[DAPP] Create voting failded. Please send result diffirence',
+                        `${messageLog.VOTING_PROPOSAL_SHAREHOLDER_MEETING_FAILED.message}`,
                     )
                     throw new HttpException(
                         httpErrors.VOTING_CREATED_FAILED,
@@ -229,7 +224,7 @@ export class VotingService {
             return existedProposal
         } else {
             this.logger.error(
-                '[DAPP] voting failed with proposalId: ' + existedProposal.id,
+                `${messageLog.VOTING_PROPOSAL_SHAREHOLDER_MEETING_FAILED.message} ${existedProposal.id}`,
             )
             throw new HttpException(
                 httpErrors.VOTING_FAILED,

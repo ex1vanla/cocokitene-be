@@ -22,7 +22,7 @@ import {
     StatusMeeting,
     UserMeetingStatusEnum,
 } from '@shares/constants/meeting.const'
-import { httpErrors } from '@shares/exception-filter'
+import { httpErrors, messageLog } from '@shares/exception-filter'
 import { enumToArray } from '@shares/utils/enum'
 import {
     AttendMeetingDto,
@@ -188,11 +188,12 @@ export class MeetingService {
                 companyId,
             )
             this.logger.info(
-                '[DAPP] Create meeting successfully with meetingId: ' +
-                    createdMeeting.id,
+                `${messageLog.CREATE_SHAREHOLDER_MEETING_SUCCESS.message} ${createdMeeting.id}`,
             )
         } catch (error) {
-            this.logger.error('[DAPP] Create meeting failed. Please try again')
+            this.logger.error(
+                `${messageLog.CREATE_SHAREHOLDER_MEETING_FAILED.message}`,
+            )
             throw new HttpException(
                 httpErrors.MEETING_CREATE_FAILED,
                 HttpStatus.INTERNAL_SERVER_ERROR,
@@ -455,13 +456,11 @@ export class MeetingService {
                 companyId,
             )
             this.logger.info(
-                '[DAPP] Update meeting successfully with meetingId: ' +
-                    existedMeeting.id,
+                `${messageLog.UPDATE_SHAREHOLDER_MEETING_SUCCESS.message} ${existedMeeting.id}`,
             )
         } catch (error) {
             this.logger.error(
-                '[DAPP] Update meeting failed with meetingId: ' +
-                    existedMeeting.id,
+                `${messageLog.UPDATE_SHAREHOLDER_MEETING_FAILED.message} ${existedMeeting.id}`,
             )
             throw new HttpException(
                 httpErrors.MEETING_UPDATE_FAILED,

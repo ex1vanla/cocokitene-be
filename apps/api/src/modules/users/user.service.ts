@@ -15,7 +15,7 @@ import {
     Injectable,
 } from '@nestjs/common'
 import { UserRepository } from '@repositories/user.repository'
-import { httpErrors } from '@shares/exception-filter'
+import { httpErrors, messageLog } from '@shares/exception-filter'
 import { WalletAddressDto } from 'libs/queries/src/dtos/base.dto'
 import { Pagination } from 'nestjs-typeorm-paginate'
 import { DetailUserReponse } from '@api/modules/users/user.interface'
@@ -191,11 +191,11 @@ export class UserService {
                 updateUserDto,
             )
             this.logger.info(
-                '[DAPP] Update user successfully with userId: ' + userId,
+                `${messageLog.UPDATE_ACCOUNT_SUCCESS.message} ${existedUser.id}`,
             )
         } catch (error) {
             this.logger.error(
-                '[DAPP] User update failed with userId: ' + userId,
+                `${messageLog.UPDATE_ACCOUNT_FAILED.message} ${userId}`,
             )
             throw new HttpException(
                 httpErrors.USER_UPDATE_FAILED,
@@ -295,7 +295,9 @@ export class UserService {
                 createUserDto.walletAddress,
             )
             if (exitedUser) {
-                this.logger.error('[DAPP] DUPLICATE_WALLET_ADDRESS')
+                this.logger.error(
+                    `${messageLog.CREATE_ACCOUNT_FAILED_DUPLICATE.message} ${createUserDto.walletAddress}`,
+                )
                 throw new HttpException(
                     httpErrors.DUPLICATE_WALLET_ADDRESS,
                     HttpStatus.BAD_REQUEST,
@@ -304,7 +306,9 @@ export class UserService {
         }
         exitedUser = await this.getUserByEmail(createUserDto.email)
         if (exitedUser) {
-            this.logger.error('[DAPP] DUPLICATE_EMAIL_USER')
+            this.logger.error(
+                `${messageLog.CREATE_ACCOUNT_FAILED_DUPLICATE.message} ${createUserDto.email}`,
+            )
             throw new HttpException(
                 httpErrors.DUPLICATE_EMAIL_USER,
                 HttpStatus.BAD_REQUEST,
@@ -325,20 +329,10 @@ export class UserService {
             createdUser.defaultAvatarHashColor = generateRandomHexColor()
             await createdUser.save()
             this.logger.info(
-                '[DAPP] Create user successfully with userId: ' +
-                    createdUser.id,
+                `${messageLog.CREATE_ACCOUNT_SUCCESS.message} ${createdUser.id}`,
             )
         } catch (error) {
-            if (error.sqlMessage.includes('Duplicate entry')) {
-                throw new HttpException(
-                    {
-                        message: error.sqlMessage.split('for')[0],
-                        code: httpErrors.USER_UPDATE_FAILED.code,
-                    },
-                    HttpStatus.INTERNAL_SERVER_ERROR,
-                )
-            }
-            this.logger.error('[DAPP] User create failed. Please try again')
+            this.logger.error(`${messageLog.CREATE_ACCOUNT_FAILED.message}`)
             throw new HttpException(
                 httpErrors.USER_CREATE_FAILED,
                 HttpStatus.INTERNAL_SERVER_ERROR,
@@ -469,17 +463,13 @@ export class UserService {
                 companyId,
                 updateOwnProfileDto,
             )
+            this.logger.info(
+                `${messageLog.UPDATE_PROFILE_SUCCESS.message} ${existedUser.id}`,
+            )
         } catch (error) {
-            if (error.sqlMessage.includes('Duplicate entry')) {
-                throw new HttpException(
-                    {
-                        message: error.sqlMessage.split('for')[0],
-                        code: httpErrors.PROFILE_UPDATE_FAILED.code,
-                    },
-                    HttpStatus.INTERNAL_SERVER_ERROR,
-                )
-            }
-
+            this.logger.error(
+                `${messageLog.UPDATE_PROFILE_FAILED.message} ${userId}`,
+            )
             throw new HttpException(
                 httpErrors.PROFILE_UPDATE_FAILED,
                 HttpStatus.INTERNAL_SERVER_ERROR,
