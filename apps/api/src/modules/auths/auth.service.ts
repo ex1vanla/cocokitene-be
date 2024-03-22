@@ -13,7 +13,7 @@ import {
     TOKEN_VERIFY_EMAIL_EXPIRE_IN_MILISECOND,
     UserStatusEnum,
 } from '@shares/constants'
-import { httpErrors } from '@shares/exception-filter'
+import { httpErrors, messageLog } from '@shares/exception-filter'
 
 import { uuid } from '@shares/utils/uuid'
 import { User } from '@entities/user.entity'
@@ -75,7 +75,9 @@ export class AuthService {
         )
 
         if (!user) {
-            this.logger.error('[DAPP] User not found. Please try again')
+            this.logger.error(
+                `${messageLog.LOGIN_WALLET_ADDRESS_FAILED.message} ${walletAddress}`,
+            )
             throw new HttpException(
                 httpErrors.USER_NOT_FOUND,
                 HttpStatus.NOT_FOUND,
@@ -83,7 +85,9 @@ export class AuthService {
         }
 
         if (user.userStatus.status !== UserStatusEnum.ACTIVE) {
-            this.logger.error('[DAPP] USER_STATUS_INACTIVE')
+            this.logger.error(
+                `${messageLog.LOGIN_USER_INACTIVE.message} ${walletAddress}`,
+            )
             throw new HttpException(
                 httpErrors.USER_STATUS_INACTIVE,
                 HttpStatus.FORBIDDEN,
@@ -105,7 +109,7 @@ export class AuthService {
         const { userData, accessToken, refreshToken } =
             await this.generateResponseLoginData(user)
         this.logger.info(
-            `[DAPP] User login by walletAddress successfully with walletAddress: ` +
+            `${messageLog.LOGIN_WALLET_ADDRESS_SUCCESS.message}` +
                 userData.walletAddress,
         )
         return {
@@ -191,7 +195,6 @@ export class AuthService {
         const systemAdmin =
             await this.systemAdminRepository.findSystemAdminByEmail(email)
         if (!systemAdmin) {
-            this.logger.error('[DAPP] System admin does not exist')
             throw new HttpException(
                 httpErrors.SYSTEM_ADMIN_NOT_FOUND,
                 HttpStatus.NOT_FOUND,
@@ -203,7 +206,7 @@ export class AuthService {
         )
         if (!checkPassword) {
             this.logger.error(
-                '[DAPP] password of system admin invalid credentials. Please try again',
+                `${messageLog.LOGIN_SYSTEM_FAILED.message} ${email}`,
             )
             throw new HttpException(
                 httpErrors.SYSTEM_ADMIN_INVALID_PASSWORD,
@@ -212,7 +215,8 @@ export class AuthService {
         }
         const { systemAdminData, accessToken, refreshToken } =
             await this.generateResponseSystemAdminLoginData(systemAdmin)
-        this.logger.info('[DAPP] System admin login successfully')
+
+        this.logger.info(`${messageLog.LOGIN_SYSTEM_SUCCESS.message} ${email}`)
         return {
             systemAdminData,
             accessToken,
@@ -325,6 +329,9 @@ export class AuthService {
         const currentTime = new Date()
         const expiredLinkToken = systemAdmin.resetPasswordExpireTime
         if (currentTime > expiredLinkToken) {
+            this.logger.error(
+                `${messageLog.RESET_PASSWORD_SYSTEM_FAILED.message} ${systemAdmin.email}`,
+            )
             throw new HttpException(
                 httpErrors.RESET_PASSWORD_TOKEN_EXPIRED,
                 HttpStatus.INTERNAL_SERVER_ERROR,
@@ -333,6 +340,9 @@ export class AuthService {
         const newPasswordHashed = await hashPassword(password)
         systemAdmin.password = newPasswordHashed
         await systemAdmin.save()
+        this.logger.info(
+            `${messageLog.RESET_PASSWORD_SYSTEM_SUCCESS.message} ${systemAdmin.email}`,
+        )
         return 'Reset Password Successfully'
     }
 
@@ -354,6 +364,9 @@ export class AuthService {
             existedSystemAdmin.password,
         )
         if (!checkPassword) {
+            this.logger.error(
+                `${messageLog.CHANGE_PASSWORD_SYSTEM_FAILED.message} ${existedSystemAdmin.email}`,
+            )
             throw new HttpException(
                 httpErrors.SYSTEM_ADMIN_INVALID_PASSWORD,
                 HttpStatus.FORBIDDEN,
@@ -362,6 +375,9 @@ export class AuthService {
         const hashedNewPassword = await hashPassword(newPassword)
         existedSystemAdmin.password = hashedNewPassword
         await existedSystemAdmin.save()
+        this.logger.info(
+            `${messageLog.CHANGE_PASSWORD_SYSTEM_SUCCESS.message} ${existedSystemAdmin.email}`,
+        )
         return 'Change Password successfully!!!'
     }
 
@@ -374,7 +390,6 @@ export class AuthService {
             taxOfCompany,
         )
         if (!company) {
-            this.logger.error('[DAPP] Company not found')
             throw new HttpException(
                 httpErrors.COMPANY_NOT_FOUND,
                 HttpStatus.NOT_FOUND,
@@ -386,9 +401,7 @@ export class AuthService {
             companyId: company.id,
         })
         if (!user) {
-            this.logger.error(
-                '[DAPP] Login false. Please check (email or WallerAddress)',
-            )
+            // this.logger.error('[DAPP] Login false. Please check (email or WallerAddress)',)
             throw new HttpException(
                 httpErrors.USER_WRONG_LOGIN,
                 HttpStatus.NOT_FOUND,
@@ -397,7 +410,9 @@ export class AuthService {
 
         const checkPassword = await comparePasswordUser(password, user.password)
         if (!checkPassword) {
-            this.logger.error('[DAPP] Password of user invalid credentials. ')
+            this.logger.error(
+                `${messageLog.LOGIN_EMAIL_FAILED.message} ${email}`,
+            )
             throw new HttpException(
                 httpErrors.USER_INVALID_PASSWORD,
                 HttpStatus.FORBIDDEN,
@@ -405,6 +420,9 @@ export class AuthService {
         }
 
         if (user.userStatus.status !== UserStatusEnum.ACTIVE) {
+            this.logger.error(
+                `${messageLog.LOGIN_USER_INACTIVE.message} ${email}`,
+            )
             throw new HttpException(
                 httpErrors.USER_STATUS_INACTIVE,
                 HttpStatus.FORBIDDEN,
@@ -413,8 +431,7 @@ export class AuthService {
         const { userData, accessToken, refreshToken } =
             await this.generateResponseLoginData(user)
         this.logger.info(
-            `[DAPP] User login by email successfully with email: ` +
-                userData.email,
+            `${messageLog.LOGIN_EMAIL_SUCCESS.message}` + userData.email,
         )
         return {
             userData,
@@ -434,7 +451,6 @@ export class AuthService {
             },
         })
         if (!existedUser) {
-            this.logger.error('[DAPP] User not found')
             throw new HttpException(
                 httpErrors.USER_NOT_FOUND,
                 HttpStatus.NOT_FOUND,
@@ -446,6 +462,9 @@ export class AuthService {
             existedUser.password,
         )
         if (!checkPassword) {
+            this.logger.error(
+                `${messageLog.CHANGE_PASSWORD_FAILED.message} ${existedUser.email}`,
+            )
             throw new HttpException(
                 httpErrors.USER_INVALID_PASSWORD,
                 HttpStatus.FORBIDDEN,
@@ -455,6 +474,9 @@ export class AuthService {
         const hashedNewPassword = await hashPasswordUser(newPassword)
         existedUser.password = hashedNewPassword
         await existedUser.save()
+        this.logger.info(
+            `${messageLog.CHANGE_PASSWORD_SUCCESS.message}` + existedUser.email,
+        )
         return 'Change Password Successfully!!!!'
     }
 
@@ -464,7 +486,7 @@ export class AuthService {
             email,
         )
         if (!existedUser) {
-            this.logger.error('[DAPP] User not found')
+            // this.logger.error('[DAPP] User not found')
             throw new HttpException(
                 httpErrors.USER_NOT_FOUND,
                 HttpStatus.NOT_FOUND,
@@ -504,6 +526,9 @@ export class AuthService {
         const currentTime = new Date()
         const expiredLinkToken = existedUser.resetPasswordExpireTime
         if (currentTime > expiredLinkToken) {
+            this.logger.error(
+                `${messageLog.RESET_PASSWORD_FAILED.message} ${existedUser.email}`,
+            )
             throw new HttpException(
                 httpErrors.RESET_PASSWORD_TOKEN_EXPIRED,
                 HttpStatus.INTERNAL_SERVER_ERROR,
@@ -512,6 +537,9 @@ export class AuthService {
         const newPasswordHashed = await hashPasswordUser(password)
         existedUser.password = newPasswordHashed
         await existedUser.save()
+        this.logger.info(
+            `${messageLog.RESET_PASSWORD_SUCCESS.message}` + existedUser.email,
+        )
         return 'Reset Password Successfully'
     }
 }

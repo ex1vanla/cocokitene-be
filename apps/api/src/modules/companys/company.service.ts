@@ -14,7 +14,7 @@ import {
     UpdateCompanyDto,
 } from '@dtos/company.dto'
 import { CompanyStatusRepository } from '@repositories/company-status.repository'
-import { httpErrors } from '@shares/exception-filter'
+import { httpErrors, messageLog } from '@shares/exception-filter'
 import { UserService } from '@api/modules/users/user.service'
 import { RoleService } from '@api/modules/roles/role.service'
 import { enumToArray } from '@shares/utils/enum'
@@ -77,7 +77,6 @@ export class CompanyService {
     ): Promise<Company> {
         let existedCompany = await this.getCompanyById(companyId)
         if (!existedCompany) {
-            this.logger.error('[DAPP] Company not found')
             throw new HttpException(
                 httpErrors.COMPANY_NOT_FOUND,
                 HttpStatus.NOT_FOUND,
@@ -112,13 +111,11 @@ export class CompanyService {
                 updateCompanyDto,
             )
             this.logger.info(
-                '[DAPP] Update company successfully with companyId: ' +
-                    existedCompany.id,
+                `${messageLog.UPDATE_COMPANY_SUCCESS.message} ${existedCompany.id}`,
             )
         } catch (error) {
             this.logger.error(
-                '[DAPP] Company update failed with companyId: ' +
-                    existedCompany.id,
+                `${messageLog.UPDATE_COMPANY_FAILED.message} ${existedCompany.id}`,
             )
             throw new HttpException(
                 {
@@ -143,6 +140,9 @@ export class CompanyService {
                 superAdminWalletAddress,
             )
             if (superAdmin) {
+                this.logger.error(
+                    `${messageLog.CREATE_COMPANY_FAILED_DUPLICATE} ${superAdminWalletAddress}`,
+                )
                 throw new HttpException(
                     httpErrors.DUPLICATE_WALLET_ADDRESS,
                     HttpStatus.BAD_REQUEST,
@@ -152,7 +152,7 @@ export class CompanyService {
         superAdmin = await this.userService.getUserByEmail(superAdminEmail)
         if (superAdmin) {
             this.logger.error(
-                '[DAPP] duplicate email super admin when create company',
+                `${messageLog.CREATE_COMPANY_FAILED_DUPLICATE} ${superAdminEmail}`,
             )
             throw new HttpException(
                 httpErrors.DUPLICATE_EMAIL_USER,
@@ -169,7 +169,7 @@ export class CompanyService {
         )
         if (company) {
             this.logger.error(
-                '[DAPP] duplicate tax number company when create company',
+                `${messageLog.CREATE_COMPANY_FAILED_DUPLICATE} ${createCompanyDto.taxNumber}`,
             )
             throw new HttpException(
                 httpErrors.DUPLICATE_TAX_NUMBER_COMPANY,
@@ -181,7 +181,7 @@ export class CompanyService {
         )
         if (company) {
             this.logger.error(
-                '[DAPP] duplicate email company when create company',
+                `${messageLog.CREATE_COMPANY_FAILED_DUPLICATE} ${createCompanyDto.email}`,
             )
             throw new HttpException(
                 httpErrors.DUPLICATE_EMAIL_COMPANY,
@@ -193,12 +193,11 @@ export class CompanyService {
             createdCompany = await this.companyRepository.createCompany(
                 createCompanyDto,
             )
-            this.logger.debug(
-                `[DAPP] Create company succussfully with companyId: ` +
-                    createdCompany.id,
+            this.logger.info(
+                `${messageLog.CREATE_COMPANY_SUCCESS.message} ${createdCompany.id}`,
             )
         } catch (error) {
-            this.logger.error('[DAPP] Company create failed. Please try again')
+            this.logger.error(`${messageLog.CREATE_COMPANY_FAILED.message}`)
             throw new HttpException(
                 httpErrors.COMPANY_CREATE_FAILED,
                 HttpStatus.INTERNAL_SERVER_ERROR,

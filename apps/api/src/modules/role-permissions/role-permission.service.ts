@@ -14,7 +14,7 @@ import { RoleService } from '@api/modules/roles/role.service'
 import { CompanyService } from '@api/modules/companys/company.service'
 import { PermissionService } from '@api/modules/permissions/permission.service'
 import { RolePermission } from '@entities/role-permission.entity'
-import { httpErrors } from '@shares/exception-filter'
+import { httpErrors, messageLog } from '@shares/exception-filter'
 import { StatePermisisionForRolesEnum } from '@shares/constants'
 import { GetAllPermissionDto } from '@dtos/permissions.dto'
 import { Logger } from 'winston'
@@ -81,7 +81,7 @@ export class RolePermissionService {
                 },
             ),
         ])
-        this.logger.info('[DAPP] Update role with permission successfully')
+        this.logger.info(`${messageLog.UPDATE_ROLE_SUCCESS.message}`)
         return 'updated role permisison successfully!!!'
     }
 
@@ -146,6 +146,7 @@ export class RolePermissionService {
 
             return createdRolePermission
         } catch (error) {
+            this.logger.error(``)
             throw new HttpException(
                 {
                     code: httpErrors.ROLE_PERMISSION_CREATE_FAILED.code,

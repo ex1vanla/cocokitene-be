@@ -15,7 +15,7 @@ import {
     Injectable,
 } from '@nestjs/common'
 import { CompanyService } from '@api/modules/companys/company.service'
-import { httpErrors } from '@shares/exception-filter'
+import { httpErrors, messageLog } from '@shares/exception-filter'
 import { RolePermissionService } from '@api/modules/role-permissions/role-permission.service'
 import { Logger } from 'winston'
 @Injectable()
@@ -77,12 +77,23 @@ export class RoleService {
         companyId: number,
         description?: string,
     ): Promise<Role> {
-        const createdCompanyRole = await this.roleRepository.createCompanyRole(
-            role,
-            companyId,
-            description,
-        )
-        return createdCompanyRole
+        try {
+            const createdCompanyRole =
+                await this.roleRepository.createCompanyRole(
+                    role,
+                    companyId,
+                    description,
+                )
+            return createdCompanyRole
+        } catch (error) {
+            this.logger.error(
+                `${messageLog.CREATE_ROLE_FAILED.message} ${role}`,
+            )
+            throw new HttpException(
+                httpErrors.COMPANY_ROLE_CREATE_FAILED,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            )
+        }
     }
 
     async createRoleHasPermissionInCompany(
@@ -105,7 +116,6 @@ export class RoleService {
             companyId,
             description,
         )
-        this.logger.info('[DAPP] Create role successfully')
         await Promise.all([
             ...idPermissions.map((idPermission) =>
                 this.rolePermissionService.createRolePermission({
@@ -114,6 +124,9 @@ export class RoleService {
                 }),
             ),
         ])
+        this.logger.info(
+            `${messageLog.CREATE_ROLE_SUCCESS.message} ${createdRole.roleName}`,
+        )
         return createdRole
     }
 }
