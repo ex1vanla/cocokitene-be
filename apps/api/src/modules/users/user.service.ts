@@ -243,7 +243,7 @@ export class UserService {
                 HttpStatus.NOT_FOUND,
             )
         }
-        this.logger.info('[DAPP] Get user successfully with userId: ' + userId)
+        // this.logger.info('[DAPP] Get user successfully with userId: ' + userId)
         const rolesByUserId = await this.userRoleService.getRolesByUserId(
             userId,
         )

@@ -138,7 +138,7 @@ export class VotingService {
                         shareOfUser,
                     )
                 this.logger.info(
-                    `${messageLog.VOTING_PROPOSAL_SHAREHOLDER_MEETING_SUCCESS.message} ${existedProposal.id}`,
+                    `[DAPP] User ID : ${userId} ${messageLog.VOTING_PROPOSAL_SHAREHOLDER_MEETING_SUCCESS.message} ${existedProposal.id}`,
                 )
                 return updateCountVoteExistedProposal
             } else {
@@ -162,12 +162,12 @@ export class VotingService {
                     await createdVoting.save()
                     await existedProposal.save()
                     this.logger.info(
-                        `${messageLog.VOTING_PROPOSAL_SHAREHOLDER_MEETING_SUCCESS.message} ${existedProposal.id}`,
+                        `User ID : ${userId} ${messageLog.VOTING_PROPOSAL_SHAREHOLDER_MEETING_SUCCESS.message} ${existedProposal.id}`,
                     )
                     return existedProposal
                 } catch (error) {
                     this.logger.error(
-                        `${messageLog.VOTING_PROPOSAL_SHAREHOLDER_MEETING_FAILED.message}`,
+                        `User ID : ${userId} ${messageLog.VOTING_PROPOSAL_SHAREHOLDER_MEETING_FAILED.message} ${existedProposal.id}`,
                     )
                     throw new HttpException(
                         httpErrors.VOTING_CREATED_FAILED,

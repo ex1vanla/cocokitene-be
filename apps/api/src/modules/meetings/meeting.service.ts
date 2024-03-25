@@ -313,15 +313,15 @@ export class MeetingService {
             companyId,
         )
         if (!meeting) {
-            this.logger.error('[DAPP] Meeting not existed. Please try again')
+            // this.logger.error('[DAPP] Meeting not existed. Please try again')
             throw new HttpException(
                 httpErrors.MEETING_NOT_FOUND,
                 HttpStatus.NOT_FOUND,
             )
         }
-        this.logger.info(
-            '[DAPP] Get meeting successfully by meetingId: ' + meeting.id,
-        )
+        // this.logger.info(
+        //     '[DAPP] Get meeting successfully by meetingId: ' + meeting.id,
+        // )
 
         const [
             hosts,

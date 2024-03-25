@@ -56,10 +56,10 @@ export class SystemAdminService {
         const existedCompany = await this.companyService.getCompanyById(
             companyId,
         )
-        this.logger.info(
-            '[DAPP] get company successfully with companyId: ' +
-                existedCompany.id,
-        )
+        // this.logger.info(
+        //     '[DAPP] get company successfully with companyId: ' +
+        //         existedCompany.id,
+        // )
 
         const [superAdmin, plan] = await Promise.all([
             this.userService.getSuperAdminCompany(existedCompany.id),

@@ -6,11 +6,11 @@ export const messageLog = {
 
     //Authorization SystemAdmin
     LOGIN_SYSTEM_SUCCESS: {
-        message: '🚀[DAPP] System admin login successfully',
+        message: '🚀[DAPP] System admin login successfully ,email System : ',
         code: 'AUTH_SYSTEM_0000',
     },
     LOGIN_SYSTEM_FAILED: {
-        message: '🚀[DAPP] System admin login failed',
+        message: '🚀[DAPP] System admin login failed ,email System : ',
         code: 'AUTH_SYSTEM_0001',
     },
     RESET_PASSWORD_SYSTEM_SUCCESS: {
@@ -36,21 +36,19 @@ export const messageLog = {
 
     //Authorization User
     LOGIN_WALLET_ADDRESS_SUCCESS: {
-        message:
-            '[DAPP] User login by walletAddress successfully with walletAddress: ',
+        message: '[DAPP] User login successfully by walletAddress: ',
         code: 'AUTH_0000',
     },
     LOGIN_WALLET_ADDRESS_FAILED: {
-        message:
-            '[DAPP] User login by walletAddress failed with walletAddress: ',
+        message: '[DAPP] User failed by walletAddress: ',
         code: 'AUTH_0001',
     },
     LOGIN_EMAIL_SUCCESS: {
-        message: '[DAPP] User login by email successfully with email: ',
+        message: '[DAPP] User login successfully by email: ',
         code: 'AUTH_0002',
     },
     LOGIN_EMAIL_FAILED: {
-        message: '[DAPP] User login by email failed with email: ',
+        message: '[DAPP] User login failed by email: ',
         code: 'AUTH_0003',
     },
     LOGIN_USER_INACTIVE: {
@@ -172,11 +170,11 @@ export const messageLog = {
 
     //Voting Proposal Shareholder Meeting
     VOTING_PROPOSAL_SHAREHOLDER_MEETING_SUCCESS: {
-        message: '[DAPP] Voting for proposal successfully with proposalId: ',
+        message: ' voting successfully for proposalId: ',
         code: 'VOTING_SHAREHOLDER_MEETING_0000',
     },
     VOTING_PROPOSAL_SHAREHOLDER_MEETING_FAILED: {
-        message: '[DAPP] Voting for proposal failed with proposalId: ',
+        message: ' voting failed for proposalId: ',
         code: 'VOTING_SHAREHOLDER_MEETING_0001',
     },
 
