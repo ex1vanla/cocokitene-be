@@ -40,10 +40,10 @@ export class ShareholderService {
             getAllShareholdersDto,
             companyId,
         )
-        this.logger.info(
-            '[DAPP] Get all shareholder successfully in company with id: ' +
-                companyId,
-        )
+        // this.logger.info(
+        //     '[DAPP] Get all shareholder successfully in company with id: ' +
+        //         companyId,
+        // )
         return users
     }
 

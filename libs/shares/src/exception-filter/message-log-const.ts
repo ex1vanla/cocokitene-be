@@ -1,16 +1,36 @@
 export const messageLog = {
     TURN_ON_DAPP: {
-        message: '🚀 [DAPP] Api application is running on: ',
+        message: `🚀[DAPP] Api application is running on:`,
         code: 'DAPP_0000',
+    },
+
+    //Connect Database
+    CONNECT_DATABASE_SUCCESSFULLY: {
+        message: '🚀[DAPP] Connect to database successfully',
+        code: 'DAPP_0001',
+    },
+    CONNECT_DATABASE_FAILED: {
+        message: '🚀[DAPP] Connect to database failed',
+        code: 'DAPP_0002',
+    },
+
+    //Connect Internet
+    CONNECT_INTERNET_SUCCESS: {
+        message: '🚀[DAPP] Connect to internet successfully',
+        code: 'DAPP_0003',
+    },
+    CONNECT_INTERNET_FAILED: {
+        message: '🚀[DAPP] Connect to internet failed',
+        code: 'DAPP_0004',
     },
 
     //Authorization SystemAdmin
     LOGIN_SYSTEM_SUCCESS: {
-        message: '🚀[DAPP] System admin login successfully',
+        message: '🚀[DAPP] System admin login successfully ,email System : ',
         code: 'AUTH_SYSTEM_0000',
     },
     LOGIN_SYSTEM_FAILED: {
-        message: '🚀[DAPP] System admin login failed',
+        message: '🚀[DAPP] System admin login failed ,email System : ',
         code: 'AUTH_SYSTEM_0001',
     },
     RESET_PASSWORD_SYSTEM_SUCCESS: {
@@ -36,42 +56,40 @@ export const messageLog = {
 
     //Authorization User
     LOGIN_WALLET_ADDRESS_SUCCESS: {
-        message:
-            '[DAPP] User login by walletAddress successfully with walletAddress: ',
+        message: '[DAPP] User login successfully by walletAddress: ',
         code: 'AUTH_0000',
     },
     LOGIN_WALLET_ADDRESS_FAILED: {
-        message:
-            '[DAPP] User login by walletAddress failed with walletAddress: ',
+        message: '[DAPP] User failed by walletAddress: ',
         code: 'AUTH_0001',
     },
     LOGIN_EMAIL_SUCCESS: {
-        message: '[DAPP] User login by email successfully with email: ',
+        message: '[DAPP] User login successfully by email: ',
         code: 'AUTH_0002',
     },
     LOGIN_EMAIL_FAILED: {
-        message: '[DAPP] User login by email failed with email: ',
+        message: '[DAPP] User login failed by email: ',
         code: 'AUTH_0003',
     },
     LOGIN_USER_INACTIVE: {
         message: '[DAPP] Inactive User login : ',
-        code: 'AUTH_0003',
+        code: 'AUTH_0004',
     },
     RESET_PASSWORD_SUCCESS: {
         message: '[DAPP] Password of user reset successfully by email: ',
-        code: 'AUTH_0004',
+        code: 'AUTH_0005',
     },
     RESET_PASSWORD_FAILED: {
         message: '[DAPP] Password of user reset failed by email: ',
-        code: 'AUTH_0005',
+        code: 'AUTH_0006',
     },
     CHANGE_PASSWORD_SUCCESS: {
         message: '[DAPP] Change Password of user successfully, email of user: ',
-        code: 'AUTH_0006',
+        code: 'AUTH_0007',
     },
     CHANGE_PASSWORD_FAILED: {
         message: '[DAPP] Change Password of user failed, email of user: ',
-        code: 'AUTH_0007',
+        code: 'AUTH_0008',
     },
 
     //Company
@@ -85,15 +103,15 @@ export const messageLog = {
     },
     CREATE_COMPANY_FAILED_DUPLICATE: {
         message: '🚀[DAPP] Create Company failed duplicate : ',
-        code: 'COMPANY_0001',
+        code: 'COMPANY_0002',
     },
     UPDATE_COMPANY_SUCCESS: {
         message: '🚀[DAPP] Update Company successfully ,ID company : ',
-        code: 'COMPANY_0002',
+        code: 'COMPANY_0003',
     },
     UPDATE_COMPANY_FAILED: {
         message: '🚀[DAPP] Update Company failed ,ID company : ',
-        code: 'COMPANY_0003',
+        code: 'COMPANY_0004',
     },
 
     //Service Plan
@@ -172,11 +190,11 @@ export const messageLog = {
 
     //Voting Proposal Shareholder Meeting
     VOTING_PROPOSAL_SHAREHOLDER_MEETING_SUCCESS: {
-        message: '[DAPP] Voting for proposal successfully with proposalId: ',
+        message: ' voting successfully for proposalId: ',
         code: 'VOTING_SHAREHOLDER_MEETING_0000',
     },
     VOTING_PROPOSAL_SHAREHOLDER_MEETING_FAILED: {
-        message: '[DAPP] Voting for proposal failed with proposalId: ',
+        message: ' voting failed for proposalId: ',
         code: 'VOTING_SHAREHOLDER_MEETING_0001',
     },
 
