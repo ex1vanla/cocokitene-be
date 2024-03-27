@@ -47,6 +47,7 @@ import { VotingRepository } from '@repositories/voting.repository'
 import { MeetingFileRepository } from '@repositories/meeting-file.repository'
 import { FileMeetingTransactionRepository } from '@repositories/file-meeting-transaction.repository'
 import { Logger } from 'winston'
+import { messageBLCLog } from '@shares/exception-filter/message-log-blc-const'
 
 @Injectable()
 export class TransactionService {
@@ -76,7 +77,10 @@ export class TransactionService {
             )
         if (!listMeetingEnd || listMeetingEnd?.length == 0) {
             console.log('No meeting ends found: ' + new Date())
-            this.logger.debug('[BLC] No meetings found')
+            // this.logger.debug('[BLC] No meetings found')
+            this.logger.debug(
+                `${messageBLCLog.NOT_FOUND_MEETING_ENDED.message}`,
+            )
             return
         }
         await Promise.all([
@@ -388,8 +392,11 @@ export class TransactionService {
             console.log(
                 'No meeting creation event has been successful: ' + new Date(),
             )
+            // this.logger.debug(
+            //     '[BLC] No meeting creation event has been successful',
+            // )
             this.logger.debug(
-                '[BLC] No meeting creation event has been successful',
+                `${messageBLCLog.NOT_FOUND_MEETING_CREATE.message}`,
             )
             return
         }
@@ -555,7 +562,9 @@ export class TransactionService {
             )
         if (!transactionsList || transactionsList?.length === 0) {
             console.log('No transactions found: ' + new Date())
-            this.logger.debug('[BLC] No transactions found')
+            this.logger.debug(
+                `${messageBLCLog.NOT_FOUND_TRANSACTION_PENDING.message}`,
+            )
             return
         }
         const maximumNumberTransactionCallFuncBlockchain =
@@ -581,9 +590,12 @@ export class TransactionService {
                     })
                     if (txPromises) {
                         console.log(
-                            'Sent transaction: ' + txPromises?.transactionHash,
+                            `${messageBLCLog.SENT_TRANSACTION_MEETING_ENDED.message}` +
+                                txPromises?.transactionHash,
                         )
-
+                        this.logger.info(
+                            `${messageBLCLog.SENT_TRANSACTION_MEETING_ENDED.message} ${txPromises?.transactionHash}`,
+                        )
                         await this.transactionRepository.updateTransaction(
                             transaction.id,
                             {
@@ -620,8 +632,11 @@ export class TransactionService {
                             })
                         if (txPromises) {
                             console.log(
-                                'Sent transaction: ' +
+                                `${messageBLCLog.SENT_PROPOSAL_TRANSACTION_MEETING_ENDED.message}` +
                                     txPromises?.transactionHash,
+                            )
+                            this.logger.info(
+                                `${messageBLCLog.SENT_PROPOSAL_TRANSACTION_MEETING_ENDED.message} ${txPromises?.transactionHash}`,
                             )
 
                             await this.transactionRepository.updateTransaction(
@@ -665,6 +680,9 @@ export class TransactionService {
                                 'Sent transaction: ' +
                                     txPromises?.transactionHash,
                             )
+                            this.logger.info(
+                                `${messageBLCLog.SENT_FILE_PROPOSAL_TRANSACTION_MEETING_ENDED.message} ${txPromises?.transactionHash}`,
+                            )
 
                             await this.transactionRepository.updateTransaction(
                                 transaction.id,
@@ -704,8 +722,11 @@ export class TransactionService {
                             })
                         if (txPromises) {
                             console.log(
-                                'Sent transaction: ' +
+                                `${messageBLCLog.SENT_TRANSACTION_FILE_MEETING_ENDED.message}` +
                                     txPromises?.transactionHash,
+                            )
+                            this.logger.info(
+                                `${messageBLCLog.SENT_TRANSACTION_FILE_MEETING_ENDED.message} ${txPromises?.transactionHash}`,
                             )
 
                             await this.transactionRepository.updateTransaction(
@@ -747,8 +768,11 @@ export class TransactionService {
                             })
                         if (txPromises) {
                             console.log(
-                                'Sent transaction: ' +
+                                'Sent  transaction: ' +
                                     txPromises?.transactionHash,
+                            )
+                            this.logger.info(
+                                `${messageBLCLog.SENT_TRANSACTION_PARTICIPANT_MEETING_ENDED.message} ${txPromises?.transactionHash}`,
                             )
 
                             await this.transactionRepository.updateTransaction(
@@ -806,8 +830,11 @@ export class TransactionService {
                                         })
                                     if (txPromises) {
                                         console.log(
-                                            'Sent transaction: ' +
+                                            `${messageBLCLog.SENt_TRANSACTION_USER_PROPOSAL_MEETING_ENDED.message}` +
                                                 txPromises?.transactionHash,
+                                        )
+                                        this.logger.info(
+                                            `${messageBLCLog.SENt_TRANSACTION_USER_PROPOSAL_MEETING_ENDED.message} ${txPromises?.transactionHash}`,
                                         )
                                         await this.transactionRepository.updateTransaction(
                                             transaction.id,
@@ -834,11 +861,11 @@ export class TransactionService {
             transactionsUpdateProposalMeetingSuccessful?.length == 0
         ) {
             console.log(
-                'No update proposal meeting event has been successful: ' +
+                `${messageBLCLog.NO_UPDATE_PROPOSAL_MEETING_ENDED.message}}` +
                     new Date(),
             )
             this.logger.debug(
-                '[BLC] No update proposal meeting event has been successful',
+                messageBLCLog.NO_UPDATE_PROPOSAL_MEETING_ENDED.message,
             )
             return
         }

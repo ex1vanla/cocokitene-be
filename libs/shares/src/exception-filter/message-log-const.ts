@@ -1,7 +1,27 @@
 export const messageLog = {
     TURN_ON_DAPP: {
-        message: '🚀 [DAPP] Api application is running on: ',
+        message: `🚀[DAPP] Api application is running on:`,
         code: 'DAPP_0000',
+    },
+
+    //Connect Database
+    CONNECT_DATABASE_SUCCESSFULLY: {
+        message: '🚀[DAPP] Connect to database successfully',
+        code: 'DAPP_0001',
+    },
+    CONNECT_DATABASE_FAILED: {
+        message: '🚀[DAPP] Connect to database failed',
+        code: 'DAPP_0002',
+    },
+
+    //Connect Internet
+    CONNECT_INTERNET_SUCCESS: {
+        message: '🚀[DAPP] Connect to internet successfully',
+        code: 'DAPP_0003',
+    },
+    CONNECT_INTERNET_FAILED: {
+        message: '🚀[DAPP] Connect to internet failed',
+        code: 'DAPP_0004',
     },
 
     //Authorization SystemAdmin
@@ -53,23 +73,23 @@ export const messageLog = {
     },
     LOGIN_USER_INACTIVE: {
         message: '[DAPP] Inactive User login : ',
-        code: 'AUTH_0003',
+        code: 'AUTH_0004',
     },
     RESET_PASSWORD_SUCCESS: {
         message: '[DAPP] Password of user reset successfully by email: ',
-        code: 'AUTH_0004',
+        code: 'AUTH_0005',
     },
     RESET_PASSWORD_FAILED: {
         message: '[DAPP] Password of user reset failed by email: ',
-        code: 'AUTH_0005',
+        code: 'AUTH_0006',
     },
     CHANGE_PASSWORD_SUCCESS: {
         message: '[DAPP] Change Password of user successfully, email of user: ',
-        code: 'AUTH_0006',
+        code: 'AUTH_0007',
     },
     CHANGE_PASSWORD_FAILED: {
         message: '[DAPP] Change Password of user failed, email of user: ',
-        code: 'AUTH_0007',
+        code: 'AUTH_0008',
     },
 
     //Company
@@ -83,15 +103,15 @@ export const messageLog = {
     },
     CREATE_COMPANY_FAILED_DUPLICATE: {
         message: '🚀[DAPP] Create Company failed duplicate : ',
-        code: 'COMPANY_0001',
+        code: 'COMPANY_0002',
     },
     UPDATE_COMPANY_SUCCESS: {
         message: '🚀[DAPP] Update Company successfully ,ID company : ',
-        code: 'COMPANY_0002',
+        code: 'COMPANY_0003',
     },
     UPDATE_COMPANY_FAILED: {
         message: '🚀[DAPP] Update Company failed ,ID company : ',
-        code: 'COMPANY_0003',
+        code: 'COMPANY_0004',
     },
 
     //Service Plan

@@ -76,7 +76,7 @@ export class AuthService {
 
         if (!user) {
             this.logger.error(
-                `${messageLog.LOGIN_WALLET_ADDRESS_FAILED.message} ${walletAddress}`,
+                `[${messageLog.LOGIN_WALLET_ADDRESS_FAILED.code}]-${messageLog.LOGIN_WALLET_ADDRESS_FAILED.message} ${walletAddress}`,
             )
             throw new HttpException(
                 httpErrors.USER_NOT_FOUND,
@@ -86,7 +86,7 @@ export class AuthService {
 
         if (user.userStatus.status !== UserStatusEnum.ACTIVE) {
             this.logger.error(
-                `${messageLog.LOGIN_USER_INACTIVE.message} ${walletAddress}`,
+                `[${messageLog.LOGIN_USER_INACTIVE.code}]-${messageLog.LOGIN_USER_INACTIVE.message} ${walletAddress}`,
             )
             throw new HttpException(
                 httpErrors.USER_STATUS_INACTIVE,
@@ -109,7 +109,7 @@ export class AuthService {
         const { userData, accessToken, refreshToken } =
             await this.generateResponseLoginData(user)
         this.logger.info(
-            `${messageLog.LOGIN_WALLET_ADDRESS_SUCCESS.message}` +
+            `[${messageLog.LOGIN_WALLET_ADDRESS_SUCCESS.code}]-${messageLog.LOGIN_WALLET_ADDRESS_SUCCESS.message}` +
                 userData.walletAddress,
         )
         return {
@@ -206,7 +206,7 @@ export class AuthService {
         )
         if (!checkPassword) {
             this.logger.error(
-                `${messageLog.LOGIN_SYSTEM_FAILED.message} ${email}`,
+                `[${messageLog.LOGIN_SYSTEM_FAILED.code}]-${messageLog.LOGIN_SYSTEM_FAILED.message} ${email}`,
             )
             throw new HttpException(
                 httpErrors.SYSTEM_ADMIN_INVALID_PASSWORD,
@@ -216,7 +216,9 @@ export class AuthService {
         const { systemAdminData, accessToken, refreshToken } =
             await this.generateResponseSystemAdminLoginData(systemAdmin)
 
-        this.logger.info(`${messageLog.LOGIN_SYSTEM_SUCCESS.message} ${email}`)
+        this.logger.info(
+            `[${messageLog.LOGIN_SYSTEM_SUCCESS.code}]-${messageLog.LOGIN_SYSTEM_SUCCESS.message} ${email}`,
+        )
         return {
             systemAdminData,
             accessToken,
@@ -330,7 +332,7 @@ export class AuthService {
         const expiredLinkToken = systemAdmin.resetPasswordExpireTime
         if (currentTime > expiredLinkToken) {
             this.logger.error(
-                `${messageLog.RESET_PASSWORD_SYSTEM_FAILED.message} ${systemAdmin.email}`,
+                `[${messageLog.RESET_PASSWORD_SYSTEM_FAILED.code}]-${messageLog.RESET_PASSWORD_SYSTEM_FAILED.message} ${systemAdmin.email}`,
             )
             throw new HttpException(
                 httpErrors.RESET_PASSWORD_TOKEN_EXPIRED,
@@ -341,7 +343,7 @@ export class AuthService {
         systemAdmin.password = newPasswordHashed
         await systemAdmin.save()
         this.logger.info(
-            `${messageLog.RESET_PASSWORD_SYSTEM_SUCCESS.message} ${systemAdmin.email}`,
+            `[${messageLog.RESET_PASSWORD_SYSTEM_SUCCESS.code}]-${messageLog.RESET_PASSWORD_SYSTEM_SUCCESS.message} ${systemAdmin.email}`,
         )
         return 'Reset Password Successfully'
     }
@@ -365,7 +367,7 @@ export class AuthService {
         )
         if (!checkPassword) {
             this.logger.error(
-                `${messageLog.CHANGE_PASSWORD_SYSTEM_FAILED.message} ${existedSystemAdmin.email}`,
+                `[${messageLog.CHANGE_PASSWORD_SYSTEM_FAILED.code}]-${messageLog.CHANGE_PASSWORD_SYSTEM_FAILED.message} ${existedSystemAdmin.email}`,
             )
             throw new HttpException(
                 httpErrors.SYSTEM_ADMIN_INVALID_PASSWORD,
@@ -376,7 +378,7 @@ export class AuthService {
         existedSystemAdmin.password = hashedNewPassword
         await existedSystemAdmin.save()
         this.logger.info(
-            `${messageLog.CHANGE_PASSWORD_SYSTEM_SUCCESS.message} ${existedSystemAdmin.email}`,
+            `[${messageLog.CHANGE_PASSWORD_SYSTEM_SUCCESS.code}]-${messageLog.CHANGE_PASSWORD_SYSTEM_SUCCESS.message} ${existedSystemAdmin.email}`,
         )
         return 'Change Password successfully!!!'
     }
@@ -411,7 +413,7 @@ export class AuthService {
         const checkPassword = await comparePasswordUser(password, user.password)
         if (!checkPassword) {
             this.logger.error(
-                `${messageLog.LOGIN_EMAIL_FAILED.message} ${email}`,
+                `[${messageLog.LOGIN_EMAIL_FAILED.code}]-${messageLog.LOGIN_EMAIL_FAILED.message} ${email}`,
             )
             throw new HttpException(
                 httpErrors.USER_INVALID_PASSWORD,
@@ -421,7 +423,7 @@ export class AuthService {
 
         if (user.userStatus.status !== UserStatusEnum.ACTIVE) {
             this.logger.error(
-                `${messageLog.LOGIN_USER_INACTIVE.message} ${email}`,
+                `[${messageLog.LOGIN_USER_INACTIVE.code}]-${messageLog.LOGIN_USER_INACTIVE.message} ${email}`,
             )
             throw new HttpException(
                 httpErrors.USER_STATUS_INACTIVE,
@@ -431,7 +433,8 @@ export class AuthService {
         const { userData, accessToken, refreshToken } =
             await this.generateResponseLoginData(user)
         this.logger.info(
-            `${messageLog.LOGIN_EMAIL_SUCCESS.message}` + userData.email,
+            `[${messageLog.LOGIN_EMAIL_SUCCESS.code}]-${messageLog.LOGIN_EMAIL_SUCCESS.message}` +
+                userData.email,
         )
         return {
             userData,
@@ -463,7 +466,7 @@ export class AuthService {
         )
         if (!checkPassword) {
             this.logger.error(
-                `${messageLog.CHANGE_PASSWORD_FAILED.message} ${existedUser.email}`,
+                `[${messageLog.CHANGE_PASSWORD_FAILED.code}]-${messageLog.CHANGE_PASSWORD_FAILED.message} ${existedUser.email}`,
             )
             throw new HttpException(
                 httpErrors.USER_INVALID_PASSWORD,
@@ -475,7 +478,8 @@ export class AuthService {
         existedUser.password = hashedNewPassword
         await existedUser.save()
         this.logger.info(
-            `${messageLog.CHANGE_PASSWORD_SUCCESS.message}` + existedUser.email,
+            `[${messageLog.CHANGE_PASSWORD_SUCCESS.code}]-${messageLog.CHANGE_PASSWORD_SUCCESS.message}` +
+                existedUser.email,
         )
         return 'Change Password Successfully!!!!'
     }
@@ -527,7 +531,7 @@ export class AuthService {
         const expiredLinkToken = existedUser.resetPasswordExpireTime
         if (currentTime > expiredLinkToken) {
             this.logger.error(
-                `${messageLog.RESET_PASSWORD_FAILED.message} ${existedUser.email}`,
+                `[${messageLog.RESET_PASSWORD_FAILED.code}]-${messageLog.RESET_PASSWORD_FAILED.message} ${existedUser.email}`,
             )
             throw new HttpException(
                 httpErrors.RESET_PASSWORD_TOKEN_EXPIRED,
@@ -538,7 +542,8 @@ export class AuthService {
         existedUser.password = newPasswordHashed
         await existedUser.save()
         this.logger.info(
-            `${messageLog.RESET_PASSWORD_SUCCESS.message}` + existedUser.email,
+            `[${messageLog.RESET_PASSWORD_SUCCESS.code}]-${messageLog.RESET_PASSWORD_SUCCESS.message}` +
+                existedUser.email,
         )
         return 'Reset Password Successfully'
     }

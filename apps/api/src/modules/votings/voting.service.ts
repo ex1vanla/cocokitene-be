@@ -138,7 +138,7 @@ export class VotingService {
                         shareOfUser,
                     )
                 this.logger.info(
-                    `[DAPP] User ID : ${userId} ${messageLog.VOTING_PROPOSAL_SHAREHOLDER_MEETING_SUCCESS.message} ${existedProposal.id}`,
+                    `[${messageLog.VOTING_PROPOSAL_SHAREHOLDER_MEETING_SUCCESS.code}]- [DAPP] User ID : ${userId} ${messageLog.VOTING_PROPOSAL_SHAREHOLDER_MEETING_SUCCESS.message} ${existedProposal.id}`,
                 )
                 return updateCountVoteExistedProposal
             } else {
@@ -162,12 +162,12 @@ export class VotingService {
                     await createdVoting.save()
                     await existedProposal.save()
                     this.logger.info(
-                        `User ID : ${userId} ${messageLog.VOTING_PROPOSAL_SHAREHOLDER_MEETING_SUCCESS.message} ${existedProposal.id}`,
+                        `[${messageLog.VOTING_PROPOSAL_SHAREHOLDER_MEETING_SUCCESS.code}]-User ID : ${userId} ${messageLog.VOTING_PROPOSAL_SHAREHOLDER_MEETING_SUCCESS.message} ${existedProposal.id}`,
                     )
                     return existedProposal
                 } catch (error) {
                     this.logger.error(
-                        `User ID : ${userId} ${messageLog.VOTING_PROPOSAL_SHAREHOLDER_MEETING_FAILED.message} ${existedProposal.id}`,
+                        `[${messageLog.VOTING_PROPOSAL_SHAREHOLDER_MEETING_FAILED.code}]-User ID : ${userId} ${messageLog.VOTING_PROPOSAL_SHAREHOLDER_MEETING_FAILED.message} ${existedProposal.id}`,
                     )
                     throw new HttpException(
                         httpErrors.VOTING_CREATED_FAILED,
@@ -224,7 +224,7 @@ export class VotingService {
             return existedProposal
         } else {
             this.logger.error(
-                `${messageLog.VOTING_PROPOSAL_SHAREHOLDER_MEETING_FAILED.message} ${existedProposal.id}`,
+                `[${messageLog.VOTING_PROPOSAL_SHAREHOLDER_MEETING_FAILED.code}]-${messageLog.VOTING_PROPOSAL_SHAREHOLDER_MEETING_FAILED.message} ${existedProposal.id}`,
             )
             throw new HttpException(
                 httpErrors.VOTING_FAILED,
