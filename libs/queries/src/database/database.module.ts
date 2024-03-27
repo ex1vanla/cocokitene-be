@@ -2,6 +2,7 @@ import {
     Block,
     Company,
     CompanyStatus,
+    Election,
     FileMeetingTransaction,
     FileProposalTransaction,
     ParticipantMeetingTransaction,
@@ -16,7 +17,9 @@ import {
     User,
     UserRole,
     UserStatus,
+    UserVoteParticipant,
     Voting,
+    VotingBoard,
     VotingTransaction,
 } from '@entities/index'
 import { Module } from '@nestjs/common'
@@ -24,7 +27,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { Meeting } from '@entities/meeting.entity'
 import { UserMeeting } from '@entities/user-meeting.entity'
-import { MeetingFile } from '@entities/meeting-file'
+import { MeetingFile } from '@entities/meeting-file.entity'
 import { ProposalFile } from '@entities/proposal-file'
 
 @Module({
@@ -63,6 +66,9 @@ import { ProposalFile } from '@entities/proposal-file'
                         ProposalTransaction,
                         VotingTransaction,
                         FileMeetingTransaction,
+                        VotingBoard,
+                        Election,
+                        UserVoteParticipant,
                     ],
                     timezone: 'Z',
                     synchronize: configService.get('database.synchronize'),

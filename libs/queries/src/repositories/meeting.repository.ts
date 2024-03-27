@@ -7,7 +7,7 @@ import {
 } from 'nestjs-typeorm-paginate'
 import { Meeting } from '@entities/meeting.entity'
 import { CreateMeetingDto, GetAllMeetingDto, UpdateMeetingDto } from '../dtos'
-import { MeetingType, StatusMeeting } from '@shares/constants/meeting.const'
+import { MeetingTime, StatusMeeting } from '@shares/constants/meeting.const'
 
 @CustomRepository(Meeting)
 export class MeetingRepository extends Repository<Meeting> {
@@ -65,7 +65,7 @@ export class MeetingRepository extends Repository<Meeting> {
                 searchQuery: `%${searchQuery}%`,
             })
         }
-        if (type == MeetingType.FUTURE) {
+        if (type == MeetingTime.FUTURE) {
             queryBuilder.andWhere(
                 'meetings.startTime >= :currentDateTime OR (meetings.startTime <= :currentDateTime AND meetings.endTime >= :currentDateTime)',
                 {
@@ -101,7 +101,7 @@ export class MeetingRepository extends Repository<Meeting> {
                 searchQuery: `%${searchQuery}%`,
             })
         }
-        if (type == MeetingType.FUTURE) {
+        if (type == MeetingTime.FUTURE) {
             queryBuilder.andWhere(
                 'meetings.startTime >= :currentDateTime OR (meetings.startTime <= :currentDateTime AND meetings.endTime >= :currentDateTime)',
                 {

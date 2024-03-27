@@ -1,4 +1,4 @@
-import { MeetingFile } from '@entities/meeting-file'
+import { MeetingFile } from '@entities/meeting-file.entity'
 import { CustomRepository } from '@shares/decorators'
 import { Repository } from 'typeorm'
 import { CreateMeetingFileDto, MeetingFileDto } from '../dtos'
