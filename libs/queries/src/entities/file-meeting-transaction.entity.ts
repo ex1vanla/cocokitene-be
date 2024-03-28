@@ -11,7 +11,7 @@ import {
     UpdateDateColumn,
 } from 'typeorm'
 import { Meeting } from '@entities/meeting.entity'
-import { MeetingFile } from '@entities/meeting-file'
+import { MeetingFile } from '@entities/meeting-file.entity'
 
 @Entity('file_meeting_transactions')
 export class FileMeetingTransaction extends BaseEntity {

@@ -2,6 +2,7 @@ import {
     Block,
     Company,
     CompanyStatus,
+    Election,
     FileMeetingTransaction,
     FileProposalTransaction,
     ParticipantMeetingTransaction,
@@ -16,7 +17,9 @@ import {
     User,
     UserRole,
     UserStatus,
+    UserVoteParticipant,
     Voting,
+    VotingBoard,
     VotingTransaction,
 } from '@entities/index'
 import { Module } from '@nestjs/common'
@@ -24,7 +27,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { Meeting } from '@entities/meeting.entity'
 import { UserMeeting } from '@entities/user-meeting.entity'
-import { MeetingFile } from '@entities/meeting-file'
+import { MeetingFile } from '@entities/meeting-file.entity'
 import { ProposalFile } from '@entities/proposal-file'
 import { DataSource } from 'typeorm'
 import { logger } from '@api/modules/loggers/logger'
@@ -35,7 +38,6 @@ import { messageLog } from '@shares/exception-filter'
         TypeOrmModule.forRootAsync({
             imports: [ConfigModule],
             useFactory: (configService: ConfigService) => ({
-                // return {
                 type: 'mysql',
                 host: configService.get('database.host'),
                 port: +configService.get('database.port'),
@@ -66,6 +68,9 @@ import { messageLog } from '@shares/exception-filter'
                     ProposalTransaction,
                     VotingTransaction,
                     FileMeetingTransaction,
+                    VotingBoard,
+                    Election,
+                    UserVoteParticipant,
                 ],
                 timezone: 'Z',
                 synchronize: configService.get('database.synchronize'),
@@ -73,7 +78,6 @@ import { messageLog } from '@shares/exception-filter'
                 logging: configService.get('database.logging'),
                 retryAttempts: 3,
                 retryDelay: 10000,
-                // }
             }),
             inject: [ConfigService],
             dataSourceFactory: async (option) => {

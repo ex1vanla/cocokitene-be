@@ -9,9 +9,9 @@ import {
 } from 'typeorm'
 import { Company } from '@entities/company.entity'
 import { User } from '@entities/user.entity'
-import { MeetingFile } from '@entities/meeting-file'
+import { MeetingFile } from '@entities/meeting-file.entity'
 import { Proposal } from '@entities/proposal.entity'
-import { StatusMeeting } from '@shares/constants/meeting.const'
+import { MeetingType, StatusMeeting } from '@shares/constants/meeting.const'
 @Entity('meetings')
 export class Meeting extends BaseEntity {
     @PrimaryGeneratedColumn()
@@ -70,6 +70,14 @@ export class Meeting extends BaseEntity {
 
     @Column({ nullable: false, name: 'creator_id', type: 'integer', width: 11 })
     creatorId: number
+
+    @Column({
+        nullable: false,
+        type: 'enum',
+        name: 'type',
+        enum: MeetingType,
+    })
+    type: MeetingType
 
     @ManyToOne(() => Company)
     @JoinColumn({

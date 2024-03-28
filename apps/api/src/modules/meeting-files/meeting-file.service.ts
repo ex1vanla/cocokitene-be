@@ -1,5 +1,5 @@
 import { CreateMeetingFileDto, MeetingFileDto } from '@dtos/meeting-file.dto'
-import { MeetingFile } from '@entities/meeting-file'
+import { MeetingFile } from '@entities/meeting-file.entity'
 import {
     HttpException,
     HttpStatus,
