@@ -11,7 +11,7 @@ import {
 import { User } from '@entities/user.entity'
 
 @Entity('voting_boards')
-@Unique(['userId', 'proposalId'])
+@Unique(['userId', 'votedForUserId'])
 export class VotingBoard extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number

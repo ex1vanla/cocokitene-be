@@ -7,7 +7,11 @@ import {
 } from 'nestjs-typeorm-paginate'
 import { Meeting } from '@entities/meeting.entity'
 import { CreateMeetingDto, GetAllMeetingDto, UpdateMeetingDto } from '../dtos'
-import { MeetingTime, StatusMeeting } from '@shares/constants/meeting.const'
+import {
+    MeetingTime,
+    MeetingType,
+    StatusMeeting,
+} from '@shares/constants/meeting.const'
 
 @CustomRepository(Meeting)
 export class MeetingRepository extends Repository<Meeting> {
@@ -21,6 +25,7 @@ export class MeetingRepository extends Repository<Meeting> {
         const sortField = options.sortField
         const sortOrder = options.sortOrder
         const type = options.type
+        const meetingType = options.meetingType
         const queryBuilder = this.createQueryBuilder('meetings')
             .select([
                 'meetings.id',
@@ -30,6 +35,7 @@ export class MeetingRepository extends Repository<Meeting> {
                 'meetings.meetingLink',
                 'meetings.status',
                 'meetings.note',
+                'meetings.type',
             ])
             .distinct(true)
         if (canUserCreateMeeting) {
@@ -60,11 +66,7 @@ export class MeetingRepository extends Repository<Meeting> {
             .where('meetings.companyId= :companyId', {
                 companyId: companyId,
             })
-        if (searchQuery) {
-            queryBuilder.andWhere('(meetings.title like :searchQuery)', {
-                searchQuery: `%${searchQuery}%`,
-            })
-        }
+
         if (type == MeetingTime.FUTURE) {
             queryBuilder.andWhere(
                 'meetings.startTime >= :currentDateTime OR (meetings.startTime <= :currentDateTime AND meetings.endTime >= :currentDateTime)',
@@ -77,9 +79,20 @@ export class MeetingRepository extends Repository<Meeting> {
                 currentDateTime: new Date(),
             })
         }
+        if (searchQuery) {
+            queryBuilder.andWhere('(meetings.title like :searchQuery)', {
+                searchQuery: `%${searchQuery}%`,
+            })
+        }
+        if (meetingType) {
+            queryBuilder.andWhere('meetings.type = :typeMeeting', {
+                typeMeeting: meetingType,
+            })
+        }
         if (sortField && sortOrder) {
             queryBuilder.orderBy(`meetings.${sortField}`, sortOrder)
         }
+
         return paginateRaw(queryBuilder, options)
     }
 
@@ -91,16 +104,13 @@ export class MeetingRepository extends Repository<Meeting> {
         const sortField = options.sortField
         const sortOrder = options.sortOrder
         const type = options.type
+        const meetingType = options.meetingType
         const queryBuilder = this.createQueryBuilder('meetings')
             .select(['meetings.id'])
             .where('meetings.companyId= :companyId', {
                 companyId: companyId,
             })
-        if (searchQuery) {
-            queryBuilder.andWhere('(meetings.title like :searchQuery)', {
-                searchQuery: `%${searchQuery}%`,
-            })
-        }
+
         if (type == MeetingTime.FUTURE) {
             queryBuilder.andWhere(
                 'meetings.startTime >= :currentDateTime OR (meetings.startTime <= :currentDateTime AND meetings.endTime >= :currentDateTime)',
@@ -113,9 +123,20 @@ export class MeetingRepository extends Repository<Meeting> {
                 currentDateTime: new Date(),
             })
         }
+        if (searchQuery) {
+            queryBuilder.andWhere('(meetings.title like :searchQuery)', {
+                searchQuery: `%${searchQuery}%`,
+            })
+        }
+        if (meetingType) {
+            queryBuilder.andWhere('meetings.type = :typeMeeting', {
+                typeMeeting: meetingType,
+            })
+        }
         if (sortField && sortOrder) {
             queryBuilder.orderBy(`meetings.${sortField}`, sortOrder)
         }
+
         const listMeetings = await queryBuilder.getMany()
         return listMeetings
     }
@@ -182,11 +203,13 @@ export class MeetingRepository extends Repository<Meeting> {
     }
     async createMeeting(
         createMeetingDto: CreateMeetingDto,
+        typeMeeting: MeetingType,
         creatorId: number,
         companyId: number,
     ): Promise<Meeting> {
         const meeting = await this.create({
             ...createMeetingDto,
+            type: typeMeeting,
             creatorId,
             companyId,
         })

@@ -19,6 +19,7 @@ import { UserMeeting } from '@entities/user-meeting.entity'
 import { UserMeetingRepository } from '@repositories/user-meeting.repository'
 import {
     MeetingRole,
+    MeetingType,
     StatusMeeting,
     UserMeetingStatusEnum,
 } from '@shares/constants/meeting.const'
@@ -180,10 +181,12 @@ export class MeetingService {
         }
 
         // create project
-        let createdMeeting: Meeting
+        let createdMeeting: Meeting,
+            typeMeeting: MeetingType.SHAREHOLDER_MEETING
         try {
             createdMeeting = await this.meetingRepository.createMeeting(
                 createMeetingDto,
+                typeMeeting,
                 creatorId,
                 companyId,
             )

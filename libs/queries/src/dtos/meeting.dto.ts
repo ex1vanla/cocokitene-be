@@ -11,7 +11,11 @@ import {
 import { ApiProperty } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
 import { Sort_By_Field, Sort_By_Order } from '@shares/constants/base.const'
-import { MeetingTime, StatusMeeting } from '@shares/constants/meeting.const'
+import {
+    MeetingTime,
+    MeetingType,
+    StatusMeeting,
+} from '@shares/constants/meeting.const'
 import { MeetingFileDto } from '@dtos/meeting-file.dto'
 import { ProposalDto } from '@dtos/proposal.dto'
 import { GetAllDto } from '@dtos/base.dto'
@@ -46,6 +50,14 @@ export class GetAllMeetingDto extends GetAllDto {
         enum: MeetingTime,
     })
     type: MeetingTime
+
+    @IsNotEmpty()
+    @IsEnum(MeetingType)
+    @ApiProperty({
+        required: true,
+        enum: MeetingType,
+    })
+    meetingType: MeetingType
 }
 
 export class CreateMeetingDto {

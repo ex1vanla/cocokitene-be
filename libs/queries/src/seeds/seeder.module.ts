@@ -13,6 +13,7 @@ import { UserStatusSeederModule } from '@seeds/user-status/user-status.seeder.mo
 import { RolePermissionSeederModule } from '@seeds/role-permission/role-permission.seeder.module'
 import { UserRoleSeederModule } from '@seeds/user-role/user-role.seeder.module'
 import { SystemAdminSeederModule } from '@seeds/system-admin/system-admin.seeder.module'
+import { ElectionSeederModule } from '@seeds/election/election.seeder.module'
 
 @Module({
     imports: [
@@ -30,6 +31,7 @@ import { SystemAdminSeederModule } from '@seeds/system-admin/system-admin.seeder
         RolePermissionSeederModule,
         UserRoleSeederModule,
         SystemAdminSeederModule,
+        ElectionSeederModule,
     ],
     providers: [Seeder],
 })

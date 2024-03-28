@@ -6,7 +6,7 @@ import {
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm'
-import { ElectionEnum, UserStatusEnum } from '@shares/constants'
+import { ElectionEnum } from '@shares/constants'
 @Entity('elections')
 export class Election extends BaseEntity {
     @PrimaryGeneratedColumn()
@@ -14,7 +14,7 @@ export class Election extends BaseEntity {
     @Column({
         name: 'status',
         type: 'enum',
-        enum: UserStatusEnum,
+        enum: ElectionEnum,
         nullable: false,
     })
     type: ElectionEnum
