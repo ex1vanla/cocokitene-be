@@ -81,14 +81,12 @@ import { messageLog } from '@shares/exception-filter'
                     const dataSource = await new DataSource(option).initialize()
                     console.log('Check Test...........')
                     logger.info(
-                        `[${messageLog.CONNECT_DATABASE_SUCCESSFULLY.code}]-${messageLog.CONNECT_DATABASE_SUCCESSFULLY.message}`,
+                        `${messageLog.CONNECT_DATABASE_SUCCESSFULLY.message}`,
                     )
                     return dataSource
                 } catch (error) {
                     console.log('[DAPP] Error!!!!')
-                    logger.info(
-                        `[${messageLog.CONNECT_DATABASE_FAILED.code}]-${messageLog.CONNECT_DATABASE_FAILED.message}`,
-                    )
+                    logger.info(`${messageLog.CONNECT_DATABASE_FAILED.message}`)
                 }
             },
         }),

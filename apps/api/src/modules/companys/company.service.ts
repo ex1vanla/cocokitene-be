@@ -111,11 +111,11 @@ export class CompanyService {
                 updateCompanyDto,
             )
             this.logger.info(
-                `[${messageLog.UPDATE_COMPANY_SUCCESS.code}]-${messageLog.UPDATE_COMPANY_SUCCESS.message} ${existedCompany.id}`,
+                `${messageLog.UPDATE_COMPANY_SUCCESS.message} ${existedCompany.id}`,
             )
         } catch (error) {
             this.logger.error(
-                `[${messageLog.UPDATE_COMPANY_FAILED.code}]-${messageLog.UPDATE_COMPANY_FAILED.message} ${existedCompany.id}`,
+                `${messageLog.UPDATE_COMPANY_FAILED.message} ${existedCompany.id}`,
             )
             throw new HttpException(
                 {
@@ -141,7 +141,7 @@ export class CompanyService {
             )
             if (superAdmin) {
                 this.logger.error(
-                    `[${messageLog.CREATE_COMPANY_FAILED_DUPLICATE.code}]-${messageLog.CREATE_COMPANY_FAILED_DUPLICATE} ${superAdminWalletAddress}`,
+                    `${messageLog.CREATE_COMPANY_FAILED_DUPLICATE} ${superAdminWalletAddress}`,
                 )
                 throw new HttpException(
                     httpErrors.DUPLICATE_WALLET_ADDRESS,
@@ -152,7 +152,7 @@ export class CompanyService {
         superAdmin = await this.userService.getUserByEmail(superAdminEmail)
         if (superAdmin) {
             this.logger.error(
-                `[${messageLog.CREATE_COMPANY_FAILED_DUPLICATE.code}]-${messageLog.CREATE_COMPANY_FAILED_DUPLICATE} ${superAdminEmail}`,
+                `${messageLog.CREATE_COMPANY_FAILED_DUPLICATE} ${superAdminEmail}`,
             )
             throw new HttpException(
                 httpErrors.DUPLICATE_EMAIL_USER,
@@ -169,7 +169,7 @@ export class CompanyService {
         )
         if (company) {
             this.logger.error(
-                `[${messageLog.CREATE_COMPANY_FAILED_DUPLICATE.code}]-${messageLog.CREATE_COMPANY_FAILED_DUPLICATE} ${createCompanyDto.taxNumber}`,
+                `${messageLog.CREATE_COMPANY_FAILED_DUPLICATE} ${createCompanyDto.taxNumber}`,
             )
             throw new HttpException(
                 httpErrors.DUPLICATE_TAX_NUMBER_COMPANY,
@@ -181,7 +181,7 @@ export class CompanyService {
         )
         if (company) {
             this.logger.error(
-                `[${messageLog.CREATE_COMPANY_FAILED_DUPLICATE.code}]-${messageLog.CREATE_COMPANY_FAILED_DUPLICATE} ${createCompanyDto.email}`,
+                `${messageLog.CREATE_COMPANY_FAILED_DUPLICATE} ${createCompanyDto.email}`,
             )
             throw new HttpException(
                 httpErrors.DUPLICATE_EMAIL_COMPANY,
@@ -194,12 +194,10 @@ export class CompanyService {
                 createCompanyDto,
             )
             this.logger.info(
-                `[${messageLog.CREATE_COMPANY_SUCCESS.code}]-${messageLog.CREATE_COMPANY_SUCCESS.message} ${createdCompany.id}`,
+                `${messageLog.CREATE_COMPANY_SUCCESS.message} ${createdCompany.id}`,
             )
         } catch (error) {
-            this.logger.error(
-                `[${messageLog.CREATE_COMPANY_FAILED.code}]-${messageLog.CREATE_COMPANY_FAILED.message}`,
-            )
+            this.logger.error(`${messageLog.CREATE_COMPANY_FAILED.message}`)
             throw new HttpException(
                 httpErrors.COMPANY_CREATE_FAILED,
                 HttpStatus.INTERNAL_SERVER_ERROR,

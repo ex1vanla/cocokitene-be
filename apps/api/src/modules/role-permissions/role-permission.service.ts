@@ -81,9 +81,7 @@ export class RolePermissionService {
                 },
             ),
         ])
-        this.logger.info(
-            `[${messageLog.UPDATE_ROLE_SUCCESS.code}]-${messageLog.UPDATE_ROLE_SUCCESS.message}`,
-        )
+        this.logger.info(`${messageLog.UPDATE_ROLE_SUCCESS.message}`)
         return 'updated role permission successfully!!!'
     }
 

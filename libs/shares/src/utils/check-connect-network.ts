@@ -26,16 +26,10 @@ export async function checkInternet() {
     if (isConnected) {
         // Connected to the internet
         Logger.log('Connected to the internet')
-        logger.log(
-            'info',
-            `[${messageLog.CONNECT_INTERNET_SUCCESS.code}]- ${messageLog.CONNECT_INTERNET_SUCCESS.message}`,
-        )
+        logger.log('info', `${messageLog.CONNECT_INTERNET_SUCCESS.message}`)
     } else {
         // not connected to the internet
         Logger.log(`Not connected to the internet`)
-        logger.log(
-            'error',
-            `[${messageLog.CONNECT_INTERNET_FAILED.code}]-${messageLog.CONNECT_INTERNET_FAILED.message}`,
-        )
+        logger.log('error', `${messageLog.CONNECT_INTERNET_FAILED.message}`)
     }
 }
