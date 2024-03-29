@@ -13,8 +13,4 @@ export const electionData: InsertElectionDto[] = [
         type: ElectionEnum.VOTE_OF_NOT_CONFIDENCE,
         description: 'vote of not confidence',
     },
-    {
-        type: ElectionEnum.RENT,
-        description: 'rent',
-    },
 ]
