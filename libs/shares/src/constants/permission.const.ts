@@ -21,6 +21,7 @@ export enum PermissionEnum {
     LIST_SHAREHOLDERS = 'list_shareholders',
     DETAIL_SHAREHOLDERS = 'detail_shareholders',
     EDIT_SHAREHOLDERS = 'edit_shareholders',
+    CREATE_BOARD_MEETING = 'create_board_meeting',
 }
 
 export enum StatePermisisionForRolesEnum {
