@@ -19,6 +19,7 @@ import { UserMeeting } from '@entities/user-meeting.entity'
 import { UserMeetingRepository } from '@repositories/user-meeting.repository'
 import {
     MeetingRole,
+    MeetingType,
     StatusMeeting,
     UserMeetingStatusEnum,
 } from '@shares/constants/meeting.const'
@@ -180,19 +181,21 @@ export class MeetingService {
         }
 
         // create project
-        let createdMeeting: Meeting
+        let createdMeeting: Meeting,
+            typeMeeting: MeetingType.SHAREHOLDER_MEETING
         try {
             createdMeeting = await this.meetingRepository.createMeeting(
                 createMeetingDto,
+                typeMeeting,
                 creatorId,
                 companyId,
             )
             this.logger.info(
-                `[${messageLog.CREATE_SHAREHOLDER_MEETING_SUCCESS.code}]-${messageLog.CREATE_SHAREHOLDER_MEETING_SUCCESS.message} ${createdMeeting.id}`,
+                `${messageLog.CREATE_SHAREHOLDER_MEETING_SUCCESS.message} ${createdMeeting.id}`,
             )
         } catch (error) {
             this.logger.error(
-                `[${messageLog.CREATE_SHAREHOLDER_MEETING_FAILED.code}]-${messageLog.CREATE_SHAREHOLDER_MEETING_FAILED.message}`,
+                `${messageLog.CREATE_SHAREHOLDER_MEETING_FAILED.code} ${messageLog.CREATE_SHAREHOLDER_MEETING_FAILED.message}`,
             )
             throw new HttpException(
                 httpErrors.MEETING_CREATE_FAILED,
@@ -456,11 +459,11 @@ export class MeetingService {
                 companyId,
             )
             this.logger.info(
-                `[${messageLog.UPDATE_SHAREHOLDER_MEETING_SUCCESS.code}]-${messageLog.UPDATE_SHAREHOLDER_MEETING_SUCCESS.message} ${existedMeeting.id}`,
+                `${messageLog.UPDATE_SHAREHOLDER_MEETING_SUCCESS.message} ${existedMeeting.id}`,
             )
         } catch (error) {
             this.logger.error(
-                `[${messageLog.UPDATE_SHAREHOLDER_MEETING_FAILED.code}]-${messageLog.UPDATE_SHAREHOLDER_MEETING_FAILED.message} ${existedMeeting.id}`,
+                `${messageLog.UPDATE_SHAREHOLDER_MEETING_FAILED.code} ${messageLog.UPDATE_SHAREHOLDER_MEETING_FAILED.message} ${existedMeeting.id}`,
             )
             throw new HttpException(
                 httpErrors.MEETING_UPDATE_FAILED,

@@ -9,6 +9,7 @@ import { UserStatusSeederService } from '@seeds/user-status/user-status.seeder.s
 import { RolePermissionSeederService } from '@seeds/role-permission/role-permission.seeder.service'
 import { UserRoleSeederService } from '@seeds/user-role/user-role.seeder.service'
 import { SystemAdminSeederService } from '@seeds/system-admin/system-admin.seeder.service'
+import { ElectionSeederService } from '@seeds/election/election.seeder.service'
 
 @Injectable()
 export class Seeder {
@@ -23,9 +24,11 @@ export class Seeder {
         private readonly rolePermissionSeederService: RolePermissionSeederService,
         private readonly userRoleSeederService: UserRoleSeederService,
         private readonly systemAdminSeederService: SystemAdminSeederService,
+        private readonly electionSeederService: ElectionSeederService,
     ) {}
     async seed() {
         Logger.log('START_SEEDING__DATA')
+        await this.seedElection()
         await this.seedPlan()
         await this.seedCompanyStatus()
         // await this.seedCompany()
@@ -39,6 +42,9 @@ export class Seeder {
         Logger.log('END___SEEDING__DATA')
     }
 
+    async seedElection() {
+        await this.electionSeederService.seedElection()
+    }
     async seedPlan() {
         await this.planSeederService.seedPlan()
     }

@@ -78,12 +78,12 @@ export class PlanService {
                 updatePlanDto,
             )
             this.logger.info(
-                `[${messageLog.UPDATE_SERVICE_PLAN_SUCCESS.code}]-${messageLog.UPDATE_SERVICE_PLAN_SUCCESS.message} ${existedPlan.id}`,
+                `${messageLog.UPDATE_SERVICE_PLAN_SUCCESS.message} ${existedPlan.id}`,
             )
             return existedPlan
         } catch (error) {
             this.logger.error(
-                `[${messageLog.UPDATE_SERVICE_PLAN_FAILED.code}]-${messageLog.UPDATE_SERVICE_PLAN_FAILED.message} ${planId}`,
+                `${messageLog.UPDATE_SERVICE_PLAN_FAILED.code} ${messageLog.UPDATE_SERVICE_PLAN_FAILED.message} ${planId}`,
             )
             throw new HttpException(
                 {
@@ -102,7 +102,7 @@ export class PlanService {
             )
             if (planExisted) {
                 this.logger.error(
-                    `[${messageLog.CREATE_SERVICE_PLAN_FAILED_DUPLICATE.code}]-${messageLog.CREATE_SERVICE_PLAN_FAILED_DUPLICATE.message} ${createPlanDto.planName}`,
+                    `${messageLog.CREATE_SERVICE_PLAN_FAILED_DUPLICATE.code} ${messageLog.CREATE_SERVICE_PLAN_FAILED_DUPLICATE.message} ${createPlanDto.planName}`,
                 )
                 throw new HttpException(
                     httpErrors.DUPLICATE_PLAN_NAME,
@@ -113,12 +113,12 @@ export class PlanService {
                 createPlanDto,
             )
             this.logger.info(
-                `[${messageLog.CREATE_SERVICE_PLAN_SUCCESS.code}]-${messageLog.CREATE_SERVICE_PLAN_SUCCESS.message} ${createdPlan.id}`,
+                `${messageLog.CREATE_SERVICE_PLAN_SUCCESS.message} ${createdPlan.id}`,
             )
             return createdPlan
         } catch (error) {
             this.logger.error(
-                `[${messageLog.CREATE_SERVICE_PLAN_FAILED.code}]-${messageLog.CREATE_SERVICE_PLAN_FAILED.message}`,
+                `${messageLog.CREATE_SERVICE_PLAN_FAILED.code} ${messageLog.CREATE_SERVICE_PLAN_FAILED.message}`,
             )
             throw new HttpException(
                 httpErrors.PLAN_CREATE_FAILED,
