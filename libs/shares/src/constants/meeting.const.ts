@@ -19,9 +19,14 @@ export enum FileTypesToFolderName {
     AVATARS = 'avatars',
 }
 
-export enum MeetingType {
+export enum MeetingTime {
     FUTURE = 'future',
     PASS = 'pass',
+}
+
+export enum MeetingType {
+    SHAREHOLDER_MEETING = '0',
+    BOARD_MEETING = '1',
 }
 
 export enum StatusMeeting {
