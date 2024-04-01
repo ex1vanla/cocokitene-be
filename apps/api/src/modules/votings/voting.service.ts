@@ -162,12 +162,12 @@ export class VotingService {
                     await createdVoting.save()
                     await existedProposal.save()
                     this.logger.info(
-                        `User ID : ${userId} ${messageLog.VOTING_PROPOSAL_SHAREHOLDER_MEETING_SUCCESS.message} ${existedProposal.id}`,
+                        `[DAPP] User ID : ${userId} ${messageLog.VOTING_PROPOSAL_SHAREHOLDER_MEETING_SUCCESS.message} ${existedProposal.id}`,
                     )
                     return existedProposal
                 } catch (error) {
                     this.logger.error(
-                        `User ID : ${userId} ${messageLog.VOTING_PROPOSAL_SHAREHOLDER_MEETING_FAILED.message} ${existedProposal.id}`,
+                        `${messageLog.VOTING_PROPOSAL_SHAREHOLDER_MEETING_FAILED.code} [DAPP] User ID : ${userId} ${messageLog.VOTING_PROPOSAL_SHAREHOLDER_MEETING_FAILED.message} ${existedProposal.id}`,
                     )
                     throw new HttpException(
                         httpErrors.VOTING_CREATED_FAILED,
@@ -176,6 +176,9 @@ export class VotingService {
                 }
             }
         } catch (error) {
+            this.logger.info(
+                `[DAPP] User ID : ${userId} ${messageLog.VOTING_PROPOSAL_SHAREHOLDER_MEETING_SUCCESS.message} ${existedProposal.id}`,
+            )
             throw new HttpException(
                 { message: error.message },
                 HttpStatus.INTERNAL_SERVER_ERROR,
@@ -223,9 +226,6 @@ export class VotingService {
             await existedProposal.save()
             return existedProposal
         } else {
-            this.logger.error(
-                `${messageLog.VOTING_PROPOSAL_SHAREHOLDER_MEETING_FAILED.message} ${existedProposal.id}`,
-            )
             throw new HttpException(
                 httpErrors.VOTING_FAILED,
                 HttpStatus.BAD_REQUEST,

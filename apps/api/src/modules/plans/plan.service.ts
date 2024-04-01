@@ -83,7 +83,7 @@ export class PlanService {
             return existedPlan
         } catch (error) {
             this.logger.error(
-                `${messageLog.UPDATE_SERVICE_PLAN_FAILED.message} ${planId}`,
+                `${messageLog.UPDATE_SERVICE_PLAN_FAILED.code} ${messageLog.UPDATE_SERVICE_PLAN_FAILED.message} ${planId}`,
             )
             throw new HttpException(
                 {
@@ -102,7 +102,7 @@ export class PlanService {
             )
             if (planExisted) {
                 this.logger.error(
-                    `${messageLog.CREATE_SERVICE_PLAN_FAILED_DUPLICATE.message} ${createPlanDto.planName}`,
+                    `${messageLog.CREATE_SERVICE_PLAN_FAILED_DUPLICATE.code} ${messageLog.CREATE_SERVICE_PLAN_FAILED_DUPLICATE.message} ${createPlanDto.planName}`,
                 )
                 throw new HttpException(
                     httpErrors.DUPLICATE_PLAN_NAME,
@@ -118,7 +118,7 @@ export class PlanService {
             return createdPlan
         } catch (error) {
             this.logger.error(
-                `${messageLog.CREATE_SERVICE_PLAN_FAILED.message}`,
+                `${messageLog.CREATE_SERVICE_PLAN_FAILED.code} ${messageLog.CREATE_SERVICE_PLAN_FAILED.message}`,
             )
             throw new HttpException(
                 httpErrors.PLAN_CREATE_FAILED,

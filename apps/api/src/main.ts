@@ -49,7 +49,7 @@ async function bootstrap() {
         const isConnected = !!(await dns.promises
             .resolve('google.com')
             .catch(() => {
-                console.log('check connect network!')
+                console.log('check error connect network!')
             }))
         if (isConnected) {
             // Connected to the internet
@@ -58,10 +58,14 @@ async function bootstrap() {
         } else {
             // Not connected to the internet
             Logger.log(`${messageLog.CONNECT_INTERNET_FAILED.message}`)
-            logger.log('error', `${messageLog.CONNECT_INTERNET_FAILED.message}`)
+            logger.log(
+                'error',
+                `${messageLog.CONNECT_INTERNET_FAILED.code} ${messageLog.CONNECT_INTERNET_FAILED.message}`,
+            )
         }
 
         logger.log('info', `${messageLog.TURN_ON_DAPP.message} ${port}`)
+        // logger.log(`${messageLog.TURN_ON_DAPP.message} ${port}`)
         Logger.log(`${messageLog.TURN_ON_DAPP.message}${port}`)
     } catch (err) {
         console.log('Error Check ', err)

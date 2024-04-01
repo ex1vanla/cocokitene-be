@@ -74,7 +74,7 @@ export class ProposalService {
 
             return createdProposal
         } catch (error) {
-            this.logger.error('Proposal create failed. Please try again')
+            // this.logger.error('Proposal create failed. Please try again')
             throw new HttpException(
                 httpErrors.PROPOSAL_CREATE_FAILED,
                 HttpStatus.INTERNAL_SERVER_ERROR,

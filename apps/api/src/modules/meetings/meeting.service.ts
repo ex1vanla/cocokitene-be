@@ -195,7 +195,7 @@ export class MeetingService {
             )
         } catch (error) {
             this.logger.error(
-                `${messageLog.CREATE_SHAREHOLDER_MEETING_FAILED.message}`,
+                `${messageLog.CREATE_SHAREHOLDER_MEETING_FAILED.code} ${messageLog.CREATE_SHAREHOLDER_MEETING_FAILED.message}`,
             )
             throw new HttpException(
                 httpErrors.MEETING_CREATE_FAILED,
@@ -463,7 +463,7 @@ export class MeetingService {
             )
         } catch (error) {
             this.logger.error(
-                `${messageLog.UPDATE_SHAREHOLDER_MEETING_FAILED.message} ${existedMeeting.id}`,
+                `${messageLog.UPDATE_SHAREHOLDER_MEETING_FAILED.code} ${messageLog.UPDATE_SHAREHOLDER_MEETING_FAILED.message} ${existedMeeting.id}`,
             )
             throw new HttpException(
                 httpErrors.MEETING_UPDATE_FAILED,

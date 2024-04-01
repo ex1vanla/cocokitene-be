@@ -146,7 +146,9 @@ export class RolePermissionService {
 
             return createdRolePermission
         } catch (error) {
-            this.logger.error(``)
+            this.logger.error(
+                `${messageLog.CREATE_ROLE_FAILED.code} ${messageLog.CREATE_ROLE_FAILED.message}`,
+            )
             throw new HttpException(
                 {
                     code: httpErrors.ROLE_PERMISSION_CREATE_FAILED.code,

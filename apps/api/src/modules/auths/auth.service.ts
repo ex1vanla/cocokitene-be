@@ -75,7 +75,7 @@ export class AuthService {
         )
 
         if (!user) {
-            this.logger.error(
+            this.logger.info(
                 `${messageLog.LOGIN_WALLET_ADDRESS_FAILED.message} ${walletAddress}`,
             )
             throw new HttpException(
@@ -85,7 +85,7 @@ export class AuthService {
         }
 
         if (user.userStatus.status !== UserStatusEnum.ACTIVE) {
-            this.logger.error(
+            this.logger.info(
                 `${messageLog.LOGIN_USER_INACTIVE.message} ${walletAddress}`,
             )
             throw new HttpException(
@@ -205,7 +205,7 @@ export class AuthService {
             systemAdmin.password,
         )
         if (!checkPassword) {
-            this.logger.error(
+            this.logger.info(
                 `${messageLog.LOGIN_SYSTEM_FAILED.message} ${email}`,
             )
             throw new HttpException(
@@ -330,7 +330,7 @@ export class AuthService {
         const expiredLinkToken = systemAdmin.resetPasswordExpireTime
         if (currentTime > expiredLinkToken) {
             this.logger.error(
-                `${messageLog.RESET_PASSWORD_SYSTEM_FAILED.message} ${systemAdmin.email}`,
+                `${messageLog.RESET_PASSWORD_SYSTEM_FAILED.code} ${messageLog.RESET_PASSWORD_SYSTEM_FAILED.message} ${systemAdmin.email}`,
             )
             throw new HttpException(
                 httpErrors.RESET_PASSWORD_TOKEN_EXPIRED,
@@ -364,7 +364,7 @@ export class AuthService {
             existedSystemAdmin.password,
         )
         if (!checkPassword) {
-            this.logger.error(
+            this.logger.info(
                 `${messageLog.CHANGE_PASSWORD_SYSTEM_FAILED.message} ${existedSystemAdmin.email}`,
             )
             throw new HttpException(
@@ -410,7 +410,7 @@ export class AuthService {
 
         const checkPassword = await comparePasswordUser(password, user.password)
         if (!checkPassword) {
-            this.logger.error(
+            this.logger.info(
                 `${messageLog.LOGIN_EMAIL_FAILED.message} ${email}`,
             )
             throw new HttpException(
@@ -420,7 +420,7 @@ export class AuthService {
         }
 
         if (user.userStatus.status !== UserStatusEnum.ACTIVE) {
-            this.logger.error(
+            this.logger.info(
                 `${messageLog.LOGIN_USER_INACTIVE.message} ${email}`,
             )
             throw new HttpException(
@@ -462,7 +462,7 @@ export class AuthService {
             existedUser.password,
         )
         if (!checkPassword) {
-            this.logger.error(
+            this.logger.info(
                 `${messageLog.CHANGE_PASSWORD_FAILED.message} ${existedUser.email}`,
             )
             throw new HttpException(
@@ -527,7 +527,7 @@ export class AuthService {
         const expiredLinkToken = existedUser.resetPasswordExpireTime
         if (currentTime > expiredLinkToken) {
             this.logger.error(
-                `${messageLog.RESET_PASSWORD_FAILED.message} ${existedUser.email}`,
+                `${messageLog.RESET_PASSWORD_FAILED.code} ${messageLog.RESET_PASSWORD_FAILED.message} ${existedUser.email}`,
             )
             throw new HttpException(
                 httpErrors.RESET_PASSWORD_TOKEN_EXPIRED,

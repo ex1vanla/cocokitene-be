@@ -53,7 +53,7 @@ export class UserService {
             },
         })
         if (!user) {
-            this.logger.error('User not found. Please try again')
+            // this.logger.error('User not found. Please try again')
             throw new HttpException(
                 httpErrors.USER_NOT_FOUND,
                 HttpStatus.BAD_REQUEST,
@@ -195,7 +195,7 @@ export class UserService {
             )
         } catch (error) {
             this.logger.error(
-                `${messageLog.UPDATE_ACCOUNT_FAILED.message} ${userId}`,
+                `${messageLog.UPDATE_ACCOUNT_FAILED.code} ${messageLog.UPDATE_ACCOUNT_FAILED.message} ${userId}`,
             )
             throw new HttpException(
                 httpErrors.USER_UPDATE_FAILED,
@@ -237,7 +237,7 @@ export class UserService {
             userId,
         )
         if (!existedUser) {
-            this.logger.error('[DAPP] User not found. Please try again')
+            // this.logger.error('[DAPP] User not found. Please try again')
             throw new HttpException(
                 httpErrors.USER_NOT_FOUND,
                 HttpStatus.NOT_FOUND,
@@ -296,7 +296,7 @@ export class UserService {
             )
             if (exitedUser) {
                 this.logger.error(
-                    `${messageLog.CREATE_ACCOUNT_FAILED_DUPLICATE.message} ${createUserDto.walletAddress}`,
+                    `${messageLog.CREATE_ACCOUNT_FAILED_DUPLICATE.code} ${messageLog.CREATE_ACCOUNT_FAILED_DUPLICATE.message} ${createUserDto.walletAddress}`,
                 )
                 throw new HttpException(
                     httpErrors.DUPLICATE_WALLET_ADDRESS,
@@ -307,7 +307,7 @@ export class UserService {
         exitedUser = await this.getUserByEmail(createUserDto.email)
         if (exitedUser) {
             this.logger.error(
-                `${messageLog.CREATE_ACCOUNT_FAILED_DUPLICATE.message} ${createUserDto.email}`,
+                `${messageLog.CREATE_ACCOUNT_FAILED_DUPLICATE.code} ${messageLog.CREATE_ACCOUNT_FAILED_DUPLICATE.message} ${createUserDto.email}`,
             )
             throw new HttpException(
                 httpErrors.DUPLICATE_EMAIL_USER,
@@ -332,7 +332,9 @@ export class UserService {
                 `${messageLog.CREATE_ACCOUNT_SUCCESS.message} ${createdUser.id}`,
             )
         } catch (error) {
-            this.logger.error(`${messageLog.CREATE_ACCOUNT_FAILED.message}`)
+            this.logger.error(
+                `${messageLog.CREATE_ACCOUNT_FAILED.code} ${messageLog.CREATE_ACCOUNT_FAILED.message}`,
+            )
             throw new HttpException(
                 httpErrors.USER_CREATE_FAILED,
                 HttpStatus.INTERNAL_SERVER_ERROR,
@@ -468,7 +470,7 @@ export class UserService {
             )
         } catch (error) {
             this.logger.error(
-                `${messageLog.UPDATE_PROFILE_FAILED.message} ${userId}`,
+                `${messageLog.UPDATE_PROFILE_FAILED.code} ${messageLog.UPDATE_PROFILE_FAILED.message} ${userId}`,
             )
             throw new HttpException(
                 httpErrors.PROFILE_UPDATE_FAILED,

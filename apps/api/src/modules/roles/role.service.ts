@@ -87,7 +87,7 @@ export class RoleService {
             return createdCompanyRole
         } catch (error) {
             this.logger.error(
-                `${messageLog.CREATE_ROLE_FAILED.message} ${role}`,
+                `${messageLog.CREATE_ROLE_FAILED.code} ${messageLog.CREATE_ROLE_FAILED.message} ${role}`,
             )
             throw new HttpException(
                 httpErrors.COMPANY_ROLE_CREATE_FAILED,
