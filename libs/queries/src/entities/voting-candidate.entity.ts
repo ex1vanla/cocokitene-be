@@ -9,10 +9,11 @@ import {
     Unique,
 } from 'typeorm'
 import { User } from '@entities/user.entity'
+import { Candidate } from './candidate.entity'
 
-@Entity('voting_boards')
-@Unique(['userId', 'votedForUserId'])
-export class VotingBoard extends BaseEntity {
+@Entity('voting_candidate')
+@Unique(['userId', 'votedForCandidateId'])
+export class VotingCandidate extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number
 
@@ -21,19 +22,11 @@ export class VotingBoard extends BaseEntity {
 
     @Column({
         nullable: true,
-        name: 'voted_for_user_id',
+        name: 'voted_for_candidate_id',
         type: 'integer',
         width: 11,
     })
-    votedForUserId: number
-
-    @Column({
-        nullable: true,
-        name: 'voted_quantity',
-        type: 'integer',
-        width: 11,
-    })
-    votedQuantity: number
+    votedForCandidateId: number
 
     @DeleteDateColumn()
     deletedAt: Date
@@ -43,9 +36,10 @@ export class VotingBoard extends BaseEntity {
         name: 'user_id',
     })
     user: User
+
     @ManyToOne(() => User)
     @JoinColumn({
-        name: 'voted_for_user_id',
+        name: 'voted_for_candidate_id',
     })
-    votedForUser: User
+    votedForCandidate: Candidate
 }

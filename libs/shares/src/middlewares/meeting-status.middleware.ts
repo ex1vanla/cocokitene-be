@@ -1,3 +1,4 @@
+import { BoardMeetingService } from './../../../../apps/api/src/modules/board-meetings/board-meeting.service'
 import {
     HttpException,
     HttpStatus,
@@ -9,14 +10,18 @@ import { MeetingService } from '@api/modules/meetings/meeting.service'
 
 @Injectable()
 export class MeetingStatusMiddleware implements NestMiddleware {
-    constructor(private readonly meetingService: MeetingService) {}
+    constructor(
+        private readonly meetingService: MeetingService,
+        private readonly boardMeetingService: BoardMeetingService,
+    ) {}
 
     async use(req: Request, res: Response, next: NextFunction) {
         // console.log('start middleware')
         try {
             const meetingId = parseInt(req.params?.id)
             await this.meetingService.standardStatusMeeting(meetingId)
-            // console.log('end middleware')
+            // await this.boardMeetingService.standardStatusMeeting(meetingId)
+            console.log('end middleware')
             next()
         } catch (error) {
             throw new HttpException(

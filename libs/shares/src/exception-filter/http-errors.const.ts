@@ -343,4 +343,16 @@ export const httpErrors = {
         message: 'DUPLICATE_PLAN_NAME',
         code: 'DUPLICATE_00005',
     },
+
+    //Candidate
+    CANDIDATE_CREATE_FAILED: {
+        message: 'Create Candidate failed , try again!',
+        code: 'CANDIDATE_00001',
+    },
+
+    //Board Meeting
+    BOARD_MEETING_CREATE_FAILED: {
+        message: 'Create Board Meeting failed , try again!',
+        code: 'BOARD_MEETING_00001',
+    },
 }

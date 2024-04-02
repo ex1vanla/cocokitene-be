@@ -14,6 +14,7 @@ import {
     RequestMethod,
 } from '@nestjs/common'
 import { MeetingStatusMiddleware } from '@shares/middlewares/meeting-status.middleware'
+import { BoardMeetingModule } from '../board-meetings/board-meeting.module'
 
 @Module({
     imports: [
@@ -25,6 +26,7 @@ import { MeetingStatusMiddleware } from '@shares/middlewares/meeting-status.midd
         forwardRef(() => UserModule),
 
         forwardRef(() => VotingModule),
+        forwardRef(() => BoardMeetingModule),
     ],
     controllers: [MeetingController],
     providers: [MeetingService],

@@ -106,8 +106,23 @@ export const permissionData: InsertPermissionDto[] = [
             'the user with this right can update shareholders in the my company',
     },
     {
-        key: PermissionEnum.DETAIL_SHAREHOLDERS,
+        key: PermissionEnum.BOARD_MEETING,
         description:
-            'the user with this right can see detail shareholders in the my company',
+            'the user with this right can see list board meeting in the my company',
+    },
+    {
+        key: PermissionEnum.EDIT_BOARD_MEETING,
+        description:
+            'the user with this right can see detail board meeting in the my company',
+    },
+    {
+        key: PermissionEnum.CREATE_BOARD_MEETING,
+        description:
+            'the user with this right can create board meeting in the my company',
+    },
+    {
+        key: PermissionEnum.DETAIL_BOARD_MEETING,
+        description:
+            'the user with this right can see detail board meeting in the my company',
     },
 ]

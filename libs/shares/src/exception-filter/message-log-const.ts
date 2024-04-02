@@ -215,4 +215,14 @@ export const messageLog = {
         message: '[DAPP] Update role failed ',
         code: 'E0017',
     },
+
+    //BoardMeeting
+    CREATE_BOARD_MEETING_SUCCESS: {
+        message: '',
+        code: '',
+    },
+    CREATE_BOARD_MEETING_FAILED: {
+        message: '',
+        code: '',
+    },
 }

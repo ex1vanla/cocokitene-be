@@ -1,0 +1,221 @@
+import { CreateBoardMeetingDto } from './../../../../../libs/queries/src/dtos/board-meeting.dto'
+import { Meeting } from '@entities/meeting.entity'
+import {
+    HttpException,
+    HttpStatus,
+    Inject,
+    Injectable,
+    forwardRef,
+} from '@nestjs/common'
+import { MeetingRepository } from '@repositories/meeting.repository'
+import {
+    MeetingRole,
+    MeetingType,
+    StatusMeeting,
+} from '@shares/constants/meeting.const'
+import { httpErrors, messageLog } from '@shares/exception-filter'
+import { getTotalVoter } from '@shares/utils'
+import { Logger } from 'winston'
+import { MeetingFileService } from '../meeting-files/meeting-file.service'
+import { ProposalService } from '../proposals/proposal.service'
+import { UserMeetingService } from '../user-meetings/user-meeting.service'
+import { CandidateService } from '../candidate/candidate.service'
+
+@Injectable()
+export class BoardMeetingService {
+    constructor(
+        private readonly boardMeetingRepository: MeetingRepository,
+
+        @Inject(forwardRef(() => MeetingFileService))
+        private readonly meetingFileService: MeetingFileService,
+        private readonly proposalService: ProposalService,
+        private readonly userMeetingService: UserMeetingService,
+        private readonly candidateService: CandidateService,
+        @Inject('winston')
+        private readonly logger: Logger,
+    ) {}
+
+    async createBoardMeeting(
+        createBoardMeetingDto: CreateBoardMeetingDto,
+        creatorId: number,
+        companyId: number,
+    ) {
+        if (!creatorId) {
+            throw new HttpException(
+                httpErrors.USER_NOT_FOUND,
+                HttpStatus.BAD_REQUEST,
+            )
+        }
+
+        if (!companyId) {
+            throw new HttpException(
+                httpErrors.COMPANY_NOT_FOUND,
+                HttpStatus.BAD_REQUEST,
+            )
+        }
+
+        //create
+        let createdBoardMeeting: Meeting
+        const typeMeeting = MeetingType.BOARD_MEETING
+
+        try {
+            createdBoardMeeting =
+                await this.boardMeetingRepository.createBoardMeeting(
+                    createBoardMeetingDto,
+                    typeMeeting,
+                    creatorId,
+                    companyId,
+                )
+            this.logger.info(
+                `${messageLog.CREATE_BOARD_MEETING_SUCCESS.message} ${createdBoardMeeting.id}`,
+            )
+        } catch (error) {
+            this.logger.error(
+                `${messageLog.CREATE_BOARD_MEETING_FAILED.code} ${messageLog.CREATE_BOARD_MEETING_FAILED.message}`,
+            )
+
+            throw new HttpException(
+                httpErrors.BOARD_MEETING_CREATE_FAILED,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            )
+        }
+
+        const {
+            meetingMinutes,
+            meetingInvitations,
+            managementAndFinancial,
+            election,
+            hosts,
+            controlBoards,
+            directors,
+            administrativeCouncils,
+            candidates,
+        } = createBoardMeetingDto
+
+        const totalVoter = getTotalVoter([
+            ...controlBoards,
+            ...directors,
+            ...administrativeCouncils,
+        ])
+
+        try {
+            await Promise.all([
+                ...meetingMinutes.map((file) =>
+                    this.meetingFileService.createMeetingFile({
+                        url: file.url,
+                        meetingId: createdBoardMeeting.id,
+                        fileType: file.fileType,
+                    }),
+                ),
+                ...meetingInvitations.map((invitation) =>
+                    this.meetingFileService.createMeetingFile({
+                        url: invitation.url,
+                        meetingId: createdBoardMeeting.id,
+                        fileType: invitation.fileType,
+                    }),
+                ),
+                ...managementAndFinancial.map((report) =>
+                    this.proposalService.createProposal({
+                        title: report.title,
+                        description: report.description,
+                        oldDescription: report.oldDescription,
+                        files: report.files,
+                        type: report.type,
+                        meetingId: createdBoardMeeting.id,
+                        creatorId: creatorId,
+                        notVoteYetQuantity: totalVoter,
+                    }),
+                ),
+                ...election.map((election) =>
+                    this.proposalService.createProposal({
+                        title: election.title,
+                        description: election.description,
+                        oldDescription: election.oldDescription,
+                        files: election.files,
+                        type: election.type,
+                        meetingId: createdBoardMeeting.id,
+                        creatorId: creatorId,
+                        notVoteYetQuantity: totalVoter,
+                    }),
+                ),
+                ...candidates.map((candidate) =>
+                    this.candidateService.createCandidate({
+                        title: candidate.title,
+                        candidateName: candidate.candidateName,
+                        type: candidate.type,
+                        meetingId: createdBoardMeeting.id,
+                        creatorId: creatorId,
+                        notVoteYetQuantity: totalVoter,
+                    }),
+                ),
+                ...hosts.map((host) =>
+                    this.userMeetingService.createUserMeeting({
+                        userId: host,
+                        meetingId: createdBoardMeeting.id,
+                        role: MeetingRole.HOST,
+                    }),
+                ),
+                ...controlBoards.map((controlBoard) =>
+                    this.userMeetingService.createUserMeeting({
+                        userId: controlBoard,
+                        meetingId: createdBoardMeeting.id,
+                        role: MeetingRole.CONTROL_BOARD,
+                    }),
+                ),
+                ...directors.map((director) =>
+                    this.userMeetingService.createUserMeeting({
+                        userId: director,
+                        meetingId: createdBoardMeeting.id,
+                        role: MeetingRole.DIRECTOR,
+                    }),
+                ),
+                ...administrativeCouncils.map((administrativeCouncil) =>
+                    this.userMeetingService.createUserMeeting({
+                        userId: administrativeCouncil,
+                        meetingId: createdBoardMeeting.id,
+                        role: MeetingRole.ADMINISTRATIVE_COUNCIL,
+                    }),
+                ),
+            ])
+        } catch (error) {
+            throw new HttpException(
+                { message: error.message },
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            )
+        }
+
+        return createdBoardMeeting
+    }
+
+    async standardStatusMeeting(meetingId: number): Promise<Meeting> {
+        const existedMeeting =
+            await this.boardMeetingRepository.getInternalMeetingById(meetingId)
+        if (!existedMeeting) {
+            throw new HttpException(
+                httpErrors.MEETING_NOT_EXISTED,
+                HttpStatus.BAD_REQUEST,
+            )
+        }
+        if (
+            existedMeeting.status === StatusMeeting.DELAYED ||
+            existedMeeting.status === StatusMeeting.CANCELED
+        ) {
+            return existedMeeting
+        }
+        const currenDate = new Date()
+        const startTimeMeeting = new Date(existedMeeting.startTime)
+        const endTimeMeeting = new Date(existedMeeting.endTime)
+        if (currenDate < startTimeMeeting) {
+            existedMeeting.status = StatusMeeting.NOT_HAPPEN
+        } else if (
+            currenDate >= startTimeMeeting &&
+            currenDate <= endTimeMeeting
+        ) {
+            existedMeeting.status = StatusMeeting.HAPPENING
+        } else if (currenDate > endTimeMeeting) {
+            existedMeeting.status = StatusMeeting.HAPPENED
+        }
+        await existedMeeting.save()
+        return existedMeeting
+    }
+}
