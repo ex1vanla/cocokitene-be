@@ -23,6 +23,7 @@ import { PermissionModule } from '@api/modules/permissions/permission.module'
 import { RolePermissionModule } from '@api/modules/role-permissions/role-permission.module'
 import { ShareholderModule } from '@api/modules/shareholder/shareholder.module'
 import { MyLoggerModule } from '@api/modules/loggers/logger.module'
+import { BoardMeetingModule } from './board-meetings/board-meeting.module'
 
 @Module({
     imports: [
@@ -50,6 +51,7 @@ import { MyLoggerModule } from '@api/modules/loggers/logger.module'
         PermissionModule,
         RolePermissionModule,
         ShareholderModule,
+        BoardMeetingModule,
     ],
     controllers: [ApiController],
     providers: [ApiService],

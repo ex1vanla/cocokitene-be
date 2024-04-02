@@ -1,5 +1,6 @@
 import {
     Block,
+    Candidate,
     Company,
     CompanyStatus,
     Election,
@@ -17,9 +18,8 @@ import {
     User,
     UserRole,
     UserStatus,
-    UserVoteParticipant,
     Voting,
-    VotingBoard,
+    VotingCandidate,
     VotingTransaction,
 } from '@entities/index'
 import { Module } from '@nestjs/common'
@@ -68,9 +68,9 @@ import { logger } from '@api/modules/loggers/logger'
                     ProposalTransaction,
                     VotingTransaction,
                     FileMeetingTransaction,
-                    VotingBoard,
+                    VotingCandidate,
                     Election,
-                    UserVoteParticipant,
+                    Candidate,
                 ],
                 timezone: 'Z',
                 synchronize: configService.get('database.synchronize'),

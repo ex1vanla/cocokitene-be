@@ -1,6 +1,7 @@
 import {
     BaseEntity,
     Column,
+    DeleteDateColumn,
     Entity,
     JoinColumn,
     ManyToOne,
@@ -10,12 +11,26 @@ import { Meeting } from '@entities/meeting.entity'
 import { User } from '@entities/user.entity'
 import { ElectionEnum } from '@shares/constants'
 
-@Entity('user_vote_participants')
-export class UserVoteParticipant extends BaseEntity {
+@Entity('candidate')
+export class Candidate extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number
-    @Column({ nullable: false, name: 'user_id', type: 'integer', width: 11 })
-    userId: number
+
+    @Column({
+        name: 'title',
+        type: 'varchar',
+        length: 255,
+        nullable: false,
+    })
+    title: string
+
+    @Column({
+        nullable: false,
+        name: 'candidate_name',
+        type: 'varchar',
+        length: 255,
+    })
+    candidateName: string
 
     @Column({
         nullable: false,
@@ -41,6 +56,14 @@ export class UserVoteParticipant extends BaseEntity {
     })
     unVotedQuantity: number
 
+    @Column({
+        nullable: true,
+        name: 'not_vote_yet_quantity',
+        type: 'integer',
+        width: 11,
+    })
+    notVoteYetQuantity: number
+
     @Column({ nullable: false, name: 'meeting_id', type: 'integer', width: 11 })
     meetingId: number
 
@@ -50,9 +73,15 @@ export class UserVoteParticipant extends BaseEntity {
     })
     meeting: Meeting
 
+    @Column({ nullable: false, name: 'creator_id', type: 'integer', width: 11 })
+    creatorId: number
+
     @ManyToOne(() => User)
     @JoinColumn({
         name: 'creator_id',
     })
-    user: User
+    creator: User
+
+    @DeleteDateColumn()
+    deletedAt: Date
 }

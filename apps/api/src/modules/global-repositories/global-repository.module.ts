@@ -23,9 +23,9 @@ import { ParticipantMeetingTransactionRepository } from '@repositories/participa
 import { ProposalTransactionRepository } from '@repositories/proposal-transaction.repository'
 import { VotingTransactionRepository } from '@repositories/voting-transaction.repository'
 import { FileMeetingTransactionRepository } from '@repositories/file-meeting-transaction.repository'
-import { VotingBoardRepository } from '@repositories/voting-board.repository'
+import { VotingBoardRepository } from '@repositories/voting-candidate.repository'
 import { ElectionRepository } from '@repositories/election.repository'
-import { UserVoteParticipantRepository } from '@repositories/user-vote-participant.repository'
+import { CandidateRepository } from '@repositories/candidate.repository'
 
 const commonRepositories = [
     UserRepository,
@@ -54,7 +54,7 @@ const commonRepositories = [
     FileMeetingTransactionRepository,
     VotingBoardRepository,
     ElectionRepository,
-    UserVoteParticipantRepository,
+    CandidateRepository,
 ]
 
 @Global()
