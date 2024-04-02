@@ -1,9 +1,6 @@
 import { Meeting } from '@entities/meeting.entity'
 import { User } from '@entities/user.entity'
-import {
-    MeetingRole,
-    UserMeetingStatusEnum,
-} from '@shares/constants/meeting.const'
+import { UserMeetingStatusEnum } from '@shares/constants/meeting.const'
 import {
     BaseEntity,
     Column,
@@ -14,6 +11,7 @@ import {
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm'
+import { RoleMtg } from '@entities/role-mtg.entity'
 
 @Entity('user_meetings')
 export class UserMeeting extends BaseEntity {
@@ -36,12 +34,12 @@ export class UserMeeting extends BaseEntity {
     status: UserMeetingStatusEnum
 
     @Column({
-        name: 'role',
-        type: 'enum',
-        enum: MeetingRole,
         nullable: false,
+        name: 'role_mtg_id',
+        type: 'integer',
+        width: 11,
     })
-    role: MeetingRole
+    roleMtgId: number
 
     @ManyToOne(() => User)
     @JoinColumn({
@@ -60,4 +58,8 @@ export class UserMeeting extends BaseEntity {
 
     @UpdateDateColumn({ name: 'updated_at' })
     updatedAt: Date
+
+    @ManyToOne(() => RoleMtg)
+    @JoinColumn({ name: 'role_mtg_id' })
+    roleMtg: RoleMtg
 }

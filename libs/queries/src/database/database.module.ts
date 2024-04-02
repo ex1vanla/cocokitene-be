@@ -11,6 +11,7 @@ import {
     Proposal,
     ProposalTransaction,
     Role,
+    RoleMtg,
     RolePermission,
     SystemAdmin,
     Transaction,
@@ -32,6 +33,7 @@ import { ProposalFile } from '@entities/proposal-file'
 import { messageLog } from '@shares/exception-filter'
 import { DataSource } from 'typeorm'
 import { logger } from '@api/modules/loggers/logger'
+import { MeetingRoleMtg } from '@entities/meeting-role-mtg.entity'
 
 @Module({
     imports: [
@@ -71,6 +73,8 @@ import { logger } from '@api/modules/loggers/logger'
                     VotingBoard,
                     Election,
                     UserVoteParticipant,
+                    RoleMtg,
+                    MeetingRoleMtg,
                 ],
                 timezone: 'Z',
                 synchronize: configService.get('database.synchronize'),

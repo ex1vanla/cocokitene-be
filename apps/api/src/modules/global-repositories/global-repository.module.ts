@@ -26,6 +26,8 @@ import { FileMeetingTransactionRepository } from '@repositories/file-meeting-tra
 import { VotingBoardRepository } from '@repositories/voting-board.repository'
 import { ElectionRepository } from '@repositories/election.repository'
 import { UserVoteParticipantRepository } from '@repositories/user-vote-participant.repository'
+import { RoleMtgRepository } from '@repositories/role-mtg.repository'
+import { MeetingRoleMtgRepository } from '@repositories/meeting-role-mtg.repository'
 
 const commonRepositories = [
     UserRepository,
@@ -55,6 +57,8 @@ const commonRepositories = [
     VotingBoardRepository,
     ElectionRepository,
     UserVoteParticipantRepository,
+    RoleMtgRepository,
+    MeetingRoleMtgRepository,
 ]
 
 @Global()

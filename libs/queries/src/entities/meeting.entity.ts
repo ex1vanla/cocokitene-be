@@ -12,6 +12,7 @@ import { User } from '@entities/user.entity'
 import { MeetingFile } from '@entities/meeting-file.entity'
 import { Proposal } from '@entities/proposal.entity'
 import { MeetingType, StatusMeeting } from '@shares/constants/meeting.const'
+import { MeetingRoleMtg } from '@entities/meeting-role-mtg.entity'
 @Entity('meetings')
 export class Meeting extends BaseEntity {
     @PrimaryGeneratedColumn()
@@ -96,4 +97,7 @@ export class Meeting extends BaseEntity {
 
     @OneToMany(() => Proposal, (proposal) => proposal.meeting)
     proposals: Proposal[]
+
+    @OneToMany(() => MeetingRoleMtg, (meetingRoleMtg) => meetingRoleMtg.meeting)
+    meetingRoleMtg: MeetingRoleMtg[]
 }
