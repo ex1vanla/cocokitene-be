@@ -23,8 +23,6 @@ import { PermissionModule } from '@api/modules/permissions/permission.module'
 import { RolePermissionModule } from '@api/modules/role-permissions/role-permission.module'
 import { ShareholderModule } from '@api/modules/shareholder/shareholder.module'
 import { MyLoggerModule } from '@api/modules/loggers/logger.module'
-import { RoleMtgModule } from '@api/modules/role-mtgs/role-mtg.module'
-import { MeetingRoleMtgModule } from '@api/modules/meeting-role-mtgs/meeting-role-mtg.module'
 
 @Module({
     imports: [
@@ -52,8 +50,6 @@ import { MeetingRoleMtgModule } from '@api/modules/meeting-role-mtgs/meeting-rol
         PermissionModule,
         RolePermissionModule,
         ShareholderModule,
-        RoleMtgModule,
-        MeetingRoleMtgModule,
     ],
     controllers: [ApiController],
     providers: [ApiService],

@@ -12,7 +12,6 @@ import {
 import { CompanyStatus } from './company-status.entity'
 import { Plan } from './plan.entity'
 import { Role } from './role.entity'
-import { RoleMtg } from '@entities/role-mtg.entity'
 
 @Entity('companys')
 export class Company extends BaseEntity {
@@ -142,7 +141,4 @@ export class Company extends BaseEntity {
 
     @OneToMany(() => Role, (role) => role.company)
     role: Role[]
-
-    @OneToMany(() => RoleMtg, (roleMtg) => roleMtg.company)
-    roleMtg: RoleMtg[]
 }
