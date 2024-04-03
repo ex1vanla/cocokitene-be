@@ -1,13 +1,6 @@
 import { ApiProperty, OmitType } from '@nestjs/swagger'
-import { ElectionEnum } from '@shares/constants'
 import { Type } from 'class-transformer'
-import {
-    IsEnum,
-    IsNotEmpty,
-    IsNumber,
-    IsOptional,
-    IsString,
-} from 'class-validator'
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator'
 
 export class CreateCandidateDto {
     @IsNotEmpty()
@@ -26,12 +19,13 @@ export class CreateCandidateDto {
     })
     candidateName: string
 
-    @IsEnum(ElectionEnum)
+    @IsNotEmpty()
+    @IsNumber()
     @ApiProperty({
         required: true,
-        enum: ElectionEnum,
+        example: 1,
     })
-    type: ElectionEnum
+    type: number
 
     @IsNumber()
     @ApiProperty({
