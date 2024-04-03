@@ -5,6 +5,8 @@ import {
     HttpCode,
     HttpStatus,
     Body,
+    Get,
+    Query,
 } from '@nestjs/common'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import { BoardMeetingService } from './board-meeting.service'
@@ -14,11 +16,33 @@ import { Permission } from '@shares/decorators/permission.decorator'
 import { CreateBoardMeetingDto } from '@dtos/board-meeting.dto'
 import { UserScope } from '@shares/decorators/user.decorator'
 import { User } from '@entities/user.entity'
+import { GetAllMeetingDto } from '@dtos/meeting.dto'
 
 @Controller('board-meetings')
 @ApiTags('board-meetings')
 export class BoardMeetingController {
     constructor(private readonly boardMeetingService: BoardMeetingService) {}
+
+    @Get('')
+    @UseGuards(JwtAuthGuard)
+    @HttpCode(HttpStatus.OK)
+    @ApiBearerAuth()
+    @Permission(PermissionEnum.BOARD_MEETING)
+    async getAllBoardMeeting(
+        @Query() getAllBoardMeetingDto: GetAllMeetingDto,
+        @UserScope() user: User,
+    ) {
+        console.log('getAllBoardMeetingDto :', getAllBoardMeetingDto)
+
+        const companyId = user?.companyId
+
+        const boardMeetings = await this.boardMeetingService.getAllBoardMeeting(
+            getAllBoardMeetingDto,
+            user,
+            companyId,
+        )
+        return boardMeetings
+    }
 
     @Post('')
     @UseGuards(JwtAuthGuard)
