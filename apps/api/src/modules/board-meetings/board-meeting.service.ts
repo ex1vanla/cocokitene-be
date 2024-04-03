@@ -20,6 +20,10 @@ import { MeetingFileService } from '../meeting-files/meeting-file.service'
 import { ProposalService } from '../proposals/proposal.service'
 import { UserMeetingService } from '../user-meetings/user-meeting.service'
 import { CandidateService } from '../candidate/candidate.service'
+import { Pagination } from 'nestjs-typeorm-paginate'
+import { GetAllMeetingDto } from '@dtos/meeting.dto'
+import { User } from '@entities/user.entity'
+import { PermissionEnum } from '@shares/constants'
 
 @Injectable()
 export class BoardMeetingService {
@@ -34,6 +38,40 @@ export class BoardMeetingService {
         @Inject('winston')
         private readonly logger: Logger,
     ) {}
+
+    async getAllBoardMeeting(
+        getAllBoardMeetingDto: GetAllMeetingDto,
+        user: User,
+        companyId: number,
+    ): Promise<Pagination<Meeting>> {
+        const listBoardMeetingResponse =
+            await this.boardMeetingRepository.getInternalListMeeting(
+                companyId,
+                getAllBoardMeetingDto,
+            )
+
+        const idOfMeetings = listBoardMeetingResponse.map(
+            (meeting) => meeting.id,
+        )
+
+        await Promise.all([
+            ...idOfMeetings.map((id) => this.standardStatusMeeting(id)),
+        ])
+        const userId = user.id
+        const permissionKeys: string[] = (user as any).permissionKeys || []
+        const canUserCreateBoardMeeting = permissionKeys.includes(
+            PermissionEnum.CREATE_BOARD_MEETING,
+        )
+
+        const boardMeetings = await this.boardMeetingRepository.getAllMeetings(
+            companyId,
+            userId,
+            canUserCreateBoardMeeting,
+            getAllBoardMeetingDto,
+        )
+
+        return boardMeetings
+    }
 
     async createBoardMeeting(
         createBoardMeetingDto: CreateBoardMeetingDto,
