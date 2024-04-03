@@ -3,7 +3,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import { ElectionService } from './election.service'
 import { GetAllElectionStatusDto } from '@dtos/election.dto'
 
-@Controller('user-status')
+@Controller('election')
 @ApiTags('election')
 export class ElectionController {
     constructor(private readonly electionService: ElectionService) {}

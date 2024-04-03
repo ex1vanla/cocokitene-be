@@ -17,7 +17,7 @@ export class Election extends BaseEntity {
         enum: ElectionEnum,
         nullable: false,
     })
-    type: ElectionEnum
+    status: ElectionEnum
 
     @Column({
         name: 'description',
