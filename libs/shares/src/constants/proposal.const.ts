@@ -1,7 +1,8 @@
 export enum ProposalType {
     RESOLUTION = '0',
     AMENDMENT_RESOLUTION = '1',
-    REPORT = '2',
+    MANAGEMENT_FINANCIAL = '2',
+    ELECTION = '3',
 }
 
 export enum VoteProposalResult {
