@@ -9,7 +9,7 @@ import {
 } from 'typeorm'
 import { Meeting } from '@entities/meeting.entity'
 import { User } from '@entities/user.entity'
-import { ElectionEnum } from '@shares/constants'
+import { Election } from './election.entity'
 
 @Entity('candidate')
 export class Candidate extends BaseEntity {
@@ -34,11 +34,11 @@ export class Candidate extends BaseEntity {
 
     @Column({
         nullable: false,
-        type: 'enum',
         name: 'type',
-        enum: ElectionEnum,
+        type: 'integer',
+        width: 11,
     })
-    type: ElectionEnum
+    type: number
 
     @Column({
         nullable: true,
@@ -66,6 +66,12 @@ export class Candidate extends BaseEntity {
 
     @Column({ nullable: false, name: 'meeting_id', type: 'integer', width: 11 })
     meetingId: number
+
+    @ManyToOne(() => Election)
+    @JoinColumn({
+        name: 'type',
+    })
+    election: Election
 
     @ManyToOne(() => Meeting)
     @JoinColumn({
