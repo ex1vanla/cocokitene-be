@@ -1,20 +1,19 @@
 // import moment from 'moment'
 import * as moment from 'moment'
 import * as winston from 'winston'
+import 'winston-daily-rotate-file'
 
 const folderName = process.env.FOLDER_LOG
-// get currentDate
-const currentDate = moment()
-const currentDateFormatted = currentDate.format('YYYY-MM-DD')
 const customFormat = winston.format.printf(({ level, message, timestamp }) => {
     const formattedTimestamp = moment(timestamp).format('YYYY-MM-DD HH:mm:ss')
 
     return `${formattedTimestamp} ${level.toUpperCase()} ${message}`
 })
 
-const cocokiteneTransport = new winston.transports.File({
-    filename: `${folderName}/cocokitene-${currentDateFormatted}.log`,
-    level: 'debug',
+const transport = new winston.transports.DailyRotateFile({
+    dirname: `${folderName}/`,
+    filename: 'cocokitene-%DATE%.log',
+    datePattern: 'YYYY-MM-DD', // rotates every day
     format: winston.format.combine(
         winston.format.timestamp(),
         winston.format.json(),
@@ -24,5 +23,5 @@ const cocokiteneTransport = new winston.transports.File({
 })
 
 export const logger = winston.createLogger({
-    transports: [cocokiteneTransport],
+    transports: [transport],
 })

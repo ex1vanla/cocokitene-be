@@ -9,13 +9,13 @@ export class ElectionSeederService {
     async saveOneElection(election: InsertElectionDto): Promise<Election> {
         const existedElection = await this.electionRepository.findOne({
             where: {
-                type: election.type,
+                status: election.status,
             },
         })
 
         if (existedElection) {
             Logger.error(
-                `Duplicate status with name: ${existedElection.type} status already exists`,
+                `Duplicate status with name: ${existedElection.status} status already exists`,
             )
             return
         }

@@ -6,11 +6,11 @@ export class InsertElectionDto extends PartialType(Election) {}
 
 export const electionData: InsertElectionDto[] = [
     {
-        type: ElectionEnum.VOTE_OF_CONFIDENCE,
+        status: ElectionEnum.VOTE_OF_CONFIDENCE,
         description: 'vote of confidence',
     },
     {
-        type: ElectionEnum.VOTE_OF_NOT_CONFIDENCE,
+        status: ElectionEnum.VOTE_OF_NOT_CONFIDENCE,
         description: 'vote of not confidence',
     },
 ]
