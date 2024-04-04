@@ -121,8 +121,8 @@ export class BoardMeetingService {
         const {
             meetingMinutes,
             meetingInvitations,
-            managementAndFinancial,
-            election,
+            managementAndFinancials,
+            elections,
             hosts,
             controlBoards,
             directors,
@@ -152,7 +152,7 @@ export class BoardMeetingService {
                         fileType: invitation.fileType,
                     }),
                 ),
-                ...managementAndFinancial.map((report) =>
+                ...managementAndFinancials.map((report) =>
                     this.proposalService.createProposal({
                         title: report.title,
                         description: report.description,
@@ -164,7 +164,7 @@ export class BoardMeetingService {
                         notVoteYetQuantity: totalVoter,
                     }),
                 ),
-                ...election.map((election) =>
+                ...elections.map((election) =>
                     this.proposalService.createProposal({
                         title: election.title,
                         description: election.description,

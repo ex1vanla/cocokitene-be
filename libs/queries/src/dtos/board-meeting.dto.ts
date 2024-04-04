@@ -89,7 +89,7 @@ export class CreateBoardMeetingDto {
         each: true,
     })
     @Type(() => ProposalDto)
-    managementAndFinancial: ProposalDto[]
+    managementAndFinancials: ProposalDto[]
 
     @ApiProperty({
         required: true,
@@ -99,7 +99,7 @@ export class CreateBoardMeetingDto {
         each: true,
     })
     @Type(() => ProposalDto)
-    election: ProposalDto[]
+    elections: ProposalDto[]
 
     //executiveOfficerElection
     @ApiProperty({

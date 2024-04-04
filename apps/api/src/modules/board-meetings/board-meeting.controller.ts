@@ -32,8 +32,6 @@ export class BoardMeetingController {
         @Query() getAllBoardMeetingDto: GetAllMeetingDto,
         @UserScope() user: User,
     ) {
-        console.log('getAllBoardMeetingDto :', getAllBoardMeetingDto)
-
         const companyId = user?.companyId
 
         const boardMeetings = await this.boardMeetingService.getAllBoardMeeting(
@@ -48,14 +46,13 @@ export class BoardMeetingController {
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.CREATED)
     @ApiBearerAuth()
-    @Permission(PermissionEnum.BOARD_MEETING)
+    @Permission(PermissionEnum.CREATE_BOARD_MEETING)
     async createBoardMeeting(
         @Body() createBoardMeetingDto: CreateBoardMeetingDto,
         @UserScope() user: User,
     ) {
         const userId = +user?.id
         const companyId = user?.companyId
-        console.log('createCandidateDto :', createBoardMeetingDto)
 
         const boardMeeting = await this.boardMeetingService.createBoardMeeting(
             createBoardMeetingDto,
