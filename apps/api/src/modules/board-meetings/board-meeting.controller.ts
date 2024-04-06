@@ -48,14 +48,13 @@ export class BoardMeetingController {
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.CREATED)
     @ApiBearerAuth()
-    @Permission(PermissionEnum.BOARD_MEETING)
+    @Permission(PermissionEnum.CREATE_BOARD_MEETING)
     async createBoardMeeting(
         @Body() createBoardMeetingDto: CreateBoardMeetingDto,
         @UserScope() user: User,
     ) {
         const userId = +user?.id
         const companyId = user?.companyId
-        console.log('createCandidateDto :', createBoardMeetingDto)
 
         const boardMeeting = await this.boardMeetingService.createBoardMeeting(
             createBoardMeetingDto,
