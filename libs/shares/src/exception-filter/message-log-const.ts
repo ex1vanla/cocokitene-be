@@ -215,6 +215,23 @@ export const messageLog = {
         message: '[DAPP] Update role failed ',
         code: 'E0017',
     },
+    //role mtg
+    CREATE_ROLE__MTG_SUCCESS: {
+        message: '[DAPP] Create role_Mtg successfully ,Role_Mtg name : ',
+        code: 'ROLE_MTG_0000',
+    },
+    CREATE_ROLE_MTG_FAILED: {
+        message: '[DAPP] Create role_Mtg failed ,Role_Mtg name : ',
+        code: 'E0018',
+    },
+    UPDATE_ROLE_MTG_SUCCESS: {
+        message: '[DAPP] Update role_mtg successfully ',
+        code: 'ROLE_MTG_0001',
+    },
+    UPDATE_ROLE_MTG_FAILED: {
+        message: '[DAPP] Update role failed ',
+        code: 'E0019',
+    },
 
     //BoardMeeting
     CREATE_BOARD_MEETING_SUCCESS: {

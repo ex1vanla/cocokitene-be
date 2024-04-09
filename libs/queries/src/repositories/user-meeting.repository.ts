@@ -2,22 +2,19 @@ import { Like, Repository } from 'typeorm'
 import { CustomRepository } from '@shares/decorators'
 import { UserMeeting } from '@entities/user-meeting.entity'
 import { CreateUserMeetingDto } from '@dtos/user-meeting.dto'
-import {
-    MeetingRole,
-    UserMeetingStatusEnum,
-} from '@shares/constants/meeting.const'
+import { UserMeetingStatusEnum } from '@shares/constants/meeting.const'
 
 @CustomRepository(UserMeeting)
 export class UserMeetingRepository extends Repository<UserMeeting> {
     async createUserMeeting(
         createUserMeetingDto: CreateUserMeetingDto,
     ): Promise<UserMeeting> {
-        const { userId, meetingId, role, status } = createUserMeetingDto
+        const { userId, meetingId, roleMtgId, status } = createUserMeetingDto
 
         const createdUserMeeting = await this.create({
             userId,
             meetingId,
-            role,
+            roleMtgId,
             status,
         })
         return await createdUserMeeting.save()
@@ -26,12 +23,12 @@ export class UserMeetingRepository extends Repository<UserMeeting> {
 
     async getUserMeetingByMeetingIdAndRole(
         meetingId: number,
-        role: MeetingRole,
+        roleMtgId: number,
     ): Promise<UserMeeting[]> {
         const userMeetingEnded = await this.find({
             where: {
                 meetingId,
-                role,
+                roleMtgId,
             },
             select: {
                 id: true,
@@ -56,12 +53,12 @@ export class UserMeetingRepository extends Repository<UserMeeting> {
 
     async getListUserIdPaticipantsByMeetingIdAndMeetingRole(
         meetingId: number,
-        meetingRole: MeetingRole,
+        roleMtgId: number,
     ): Promise<number[]> {
         const listUserMeetingFollowRoles = await this.find({
             where: {
                 meetingId: meetingId,
-                role: meetingRole,
+                roleMtgId: roleMtgId,
             },
         })
         const listIdUserMeetingFollowRoles = listUserMeetingFollowRoles.map(
@@ -73,13 +70,13 @@ export class UserMeetingRepository extends Repository<UserMeeting> {
     async removeUserFromMeeting(
         userId: number,
         meetingId: number,
-        meetingRole: MeetingRole,
+        roleMtgId: number,
     ) {
         const existeduserMeeting = await this.findOne({
             where: {
                 userId: userId,
                 meetingId: meetingId,
-                role: meetingRole,
+                roleMtgId: roleMtgId,
             },
         })
 
@@ -109,8 +106,11 @@ export class UserMeetingRepository extends Repository<UserMeeting> {
         await userMeeting.save()
         return userMeeting
     }
-
-    async getAllParticipantInMeeting(meetingId: number, searchValue: string) {
+    async getAllParticipantInMeeting(
+        meetingId: number,
+        searchValue: string,
+        meetingRoleMtgs: number[],
+    ) {
         const base = {
             meetingId: meetingId,
         }
@@ -137,40 +137,27 @@ export class UserMeetingRepository extends Repository<UserMeeting> {
             },
         })
 
-        const rs = {
-            hosts: [],
-            controlBoards: [],
-            directors: [],
-            shareholders: [],
-            administrativeCouncils: [],
-        }
-        participants.map((item) => {
-            const participant = {
-                defaultAvatarHashColor: item.user.defaultAvatarHashColor,
-                avatar: item.user.avatar,
-                name: item.user.username,
-                joined: item.status === UserMeetingStatusEnum.PARTICIPATE,
-            }
-            switch (item.role) {
-                case MeetingRole.HOST:
-                    rs.hosts.push(participant)
-                    break
-                case MeetingRole.CONTROL_BOARD:
-                    rs.controlBoards.push(participant)
-                    break
-                case MeetingRole.DIRECTOR:
-                    rs.directors.push(participant)
-                    break
-                case MeetingRole.SHAREHOLDER:
-                    rs.shareholders.push(participant)
-                    break
-                case MeetingRole.ADMINISTRATIVE_COUNCIL:
-                    rs.administrativeCouncils.push(participant)
+        const participantResults = {}
+        await Promise.all(
+            participants.map(async (item) => {
+                const roleMtgId = item.roleMtgId
+                participantResults[roleMtgId] = {}
+                const participant = {
+                    defaultAvatarHashColor: item.user.defaultAvatarHashColor,
+                    avatar: item.user.avatar,
+                    name: item.user.username,
+                    joined: item.status === UserMeetingStatusEnum.PARTICIPATE,
+                }
+                await Promise.all(
+                    meetingRoleMtgs.map((meetingRoleMtg) => {
+                        if (item.roleMtgId === meetingRoleMtg) {
+                            participantResults[roleMtgId].push(participant)
+                        }
+                    }),
+                )
+            }),
+        )
 
-                default:
-                    break
-            }
-        })
-        return rs
+        return participantResults
     }
 }

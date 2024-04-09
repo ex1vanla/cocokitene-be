@@ -1,16 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger'
 import {
     IsNotEmpty,
-    IsString,
     IsOptional,
+    IsString,
     ValidateNested,
-    IsArray,
-    IsNumber,
 } from 'class-validator'
 import { MeetingFileDto } from './meeting-file.dto'
 import { Type } from 'class-transformer'
 import { ProposalDto } from './proposal.dto'
 import { CandidateDto } from './candidate.dto'
+import { UserMeetingDto } from '@dtos/user-meeting.dto'
 
 export class CreateBoardMeetingDto {
     @IsNotEmpty()
@@ -113,35 +112,13 @@ export class CreateBoardMeetingDto {
     candidates: CandidateDto[]
     //
 
-    @IsArray()
-    @IsNumber({}, { each: true })
     @ApiProperty({
         required: true,
-        example: [1, 2],
+        type: [UserMeetingDto],
     })
-    hosts: number[]
-
-    @IsArray()
-    @IsNumber({}, { each: true })
-    @ApiProperty({
-        required: true,
-        example: [1, 2],
+    @ValidateNested({
+        each: true,
     })
-    controlBoards: number[]
-
-    @IsArray()
-    @IsNumber({}, { each: true })
-    @ApiProperty({
-        required: true,
-        example: [1, 2, 3],
-    })
-    directors: number[]
-
-    @IsArray()
-    @IsNumber({}, { each: true })
-    @ApiProperty({
-        required: true,
-        example: [1, 2, 3, 4, 5],
-    })
-    administrativeCouncils: number[]
+    @Type(() => UserMeetingDto)
+    participants: UserMeetingDto[]
 }
