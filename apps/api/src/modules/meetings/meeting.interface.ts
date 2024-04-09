@@ -7,12 +7,13 @@ export interface ProposalItemDetailMeeting extends Proposal {
     voteResult: VoteProposalResult
 }
 
+export interface ParticipantDetailMeeting {
+    id: number
+    roleMtg: Partial<UserMeeting>[]
+}
+
 export interface DetailMeetingResponse extends Partial<Meeting> {
-    hosts: Partial<UserMeeting>[]
-    controlBoards: Partial<UserMeeting>[]
-    directors: Partial<UserMeeting>[]
-    administrativeCouncils: Partial<UserMeeting>[]
-    shareholders: Partial<UserMeeting>[]
+    participants: ParticipantDetailMeeting[]
     shareholdersTotal: number
     shareholdersJoined: number
     joinedMeetingShares: number

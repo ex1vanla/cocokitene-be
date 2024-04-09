@@ -62,8 +62,12 @@ export class MeetingController {
     @HttpCode(HttpStatus.OK)
     @ApiBearerAuth()
     @Permission(PermissionEnum.SEND_MAIL_TO_SHAREHOLDER)
-    async sendEmailToShareHolder(@Param('id') meetingId: number) {
-        await this.emailService.sendEmailMeeting(meetingId)
+    async sendEmailToShareHolder(
+        @Param('id') meetingId: number,
+        @UserScope() user: User,
+    ) {
+        const companyId = user.companyId
+        await this.emailService.sendEmailMeeting(meetingId, companyId)
         return 'Emails sent successfully'
     }
 

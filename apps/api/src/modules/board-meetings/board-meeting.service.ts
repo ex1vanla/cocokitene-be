@@ -8,13 +8,8 @@ import {
     forwardRef,
 } from '@nestjs/common'
 import { MeetingRepository } from '@repositories/meeting.repository'
-import {
-    MeetingRole,
-    MeetingType,
-    StatusMeeting,
-} from '@shares/constants/meeting.const'
+import { MeetingType, StatusMeeting } from '@shares/constants/meeting.const'
 import { httpErrors, messageLog } from '@shares/exception-filter'
-import { getTotalVoter } from '@shares/utils'
 import { Logger } from 'winston'
 import { MeetingFileService } from '../meeting-files/meeting-file.service'
 import { ProposalService } from '../proposals/proposal.service'
@@ -123,18 +118,16 @@ export class BoardMeetingService {
             meetingInvitations,
             managementAndFinancials,
             elections,
-            hosts,
-            controlBoards,
-            directors,
-            administrativeCouncils,
             candidates,
+            participants,
         } = createBoardMeetingDto
 
-        const totalVoter = getTotalVoter([
-            ...controlBoards,
-            ...directors,
-            ...administrativeCouncils,
-        ])
+        const userIdParticipants = participants
+            .filter((participant) => participant.roleName !== '')
+            .map((participant) => participant.userIds)
+            .flat()
+
+        const totalVoter = new Set(userIdParticipants).size
 
         try {
             await Promise.all([
@@ -186,34 +179,17 @@ export class BoardMeetingService {
                         notVoteYetQuantity: totalVoter,
                     }),
                 ),
-                ...hosts.map((host) =>
-                    this.userMeetingService.createUserMeeting({
-                        userId: host,
-                        meetingId: createdBoardMeeting.id,
-                        role: MeetingRole.HOST,
-                    }),
-                ),
-                ...controlBoards.map((controlBoard) =>
-                    this.userMeetingService.createUserMeeting({
-                        userId: controlBoard,
-                        meetingId: createdBoardMeeting.id,
-                        role: MeetingRole.CONTROL_BOARD,
-                    }),
-                ),
-                ...directors.map((director) =>
-                    this.userMeetingService.createUserMeeting({
-                        userId: director,
-                        meetingId: createdBoardMeeting.id,
-                        role: MeetingRole.DIRECTOR,
-                    }),
-                ),
-                ...administrativeCouncils.map((administrativeCouncil) =>
-                    this.userMeetingService.createUserMeeting({
-                        userId: administrativeCouncil,
-                        meetingId: createdBoardMeeting.id,
-                        role: MeetingRole.ADMINISTRATIVE_COUNCIL,
-                    }),
-                ),
+                ...participants.map(async (item) => {
+                    await Promise.all([
+                        ...item.userIds.map(async (userId) => {
+                            await this.userMeetingService.createUserMeeting({
+                                userId: userId,
+                                meetingId: createdBoardMeeting.id,
+                                roleMtgId: item.roleMtgId,
+                            })
+                        }),
+                    ])
+                }),
             ])
         } catch (error) {
             throw new HttpException(

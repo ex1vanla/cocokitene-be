@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import {
     forwardRef,
     HttpException,
@@ -18,13 +20,11 @@ import { Meeting } from '@entities/meeting.entity'
 import { UserMeeting } from '@entities/user-meeting.entity'
 import { UserMeetingRepository } from '@repositories/user-meeting.repository'
 import {
-    MeetingRole,
     MeetingType,
     StatusMeeting,
     UserMeetingStatusEnum,
 } from '@shares/constants/meeting.const'
 import { httpErrors, messageLog } from '@shares/exception-filter'
-import { enumToArray } from '@shares/utils/enum'
 import {
     AttendMeetingDto,
     CreateMeetingDto,
@@ -37,8 +37,10 @@ import { VoteProposalResult } from '@shares/constants/proposal.const'
 import { GetAllDto } from '@dtos/base.dto'
 import { UserService } from '@api/modules/users/user.service'
 import { User } from '@entities/user.entity'
-import { PermissionEnum } from '@shares/constants'
+import { PermissionEnum, RoleMtgEnum } from '@shares/constants'
 import { Logger } from 'winston'
+import { MeetingRoleMtgService } from '@api/modules/meeting-role-mtgs/meeting-role-mtg.service'
+import { RoleMtgService } from '@api/modules/role-mtgs/role-mtg.service'
 
 @Injectable()
 export class MeetingService {
@@ -53,6 +55,8 @@ export class MeetingService {
         private readonly votingService: VotingService,
         @Inject(forwardRef(() => UserService))
         private readonly userService: UserService,
+        private readonly meetingRoleMtgService: MeetingRoleMtgService,
+        private readonly roleMtgService: RoleMtgService,
         @Inject('winston')
         private readonly logger: Logger,
     ) {}
@@ -208,12 +212,14 @@ export class MeetingService {
             meetingInvitations,
             resolutions,
             amendmentResolutions,
-            hosts,
-            controlBoards,
-            directors,
-            administrativeCouncils,
-            shareholders,
+            participants,
         } = createMeetingDto
+        const shareholders = participants
+            .filter((participant) => participant.roleName !== '')
+            .map((participant) => participant.userIds)
+            .flat()
+
+        const roleMtgInMtgs = participants.map((item) => item.roleMtgId)
 
         const totalShares =
             await this.userService.getTotalSharesHolderByShareholderIds(
@@ -260,39 +266,22 @@ export class MeetingService {
                         notVoteYetQuantity: totalShares,
                     }),
                 ),
-                ...hosts.map((host) =>
-                    this.userMeetingService.createUserMeeting({
-                        userId: host,
+
+                ...participants.map(async (item) => {
+                    await Promise.all([
+                        ...item.userIds.map(async (userId) => {
+                            await this.userMeetingService.createUserMeeting({
+                                userId: userId,
+                                meetingId: createdMeeting.id,
+                                roleMtgId: item.roleMtgId,
+                            })
+                        }),
+                    ])
+                }),
+                ...roleMtgInMtgs.map((item) =>
+                    this.meetingRoleMtgService.createMeetingRoleMtg({
                         meetingId: createdMeeting.id,
-                        role: MeetingRole.HOST,
-                    }),
-                ),
-                ...controlBoards.map((controlBoard) =>
-                    this.userMeetingService.createUserMeeting({
-                        userId: controlBoard,
-                        meetingId: createdMeeting.id,
-                        role: MeetingRole.CONTROL_BOARD,
-                    }),
-                ),
-                ...directors.map((director) =>
-                    this.userMeetingService.createUserMeeting({
-                        userId: director,
-                        meetingId: createdMeeting.id,
-                        role: MeetingRole.DIRECTOR,
-                    }),
-                ),
-                ...administrativeCouncils.map((administrativeCouncil) =>
-                    this.userMeetingService.createUserMeeting({
-                        userId: administrativeCouncil,
-                        meetingId: createdMeeting.id,
-                        role: MeetingRole.ADMINISTRATIVE_COUNCIL,
-                    }),
-                ),
-                ...shareholders.map((shareholder) =>
-                    this.userMeetingService.createUserMeeting({
-                        userId: shareholder,
-                        meetingId: createdMeeting.id,
-                        role: MeetingRole.SHAREHOLDER,
+                        roleMtgId: item,
                     }),
                 ),
             ])
@@ -316,33 +305,38 @@ export class MeetingService {
             companyId,
         )
         if (!meeting) {
-            // this.logger.error('[DAPP] Meeting not existed. Please try again')
             throw new HttpException(
                 httpErrors.MEETING_NOT_FOUND,
                 HttpStatus.NOT_FOUND,
             )
         }
-        // this.logger.info(
-        //     '[DAPP] Get meeting successfully by meetingId: ' + meeting.id,
-        // )
 
-        const [
-            hosts,
-            controlBoards,
-            directors,
-            administrativeCouncils,
-            shareholders,
-        ] = await Promise.all(
-            enumToArray(MeetingRole).map((role) =>
-                this.userMeetingService.getUserMeetingByMeetingIdAndRole(
+        const roleMtgIds =
+            await this.meetingRoleMtgService.getRoleMtgIdsByMeetingId(meetingId)
+
+        const participantsPromises = roleMtgIds.map(async (roleMtgId) => {
+            const userMeetings =
+                await this.userMeetingService.getUserMeetingByMeetingIdAndRole(
                     meetingId,
-                    role,
-                ),
-            ),
+                    roleMtgId,
+                )
+            return { id: roleMtgId, roleMtg: userMeetings }
+        })
+        const participants = await Promise.all(participantsPromises)
+
+        const roleMtgShareholderId =
+            await this.roleMtgService.getRoleMtgByNameAndCompanyId(
+                RoleMtgEnum.SHAREHOLDER,
+                companyId,
+            )
+
+        const shareholders = participants.find(
+            (item) => item.id === roleMtgShareholderId.id,
         )
 
-        const shareholdersTotal = shareholders.length
-        const shareholdersJoined = shareholders.reduce(
+        const shareholdersTotal = shareholders.roleMtg.length
+
+        const shareholdersJoined = shareholders.roleMtg.reduce(
             (accumulator, currentValue) => {
                 accumulator =
                     currentValue.status === UserMeetingStatusEnum.PARTICIPATE
@@ -352,7 +346,8 @@ export class MeetingService {
             },
             0,
         )
-        const totalMeetingShares = shareholders.reduce(
+
+        const totalMeetingShares = shareholders.roleMtg.reduce(
             (accumulator, currentValue) => {
                 accumulator += Number(currentValue.user.shareQuantity)
                 return accumulator
@@ -360,7 +355,7 @@ export class MeetingService {
             0,
         )
 
-        const joinedMeetingShares = shareholders.reduce(
+        const joinedMeetingShares = shareholders.roleMtg.reduce(
             (accumulator, currentValue) => {
                 accumulator =
                     currentValue.status === UserMeetingStatusEnum.PARTICIPATE
@@ -370,7 +365,6 @@ export class MeetingService {
             },
             0,
         )
-
         // handle vote result with current user
         const listProposals: ProposalItemDetailMeeting[] = []
         for (const proposal of meeting.proposals) {
@@ -402,11 +396,7 @@ export class MeetingService {
 
         return {
             ...meeting,
-            hosts,
-            controlBoards,
-            directors,
-            administrativeCouncils,
-            shareholders,
+            participants,
             shareholdersTotal,
             shareholdersJoined,
             joinedMeetingShares,
@@ -476,17 +466,24 @@ export class MeetingService {
             meetingInvitations,
             resolutions,
             amendmentResolutions,
-            hosts,
-            controlBoards,
-            directors,
-            administrativeCouncils,
-            shareholders,
+            participants,
         } = updateMeetingDto
+
+        const shareholders = participants
+            .filter((participant) => participant.roleName !== '')
+            .map((participant) => participant.userIds)
+            .flat()
+
+        const roleMtgShareholderId = participants
+            .filter((participant) => participant.roleName !== '')
+            .map((participant) => participant.roleMtgId)
+            .find((id) => true)
 
         const totalShares =
             await this.userService.getTotalSharesHolderByShareholderIds(
                 shareholders,
             )
+
         const listMeetingFiles = [...meetingMinutes, ...meetingInvitations]
         const listProposals = [...resolutions, ...amendmentResolutions]
 
@@ -497,45 +494,33 @@ export class MeetingService {
             ),
             this.proposalService.updateListProposals(
                 meetingId,
+                companyId,
                 userId,
                 listProposals,
                 totalShares,
                 shareholders,
+                roleMtgShareholderId,
             ),
+
             await Promise.all([
-                this.userMeetingService.updateUserMeeting(
-                    meetingId,
-                    MeetingRole.HOST,
-                    hosts,
-                ),
-                this.userMeetingService.updateUserMeeting(
-                    meetingId,
-                    MeetingRole.CONTROL_BOARD,
-                    controlBoards,
-                ),
-                this.userMeetingService.updateUserMeeting(
-                    meetingId,
-                    MeetingRole.DIRECTOR,
-                    directors,
-                ),
-                this.userMeetingService.updateUserMeeting(
-                    meetingId,
-                    MeetingRole.ADMINISTRATIVE_COUNCIL,
-                    administrativeCouncils,
-                ),
-                this.userMeetingService.updateUserMeeting(
-                    meetingId,
-                    MeetingRole.SHAREHOLDER,
-                    shareholders,
+                ...participants.map((item) =>
+                    this.userMeetingService.updateUserMeeting(
+                        meetingId,
+                        item.roleMtgId,
+                        item.userIds,
+                    ),
                 ),
             ]),
         ])
         return existedMeeting
     }
     async getAllMeetingParticipant(meetingId: number, filter: GetAllDto) {
+        const meetingRoleMtgs =
+            await this.meetingRoleMtgService.getRoleMtgIdsByMeetingId(meetingId)
         return this.userMeetingRepository.getAllParticipantInMeeting(
             meetingId,
             filter.searchQuery,
+            meetingRoleMtgs,
         )
     }
 
