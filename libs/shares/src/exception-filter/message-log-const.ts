@@ -24,6 +24,16 @@ export const messageLog = {
         code: 'E0002',
     },
 
+    //Connect S3
+    CONNECT_S3_SUCCESS: {
+        message: '[DAPP] Connect to S3 successfully',
+        code: 'I0004',
+    },
+    CONNECT_S3_FAILED: {
+        message: '[DAPP] Connect to S3 failed',
+        code: 'E0019',
+    },
+
     //Authorization SystemAdmin
     LOGIN_SYSTEM_SUCCESS: {
         message: '🚀[DAPP] System admin login successfully ,email System : ',
