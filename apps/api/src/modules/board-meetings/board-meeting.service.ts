@@ -18,7 +18,8 @@ import { CandidateService } from '../candidate/candidate.service'
 import { Pagination } from 'nestjs-typeorm-paginate'
 import { GetAllMeetingDto } from '@dtos/meeting.dto'
 import { User } from '@entities/user.entity'
-import { PermissionEnum } from '@shares/constants'
+import { PermissionEnum, RoleMtgEnum } from '@shares/constants'
+import { MeetingRoleMtgService } from '../meeting-role-mtgs/meeting-role-mtg.service'
 
 @Injectable()
 export class BoardMeetingService {
@@ -30,6 +31,7 @@ export class BoardMeetingService {
         private readonly proposalService: ProposalService,
         private readonly userMeetingService: UserMeetingService,
         private readonly candidateService: CandidateService,
+        private readonly meetingRoleMtgService: MeetingRoleMtgService,
         @Inject('winston')
         private readonly logger: Logger,
     ) {}
@@ -123,11 +125,12 @@ export class BoardMeetingService {
         } = createBoardMeetingDto
 
         const userIdParticipants = participants
-            .filter((participant) => participant.roleName !== '')
+            .filter((participant) => participant.roleName !== RoleMtgEnum.HOST)
             .map((participant) => participant.userIds)
             .flat()
 
         const totalVoter = new Set(userIdParticipants).size
+        const roleBoardMtg = participants.map((item) => item.roleMtgId)
 
         try {
             await Promise.all([
@@ -190,6 +193,13 @@ export class BoardMeetingService {
                         }),
                     ])
                 }),
+
+                ...roleBoardMtg.map((roleMtgId) =>
+                    this.meetingRoleMtgService.createMeetingRoleMtg({
+                        meetingId: createdBoardMeeting.id,
+                        roleMtgId: roleMtgId,
+                    }),
+                ),
             ])
         } catch (error) {
             throw new HttpException(
