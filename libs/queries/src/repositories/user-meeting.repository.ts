@@ -106,11 +106,7 @@ export class UserMeetingRepository extends Repository<UserMeeting> {
         await userMeeting.save()
         return userMeeting
     }
-    async getAllParticipantInMeeting(
-        meetingId: number,
-        searchValue: string,
-        meetingRoleMtgs: number[],
-    ) {
+    async getAllParticipantInMeeting(meetingId: number, searchValue: string) {
         const base = {
             meetingId: meetingId,
         }
@@ -136,28 +132,6 @@ export class UserMeetingRepository extends Repository<UserMeeting> {
                 status: 'ASC',
             },
         })
-
-        const participantResults = {}
-        await Promise.all(
-            participants.map(async (item) => {
-                const roleMtgId = item.roleMtgId
-                participantResults[roleMtgId] = {}
-                const participant = {
-                    defaultAvatarHashColor: item.user.defaultAvatarHashColor,
-                    avatar: item.user.avatar,
-                    name: item.user.username,
-                    joined: item.status === UserMeetingStatusEnum.PARTICIPATE,
-                }
-                await Promise.all(
-                    meetingRoleMtgs.map((meetingRoleMtg) => {
-                        if (item.roleMtgId === meetingRoleMtg) {
-                            participantResults[roleMtgId].push(participant)
-                        }
-                    }),
-                )
-            }),
-        )
-
-        return participantResults
+        return participants
     }
 }

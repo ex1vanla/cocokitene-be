@@ -12,6 +12,7 @@ import { MeetingRepository } from '@repositories/meeting.repository'
 import { MeetingFileService } from '@api/modules/meeting-files/meeting-file.service'
 import {
     DetailMeetingResponse,
+    ParticipantMeeting,
     ProposalItemDetailMeeting,
 } from '@api/modules/meetings/meeting.interface'
 import { ProposalService } from '@api/modules/proposals/proposal.service'
@@ -215,17 +216,18 @@ export class MeetingService {
             participants,
         } = createMeetingDto
         const shareholders = participants
-            .filter((participant) => participant.roleName !== '')
+            .filter(
+                (participant) =>
+                    participant.roleName === RoleMtgEnum.SHAREHOLDER,
+            )
             .map((participant) => participant.userIds)
             .flat()
 
         const roleMtgInMtgs = participants.map((item) => item.roleMtgId)
-
         const totalShares =
             await this.userService.getTotalSharesHolderByShareholderIds(
                 shareholders,
             )
-
         try {
             await Promise.all([
                 ...meetingMinutes.map((file) =>
@@ -278,6 +280,7 @@ export class MeetingService {
                         }),
                     ])
                 }),
+
                 ...roleMtgInMtgs.map((item) =>
                     this.meetingRoleMtgService.createMeetingRoleMtg({
                         meetingId: createdMeeting.id,
@@ -311,16 +314,41 @@ export class MeetingService {
             )
         }
 
-        const roleMtgIds =
-            await this.meetingRoleMtgService.getRoleMtgIdsByMeetingId(meetingId)
+        const meetingRoleMtgs =
+            await this.meetingRoleMtgService.getMeetingRoleMtgByMeetingId(
+                meetingId,
+            )
 
-        const participantsPromises = roleMtgIds.map(async (roleMtgId) => {
+        const roleMtgs = meetingRoleMtgs
+            .map((item) => item.roleMtg)
+            .sort((a, b) => a.roleName.localeCompare(b.roleName))
+
+        const participantsPromises = roleMtgs.map(async (roleMtg) => {
             const userMeetings =
                 await this.userMeetingService.getUserMeetingByMeetingIdAndRole(
                     meetingId,
-                    roleMtgId,
+                    roleMtg.id,
                 )
-            return { id: roleMtgId, roleMtg: userMeetings }
+            const userParticipants = userMeetings.map((userMeeting) => {
+                return {
+                    userDefaultAvatarHashColor:
+                        userMeeting.user.defaultAvatarHashColor,
+                    userId: userMeeting.user.id,
+                    userAvatar: userMeeting.user.avatar,
+                    userEmail: userMeeting.user.email,
+                    status: userMeeting.status,
+                    userJoined:
+                        userMeeting.status ===
+                        UserMeetingStatusEnum.PARTICIPATE,
+                    userShareQuantity: userMeeting.user.shareQuantity,
+                }
+            })
+
+            return {
+                roleMtgId: roleMtg.id,
+                roleMtgName: roleMtg.roleName,
+                userParticipants: userParticipants,
+            }
         })
         const participants = await Promise.all(participantsPromises)
 
@@ -331,12 +359,12 @@ export class MeetingService {
             )
 
         const shareholders = participants.find(
-            (item) => item.id === roleMtgShareholderId.id,
+            (item) => item.roleMtgId === roleMtgShareholderId.id,
         )
 
-        const shareholdersTotal = shareholders.roleMtg.length
+        const shareholdersTotal = shareholders.userParticipants.length
 
-        const shareholdersJoined = shareholders.roleMtg.reduce(
+        const shareholdersJoined = shareholders.userParticipants.reduce(
             (accumulator, currentValue) => {
                 accumulator =
                     currentValue.status === UserMeetingStatusEnum.PARTICIPATE
@@ -347,24 +375,25 @@ export class MeetingService {
             0,
         )
 
-        const totalMeetingShares = shareholders.roleMtg.reduce(
+        const totalMeetingShares = shareholders.userParticipants.reduce(
             (accumulator, currentValue) => {
-                accumulator += Number(currentValue.user.shareQuantity)
+                accumulator += Number(currentValue.userShareQuantity)
                 return accumulator
             },
             0,
         )
 
-        const joinedMeetingShares = shareholders.roleMtg.reduce(
+        const joinedMeetingShares = shareholders.userParticipants.reduce(
             (accumulator, currentValue) => {
                 accumulator =
                     currentValue.status === UserMeetingStatusEnum.PARTICIPATE
-                        ? accumulator + Number(currentValue.user.shareQuantity)
+                        ? accumulator + Number(currentValue.userShareQuantity)
                         : accumulator
                 return accumulator
             },
             0,
         )
+
         // handle vote result with current user
         const listProposals: ProposalItemDetailMeeting[] = []
         for (const proposal of meeting.proposals) {
@@ -470,12 +499,18 @@ export class MeetingService {
         } = updateMeetingDto
 
         const shareholders = participants
-            .filter((participant) => participant.roleName !== '')
+            .filter(
+                (participant) =>
+                    participant.roleName === RoleMtgEnum.SHAREHOLDER,
+            )
             .map((participant) => participant.userIds)
             .flat()
 
         const roleMtgShareholderId = participants
-            .filter((participant) => participant.roleName !== '')
+            .filter(
+                (participant) =>
+                    participant.roleName === RoleMtgEnum.SHAREHOLDER,
+            )
             .map((participant) => participant.roleMtgId)
             .find((id) => true)
 
@@ -516,12 +551,50 @@ export class MeetingService {
     }
     async getAllMeetingParticipant(meetingId: number, filter: GetAllDto) {
         const meetingRoleMtgs =
-            await this.meetingRoleMtgService.getRoleMtgIdsByMeetingId(meetingId)
-        return this.userMeetingRepository.getAllParticipantInMeeting(
-            meetingId,
-            filter.searchQuery,
-            meetingRoleMtgs,
-        )
+            await this.meetingRoleMtgService.getMeetingRoleMtgByMeetingId(
+                meetingId,
+            )
+
+        const roleMtgs = meetingRoleMtgs
+            .map((item) => item.roleMtg)
+            .sort((a, b) => a.roleName.localeCompare(b.roleName))
+        const userMeetings =
+            await this.userMeetingRepository.getAllParticipantInMeeting(
+                meetingId,
+                filter.searchQuery,
+            )
+        const participantPromises = roleMtgs.map(async (roleMtg) => {
+            const userParticipants = []
+            userMeetings.forEach((userMeeting) => {
+                if (userMeeting.roleMtgId === roleMtg.id) {
+                    const participantItemResponse = {
+                        defaultAvatarHashColor:
+                            userMeeting.user.defaultAvatarHashColor,
+                        avatar: userMeeting.user.avatar,
+                        email: userMeeting.user.email,
+                        status: userMeeting.status,
+                        joined:
+                            userMeeting.status ===
+                            UserMeetingStatusEnum.PARTICIPATE,
+                        shareQuantity: userMeeting.user.shareQuantity,
+                    }
+                    if (participantItemResponse !== null) {
+                        userParticipants.push(participantItemResponse)
+                    }
+                }
+            })
+
+            return {
+                roleMtgId: roleMtg.id,
+                roleMtgName: roleMtg.roleName,
+                userParticipants: userParticipants,
+            }
+        })
+        const participantResults = await Promise.all(participantPromises)
+        const participantMeeting: ParticipantMeeting = {
+            userWithRoleMtg: participantResults,
+        }
+        return participantMeeting
     }
 
     async standardStatusMeeting(meetingId: number): Promise<Meeting> {

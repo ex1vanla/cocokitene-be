@@ -41,6 +41,17 @@ export class RoleMtgService {
         }
     }
 
+    async getAllRoleMtgByCompanyIdAndTypeRoleMtg(
+        getAllRoleMtgDto: GetAllRoleMtgDto,
+        companyId: number,
+    ): Promise<Pagination<RoleMtg>> {
+        const roleMtgs =
+            await this.roleMtgRepository.getAllRoleMtgByCompanyIdAndTypeRoleMtg(
+                getAllRoleMtgDto,
+                companyId,
+            )
+        return roleMtgs
+    }
     async getAllRoleMtgByCompanyId(
         getAllRoleMtgDto: GetAllRoleMtgDto,
         companyId: number,
@@ -60,6 +71,15 @@ export class RoleMtgService {
             where: {
                 roleName: roleMtg,
                 companyId: companyId,
+            },
+        })
+        return roleMtgResult
+    }
+
+    async getRoleMtgById(roleMtgId: number): Promise<RoleMtg> {
+        const roleMtgResult = await this.roleMtgRepository.findOne({
+            where: {
+                id: roleMtgId,
             },
         })
         return roleMtgResult
