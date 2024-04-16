@@ -20,7 +20,25 @@ import { User } from '@entities/user.entity'
 export class RoleMtgController {
     constructor(private readonly roleMtgService: RoleMtgService) {}
 
-    @Get('')
+    @Get('/types')
+    @HttpCode(HttpStatus.OK)
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @Permission(PermissionEnum.LIST_ROLE_MTG)
+    async getAllRoleMtgByCompanyIdAndTypeRoleMtg(
+        @Query() getAllRoleMtgDto: GetAllRoleMtgDto,
+        @UserScope() user: User,
+    ) {
+        const companyId = user?.companyId
+        const roleMtgs =
+            await this.roleMtgService.getAllRoleMtgByCompanyIdAndTypeRoleMtg(
+                getAllRoleMtgDto,
+                companyId,
+            )
+        return roleMtgs
+    }
+
+    @Get('/')
     @HttpCode(HttpStatus.OK)
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()

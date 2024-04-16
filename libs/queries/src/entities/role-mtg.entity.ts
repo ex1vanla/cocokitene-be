@@ -12,6 +12,7 @@ import {
 import { Company } from '@entities/company.entity'
 import { MeetingRoleMtg } from '@entities/meeting-role-mtg.entity'
 import { UserMeeting } from '@entities/user-meeting.entity'
+import { TypeRoleMeeting } from '@shares/constants'
 
 @Entity('role_mtg')
 export class RoleMtg extends BaseEntity {
@@ -33,6 +34,14 @@ export class RoleMtg extends BaseEntity {
         nullable: true,
     })
     description: string
+
+    @Column({
+        nullable: false,
+        name: 'type',
+        type: 'enum',
+        enum: TypeRoleMeeting,
+    })
+    type: TypeRoleMeeting
 
     @Column({ nullable: false, name: 'company_id', type: 'integer', width: 11 })
     companyId: number

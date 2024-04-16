@@ -9,17 +9,40 @@ export class MeetingRoleMtgService {
         private readonly meetingRoleMtgRepository: MeetingRoleMtgRepository,
     ) {}
 
-    async getRoleMtgIdsByMeetingId(meetingId: number): Promise<number[]> {
+    async getRoleMtgByMeetingId(meetingId: number) {
+        const meetingRoleMtg = await this.getMeetingRoleMtgByMeetingId(
+            meetingId,
+        )
+
+        const roleMtgs = meetingRoleMtg
+            .map((item) => item.roleMtg)
+            .sort((a, b) => a.roleName.localeCompare(b.roleName))
+
+        return roleMtgs
+    }
+    async getMeetingRoleMtgByMeetingId(
+        meetingId: number,
+    ): Promise<MeetingRoleMtg[]> {
         const meetingRoleMtgs =
             await this.meetingRoleMtgRepository.getRoleMtgsByMeetingId(
                 meetingId,
             )
+        // const roleMeetingIds = meetingRoleMtgs.map(
+        //     (meetingRoleMtg) => meetingRoleMtg.roleMtgId,
+        // )
+        return meetingRoleMtgs
+    }
+    async getRoleMtgNamesByMeetingId(meetingId: number): Promise<string[]> {
+        const meetingRoleMtgs =
+            await this.meetingRoleMtgRepository.getRoleMtgsByMeetingId(
+                meetingId,
+            )
+
         const roleMeetingIds = meetingRoleMtgs.map(
-            (meetingRoleMtg) => meetingRoleMtg.roleMtgId,
+            (meetingRoleMtg) => meetingRoleMtg.roleMtg.roleName,
         )
         return roleMeetingIds
     }
-
     async createMeetingRoleMtg(
         createMeetingRoleMtgDto: CreateMeetingRoleMtgDto,
     ): Promise<MeetingRoleMtg> {

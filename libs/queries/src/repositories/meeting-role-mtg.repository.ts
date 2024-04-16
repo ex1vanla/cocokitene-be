@@ -10,6 +10,7 @@ export class MeetingRoleMtgRepository extends Repository<MeetingRoleMtg> {
             where: {
                 meetingId: meetingId,
             },
+            relations: ['roleMtg'],
         })
         return meetingRoleMtgs
     }

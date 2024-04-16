@@ -110,7 +110,6 @@ export class CreateBoardMeetingDto {
     })
     @Type(() => CandidateDto)
     candidates: CandidateDto[]
-    //
 
     @ApiProperty({
         required: true,

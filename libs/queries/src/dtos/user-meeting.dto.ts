@@ -93,10 +93,10 @@ export class UserMeetingDto {
     })
     roleMtgId: number
 
-    @IsOptional()
+    @IsNotEmpty()
     @IsString()
     @ApiProperty({
-        required: false,
+        required: true,
         example: 'shareholder',
     })
     roleName?: string
