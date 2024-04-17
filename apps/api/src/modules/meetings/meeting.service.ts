@@ -329,6 +329,7 @@ export class MeetingService {
                     meetingId,
                     roleMtg.id,
                 )
+
             const userParticipants = userMeetings.map((userMeeting) => {
                 return {
                     userDefaultAvatarHashColor:
@@ -350,6 +351,7 @@ export class MeetingService {
                 userParticipants: userParticipants,
             }
         })
+
         const participants = await Promise.all(participantsPromises)
 
         const roleMtgShareholderId =
@@ -362,37 +364,56 @@ export class MeetingService {
             (item) => item.roleMtgId === roleMtgShareholderId.id,
         )
 
-        const shareholdersTotal = shareholders.userParticipants.length
+        let shareholdersTotal
+        let shareholdersJoined
+        let totalMeetingShares
+        let joinedMeetingShares
 
-        const shareholdersJoined = shareholders.userParticipants.reduce(
-            (accumulator, currentValue) => {
-                accumulator =
-                    currentValue.status === UserMeetingStatusEnum.PARTICIPATE
-                        ? accumulator + 1
-                        : accumulator
-                return accumulator
-            },
-            0,
-        )
+        if (!shareholders) {
+            shareholdersTotal = 0
+            shareholdersJoined = 0
+            totalMeetingShares = 0
+            joinedMeetingShares = 0
+        } else {
+            shareholdersTotal = shareholders.userParticipants.length
 
-        const totalMeetingShares = shareholders.userParticipants.reduce(
-            (accumulator, currentValue) => {
-                accumulator += Number(currentValue.userShareQuantity)
-                return accumulator
-            },
-            0,
-        )
+            shareholdersJoined = shareholders.userParticipants.reduce(
+                (accumulator, currentValue) => {
+                    accumulator =
+                        currentValue.status ===
+                        UserMeetingStatusEnum.PARTICIPATE
+                            ? accumulator + 1
+                            : accumulator
+                    return accumulator
+                },
+                0,
+            )
 
-        const joinedMeetingShares = shareholders.userParticipants.reduce(
-            (accumulator, currentValue) => {
-                accumulator =
-                    currentValue.status === UserMeetingStatusEnum.PARTICIPATE
-                        ? accumulator + Number(currentValue.userShareQuantity)
-                        : accumulator
-                return accumulator
-            },
-            0,
-        )
+            totalMeetingShares = shareholders.userParticipants.reduce(
+                (accumulator, currentValue) => {
+                    if (currentValue.userShareQuantity) {
+                        accumulator += Number(currentValue.userShareQuantity)
+                    }
+                    return accumulator
+                },
+                0,
+            )
+
+            joinedMeetingShares = shareholders.userParticipants.reduce(
+                (accumulator, currentValue) => {
+                    if (currentValue.userShareQuantity) {
+                        accumulator =
+                            currentValue.status ===
+                            UserMeetingStatusEnum.PARTICIPATE
+                                ? accumulator +
+                                  Number(currentValue.userShareQuantity)
+                                : accumulator
+                    }
+                    return accumulator
+                },
+                0,
+            )
+        }
 
         // handle vote result with current user
         const listProposals: ProposalItemDetailMeeting[] = []
@@ -501,7 +522,8 @@ export class MeetingService {
         const shareholders = participants
             .filter(
                 (participant) =>
-                    participant.roleName === RoleMtgEnum.SHAREHOLDER,
+                    // participant.roleName === RoleMtgEnum.SHAREHOLDER,
+                    participant.roleName === 'Shareholder',
             )
             .map((participant) => participant.userIds)
             .flat()
@@ -509,7 +531,8 @@ export class MeetingService {
         const roleMtgShareholderId = participants
             .filter(
                 (participant) =>
-                    participant.roleName === RoleMtgEnum.SHAREHOLDER,
+                    // participant.roleName === RoleMtgEnum.SHAREHOLDER,
+                    participant.roleName === 'Shareholder',
             )
             .map((participant) => participant.roleMtgId)
             .find((id) => true)
@@ -521,6 +544,17 @@ export class MeetingService {
 
         const listMeetingFiles = [...meetingMinutes, ...meetingInvitations]
         const listProposals = [...resolutions, ...amendmentResolutions]
+        const roleMtgInMtgs = participants.map((item) => item.roleMtgId)
+
+        const exitedRoleInMtg = (
+            await this.meetingRoleMtgService.getMeetingRoleMtgByMeetingId(
+                meetingId,
+            )
+        ).map((item) => item.roleMtgId)
+
+        const listMtgRoleAdded = roleMtgInMtgs.filter(
+            (item) => !exitedRoleInMtg.includes(item),
+        )
 
         await Promise.all([
             this.meetingFileService.updateListMeetingFiles(
@@ -544,6 +578,13 @@ export class MeetingService {
                         item.roleMtgId,
                         item.userIds,
                     ),
+                ),
+
+                ...listMtgRoleAdded.map((item) =>
+                    this.meetingRoleMtgService.createMeetingRoleMtg({
+                        meetingId: meetingId,
+                        roleMtgId: item,
+                    }),
                 ),
             ]),
         ])

@@ -81,6 +81,7 @@ export class UserMeetingService {
         const usersToAdds = newIdPaticipants.filter(
             (userId) => !listUserIds.includes(userId),
         )
+
         const addedUsersFollowRole: number[] = []
         addedUsersFollowRole.push(...usersToAdds)
 
