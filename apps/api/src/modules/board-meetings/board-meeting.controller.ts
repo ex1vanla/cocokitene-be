@@ -7,6 +7,7 @@ import {
     Body,
     Get,
     Query,
+    Param,
 } from '@nestjs/common'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import { BoardMeetingService } from './board-meeting.service'
@@ -59,6 +60,27 @@ export class BoardMeetingController {
             userId,
             companyId,
         )
+        return boardMeeting
+    }
+
+    @Get('/:id')
+    @UseGuards(JwtAuthGuard)
+    @Permission(PermissionEnum.DETAIL_BOARD_MEETING)
+    @HttpCode(HttpStatus.OK)
+    @ApiBearerAuth()
+    async getBoardMeetingById(
+        @Param('id') meetingId: number,
+        @UserScope() user: User,
+    ) {
+        const companyId = user?.companyId
+        const userId = user?.id
+
+        const boardMeeting = await this.boardMeetingService.getBoardMeetingById(
+            meetingId,
+            companyId,
+            userId,
+        )
+
         return boardMeeting
     }
 }

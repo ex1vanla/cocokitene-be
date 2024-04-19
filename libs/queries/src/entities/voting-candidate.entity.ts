@@ -10,6 +10,7 @@ import {
 } from 'typeorm'
 import { User } from '@entities/user.entity'
 import { Candidate } from './candidate.entity'
+import { VoteProposalResult } from '@shares/constants/proposal.const'
 
 @Entity('voting_candidate')
 @Unique(['userId', 'votedForCandidateId'])
@@ -27,6 +28,14 @@ export class VotingCandidate extends BaseEntity {
         width: 11,
     })
     votedForCandidateId: number
+
+    @Column({
+        name: 'result',
+        type: 'enum',
+        nullable: false,
+        enum: VoteProposalResult,
+    })
+    result: VoteProposalResult
 
     @DeleteDateColumn()
     deletedAt: Date
