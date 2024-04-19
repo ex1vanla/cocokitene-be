@@ -118,6 +118,14 @@ export const httpErrors = {
         message: 'Company_role_mtg created failed. Please try again.',
         code: 'ROLE_MTG_00001',
     },
+    COMPANY_ROLE_MTG_UPDATE_FAILED: {
+        message: 'Company_role_mtg update failed. Please try again.',
+        code: 'ROLE_MTG_00002',
+    },
+    COMPANY_ROLE_MTG_NOT_EXISTED: {
+        message: 'Company_role_mtg not existed. Please try again.',
+        code: 'ROLE_MTG_00003',
+    },
 
     // meeting file error
     MEETING_FILE_CREATE_FAILED: {
