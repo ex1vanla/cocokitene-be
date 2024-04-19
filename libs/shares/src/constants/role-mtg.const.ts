@@ -12,3 +12,11 @@ export enum TypeRoleMeeting {
     BOTH_MTG = '0',
     NULL_MTG = '3',
 }
+
+export enum RoleBoardMtgEnum {
+    HOST = 'Host',
+    CONTROL_BOARD = 'CONTROL_BOARD',
+    DIRECTOR_GENERAL_DIRECTOR = 'DIRECTOR_GENERAL_DIRECTOR',
+    ADMINISTRATIVE_COUNCIL = 'ADMINISTRATIVE_COUNCIL',
+    BOARD = 'BOARD',
+}
