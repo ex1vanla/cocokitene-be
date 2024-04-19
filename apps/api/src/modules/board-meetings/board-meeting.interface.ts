@@ -4,10 +4,10 @@ import {
     ProposalItemDetailMeeting,
 } from '../meetings/meeting.interface'
 import { Candidate } from '@entities/candidate.entity'
-import { VoteCandidateResult } from '@shares/constants/candidate.const'
+import { VoteProposalResult } from '@shares/constants/proposal.const'
 
 export interface CandidateItemDetailMeeting extends Candidate {
-    voteResult: VoteCandidateResult
+    voteResult: VoteProposalResult
 }
 
 export interface DetailBoardMeetingResponse extends Partial<Meeting> {

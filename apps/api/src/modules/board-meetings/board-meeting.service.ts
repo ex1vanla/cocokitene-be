@@ -33,7 +33,6 @@ import {
     DetailBoardMeetingResponse,
 } from './board-meeting.interface'
 import { VotingCandidateService } from '../voting-candidate/voting-candidate.service'
-import { VoteCandidateResult } from '@shares/constants/candidate.const'
 
 @Injectable()
 export class BoardMeetingService {
@@ -389,23 +388,23 @@ export class BoardMeetingService {
 
             if (
                 !existedVotingCandidate ||
-                existedVotingCandidate.result === VoteCandidateResult.NO_IDEA
+                existedVotingCandidate.result === VoteProposalResult.NO_IDEA
             ) {
                 listCandidate.push({
                     ...candidate,
-                    voteResult: VoteCandidateResult.NO_IDEA,
+                    voteResult: VoteProposalResult.NO_IDEA,
                 } as CandidateItemDetailMeeting)
             } else if (
-                existedVotingCandidate.result === VoteCandidateResult.VOTE
+                existedVotingCandidate.result === VoteProposalResult.VOTE
             ) {
                 listCandidate.push({
                     ...candidate,
-                    voteResult: VoteCandidateResult.VOTE,
+                    voteResult: VoteProposalResult.VOTE,
                 } as CandidateItemDetailMeeting)
             } else {
                 listCandidate.push({
                     ...candidate,
-                    voteResult: VoteCandidateResult.UNVOTE,
+                    voteResult: VoteProposalResult.UNVOTE,
                 } as CandidateItemDetailMeeting)
             }
         }
