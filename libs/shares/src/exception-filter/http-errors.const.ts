@@ -363,9 +363,26 @@ export const httpErrors = {
         code: 'CANDIDATE_00001',
     },
 
+    CANDIDATE_NOT_FOUND: {
+        message: 'Candidate with meetingId and id not found. Please try again',
+        code: 'CANDIDATE_000002',
+    },
+
     //Board Meeting
     BOARD_MEETING_CREATE_FAILED: {
         message: 'Create Board Meeting failed , try again!',
         code: 'BOARD_MEETING_00001',
+    },
+
+    //Board Voting
+    BOARD_NOT_HAVE_THE_RIGHT_TO_VOTE: {
+        message:
+            'User are not a Board in this meeting so you do not have the right to vote. Please try again',
+        code: 'BOARD_VOTING_00001',
+    },
+
+    VOTING_CANDIDATE_FAILED: {
+        message: 'Create voting failded. Please send result diffirence.',
+        code: 'VOTING_00001',
     },
 }

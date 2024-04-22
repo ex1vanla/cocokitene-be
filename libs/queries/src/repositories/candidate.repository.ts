@@ -26,4 +26,14 @@ export class CandidateRepository extends Repository<Candidate> {
         })
         return await createdCandidate.save()
     }
+
+    async getCandidateById(candidateId: number): Promise<Candidate> {
+        const candidate = await this.findOne({
+            where: {
+                id: candidateId,
+            },
+            relations: ['meeting'],
+        })
+        return candidate
+    }
 }
