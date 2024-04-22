@@ -29,13 +29,13 @@ export class VotingCandidateService {
 
     async findVotingByUserIdAndCandidateId(
         userId: number,
-        candidateId: number,
+        votedForCandidateId: number,
     ): Promise<VotingCandidate> {
         const existedVotingCandidate =
             await this.votingCandidateRepository.findOne({
                 where: {
                     userId: userId,
-                    votedForCandidateId: candidateId,
+                    votedForCandidateId: votedForCandidateId,
                 },
             })
         return existedVotingCandidate
@@ -94,13 +94,13 @@ export class VotingCandidateService {
                         roleBoard.id,
                     )
 
-                const paricipantIdOfRole = participantBoardMeeting.map(
+                const participantIdOfRole = participantBoardMeeting.map(
                     (participant) => participant.user.id,
                 )
                 return {
                     roleMtgId: roleBoard.id,
                     roleMtgName: roleBoard.roleName,
-                    userParticipants: paricipantIdOfRole,
+                    userParticipants: participantIdOfRole,
                 }
             },
         )
@@ -132,7 +132,7 @@ export class VotingCandidateService {
 
         const isUserJoinedBoardMeeting =
             userMeeting.status === UserMeetingStatusEnum.PARTICIPATE
-        if (isUserJoinedBoardMeeting) {
+        if (!isUserJoinedBoardMeeting) {
             throw new HttpException(
                 httpErrors.USER_NOT_YET_ATTENDANCE,
                 HttpStatus.BAD_REQUEST,
@@ -253,6 +253,23 @@ export class VotingCandidateService {
             throw new HttpException(
                 httpErrors.VOTING_FAILED,
                 HttpStatus.BAD_REQUEST,
+            )
+        }
+    }
+
+    async removeVoting(
+        userId: number,
+        votedForCandidateId: number,
+    ): Promise<void> {
+        try {
+            await this.votingCandidateRepository.delete({
+                userId,
+                votedForCandidateId,
+            })
+        } catch (error) {
+            throw new HttpException(
+                httpErrors.DELETE_FAILED_USER_VOTING,
+                HttpStatus.INTERNAL_SERVER_ERROR,
             )
         }
     }

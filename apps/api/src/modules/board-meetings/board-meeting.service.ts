@@ -1,5 +1,7 @@
-import { RoleMtgService } from '@api/modules/role-mtgs/role-mtg.service'
-import { CreateBoardMeetingDto } from './../../../../../libs/queries/src/dtos/board-meeting.dto'
+import {
+    CreateBoardMeetingDto,
+    UpdateBoardMeetingDto,
+} from 'libs/queries/src/dtos/board-meeting.dto'
 import { Meeting } from '@entities/meeting.entity'
 import {
     HttpException,
@@ -45,7 +47,6 @@ export class BoardMeetingService {
         private readonly userMeetingService: UserMeetingService,
         private readonly candidateService: CandidateService,
         private readonly meetingRoleMtgService: MeetingRoleMtgService,
-        private readonly roleMtgService: RoleMtgService,
         private readonly votingService: VotingService,
         private readonly votingCandidateService: VotingCandidateService,
         @Inject('winston')
@@ -336,7 +337,7 @@ export class BoardMeetingService {
 
         const boardTotal = new Set(participantBoardId).size
         let boardJoinedTotal
-        if (boardTotal) {
+        if (!boardTotal) {
             boardJoinedTotal = 0
         } else {
             boardJoinedTotal = participantBoard.reduce((total, current) => {
@@ -417,5 +418,158 @@ export class BoardMeetingService {
             proposals: listProposals,
             candidates: listCandidate,
         }
+    }
+
+    async updateBoardMeeting(
+        userId: number,
+        companyId: number,
+        meetingId: number,
+        updateBoardMeetingDto: UpdateBoardMeetingDto,
+    ) {
+        if (!userId) {
+            throw new HttpException(
+                httpErrors.USER_NOT_FOUND,
+                HttpStatus.BAD_REQUEST,
+            )
+        }
+        if (!companyId) {
+            throw new HttpException(
+                httpErrors.COMPANY_NOT_FOUND,
+                HttpStatus.BAD_GATEWAY,
+            )
+        }
+        let existedBoardMeeting =
+            await this.getBoardMeetingByMeetingIdAndCompanyId(
+                meetingId,
+                companyId,
+            )
+        if (
+            !existedBoardMeeting ||
+            existedBoardMeeting.type !== MeetingType.BOARD_MEETING
+        ) {
+            throw new HttpException(
+                httpErrors.MEETING_NOT_FOUND,
+                HttpStatus.BAD_REQUEST,
+            )
+        }
+        //Update board Meeting
+        try {
+            existedBoardMeeting =
+                await this.boardMeetingRepository.updateMeeting(
+                    meetingId,
+                    updateBoardMeetingDto,
+                    userId,
+                    companyId,
+                )
+            this.logger.info(
+                `${messageLog.UPDATE_BOARD_MEETING_SUCCESS.message} ${existedBoardMeeting.id}`,
+            )
+        } catch (error) {
+            this.logger.error(
+                `${messageLog.UPDATE_BOARD_MEETING_FAILED.code} ${messageLog.UPDATE_SHAREHOLDER_MEETING_FAILED.message} ${existedBoardMeeting.id}`,
+            )
+            throw new HttpException(
+                httpErrors.MEETING_UPDATE_FAILED,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            )
+        }
+
+        const {
+            meetingMinutes,
+            meetingInvitations,
+            managementAndFinancials,
+            elections,
+            candidates,
+            participants,
+        } = updateBoardMeetingDto
+
+        const userIdParticipants = participants
+            .filter(
+                (participant) =>
+                    participant.roleName.toLocaleUpperCase() !==
+                    RoleBoardMtgEnum.HOST.toLocaleUpperCase(),
+            )
+            .map((participant) => participant.userIds)
+            .flat()
+
+        const uniqueBoardIdParticipants = Array.from(
+            new Set(userIdParticipants),
+        )
+
+        const totalVoter = new Set(userIdParticipants).size
+        const roleBoardMtg = participants.map((item) => item.roleMtgId)
+
+        const listBoardMeetingFile = [...meetingMinutes, ...meetingInvitations]
+        const listProposals = [...managementAndFinancials, ...elections]
+
+        const exitedRoleInMtg = (
+            await this.meetingRoleMtgService.getMeetingRoleMtgByMeetingId(
+                meetingId,
+            )
+        ).map((item) => item.roleMtgId)
+
+        const listMtgRoleAdded = roleBoardMtg.filter(
+            (item) => !exitedRoleInMtg.includes(item),
+        )
+
+        const boardIdActiveRemoveMeeting =
+            await this.userMeetingService.getListActiveBoardIdRemoveBoardMtg(
+                existedBoardMeeting.id,
+                uniqueBoardIdParticipants,
+            )
+        await Promise.all([
+            this.meetingFileService.updateListMeetingFiles(
+                meetingId,
+                listBoardMeetingFile,
+            ),
+
+            this.proposalService.updateListProposalBoardMtg(
+                meetingId,
+                userId,
+                listProposals,
+                boardIdActiveRemoveMeeting,
+                totalVoter,
+            ),
+
+            this.candidateService.updateListCandidateBoardMtg(
+                companyId,
+                meetingId,
+                userId,
+                candidates,
+                boardIdActiveRemoveMeeting,
+                totalVoter,
+            ),
+
+            await Promise.all([
+                ...participants.map((item) =>
+                    this.userMeetingService.updateUserMeeting(
+                        meetingId,
+                        item.roleMtgId,
+                        item.userIds,
+                    ),
+                ),
+
+                ...listMtgRoleAdded.map((item) =>
+                    this.meetingRoleMtgService.createMeetingRoleMtg({
+                        meetingId: meetingId,
+                        roleMtgId: item,
+                    }),
+                ),
+            ]),
+        ])
+
+        return existedBoardMeeting
+    }
+
+    async getBoardMeetingByMeetingIdAndCompanyId(
+        meetingId: number,
+        companyId: number,
+    ): Promise<Meeting> {
+        const meeting =
+            await this.boardMeetingRepository.getMeetingByMeetingIdAndCompanyId(
+                meetingId,
+                companyId,
+            )
+        return meeting
     }
 }
