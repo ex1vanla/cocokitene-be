@@ -14,7 +14,7 @@ export enum TypeRoleMeeting {
 }
 
 export enum RoleBoardMtgEnum {
-    HOST = 'Host',
+    HOST = 'HOST',
     CONTROL_BOARD = 'CONTROL_BOARD',
     DIRECTOR_GENERAL_DIRECTOR = 'DIRECTOR_GENERAL_DIRECTOR',
     ADMINISTRATIVE_COUNCIL = 'ADMINISTRATIVE_COUNCIL',

@@ -181,7 +181,7 @@ export class VotingService {
             }
         } catch (error) {
             this.logger.info(
-                `[DAPP] User ID : ${userId} ${messageLog.VOTING_PROPOSAL_SHAREHOLDER_MEETING_SUCCESS.message} ${existedProposal.id}`,
+                `${messageLog.VOTING_PROPOSAL_SHAREHOLDER_MEETING_FAILED.code} [DAPP] User ID : ${userId} ${messageLog.VOTING_PROPOSAL_SHAREHOLDER_MEETING_FAILED.message} ${existedProposal.id}`,
             )
             throw new HttpException(
                 { message: error.message },
