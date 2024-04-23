@@ -334,18 +334,30 @@ export class BoardMeetingService {
             (participant) => participant.userId,
         )
 
+        const cachedObject = {}
+        const uniqueParticipantBoard = participantBoard.filter((obj) => {
+            if (!cachedObject[obj.userId]) {
+                cachedObject[obj.userId] = true
+                return true
+            }
+            return false
+        })
+
         const boardTotal = new Set(participantBoardId).size
         let boardJoinedTotal
-        if (boardTotal) {
+        if (!boardTotal) {
             boardJoinedTotal = 0
         } else {
-            boardJoinedTotal = participantBoard.reduce((total, current) => {
-                total =
-                    current.status === UserMeetingStatusEnum.PARTICIPATE
-                        ? total + 1
-                        : total
-                return total
-            }, 0)
+            boardJoinedTotal = uniqueParticipantBoard.reduce(
+                (total, current) => {
+                    total =
+                        current.status === UserMeetingStatusEnum.PARTICIPATE
+                            ? total + 1
+                            : total
+                    return total
+                },
+                0,
+            )
         }
 
         // handle vote proposal result with current user
