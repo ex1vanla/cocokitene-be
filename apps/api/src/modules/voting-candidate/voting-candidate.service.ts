@@ -132,7 +132,7 @@ export class VotingCandidateService {
 
         const isUserJoinedBoardMeeting =
             userMeeting.status === UserMeetingStatusEnum.PARTICIPATE
-        if (isUserJoinedBoardMeeting) {
+        if (!isUserJoinedBoardMeeting) {
             throw new HttpException(
                 httpErrors.USER_NOT_YET_ATTENDANCE,
                 HttpStatus.BAD_REQUEST,
@@ -217,11 +217,12 @@ export class VotingCandidateService {
 
     async updateVote(
         existedCandidate: Candidate,
-        existedVoting: VotingCandidate,
+        checkExistedVoting: VotingCandidate,
         voteCandidateDto: VoteCandidateDto,
     ): Promise<Candidate> {
         const { result } = voteCandidateDto
-        const resultOld = existedVoting.result
+        const resultOld = checkExistedVoting.result
+
         if (result !== resultOld) {
             switch (resultOld) {
                 case VoteProposalResult.UNVOTE:
@@ -242,10 +243,12 @@ export class VotingCandidateService {
             }
             if (result === VoteProposalResult.NO_IDEA) {
                 existedCandidate.notVoteYetQuantity += 1
-                await this.votingCandidateRepository.delete(existedCandidate.id)
+                await this.votingCandidateRepository.delete(
+                    checkExistedVoting.id,
+                )
             } else {
-                existedVoting.result = result
-                await existedVoting.save()
+                checkExistedVoting.result = result
+                await checkExistedVoting.save()
             }
             await existedCandidate.save()
             return existedCandidate
