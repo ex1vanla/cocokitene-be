@@ -48,7 +48,7 @@ export class ProposalController {
 
     @Post('/vote-boardMtg/:proposalId')
     @UseGuards(JwtAuthGuard)
-    @Permission(PermissionEnum.VOTING_PROPOSAL)
+    @Permission(PermissionEnum.DETAIL_BOARD_MEETING)
     @ApiBearerAuth()
     @HttpCode(HttpStatus.OK)
     async voteProposalBoardMtg(

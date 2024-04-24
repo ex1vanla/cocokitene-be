@@ -272,9 +272,9 @@ export class BoardMeetingService {
                 companyId,
             )
 
-        if (!boardMeeting) {
+        if (!boardMeeting || boardMeeting.type !== MeetingType.BOARD_MEETING) {
             throw new HttpException(
-                httpErrors.MEETING_NOT_FOUND,
+                httpErrors.BOARD_MEETING_NOT_FOUND,
                 HttpStatus.NOT_FOUND,
             )
         }

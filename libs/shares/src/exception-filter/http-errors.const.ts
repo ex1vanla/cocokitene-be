@@ -374,6 +374,11 @@ export const httpErrors = {
         code: 'BOARD_MEETING_00001',
     },
 
+    BOARD_MEETING_NOT_FOUND: {
+        message: 'Board meeting not existed. Please try again',
+        code: 'BOARD_MEETING_00002',
+    },
+
     //Board Voting
     BOARD_NOT_HAVE_THE_RIGHT_TO_VOTE: {
         message:
