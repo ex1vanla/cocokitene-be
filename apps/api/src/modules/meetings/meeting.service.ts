@@ -218,7 +218,8 @@ export class MeetingService {
         const shareholders = participants
             .filter(
                 (participant) =>
-                    participant.roleName === RoleMtgEnum.SHAREHOLDER,
+                    participant.roleName.toLocaleUpperCase() ===
+                    RoleMtgEnum.SHAREHOLDER.toLocaleUpperCase(),
             )
             .map((participant) => participant.userIds)
             .flat()

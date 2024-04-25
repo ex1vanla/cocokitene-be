@@ -292,7 +292,11 @@ export class VotingService {
 
         const roleBoardMtg = listRoleBoardMtg
             .map((item) => item.roleMtg)
-            .filter((role) => role.roleName !== RoleMtgEnum.HOST)
+            .filter(
+                (role) =>
+                    role.roleName.toLocaleUpperCase() !==
+                    RoleMtgEnum.HOST.toLocaleUpperCase(),
+            )
 
         const participantIdLicensedVotePromise = roleBoardMtg.map(
             async (roleBoard) => {

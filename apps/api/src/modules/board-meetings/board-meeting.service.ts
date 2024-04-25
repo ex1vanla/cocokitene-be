@@ -324,7 +324,11 @@ export class BoardMeetingService {
 
         const idOfHostRoleInMtg = listRoleBoardMtg
             .map((item) => item.roleMtg)
-            .filter((role) => role.roleName === RoleBoardMtgEnum.HOST)
+            .filter(
+                (role) =>
+                    role.roleName.toLocaleUpperCase() ===
+                    RoleBoardMtgEnum.HOST.toLocaleUpperCase(),
+            )
 
         const participantBoard = participants
             .filter((item) => item.roleMtgId !== idOfHostRoleInMtg[0]?.id)
