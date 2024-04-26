@@ -22,7 +22,7 @@ export class VotingCandidate extends BaseEntity {
     userId: number
 
     @Column({
-        nullable: true,
+        nullable: false,
         name: 'voted_for_candidate_id',
         type: 'integer',
         width: 11,
@@ -46,7 +46,7 @@ export class VotingCandidate extends BaseEntity {
     })
     user: User
 
-    @ManyToOne(() => User)
+    @ManyToOne(() => Candidate)
     @JoinColumn({
         name: 'voted_for_candidate_id',
     })
