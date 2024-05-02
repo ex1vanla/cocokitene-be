@@ -126,6 +126,10 @@ export const httpErrors = {
         message: 'Company_role_mtg not existed. Please try again.',
         code: 'ROLE_MTG_00003',
     },
+    COMPANY_ROLE_MTG_EXISTED: {
+        message: 'Company_role_mtg already existed. Please try again.',
+        code: 'ROLE_MTG_00004',
+    },
 
     // meeting file error
     MEETING_FILE_CREATE_FAILED: {
