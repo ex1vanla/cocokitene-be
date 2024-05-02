@@ -136,6 +136,18 @@ export class RoleMtgService {
                 HttpStatus.NOT_FOUND,
             )
         }
+        // const eixstedRoleMtg = await this.roleMtgRepository.findOne({
+        //     where: {
+        //         roleName: roleName,
+        //     },
+        // })
+        // if (eixstedRoleMtg) {
+        //     throw new HttpException(
+        //         httpErrors.COMPANY_ROLE_MTG_EXISTED,
+        //         HttpStatus.INTERNAL_SERVER_ERROR,
+        //     )
+        // }
+
         try {
             const createdRoleMtg = await this.createCompanyRoleMtg(
                 roleName,
@@ -181,6 +193,7 @@ export class RoleMtgService {
                 HttpStatus.NOT_FOUND,
             )
         }
+
         try {
             existedRoleMtg = await this.roleMtgRepository.updateRoleMtgWithType(
                 roleMtgId,
