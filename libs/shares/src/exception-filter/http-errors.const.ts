@@ -115,19 +115,19 @@ export const httpErrors = {
     },
     // company-role-mtg
     COMPANY_ROLE_MTG_CREATE_FAILED: {
-        message: 'Role Mtg created failed. Please try again.',
+        message: 'Role Meeting created failed. Please try again.',
         code: 'ROLE_MTG_00001',
     },
     COMPANY_ROLE_MTG_UPDATE_FAILED: {
-        message: 'Role Mtg update failed. Please try again.',
+        message: 'Role Meeting update failed. Please try again.',
         code: 'ROLE_MTG_00002',
     },
     COMPANY_ROLE_MTG_NOT_EXISTED: {
-        message: 'Role Mtg not existed. Please try again.',
+        message: 'Role Meeting not existed. Please try again.',
         code: 'ROLE_MTG_00003',
     },
     COMPANY_ROLE_MTG_EXISTED: {
-        message: 'Role Mtg already existed. Please try again.',
+        message: 'Role Meeting already existed. Please try again.',
         code: 'ROLE_MTG_00004',
     },
 

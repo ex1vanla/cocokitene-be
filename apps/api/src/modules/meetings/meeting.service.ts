@@ -223,7 +223,6 @@ export class MeetingService {
             )
             .map((participant) => participant.userIds)
             .flat()
-        console.log('shareholders---', shareholders)
 
         const roleMtgInMtgs = participants.map((item) => item.roleMtgId)
         const totalShares =
