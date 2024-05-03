@@ -27,7 +27,7 @@ export class CandidateController {
 
     @Post('/vote/:candidateId')
     @UseGuards(JwtAuthGuard)
-    @Permission(PermissionEnum.VOTING_CANDIDATE)
+    @Permission(PermissionEnum.DETAIL_BOARD_MEETING)
     @ApiBearerAuth()
     @HttpCode(HttpStatus.OK)
     async voteCandidate(
