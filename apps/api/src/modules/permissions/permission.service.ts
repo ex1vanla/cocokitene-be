@@ -50,11 +50,45 @@ export class PermissionService {
     async getAllPermissionsBase(): Promise<Permission[]> {
         const permissions = await Promise.all(
             [
+                PermissionEnum.LIST_USER_STATUS,
+                PermissionEnum.LIST_ACCOUNT,
                 PermissionEnum.SHAREHOLDERS_MTG,
                 PermissionEnum.DETAIL_PROFILE,
-                PermissionEnum.DETAIL_ACCOUNT,
-                PermissionEnum.LIST_ACCOUNT,
+                PermissionEnum.EDIT_PROFILE,
                 PermissionEnum.DETAIL_MEETING,
+            ].map((permissionName) =>
+                this.permissionRepository.getPermissionByPermissionName(
+                    permissionName,
+                ),
+            ),
+        )
+
+        return permissions
+    }
+
+    async getPermissionsBaseForRoleBoard(): Promise<Permission[]> {
+        const permissions = await Promise.all(
+            [
+                PermissionEnum.EDIT_ACCOUNT,
+                PermissionEnum.LIST_SHAREHOLDERS,
+                PermissionEnum.VOTING_PROPOSAL,
+                PermissionEnum.BOARD_MEETING,
+                PermissionEnum.DETAIL_BOARD_MEETING,
+            ].map((permissionName) =>
+                this.permissionRepository.getPermissionByPermissionName(
+                    permissionName,
+                ),
+            ),
+        )
+
+        return permissions
+    }
+
+    async getPermissionsBaseForRoleShareholder(): Promise<Permission[]> {
+        const permissions = await Promise.all(
+            [
+                PermissionEnum.LIST_SHAREHOLDERS,
+                PermissionEnum.VOTING_PROPOSAL,
             ].map((permissionName) =>
                 this.permissionRepository.getPermissionByPermissionName(
                     permissionName,
