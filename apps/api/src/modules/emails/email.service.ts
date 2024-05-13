@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Injectable } from '@nestjs/common'
-
 import { UserRepository } from '@repositories/user.repository'
 import { MailerService } from '@nestjs-modules/mailer'
 import { MeetingRepository } from '@repositories/meeting.repository'
@@ -20,6 +19,7 @@ import { MeetingFileService } from '@api/modules/meeting-files/meeting-file.serv
 import { RoleBoardMtgEnum, RoleMtgEnum } from '@shares/constants'
 import { RoleMtgService } from '@api/modules/role-mtgs/role-mtg.service'
 import { MeetingRoleMtgService } from '../meeting-role-mtgs/meeting-role-mtg.service'
+import Handlebars from 'handlebars'
 
 @Injectable()
 export class EmailService {
@@ -141,10 +141,6 @@ export class EmailService {
             .filter((item) => item.roleMtgId !== idOfHostRoleInMtg[0]?.id)
             .map((item) => item.userParticipants)
             .flat()
-
-        const participantBoardEmail = participantBoard.map(
-            (participant) => participant.userEmail,
-        )
 
         const cachedObject = {}
         const uniqueParticipantBoard = participantBoard.filter((obj) => {
@@ -327,3 +323,8 @@ export class EmailService {
         })
     }
 }
+
+//Add increase @index in .hbs file
+Handlebars.registerHelper('inc', function (value, options) {
+    return parseInt(value) + 1
+})
