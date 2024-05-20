@@ -23,8 +23,6 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
     constructor(private readonly messageService: MessageService) {}
 
     handleConnection(client: Socket) {
-        // console.log('client---', client)
-
         console.log('Client connected:', client.id)
     }
 
@@ -37,9 +35,12 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
         @MessageBody() createMessageDto: CreateMessageDto,
         @ConnectedSocket() client: Socket,
     ) {
+        const { meetingId } = createMessageDto
         const createdMessage = await this.messageService.createMessage(
             createMessageDto,
         )
-        client.broadcast.emit('receive_chat_public', createdMessage)
+        client.broadcast
+            .to(meetingId.toString())
+            .emit('receive_chat_public', createdMessage)
     }
 }
