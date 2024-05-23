@@ -35,13 +35,13 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
         @MessageBody() createMessageDto: CreateMessageDto,
         @ConnectedSocket() client: Socket,
     ) {
-        // const { meetingId } = createMessageDto
+        const { meetingId } = createMessageDto
         const createdMessage = await this.messageService.createMessage(
             createMessageDto,
         )
         client.broadcast
             // .to(meetingId.toString())
-            .emit('receive_chat_public', createdMessage)
+            .emit(`receive_chat_public/${meetingId}`, createdMessage)
     }
 
     @SubscribeMessage('send_chat_private')
@@ -49,13 +49,16 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
         @MessageBody() createMessagePrivateDto: CreateMessagePrivateDto,
         @ConnectedSocket() client: Socket,
     ) {
-        // const { meetingId } = createMessagePrivateDto
+        const { meetingId, receiverId } = createMessagePrivateDto
         const createdMessagePrivate =
             await this.messageService.createMessagePrivate(
                 createMessagePrivateDto,
             )
         client.broadcast
             // .to(meetingId.toString())
-            .emit('receive_chat_private', createdMessagePrivate)
+            .emit(
+                `receive_chat_private/${meetingId}/${receiverId}`,
+                createdMessagePrivate,
+            )
     }
 }
