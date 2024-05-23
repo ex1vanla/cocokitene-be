@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { MessageRepository } from '@repositories/message.repository'
-import { CreateMessageDto } from '@dtos/message.dto'
+import { CreateMessageDto, CreateMessagePrivateDto } from '@dtos/message.dto'
 import { Message } from '@entities/message.entity'
 import {
     DataChatResponseDetail,
@@ -25,10 +25,29 @@ export class MessageService {
         }
     }
 
+    async createMessagePrivate(
+        createMessagePrivateDto: CreateMessagePrivateDto,
+    ): Promise<Message> {
+        try {
+            const createdMessagePrivate =
+                await this.messageRepository.createMessagePrivate(
+                    createMessagePrivateDto,
+                )
+            return createdMessagePrivate
+        } catch (error) {
+            throw new HttpException(
+                { message: error.message },
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            )
+        }
+    }
+
     async getDataMessageByMeetingId(
+        userId: number,
         meetingId: number,
     ): Promise<DataChatResponseDetail> {
         const messages = await this.messageRepository.getDataMessageByMeetingId(
+            userId,
             meetingId,
         )
         const messageChat: DataMessageChat[] = await Promise.all(

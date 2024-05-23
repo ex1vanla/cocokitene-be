@@ -1,7 +1,7 @@
 import { Repository } from 'typeorm'
 import { Message } from '@entities/message.entity'
 import { CustomRepository } from '@shares/decorators'
-import { CreateMessageDto } from '@dtos/message.dto'
+import { CreateMessageDto, CreateMessagePrivateDto } from '@dtos/message.dto'
 
 @CustomRepository(Message)
 export class MessageRepository extends Repository<Message> {
@@ -19,12 +19,46 @@ export class MessageRepository extends Repository<Message> {
         return createdMessage
     }
 
-    async getDataMessageByMeetingId(meetingId: number): Promise<Message[]> {
-        const messages = await this.find({
-            where: {
-                meetingId: meetingId,
-            },
+    async createMessagePrivate(
+        createMessagePrivateDto: CreateMessagePrivateDto,
+    ): Promise<Message> {
+        const { meetingId, senderId, receiverId, content } =
+            createMessagePrivateDto
+        const createdMessage = await this.create({
+            meetingId: meetingId,
+            senderId: senderId,
+            content: content,
+            receiverId: receiverId,
         })
+        await createdMessage.save()
+        return createdMessage
+    }
+
+    async getDataMessageByMeetingId(
+        userId: number,
+        meetingId: number,
+    ): Promise<Message[]> {
+        const queryBuilder = this.createQueryBuilder('messages')
+            .select([
+                'messages.id',
+                'messages.senderId',
+                'messages.receiverId',
+                'messages.content',
+                'messages.createdAt',
+                'messages.replyMessageId',
+            ])
+            .where('messages.meetingId = :meetingId', { meetingId: meetingId })
+            .andWhere('messages.receiverId IS NULL')
+            .orWhere(
+                'messages.senderId = :senderId AND messages.meetingId = :meetingId',
+                { senderId: userId, meetingId: meetingId },
+            )
+            .orWhere(
+                'messages.receiverId = :receiverId AND messages.meetingId = :meetingId',
+                { receiverId: userId, meetingId: meetingId },
+            )
+
+        const messages = await queryBuilder.getMany()
         return messages
     }
 }

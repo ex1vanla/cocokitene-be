@@ -8,7 +8,7 @@ import {
     WebSocketServer,
 } from '@nestjs/websockets'
 import { Server, Socket } from 'socket.io'
-import { CreateMessageDto } from '@dtos/message.dto'
+import { CreateMessageDto, CreateMessagePrivateDto } from '@dtos/message.dto'
 import { MessageService } from '@api/modules/messages/message.service'
 
 @WebSocketGateway({
@@ -35,12 +35,27 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
         @MessageBody() createMessageDto: CreateMessageDto,
         @ConnectedSocket() client: Socket,
     ) {
-        const { meetingId } = createMessageDto
+        // const { meetingId } = createMessageDto
         const createdMessage = await this.messageService.createMessage(
             createMessageDto,
         )
         client.broadcast
-            .to(meetingId.toString())
+            // .to(meetingId.toString())
             .emit('receive_chat_public', createdMessage)
+    }
+
+    @SubscribeMessage('send_chat_private')
+    async handleCreateMessagePrivate(
+        @MessageBody() createMessagePrivateDto: CreateMessagePrivateDto,
+        @ConnectedSocket() client: Socket,
+    ) {
+        // const { meetingId } = createMessagePrivateDto
+        const createdMessagePrivate =
+            await this.messageService.createMessagePrivate(
+                createMessagePrivateDto,
+            )
+        client.broadcast
+            // .to(meetingId.toString())
+            .emit('receive_chat_private', createdMessagePrivate)
     }
 }
