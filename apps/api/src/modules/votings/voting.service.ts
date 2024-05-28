@@ -423,4 +423,12 @@ export class VotingService {
             )
         }
     }
+
+    async getAllVotingByProposalId(proposalId: number): Promise<Voting[]> {
+        const voteOfProposal =
+            await this.votingRepository.getInternalListVotingByProposalId(
+                proposalId,
+            )
+        return voteOfProposal
+    }
 }

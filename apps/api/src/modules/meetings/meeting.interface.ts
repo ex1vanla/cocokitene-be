@@ -35,3 +35,10 @@ export interface DetailMeetingResponse extends Partial<Meeting> {
 export interface ParticipantMeeting {
     userWithRoleMtg: ParticipantDetailMeeting[]
 }
+
+export interface calculateVoter {
+    voterTotal: number
+    voterJoined: number
+    totalMeetingVote: number
+    joinedMeetingVote: number
+}

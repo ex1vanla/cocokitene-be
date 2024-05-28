@@ -11,6 +11,7 @@ import { MeetingRepository } from '@repositories/meeting.repository'
 
 import { MeetingFileService } from '@api/modules/meeting-files/meeting-file.service'
 import {
+    calculateVoter,
     DetailMeetingResponse,
     ParticipantMeeting,
     ProposalItemDetailMeeting,
@@ -41,6 +42,7 @@ import { User } from '@entities/user.entity'
 import {
     ChatPermissionEnum,
     PermissionEnum,
+    RoleBoardMtgEnum,
     RoleMtgEnum,
 } from '@shares/constants'
 import { Logger } from 'winston'
@@ -701,5 +703,162 @@ export class MeetingService {
                 meetingId,
             )
         return participants
+    }
+
+    async calculateVoter(
+        meetingId: number,
+        companyId: number,
+        meetingType: MeetingType,
+    ): Promise<calculateVoter> {
+        const meetingRoleMtgs =
+            await this.meetingRoleMtgService.getMeetingRoleMtgByMeetingId(
+                meetingId,
+            )
+
+        const roleMtgs = meetingRoleMtgs
+            .map((item) => item.roleMtg)
+            .sort((a, b) => a.roleName.localeCompare(b.roleName))
+
+        const participantsPromises = roleMtgs.map(async (roleMtg) => {
+            const userMeetings =
+                await this.userMeetingService.getUserMeetingByMeetingIdAndRole(
+                    meetingId,
+                    roleMtg.id,
+                )
+
+            const userParticipants = userMeetings.map((userMeeting) => {
+                return {
+                    userDefaultAvatarHashColor:
+                        userMeeting.user.defaultAvatarHashColor,
+                    userId: userMeeting.user.id,
+                    userAvatar: userMeeting.user.avatar,
+                    userEmail: userMeeting.user.email,
+                    status: userMeeting.status,
+                    userJoined:
+                        userMeeting.status ===
+                        UserMeetingStatusEnum.PARTICIPATE,
+                    userShareQuantity: userMeeting.user.shareQuantity,
+                }
+            })
+
+            return {
+                roleMtgId: roleMtg.id,
+                roleMtgName: roleMtg.roleName,
+                userParticipants: userParticipants,
+            }
+        })
+
+        const participants = await Promise.all(participantsPromises)
+
+        let voterTotal: number,
+            voterJoined: number,
+            totalMeetingVote: number,
+            joinedMeetingVote: number
+
+        if (meetingType === MeetingType.SHAREHOLDER_MEETING) {
+            const roleMtgShareholderId =
+                await this.roleMtgService.getRoleMtgByNameAndCompanyId(
+                    RoleMtgEnum.SHAREHOLDER,
+                    companyId,
+                )
+            const shareholders = participants.find(
+                (item) => item.roleMtgId === roleMtgShareholderId.id,
+            )
+            if (!shareholders) {
+                voterTotal = 0
+                voterJoined = 0
+                totalMeetingVote = 0
+                joinedMeetingVote = 0
+            } else {
+                voterTotal = shareholders.userParticipants.length
+
+                voterJoined = shareholders.userParticipants.reduce(
+                    (accumulator, currentValue) => {
+                        accumulator =
+                            currentValue.status ===
+                            UserMeetingStatusEnum.PARTICIPATE
+                                ? accumulator + 1
+                                : accumulator
+                        return accumulator
+                    },
+                    0,
+                )
+
+                totalMeetingVote = shareholders.userParticipants.reduce(
+                    (accumulator, currentValue) => {
+                        if (currentValue.userShareQuantity) {
+                            accumulator += Number(
+                                currentValue.userShareQuantity,
+                            )
+                        }
+                        return accumulator
+                    },
+                    0,
+                )
+
+                joinedMeetingVote = shareholders.userParticipants.reduce(
+                    (accumulator, currentValue) => {
+                        if (currentValue.userShareQuantity) {
+                            accumulator =
+                                currentValue.status ===
+                                UserMeetingStatusEnum.PARTICIPATE
+                                    ? accumulator +
+                                      Number(currentValue.userShareQuantity)
+                                    : accumulator
+                        }
+                        return accumulator
+                    },
+                    0,
+                )
+            }
+        }
+        if (meetingType === MeetingType.BOARD_MEETING) {
+            const idOfHostRoleInMtg = meetingRoleMtgs
+                .map((item) => item.roleMtg)
+                .filter(
+                    (role) =>
+                        role.roleName.toLocaleUpperCase() ===
+                        RoleBoardMtgEnum.HOST.toLocaleUpperCase(),
+                )
+
+            const participantBoard = participants
+                .filter((item) => item.roleMtgId !== idOfHostRoleInMtg[0]?.id)
+                .map((item) => item.userParticipants)
+                .flat()
+
+            const participantBoardId = participantBoard.map(
+                (participant) => participant.userId,
+            )
+
+            const cachedObject = {}
+            const uniqueParticipants = participantBoard.filter((obj) => {
+                if (!cachedObject[obj.userId]) {
+                    cachedObject[obj.userId] = true
+                    return true
+                }
+                return false
+            })
+
+            voterTotal = new Set(participantBoardId).size
+            if (!voterTotal) {
+                voterTotal = 0
+                totalMeetingVote = 0
+            } else {
+                voterJoined = uniqueParticipants.reduce((total, current) => {
+                    total =
+                        current.status === UserMeetingStatusEnum.PARTICIPATE
+                            ? total + 1
+                            : total
+                    return total
+                }, 0)
+                joinedMeetingVote = voterJoined
+            }
+        }
+        return {
+            voterTotal: voterTotal,
+            voterJoined: voterJoined,
+            totalMeetingVote: totalMeetingVote,
+            joinedMeetingVote: joinedMeetingVote,
+        }
     }
 }
