@@ -2,10 +2,21 @@ export interface DataChatResponseDetail {
     rootChat: number
     messageChat: DataMessageChat[]
 }
+
+export interface userChatInfo {
+    id: number
+    email: string
+}
 export interface DataMessageChat {
-    senderId: number
-    receiverId: number
+    id: number
+    sender: userChatInfo
+    receiver: userChatInfo
     content: string
     createdAt: Date
-    replyMessageId?: number
+    replyMessage?: {
+        id: number
+        senderId: userChatInfo
+        receiverId: userChatInfo
+        content: string
+    }
 }
