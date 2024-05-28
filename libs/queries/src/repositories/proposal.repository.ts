@@ -150,4 +150,16 @@ export class ProposalRepository extends Repository<Proposal> {
         })
         return listProposals
     }
+
+    async getAllProposalByMtgId(meetingId: number): Promise<Proposal[]> {
+        const proposal = await this.createQueryBuilder('proposals')
+            .select()
+            .where('proposals.meetingId = :meetingId', {
+                meetingId,
+            })
+            .leftJoinAndSelect('proposals.proposalFiles', 'proposalFiles')
+            .getMany()
+
+        return proposal
+    }
 }

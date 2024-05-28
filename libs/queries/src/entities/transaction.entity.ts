@@ -3,16 +3,10 @@ import {
     Column,
     CreateDateColumn,
     Entity,
-    OneToMany,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm'
-import {
-    TRANSACTION_STATUS,
-    TRANSACTION_TYPE,
-} from '@shares/constants/transaction.const'
-import { ProposalTransaction } from '@entities/proposal-transaction.entity'
-import { FileProposalTransaction } from '@entities/file-proposal-transaction.entity'
+import { TRANSACTION_STATUS } from '@shares/constants/transaction.const'
 
 @Entity('transactions')
 export class Transaction extends BaseEntity {
@@ -36,22 +30,6 @@ export class Transaction extends BaseEntity {
     contractAddress: string
 
     @Column({
-        name: 'meeting_link',
-        type: 'varchar',
-        length: 255,
-        nullable: false,
-    })
-    meetingLink: string
-
-    @Column({
-        name: 'title_meeting',
-        type: 'varchar',
-        length: 255,
-        nullable: true,
-    })
-    titleMeeting: string
-
-    @Column({
         name: 'meeting_id',
         type: 'integer',
         width: 11,
@@ -60,60 +38,76 @@ export class Transaction extends BaseEntity {
     meetingId: number
 
     @Column({
-        name: 'start_time_meeting',
-        type: 'integer',
-        width: 11,
+        name: 'key_query',
+        type: 'varchar',
+        length: 255,
         nullable: false,
     })
-    startTimeMeeting: number
+    keyQuery: string
 
     @Column({
-        name: 'end_time_meeting',
-        type: 'integer',
-        width: 11,
+        name: 'detail_meeting_hash',
+        type: 'varchar',
+        length: 255,
+        nullable: true,
+    })
+    detailMeetingHash: string
+
+    @Column({
+        name: 'basic_meeting_hash',
+        type: 'varchar',
+        length: 255,
         nullable: false,
     })
-    endTimeMeeting: number
+    basicInformationMeetingHash: string
 
     @Column({
-        name: 'company_id',
-        type: 'integer',
-        width: 11,
-        nullable: true,
+        name: 'file_meeting_hash',
+        type: 'varchar',
+        length: 255,
+        nullable: false,
     })
-    companyId: number
+    fileMeetingHash: string
 
     @Column({
-        name: 'shareholder_total',
-        type: 'integer',
-        width: 11,
-        nullable: true,
+        name: 'proposal_meeting_hash',
+        type: 'varchar',
+        length: 255,
+        nullable: false,
     })
-    shareholdersTotal: number
+    proposalMeetingHash: string
 
     @Column({
-        name: 'shareholders_joined',
-        type: 'integer',
-        width: 11,
-        nullable: true,
+        name: 'voted_proposal_hash',
+        type: 'varchar',
+        length: 255,
+        nullable: false,
     })
-    shareholdersJoined: number
+    votedProposalHash: string
 
     @Column({
-        name: 'joined_meeting_shares',
-        type: 'integer',
-        width: 11,
-        nullable: true,
+        name: 'candidate_meeting_hash',
+        type: 'varchar',
+        length: 255,
+        nullable: false,
     })
-    joinedMeetingShares: number
+    candidateHash: string
 
     @Column({
-        name: 'total_meeting_shares',
-        type: 'integer',
-        width: 11,
-        nullable: true,
+        name: 'voted_candidate_hash',
+        type: 'varchar',
+        length: 255,
+        nullable: false,
     })
-    totalMeetingShares: number
+    votedCandidateHash: string
+
+    @Column({
+        name: 'participant_hash',
+        type: 'varchar',
+        length: 255,
+        nullable: false,
+    })
+    participantHash: string
 
     @Column({
         nullable: false,
@@ -125,24 +119,6 @@ export class Transaction extends BaseEntity {
 
     @Column({ name: 'tx_hash', type: 'varchar', length: 255, nullable: true })
     txHash: string
-    @Column({
-        nullable: false,
-        type: 'enum',
-        enum: TRANSACTION_TYPE,
-    })
-    type: TRANSACTION_TYPE
-
-    @OneToMany(
-        () => ProposalTransaction,
-        (proposalTransaction) => proposalTransaction.meeting,
-    )
-    proposalTransactions: ProposalTransaction[]
-
-    @OneToMany(
-        () => FileProposalTransaction,
-        (fileProposalTransaction) => fileProposalTransaction.meeting,
-    )
-    fileOfProposals: FileProposalTransaction[]
 
     @CreateDateColumn({ name: 'created_at' })
     createdAt: Date

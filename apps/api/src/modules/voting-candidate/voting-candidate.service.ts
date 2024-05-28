@@ -280,4 +280,15 @@ export class VotingCandidateService {
             )
         }
     }
+
+    async getAllVotingByCandidateId(
+        candidateId: number,
+    ): Promise<VoteCandidateDto[]> {
+        const voteOfCandidate =
+            await this.votingCandidateRepository.getListVotedByCandidateId(
+                candidateId,
+            )
+
+        return voteOfCandidate
+    }
 }
