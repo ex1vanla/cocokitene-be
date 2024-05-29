@@ -50,15 +50,44 @@ export class MessageService {
             userId,
             meetingId,
         )
-        const messageChat: DataMessageChat[] = await Promise.all(
-            messages.map(async (item) => ({
-                senderId: item.senderId,
-                receiverId: item.receiverId,
-                content: item.content,
-                createdAt: item.createdAt,
-                replyMessageId: item.replyMessageId ?? null,
-            })),
-        )
+
+        // console.log('messages', messages)
+        const messageChat: DataMessageChat[] = messages.map((message) => {
+            return {
+                id: message.id,
+                sender: {
+                    id: message.sender.id,
+                    email: message.sender.email,
+                },
+                receiver: message.receiver
+                    ? {
+                          id: message.receiver.id,
+                          email: message.receiver.email,
+                      }
+                    : { id: 0, email: 'EveryOne' },
+                content: message.content,
+                createdAt: message.createdAt,
+                replyMessage: message.replyMessage
+                    ? {
+                          id: message.replyMessage.id,
+                          senderId: {
+                              id: message.replyMessage.sender.id,
+                              email: message.replyMessage.sender.email,
+                          },
+                          receiverId: message.replyMessage.receiver
+                              ? {
+                                    id: message.replyMessage.receiver.id,
+                                    email: message.replyMessage.receiver.email,
+                                }
+                              : {
+                                    id: 0,
+                                    email: 'EveryOne',
+                                },
+                          content: message.replyMessage.content,
+                      }
+                    : null,
+            }
+        })
 
         return {
             rootChat: meetingId,
