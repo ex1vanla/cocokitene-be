@@ -8,8 +8,9 @@ import {
     WebSocketServer,
 } from '@nestjs/websockets'
 import { Server, Socket } from 'socket.io'
-import { CreateMessageDto, CreateMessagePrivateDto } from '@dtos/message.dto'
 import { MessageService } from '@api/modules/messages/message.service'
+
+import { messageChatInformation } from './socket.interface'
 
 @WebSocketGateway({
     namespace: '/',
@@ -32,33 +33,76 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     @SubscribeMessage('send_chat_public')
     async handleCreateMessage(
-        @MessageBody() createMessageDto: CreateMessageDto,
+        @MessageBody() messageChatInfo: messageChatInformation,
         @ConnectedSocket() client: Socket,
     ) {
-        const { meetingId } = createMessageDto
+        const { meetingId } = messageChatInfo
+        const createMessageDto = {
+            meetingId: meetingId,
+            receiverId: messageChatInfo.receiver.id,
+            senderId: messageChatInfo.sender.id,
+            content: messageChatInfo.content,
+        }
         const createdMessage = await this.messageService.createMessage(
             createMessageDto,
         )
+
+        console.log('createdMessage', createdMessage)
+
+        const createdMessageResponse = {
+            ...createdMessage,
+            sender: {
+                id: createdMessage.senderId,
+                email: messageChatInfo.sender.email,
+            },
+            receiver: {
+                id: createdMessage.receiverId,
+                email: messageChatInfo.receiver.email,
+            },
+            replyMessage: messageChatInfo.replyMessage,
+        }
         client.broadcast
             // .to(meetingId.toString())
-            .emit(`receive_chat_public/${meetingId}`, createdMessage)
+            .emit(`receive_chat_public/${meetingId}`, createdMessageResponse)
     }
 
     @SubscribeMessage('send_chat_private')
     async handleCreateMessagePrivate(
-        @MessageBody() createMessagePrivateDto: CreateMessagePrivateDto,
+        @MessageBody() messageChatInfo: messageChatInformation,
         @ConnectedSocket() client: Socket,
     ) {
-        const { meetingId, receiverId } = createMessagePrivateDto
+        const { meetingId } = messageChatInfo
+
+        const createMessagePrivateDto = {
+            meetingId: meetingId,
+            receiverId: messageChatInfo.receiver.id,
+            senderId: messageChatInfo.sender.id,
+            content: messageChatInfo.content,
+        }
+
         const createdMessagePrivate =
             await this.messageService.createMessagePrivate(
                 createMessagePrivateDto,
             )
+
+        const createdMessageResponse = {
+            ...createdMessagePrivate,
+            sender: {
+                id: createdMessagePrivate.senderId,
+                email: messageChatInfo.sender.email,
+            },
+            receiver: {
+                id: createdMessagePrivate.receiverId,
+                email: messageChatInfo.receiver.email,
+            },
+            replyMessage: messageChatInfo.replyMessage,
+        }
+
         client.broadcast
             // .to(meetingId.toString())
             .emit(
-                `receive_chat_private/${meetingId}/${receiverId}`,
-                createdMessagePrivate,
+                `receive_chat_private/${meetingId}/${createdMessagePrivate.receiverId}`,
+                createdMessageResponse,
             )
     }
 }

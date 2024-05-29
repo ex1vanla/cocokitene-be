@@ -41,12 +41,19 @@ export class MessageRepository extends Repository<Message> {
         const queryBuilder = this.createQueryBuilder('messages')
             .select([
                 'messages.id',
-                'messages.senderId',
-                'messages.receiverId',
                 'messages.content',
                 'messages.createdAt',
-                'messages.replyMessageId',
+                // 'messages.replyMessageId',
             ])
+            .leftJoin('messages.sender', 'sender')
+            .addSelect(['sender.id', 'sender.email'])
+            .leftJoin('messages.receiver', 'receiver')
+            .addSelect(['receiver.id', 'receiver.email'])
+            .leftJoinAndSelect('messages.replyMessage', 'replyMessage')
+            .leftJoin('replyMessage.sender', 'replySender')
+            .addSelect(['replySender.id', 'replySender.email'])
+            .leftJoin('replyMessage.receiver', 'replyReceiver')
+            .addSelect(['replyReceiver.id', 'replyReceiver.email'])
             .where('messages.meetingId = :meetingId', { meetingId: meetingId })
             .andWhere('messages.receiverId IS NULL')
             .orWhere(
