@@ -32,6 +32,7 @@ import { CandidateModule } from './candidate/candidate.module'
 import { MessageModule } from '@api/modules/messages/message.module'
 import { SocketModule } from '@api/modules/socket/socket.module'
 import { ChatPermissionModule } from '@api/modules/chat-permission/chat-permission.module'
+import { TransactionModule } from './transaction/transaction.module'
 
 @Module({
     imports: [
@@ -68,6 +69,7 @@ import { ChatPermissionModule } from '@api/modules/chat-permission/chat-permissi
         MessageModule,
         SocketModule,
         ChatPermissionModule,
+        TransactionModule,
     ],
     controllers: [ApiController],
     providers: [ApiService],

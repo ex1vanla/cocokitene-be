@@ -79,6 +79,11 @@ export class MeetingRepository extends Repository<Meeting> {
             queryBuilder.andWhere('meetings.endTime <= :currentDateTime', {
                 currentDateTime: new Date(),
             })
+            queryBuilder.leftJoin('meetings.transaction', 'transaction')
+            queryBuilder.addSelect([
+                'transaction.keyQuery',
+                'transaction.contractAddress',
+            ])
         }
         if (searchQuery) {
             queryBuilder.andWhere('(meetings.title like :searchQuery)', {
@@ -257,6 +262,7 @@ export class MeetingRepository extends Repository<Meeting> {
             'meetings.meetingLink',
             'meetings.status',
             'meetings.companyId',
+            'meetings.type',
         ])
         if (
             meetingIdsAppearedInTransaction &&

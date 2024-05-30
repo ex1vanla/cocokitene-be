@@ -6,17 +6,13 @@ import { MeetingRepository } from '@repositories/meeting.repository'
 import { ProposalRepository } from '@repositories/proposal.repository'
 import { ProposalFileRepository } from '@repositories/proposal-file.repository'
 import { TransactionRepository } from '@repositories/transaction.repository'
-import { ParticipantMeetingTransactionRepository } from '@repositories/participant-meeting-transaction.repository'
-import { ProposalTransactionRepository } from '@repositories/proposal-transaction.repository'
-import { FileProposalTransactionRepository } from '@repositories/file-proposal-transaction.repository'
-import { VotingTransactionRepository } from '@repositories/voting-transaction.repository'
 import { VotingRepository } from '@repositories/voting.repository'
-import { FileMeetingTransactionRepository } from '@repositories/file-meeting-transaction.repository'
 import { MeetingFileRepository } from '@repositories/meeting-file.repository'
 import { MyLoggerModule } from '@api/modules/loggers/logger.module'
 import { CandidateRepository } from '@repositories/candidate.repository'
 import { VotingCandidateRepository } from '@repositories/voting-candidate.repository'
-import { MeetingService } from '@api/modules/meetings/meeting.service'
+import { MeetingRoleMtgRepository } from '@repositories/meeting-role-mtg.repository'
+import { RoleMtgRepository } from '@repositories/role-mtg.repository'
 
 const Repositories = TypeOrmExModule.forCustomRepository([
     UserMeetingRepository,
@@ -24,16 +20,12 @@ const Repositories = TypeOrmExModule.forCustomRepository([
     ProposalRepository,
     ProposalFileRepository,
     TransactionRepository,
-    ParticipantMeetingTransactionRepository,
-    ProposalTransactionRepository,
-    FileProposalTransactionRepository,
-    VotingTransactionRepository,
     VotingRepository,
     MeetingFileRepository,
-    FileMeetingTransactionRepository,
     CandidateRepository,
     VotingCandidateRepository,
-    MeetingService,
+    MeetingRoleMtgRepository,
+    RoleMtgRepository,
 ])
 
 @Module({

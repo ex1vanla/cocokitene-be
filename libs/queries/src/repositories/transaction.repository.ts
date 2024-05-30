@@ -73,15 +73,26 @@ export class TransactionRepository extends Repository<Transaction> {
             .execute()
     }
 
-    async updateTransactionByMeetingId(
-        meetingId: number,
-        // type: TRANSACTION_TYPE,
+    async updateTransactionByKeyQuery(
+        keyMeeting: string,
         updateOptions: Partial<Transaction>,
     ) {
         await this.createQueryBuilder('transactions')
             .update(Transaction)
             .set(updateOptions)
-            .where('transactions.meeting_id = :meetingId', { meetingId })
+            .where('transactions.key_query = :keyQuery', {
+                keyQuery: keyMeeting,
+            })
             .execute()
+    }
+
+    async getTransactionByMeetingId(meetingId: number): Promise<Transaction> {
+        const transaction = await this.createQueryBuilder('transactions')
+            .where('transactions.meeting_id = :meeting_id', {
+                meeting_id: meetingId,
+            })
+            .getOne()
+
+        return transaction
     }
 }

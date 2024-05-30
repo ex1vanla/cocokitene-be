@@ -28,11 +28,11 @@ export class MeetingCrawler extends BaseCrawler {
     }
 
     async onMeetingCreated(event: any): Promise<void> {
-        const { id_meeting, numberInBlockchain } = event['returnValues']
-        console.log({ id_meeting, numberInBlockchain })
+        const { _keyMeeting, numberInBlockchain } = event['returnValues']
+        console.log({ _keyMeeting, numberInBlockchain })
         // update transaction
-        await this.transactionRepository.updateTransactionByMeetingId(
-            +id_meeting,
+        await this.transactionRepository.updateTransactionByKeyQuery(
+            _keyMeeting,
             { status: TRANSACTION_STATUS.SUCCESS },
         )
     }

@@ -190,4 +190,21 @@ export class MeetingController {
             console.log(error)
         }
     }
+
+    @Get('/:id/dataHash')
+    @UseGuards(JwtAuthGuard)
+    @Permission(PermissionEnum.CHECK_DATA_MEETING)
+    @ApiBearerAuth()
+    @HttpCode(HttpStatus.OK)
+    async getDataHashByMeetingId(
+        @Param('id') meetingId: number,
+        @UserScope() user: User,
+    ) {
+        const companyId = user?.companyId
+        const dataHash = await this.meetingService.getDataHashByMeetingId(
+            meetingId,
+            companyId,
+        )
+        return dataHash
+    }
 }

@@ -142,6 +142,14 @@ export class UserMeetingRepository extends Repository<UserMeeting> {
             where: {
                 meetingId: meetingId,
             },
+            select: {
+                id: true,
+                userId: true,
+                meetingId: true,
+                status: true,
+                roleMtgId: true,
+                createdAt: true,
+            },
         })
 
         return participants

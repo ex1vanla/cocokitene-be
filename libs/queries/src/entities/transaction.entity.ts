@@ -3,10 +3,13 @@ import {
     Column,
     CreateDateColumn,
     Entity,
+    JoinColumn,
+    OneToOne,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm'
 import { TRANSACTION_STATUS } from '@shares/constants/transaction.const'
+import { Meeting } from './meeting.entity'
 
 @Entity('transactions')
 export class Transaction extends BaseEntity {
@@ -42,6 +45,7 @@ export class Transaction extends BaseEntity {
         type: 'varchar',
         length: 255,
         nullable: false,
+        unique: true,
     })
     keyQuery: string
 
@@ -125,4 +129,10 @@ export class Transaction extends BaseEntity {
 
     @UpdateDateColumn({ name: 'updated_at' })
     updatedAt: Date
+
+    @OneToOne(() => Meeting)
+    @JoinColumn({
+        name: 'meeting_id',
+    })
+    meeting: Meeting
 }

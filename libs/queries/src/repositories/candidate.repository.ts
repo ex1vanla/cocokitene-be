@@ -73,6 +73,18 @@ export class CandidateRepository extends Repository<Candidate> {
             where: {
                 meetingId: meetingId,
             },
+            select: {
+                id: true,
+                title: true,
+                candidateName: true,
+                type: true,
+                votedQuantity: true,
+                unVotedQuantity: true,
+                notVoteYetQuantity: true,
+                meetingId: true,
+                creatorId: true,
+                deletedAt: true,
+            },
         })
         return candidates
     }
