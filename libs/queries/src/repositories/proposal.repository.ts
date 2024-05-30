@@ -157,7 +157,14 @@ export class ProposalRepository extends Repository<Proposal> {
             .where('proposals.meetingId = :meetingId', {
                 meetingId,
             })
-            .leftJoinAndSelect('proposals.proposalFiles', 'proposalFiles')
+            .leftJoin('proposals.proposalFiles', 'proposalFiles')
+            .addSelect([
+                'proposalFiles.id',
+                'proposalFiles.url',
+                'proposalFiles.proposalId',
+                'proposalFiles.deletedAt',
+                'proposalFiles.createdAt',
+            ])
             .getMany()
 
         return proposal

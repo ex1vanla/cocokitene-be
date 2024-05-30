@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common'
-import { Cron, CronExpression } from '@nestjs/schedule'
+import { Cron } from '@nestjs/schedule'
 import { TransactionService } from '../transactions/transaction.service'
 import {
     ABI_BY_TYPE,
@@ -10,7 +10,7 @@ import {
 import { ConfigCrawler } from './cronjob.interface'
 import { getChainId } from '@shares/utils'
 import { MeetingCrawler } from './meeting-crawler'
-// import configuration from '@shares/config/configuration'
+import configuration from '@shares/config/configuration'
 import { Logger } from 'winston'
 
 @Injectable()
@@ -37,40 +37,24 @@ export class CronjobService {
         }
     }
 
-    // @Cron(configuration().cronjob.cronJobHandleEndedMeeting)
-    @Cron(CronExpression.EVERY_10_SECONDS)
+    // @Cron(CronExpression.EVERY_10_SECONDS)
+    @Cron(configuration().cronjob.cronJobHandleEndedMeeting)
     async handleAllEndedMeeting() {
         await this.transactionService.handleAllEndedMeeting()
     }
 
-    // @Cron(configuration().cronjob.cronJobHandlePendingTransaction)
-    @Cron(CronExpression.EVERY_10_SECONDS)
+    // @Cron(CronExpression.EVERY_10_SECONDS)
+    @Cron(configuration().cronjob.cronJobHandlePendingTransaction)
     async handlePendingTransaction() {
         await this.transactionService.handleCheckTransaction()
     }
 
-    // @Cron(configuration().cronjob.cronJobCrawlMeetingEvent)
-    @Cron(CronExpression.EVERY_10_SECONDS)
+    // @Cron(CronExpression.EVERY_10_SECONDS)
+    @Cron(configuration().cronjob.cronJobCrawlMeetingEvent)
     async crawlMeetingEvent() {
         const config = await this.getConfigCrawlerByContractType(
             CONTRACT_TYPE.MEETING,
         )
         await this.meetingCrawler.scan(config)
     }
-
-    // @Cron(
-    //     configuration().cronjob
-    //         .cronJobHandleDataAfterEventSuccessfulCreateMeeting,
-    // )
-    // async handleDataAfterEventSuccessfulCreatedMeeting() {
-    //     await this.transactionService.handleDataAfterEventSuccessfulCreatedMeeting()
-    // }
-
-    // @Cron(
-    //     configuration().cronjob
-    //         .cronJobHandleDataAfterEventSuccessfulUpdateProposalMeeting,
-    // )
-    // async handleDataAfterEventSuccessfulUpdateProposalMeeting() {
-    //     await this.transactionService.handleDataAfterEventSuccessfulUpdateProposalMeeting()
-    // }
 }

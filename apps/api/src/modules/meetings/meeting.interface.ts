@@ -42,3 +42,9 @@ export interface calculateVoter {
     totalMeetingVote: number
     joinedMeetingVote: number
 }
+
+export interface ListFileOfMeeting {
+    meetingId: number
+    meetingFileId: number
+    url: string
+}
