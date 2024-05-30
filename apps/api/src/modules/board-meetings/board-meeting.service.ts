@@ -1,8 +1,6 @@
-import {
-    CreateBoardMeetingDto,
-    UpdateBoardMeetingDto,
-} from 'libs/queries/src/dtos/board-meeting.dto'
+import { GetAllMeetingDto } from '@dtos/meeting.dto'
 import { Meeting } from '@entities/meeting.entity'
+import { User } from '@entities/user.entity'
 import {
     HttpException,
     HttpStatus,
@@ -11,30 +9,32 @@ import {
     forwardRef,
 } from '@nestjs/common'
 import { MeetingRepository } from '@repositories/meeting.repository'
+import { PermissionEnum, RoleBoardMtgEnum } from '@shares/constants'
 import {
     MeetingType,
     StatusMeeting,
     UserMeetingStatusEnum,
 } from '@shares/constants/meeting.const'
+import { VoteProposalResult } from '@shares/constants/proposal.const'
 import { httpErrors, messageLog } from '@shares/exception-filter'
-import { Logger } from 'winston'
-import { MeetingFileService } from '../meeting-files/meeting-file.service'
-import { ProposalService } from '../proposals/proposal.service'
-import { UserMeetingService } from '../user-meetings/user-meeting.service'
-import { CandidateService } from '../candidate/candidate.service'
+import {
+    CreateBoardMeetingDto,
+    UpdateBoardMeetingDto,
+} from 'libs/queries/src/dtos/board-meeting.dto'
 import { Pagination } from 'nestjs-typeorm-paginate'
-import { GetAllMeetingDto } from '@dtos/meeting.dto'
-import { User } from '@entities/user.entity'
-import { PermissionEnum, RoleBoardMtgEnum } from '@shares/constants'
+import { Logger } from 'winston'
+import { CandidateService } from '../candidate/candidate.service'
+import { MeetingFileService } from '../meeting-files/meeting-file.service'
 import { MeetingRoleMtgService } from '../meeting-role-mtgs/meeting-role-mtg.service'
 import { ProposalItemDetailMeeting } from '../meetings/meeting.interface'
+import { ProposalService } from '../proposals/proposal.service'
+import { UserMeetingService } from '../user-meetings/user-meeting.service'
+import { VotingCandidateService } from '../voting-candidate/voting-candidate.service'
 import { VotingService } from '../votings/voting.service'
-import { VoteProposalResult } from '@shares/constants/proposal.const'
 import {
     CandidateItemDetailMeeting,
     DetailBoardMeetingResponse,
 } from './board-meeting.interface'
-import { VotingCandidateService } from '../voting-candidate/voting-candidate.service'
 
 @Injectable()
 export class BoardMeetingService {
