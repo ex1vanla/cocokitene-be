@@ -1,5 +1,4 @@
 import {
-    ConnectedSocket,
     MessageBody,
     OnGatewayConnection,
     OnGatewayDisconnect,
@@ -34,7 +33,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @SubscribeMessage('send_chat_public')
     async handleCreateMessage(
         @MessageBody() messageChatInfo: messageChatInformation,
-        @ConnectedSocket() client: Socket,
+        // @ConnectedSocket() client: Socket,
     ) {
         const { meetingId } = messageChatInfo
         const createMessageDto = {
@@ -42,6 +41,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
             receiverId: messageChatInfo.receiver.id,
             senderId: messageChatInfo.sender.id,
             content: messageChatInfo.content,
+            replyMessageId: messageChatInfo?.replyMessage?.id,
         }
         const createdMessage = await this.messageService.createMessage(
             createMessageDto,
@@ -61,7 +61,8 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
             },
             replyMessage: messageChatInfo.replyMessage,
         }
-        client.broadcast
+        // client.broadcast
+        this.server
             // .to(meetingId.toString())
             .emit(`receive_chat_public/${meetingId}`, createdMessageResponse)
     }
@@ -69,7 +70,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @SubscribeMessage('send_chat_private')
     async handleCreateMessagePrivate(
         @MessageBody() messageChatInfo: messageChatInformation,
-        @ConnectedSocket() client: Socket,
+        // @ConnectedSocket() client: Socket,
     ) {
         const { meetingId } = messageChatInfo
 
@@ -78,6 +79,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
             receiverId: messageChatInfo.receiver.id,
             senderId: messageChatInfo.sender.id,
             content: messageChatInfo.content,
+            replyMessageId: messageChatInfo?.replyMessage?.id,
         }
 
         const createdMessagePrivate =
@@ -98,11 +100,11 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
             replyMessage: messageChatInfo.replyMessage,
         }
 
-        client.broadcast
-            // .to(meetingId.toString())
-            .emit(
-                `receive_chat_private/${meetingId}/${createdMessagePrivate.receiverId}`,
-                createdMessageResponse,
-            )
+        // client.broadcast
+        // .to(meetingId.toString())
+        this.server.emit(
+            `receive_chat_private/${meetingId}/${createdMessagePrivate.receiverId}`,
+            createdMessageResponse,
+        )
     }
 }

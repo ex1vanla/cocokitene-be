@@ -77,4 +77,12 @@ export class CreateMessagePrivateDto {
         example: 'hello mn',
     })
     content: string
+
+    @IsInt()
+    @IsOptional()
+    @ApiProperty({
+        example: 1,
+        required: false,
+    })
+    replyMessageId?: number
 }

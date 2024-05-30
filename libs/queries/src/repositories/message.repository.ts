@@ -22,13 +22,14 @@ export class MessageRepository extends Repository<Message> {
     async createMessagePrivate(
         createMessagePrivateDto: CreateMessagePrivateDto,
     ): Promise<Message> {
-        const { meetingId, senderId, receiverId, content } =
+        const { meetingId, senderId, receiverId, content, replyMessageId } =
             createMessagePrivateDto
         const createdMessage = await this.create({
             meetingId: meetingId,
             senderId: senderId,
             content: content,
             receiverId: receiverId,
+            replyMessageId: replyMessageId,
         })
         await createdMessage.save()
         return createdMessage
