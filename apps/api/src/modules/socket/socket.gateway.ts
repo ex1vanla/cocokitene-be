@@ -1,3 +1,4 @@
+import { MessageService } from '@api/modules/messages/message.service'
 import {
     MessageBody,
     OnGatewayConnection,
@@ -7,8 +8,10 @@ import {
     WebSocketServer,
 } from '@nestjs/websockets'
 import { Server, Socket } from 'socket.io'
-import { MessageService } from '@api/modules/messages/message.service'
 
+import { CreateReactionMessageDto } from '@dtos/reaction-messsage.dto'
+import { ReactionIconService } from '../reaction-icons/reaction-icon.service'
+import { ReactionMessageService } from '../reaction_messages/reaction-message.service'
 import { messageChatInformation } from './socket.interface'
 
 @WebSocketGateway({
@@ -20,7 +23,11 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @WebSocketServer()
     server: Server
 
-    constructor(private readonly messageService: MessageService) {}
+    constructor(
+        private readonly messageService: MessageService,
+        private readonly reactionMessageService: ReactionMessageService,
+        private readonly reactionIconService: ReactionIconService,
+    ) {}
 
     handleConnection(client: Socket) {
         console.log('Client connected:', client.id)
@@ -46,8 +53,6 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
         const createdMessage = await this.messageService.createMessage(
             createMessageDto,
         )
-
-        console.log('createdMessage', createdMessage)
 
         const createdMessageResponse = {
             ...createdMessage,
@@ -105,6 +110,77 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
         this.server.emit(
             `receive_chat_private/${meetingId}/${createdMessagePrivate.receiverId}`,
             createdMessageResponse,
+        )
+
+        this.server.emit(
+            `receive_chat_private/${meetingId}/${createdMessagePrivate.senderId}`,
+            createdMessageResponse,
+        )
+    }
+
+    @SubscribeMessage('send_reaction_message_public')
+    async handleCreateReactionMessage(
+        @MessageBody() createReactionMessageDto: CreateReactionMessageDto,
+        // @ConnectedSocket() client: Socket,
+    ) {
+        const { meetingId, reactionIconId } = createReactionMessageDto
+
+        console.log(
+            'reaction message ID : ',
+            reactionIconId,
+            createReactionMessageDto.messageId,
+        )
+        const createdReactionMessage =
+            await this.reactionMessageService.createReactionMessage(
+                createReactionMessageDto,
+            )
+        const reactionIcon = await this.reactionIconService.getReactionIconById(
+            reactionIconId,
+        )
+        const createdReactionMessageResponse = {
+            ...createdReactionMessage,
+            emoji: {
+                id: reactionIcon.id,
+                key: reactionIcon.key,
+            },
+        }
+
+        this.server.emit(
+            // `receive_reaction_message_public/${meetingId}`,
+            `receive_reaction_message_public/${meetingId}`,
+            createdReactionMessageResponse,
+        )
+    }
+
+    @SubscribeMessage('send_reaction_message_private')
+    async handleCreateReactionMessagePrivate(
+        @MessageBody() createReactionMessageDto: CreateReactionMessageDto,
+        // @ConnectedSocket() client: Socket,
+    ) {
+        const { meetingId, to, reactionIconId, from } = createReactionMessageDto
+        console.log('createReactionMessageDto----', createReactionMessageDto)
+        const createdReactionMessage =
+            await this.reactionMessageService.createReactionMessage(
+                createReactionMessageDto,
+            )
+        const reactionIcon = await this.reactionIconService.getReactionIconById(
+            reactionIconId,
+        )
+        const createdReactionMessageResponse = {
+            ...createdReactionMessage,
+            emoji: {
+                id: reactionIcon.id,
+                key: reactionIcon.key,
+            },
+        }
+
+        this.server.emit(
+            `receive_reaction_message_private/${meetingId}/${to}`,
+            createdReactionMessageResponse,
+        )
+        this.server.emit(
+            `receive_reaction_message_private/${meetingId}/${from}`,
+            createdReactionMessageResponse,
         )
     }
 }
