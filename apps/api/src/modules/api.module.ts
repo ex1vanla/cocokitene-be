@@ -32,6 +32,8 @@ import { CandidateModule } from './candidate/candidate.module'
 import { MessageModule } from '@api/modules/messages/message.module'
 import { SocketModule } from '@api/modules/socket/socket.module'
 import { ChatPermissionModule } from '@api/modules/chat-permission/chat-permission.module'
+import { ReactionIconModule } from './reaction-icons/reaction-icon.module'
+import { ReactionMessageModule } from './reaction_messages/reaction-message.module'
 
 @Module({
     imports: [
@@ -68,6 +70,8 @@ import { ChatPermissionModule } from '@api/modules/chat-permission/chat-permissi
         MessageModule,
         SocketModule,
         ChatPermissionModule,
+        ReactionIconModule,
+        ReactionMessageModule,
     ],
     controllers: [ApiController],
     providers: [ApiService],
