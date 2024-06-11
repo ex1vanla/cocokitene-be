@@ -399,4 +399,9 @@ export const httpErrors = {
         message: 'Create message failed. Please try again',
         code: 'MESSAGE_00000',
     },
+    //Permission Chat in Meeting
+    CHANGE_PERMISSION_CHAT_FAILED: {
+        message: 'You are not Host of Meeting',
+        code: 'CHAT_PERMISSION_00000',
+    },
 }
