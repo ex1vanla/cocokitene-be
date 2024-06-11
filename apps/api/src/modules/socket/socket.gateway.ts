@@ -13,6 +13,8 @@ import { CreateReactionMessageDto } from '@dtos/reaction-messsage.dto'
 import { ReactionIconService } from '../reaction-icons/reaction-icon.service'
 import { ReactionMessageService } from '../reaction_messages/reaction-message.service'
 import { messageChatInformation } from './socket.interface'
+import { ChangePermissionChatInMeetingDto } from '@dtos/chat-permission.dto'
+import { MeetingService } from '../meetings/meeting.service'
 
 @WebSocketGateway({
     namespace: '/',
@@ -27,6 +29,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
         private readonly messageService: MessageService,
         private readonly reactionMessageService: ReactionMessageService,
         private readonly reactionIconService: ReactionIconService,
+        private readonly meetingService: MeetingService,
     ) {}
 
     handleConnection(client: Socket) {
@@ -182,5 +185,33 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
             `receive_reaction_message_private/${meetingId}/${from}`,
             createdReactionMessageResponse,
         )
+    }
+
+    @SubscribeMessage('permission_chat_meeting')
+    async handleUpdatePermissionChat(
+        @MessageBody()
+        changePermissionChatDto: ChangePermissionChatInMeetingDto,
+    ) {
+        const { userId, meetingId, companyId, permissionChatId } =
+            changePermissionChatDto
+
+        try {
+            const meetingPermissionChat =
+                await this.meetingService.changePermissionChatInMeeting(
+                    userId,
+                    meetingId,
+                    companyId,
+                    permissionChatId,
+                )
+
+            console.log({ userId, meetingId, companyId, permissionChatId })
+            console.log('meetingPermissionChat: ', meetingPermissionChat)
+            this.server.emit(
+                `permission_chat_meeting/${meetingId}`,
+                meetingPermissionChat,
+            )
+        } catch (error) {
+            console.log('error: ', error.response.message)
+        }
     }
 }
