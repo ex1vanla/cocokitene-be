@@ -404,4 +404,10 @@ export const httpErrors = {
         message: 'You are not Host of Meeting',
         code: 'CHAT_PERMISSION_00000',
     },
+
+    //Update Message Seen
+    UPDATE_MESSAGE_SEEN_FAILED: {
+        message: 'Update last message you seen failed',
+        code: 'CHAT_00000',
+    },
 }

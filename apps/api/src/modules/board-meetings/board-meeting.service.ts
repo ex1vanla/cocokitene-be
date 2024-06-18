@@ -9,7 +9,11 @@ import {
     forwardRef,
 } from '@nestjs/common'
 import { MeetingRepository } from '@repositories/meeting.repository'
-import { PermissionEnum, RoleBoardMtgEnum } from '@shares/constants'
+import {
+    ChatPermissionEnum,
+    PermissionEnum,
+    RoleBoardMtgEnum,
+} from '@shares/constants'
 import {
     MeetingType,
     StatusMeeting,
@@ -35,6 +39,7 @@ import {
     CandidateItemDetailMeeting,
     DetailBoardMeetingResponse,
 } from './board-meeting.interface'
+import { ChatPermissionService } from '../chat-permission/chat-permission.service'
 
 @Injectable()
 export class BoardMeetingService {
@@ -49,6 +54,8 @@ export class BoardMeetingService {
         private readonly meetingRoleMtgService: MeetingRoleMtgService,
         private readonly votingService: VotingService,
         private readonly votingCandidateService: VotingCandidateService,
+        private readonly chatPermissionService: ChatPermissionService,
+
         @Inject('winston')
         private readonly logger: Logger,
     ) {}
@@ -131,6 +138,16 @@ export class BoardMeetingService {
                 HttpStatus.INTERNAL_SERVER_ERROR,
             )
         }
+
+        //Seed permission of chat for meeting is chat Public and Private
+        const chatPermissionEveryPublicPrivate =
+            await this.chatPermissionService.getChatPermissionByName(
+                ChatPermissionEnum.EVERY_PUBLIC_PRIVATE,
+            )
+
+        createdBoardMeeting.chatPermissionId =
+            chatPermissionEveryPublicPrivate.id
+        await createdBoardMeeting.save()
 
         const {
             meetingMinutes,

@@ -15,6 +15,7 @@ import { ReactionMessageService } from '../reaction_messages/reaction-message.se
 import { messageChatInformation } from './socket.interface'
 import { ChangePermissionChatInMeetingDto } from '@dtos/chat-permission.dto'
 import { MeetingService } from '../meetings/meeting.service'
+import { UserSeenMessageService } from '../user-seen-message/user-seen-message.service'
 
 @WebSocketGateway({
     namespace: '/',
@@ -30,6 +31,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
         private readonly reactionMessageService: ReactionMessageService,
         private readonly reactionIconService: ReactionIconService,
         private readonly meetingService: MeetingService,
+        private readonly userSeenMessageService: UserSeenMessageService,
     ) {}
 
     handleConnection(client: Socket) {
@@ -69,6 +71,12 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
             },
             replyMessage: messageChatInfo.replyMessage,
         }
+
+        await this.userSeenMessageService.updateLastMessageUserSeen(
+            createdMessage.senderId,
+            createdMessage.meetingId,
+            createdMessage.id,
+        )
         // client.broadcast
         this.server
             // .to(meetingId.toString())
@@ -107,6 +115,12 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
             },
             replyMessage: messageChatInfo.replyMessage,
         }
+
+        await this.userSeenMessageService.updateLastMessageUserSeen(
+            createdMessagePrivate.senderId,
+            createdMessagePrivate.meetingId,
+            createdMessagePrivate.id,
+        )
 
         // client.broadcast
         // .to(meetingId.toString())

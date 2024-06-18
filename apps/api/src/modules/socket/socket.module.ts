@@ -4,6 +4,7 @@ import { MessageModule } from '@api/modules/messages/message.module'
 import { ReactionMessageModule } from '../reaction_messages/reaction-message.module'
 import { ReactionIconModule } from '../reaction-icons/reaction-icon.module'
 import { MeetingModule } from '../meetings/meeting.module'
+import { UserSeenMessageModule } from '../user-seen-message/user-seen-message.module'
 
 @Module({
     imports: [
@@ -11,6 +12,7 @@ import { MeetingModule } from '../meetings/meeting.module'
         ReactionMessageModule,
         ReactionIconModule,
         MeetingModule,
+        UserSeenMessageModule,
     ],
     controllers: [],
     providers: [SocketGateway],
