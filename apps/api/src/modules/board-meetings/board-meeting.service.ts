@@ -485,6 +485,17 @@ export class BoardMeetingService {
                 HttpStatus.BAD_REQUEST,
             )
         }
+
+        if (
+            existedBoardMeeting.status == StatusMeeting.CANCELED ||
+            existedBoardMeeting.status == StatusMeeting.HAPPENED
+        ) {
+            throw new HttpException(
+                httpErrors.MEETING_UPDATE_FAILED,
+                HttpStatus.BAD_REQUEST,
+            )
+        }
+
         //Update board Meeting
         try {
             existedBoardMeeting =

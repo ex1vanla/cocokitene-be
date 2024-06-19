@@ -327,6 +327,12 @@ export class MeetingService {
                 HttpStatus.NOT_FOUND,
             )
         }
+        if (meeting.type !== MeetingType.SHAREHOLDER_MEETING) {
+            throw new HttpException(
+                httpErrors.MEETING_NOT_FOUND,
+                HttpStatus.NOT_FOUND,
+            )
+        }
 
         const meetingRoleMtgs =
             await this.meetingRoleMtgService.getMeetingRoleMtgByMeetingId(
@@ -501,6 +507,15 @@ export class MeetingService {
         if (!existedMeeting) {
             throw new HttpException(
                 httpErrors.MEETING_NOT_EXISTED,
+                HttpStatus.BAD_REQUEST,
+            )
+        }
+        if (
+            existedMeeting.status == StatusMeeting.CANCELED ||
+            existedMeeting.status == StatusMeeting.HAPPENED
+        ) {
+            throw new HttpException(
+                httpErrors.MEETING_UPDATE_FAILED,
                 HttpStatus.BAD_REQUEST,
             )
         }
