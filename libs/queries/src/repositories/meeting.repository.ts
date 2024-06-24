@@ -265,6 +265,7 @@ export class MeetingRepository extends Repository<Meeting> {
             'meetings.meetingLink',
             'meetings.status',
             'meetings.companyId',
+            'meetings.type',
         ])
         if (
             meetingIdsAppearedInTransaction &&

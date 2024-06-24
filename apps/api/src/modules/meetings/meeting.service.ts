@@ -11,7 +11,9 @@ import { MeetingRepository } from '@repositories/meeting.repository'
 
 import { MeetingFileService } from '@api/modules/meeting-files/meeting-file.service'
 import {
+    calculateVoter,
     DetailMeetingResponse,
+    ListFileOfMeeting,
     ParticipantMeeting,
     ProposalItemDetailMeeting,
 } from '@api/modules/meetings/meeting.interface'
@@ -21,6 +23,7 @@ import { Meeting } from '@entities/meeting.entity'
 import { UserMeeting } from '@entities/user-meeting.entity'
 import { UserMeetingRepository } from '@repositories/user-meeting.repository'
 import {
+    MeetingHash,
     MeetingType,
     StatusMeeting,
     UserMeetingStatusEnum,
@@ -41,13 +44,18 @@ import { User } from '@entities/user.entity'
 import {
     ChatPermissionEnum,
     PermissionEnum,
+    RoleBoardMtgEnum,
     RoleMtgEnum,
 } from '@shares/constants'
 import { Logger } from 'winston'
 import { MeetingRoleMtgService } from '@api/modules/meeting-role-mtgs/meeting-role-mtg.service'
 import { RoleMtgService } from '@api/modules/role-mtgs/role-mtg.service'
 import { ChatPermissionService } from '@api/modules/chat-permission/chat-permission.service'
-import { PermissionChatInMeetingDto } from '@dtos/chat-permission.dto'
+import { CandidateRepository } from '@repositories/candidate.repository'
+import { ProposalRepository } from '@repositories/proposal.repository'
+import { VotingCandidateService } from '../voting-candidate/voting-candidate.service'
+import { hashMd5 } from '@shares/utils/md5'
+import { dateTimeToEpochTime } from '@shares/utils'
 
 @Injectable()
 export class MeetingService {
@@ -65,6 +73,11 @@ export class MeetingService {
         private readonly meetingRoleMtgService: MeetingRoleMtgService,
         private readonly roleMtgService: RoleMtgService,
         private readonly chatPermissionService: ChatPermissionService,
+
+        private readonly candidateRepository: CandidateRepository,
+        private readonly proposalRepository: ProposalRepository,
+        @Inject(forwardRef(() => VotingCandidateService))
+        private readonly votingCandidateService: VotingCandidateService,
         @Inject('winston')
         private readonly logger: Logger,
     ) {}
@@ -762,5 +775,284 @@ export class MeetingService {
         await meeting.save()
 
         return meeting.chatPermissionId
+    }
+
+    async getDataHashByMeetingId(meetingId: number, companyId: number) {
+        //Meeting file
+        const meeting = await this.getMeetingByMeetingIdAndCompanyId(
+            meetingId,
+            companyId,
+        )
+
+        const meetingFiles =
+            await this.meetingFileService.getMeetingFilesByMeetingId(meetingId)
+        const listMeetingFile: ListFileOfMeeting[] = meetingFiles.map(
+            (meetingFile) => {
+                return {
+                    meetingId: meetingFile.meetingId,
+                    meetingFileId: meetingFile.id,
+                    url: meetingFile.url,
+                    type: meetingFile.fileType,
+                }
+            },
+        )
+
+        const listMeetingProposals =
+            await this.proposalRepository.getAllProposalByMtgId(meetingId)
+        const listMeetingCandidates =
+            await this.candidateRepository.getAllCandidateByMeetingId(meetingId)
+
+        const listVoteProposals = []
+        const listVoteCandidate = []
+
+        await Promise.all([
+            ...listMeetingProposals.map(async (proposal) => {
+                const listVoteOfProposal =
+                    await this.votingService.getAllVotingByProposalId(
+                        proposal.id,
+                    )
+                listVoteOfProposal.map((vote) => {
+                    listVoteProposals.push(vote)
+                })
+            }),
+            ...listMeetingCandidates.map(async (candidate) => {
+                const listVoteOfCandidate =
+                    await this.votingCandidateService.getAllVotingByCandidateId(
+                        candidate.id,
+                    )
+                listVoteOfCandidate.map((voteCandidate) => {
+                    listVoteCandidate.push(voteCandidate)
+                })
+            }),
+        ])
+
+        const listParticipantOfMeeting =
+            await this.userMeetingRepository.getAllIdsParticipantInBoardMeeting(
+                meetingId,
+            )
+
+        const voteInformation = await this.calculateVoter(
+            meeting.id,
+            companyId,
+            meeting.type,
+        )
+
+        const hash_basicMeeting = hashMd5(
+            JSON.stringify({
+                meetingId: meeting.id,
+                companyId: companyId,
+                titleMeeting: meeting.title,
+                meetingLink: meeting.meetingLink,
+                startTimeMeeting: dateTimeToEpochTime(meeting.startTime),
+                endTimeMeeting: dateTimeToEpochTime(meeting.endTime),
+                voterTotal: voteInformation.voterTotal,
+                voterJoined: voteInformation.voterJoined,
+                totalMeetingVote: voteInformation.totalMeetingVote,
+                joinedMeetingVote: voteInformation.joinedMeetingVote,
+            }),
+        )
+
+        const hash_fileMeeting = hashMd5(JSON.stringify(listMeetingFile))
+        const hash_proposalMeeting = hashMd5(
+            JSON.stringify(listMeetingProposals),
+        )
+        const hash_proposalVote = hashMd5(JSON.stringify(listVoteProposals))
+        const hash_candidateMeeting = hashMd5(
+            JSON.stringify(listMeetingCandidates),
+        )
+        const hash_candidateVote = hashMd5(JSON.stringify(listVoteCandidate))
+        const hash_participantMeeting = hashMd5(
+            JSON.stringify(listParticipantOfMeeting),
+        )
+        const hash_detailMeeting = hashMd5(
+            JSON.stringify({
+                meetingId: meeting.id,
+                companyId: companyId,
+                titleMeeting: meeting.title,
+                meetingLink: meeting.meetingLink,
+                startTimeMeeting: dateTimeToEpochTime(meeting.startTime),
+                endTimeMeeting: dateTimeToEpochTime(meeting.endTime),
+                voterTotal: voteInformation.voterTotal,
+                voterJoined: voteInformation.voterJoined,
+                totalMeetingVote: voteInformation.totalMeetingVote,
+                joinedMeetingVote: voteInformation.joinedMeetingVote,
+                fileMeeting: listMeetingFile,
+                proposalMeeting: listMeetingProposals,
+                proposalVote: listVoteProposals,
+                candidateMeeting: listMeetingCandidates,
+                candidateVote: listVoteCandidate,
+                participantMeeting: listParticipantOfMeeting,
+            }),
+        )
+
+        return {
+            id: meeting.id,
+            [MeetingHash.HASH_MEETING_BASE]: hash_basicMeeting,
+            [MeetingHash.HASH_MEETING_FILE]: hash_fileMeeting,
+            [MeetingHash.HASH_MEETING_PROPOSAL]: hash_proposalMeeting,
+            [MeetingHash.HASH_MEETING_VOTED_PROPOSAL]: hash_proposalVote,
+            [MeetingHash.HASH_MEETING_CANDIDATE]: hash_candidateMeeting,
+            [MeetingHash.HASH_MEETING_VOTED_CANDIDATE]: hash_candidateVote,
+            [MeetingHash.HASH_MEETING_PARTICIPANT]: hash_participantMeeting,
+            [MeetingHash.HASH_DETAIL_MEETING]: hash_detailMeeting,
+        }
+    }
+
+    async calculateVoter(
+        meetingId: number,
+        companyId: number,
+        meetingType: MeetingType,
+    ): Promise<calculateVoter> {
+        const meetingRoleMtgs =
+            await this.meetingRoleMtgService.getMeetingRoleMtgByMeetingId(
+                meetingId,
+            )
+
+        const roleMtgs = meetingRoleMtgs
+            .map((item) => item.roleMtg)
+            .sort((a, b) => a.roleName.localeCompare(b.roleName))
+
+        const participantsPromises = roleMtgs.map(async (roleMtg) => {
+            const userMeetings =
+                await this.userMeetingService.getUserMeetingByMeetingIdAndRole(
+                    meetingId,
+                    roleMtg.id,
+                )
+
+            const userParticipants = userMeetings.map((userMeeting) => {
+                return {
+                    userDefaultAvatarHashColor:
+                        userMeeting.user.defaultAvatarHashColor,
+                    userId: userMeeting.user.id,
+                    userAvatar: userMeeting.user.avatar,
+                    userEmail: userMeeting.user.email,
+                    status: userMeeting.status,
+                    userJoined:
+                        userMeeting.status ===
+                        UserMeetingStatusEnum.PARTICIPATE,
+                    userShareQuantity: userMeeting.user.shareQuantity,
+                }
+            })
+
+            return {
+                roleMtgId: roleMtg.id,
+                roleMtgName: roleMtg.roleName,
+                userParticipants: userParticipants,
+            }
+        })
+
+        const participants = await Promise.all(participantsPromises)
+
+        let voterTotal: number,
+            voterJoined: number,
+            totalMeetingVote: number,
+            joinedMeetingVote: number
+
+        if (meetingType === MeetingType.SHAREHOLDER_MEETING) {
+            const roleMtgShareholderId =
+                await this.roleMtgService.getRoleMtgByNameAndCompanyId(
+                    RoleMtgEnum.SHAREHOLDER,
+                    companyId,
+                )
+            const shareholders = participants.find(
+                (item) => item.roleMtgId === roleMtgShareholderId?.id,
+            )
+            if (!shareholders) {
+                voterTotal = 0
+                voterJoined = 0
+                totalMeetingVote = 0
+                joinedMeetingVote = 0
+            } else {
+                voterTotal = shareholders.userParticipants.length
+
+                voterJoined = shareholders.userParticipants.reduce(
+                    (accumulator, currentValue) => {
+                        accumulator =
+                            currentValue.status ===
+                            UserMeetingStatusEnum.PARTICIPATE
+                                ? accumulator + 1
+                                : accumulator
+                        return accumulator
+                    },
+                    0,
+                )
+
+                totalMeetingVote = shareholders.userParticipants.reduce(
+                    (accumulator, currentValue) => {
+                        if (currentValue.userShareQuantity) {
+                            accumulator += Number(
+                                currentValue.userShareQuantity,
+                            )
+                        }
+                        return accumulator
+                    },
+                    0,
+                )
+
+                joinedMeetingVote = shareholders.userParticipants.reduce(
+                    (accumulator, currentValue) => {
+                        if (currentValue.userShareQuantity) {
+                            accumulator =
+                                currentValue.status ===
+                                UserMeetingStatusEnum.PARTICIPATE
+                                    ? accumulator +
+                                      Number(currentValue.userShareQuantity)
+                                    : accumulator
+                        }
+                        return accumulator
+                    },
+                    0,
+                )
+            }
+        }
+        if (meetingType === MeetingType.BOARD_MEETING) {
+            const idOfHostRoleInMtg = meetingRoleMtgs
+                .map((item) => item.roleMtg)
+                .filter(
+                    (role) =>
+                        role.roleName.toLocaleUpperCase() ===
+                        RoleBoardMtgEnum.HOST.toLocaleUpperCase(),
+                )
+
+            const participantBoard = participants
+                .filter((item) => item.roleMtgId !== idOfHostRoleInMtg[0]?.id)
+                .map((item) => item.userParticipants)
+                .flat()
+
+            const participantBoardId = participantBoard.map(
+                (participant) => participant.userId,
+            )
+
+            const cachedObject = {}
+            const uniqueParticipants = participantBoard.filter((obj) => {
+                if (!cachedObject[obj.userId]) {
+                    cachedObject[obj.userId] = true
+                    return true
+                }
+                return false
+            })
+
+            voterTotal = new Set(participantBoardId).size
+            if (!voterTotal) {
+                voterTotal = 0
+                totalMeetingVote = 0
+            } else {
+                voterJoined = uniqueParticipants.reduce((total, current) => {
+                    total =
+                        current.status === UserMeetingStatusEnum.PARTICIPATE
+                            ? total + 1
+                            : total
+                    return total
+                }, 0)
+                joinedMeetingVote = voterJoined
+                totalMeetingVote = voterTotal
+            }
+        }
+        return {
+            voterTotal: voterTotal,
+            voterJoined: voterJoined,
+            totalMeetingVote: totalMeetingVote,
+            joinedMeetingVote: joinedMeetingVote,
+        }
     }
 }
