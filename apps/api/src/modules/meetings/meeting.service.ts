@@ -51,7 +51,6 @@ import { Logger } from 'winston'
 import { MeetingRoleMtgService } from '@api/modules/meeting-role-mtgs/meeting-role-mtg.service'
 import { RoleMtgService } from '@api/modules/role-mtgs/role-mtg.service'
 import { ChatPermissionService } from '@api/modules/chat-permission/chat-permission.service'
-import { PermissionChatInMeetingDto } from '@dtos/chat-permission.dto'
 import { CandidateRepository } from '@repositories/candidate.repository'
 import { ProposalRepository } from '@repositories/proposal.repository'
 import { VotingCandidateService } from '../voting-candidate/voting-candidate.service'
@@ -777,7 +776,7 @@ export class MeetingService {
 
         return meeting.chatPermissionId
     }
-    
+
     async getDataHashByMeetingId(meetingId: number, companyId: number) {
         //Meeting file
         const meeting = await this.getMeetingByMeetingIdAndCompanyId(
