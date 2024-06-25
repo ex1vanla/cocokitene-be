@@ -88,6 +88,8 @@ export class TransactionService {
                             meetingFileId: meetingFile.id,
                             url: meetingFile.url,
                             type: meetingFile.fileType,
+                            createAt: meetingFile.createdAt,
+                            deletedAt: meetingFile.deletedAt,
                         }
                     },
                 )
@@ -148,6 +150,10 @@ export class TransactionService {
                             meeting.startTime,
                         ),
                         endTimeMeeting: dateTimeToEpochTime(meeting.endTime),
+                        endVotingTime: dateTimeToEpochTime(
+                            meeting.endVotingTime,
+                        ),
+                        status: meeting.status,
                         voterTotal: voteInformation.voterTotal,
                         voterJoined: voteInformation.voterJoined,
                         totalMeetingVote: voteInformation.totalMeetingVote,
@@ -183,6 +189,10 @@ export class TransactionService {
                             meeting.startTime,
                         ),
                         endTimeMeeting: dateTimeToEpochTime(meeting.endTime),
+                        endVotingTime: dateTimeToEpochTime(
+                            meeting.endVotingTime,
+                        ),
+                        status: meeting.status,
                         voterTotal: voteInformation.voterTotal,
                         voterJoined: voteInformation.voterJoined,
                         totalMeetingVote: voteInformation.totalMeetingVote,

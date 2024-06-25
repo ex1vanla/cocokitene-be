@@ -1,7 +1,10 @@
 import { Meeting } from '@entities/meeting.entity'
 import { Proposal } from '@entities/proposal.entity'
 import { VoteProposalResult } from '@shares/constants/proposal.const'
-import { UserMeetingStatusEnum } from '@shares/constants/meeting.const'
+import {
+    FileTypes,
+    UserMeetingStatusEnum,
+} from '@shares/constants/meeting.const'
 
 export interface ProposalItemDetailMeeting extends Proposal {
     voteResult: VoteProposalResult
@@ -47,4 +50,5 @@ export interface ListFileOfMeeting {
     meetingId: number
     meetingFileId: number
     url: string
+    type: FileTypes
 }
