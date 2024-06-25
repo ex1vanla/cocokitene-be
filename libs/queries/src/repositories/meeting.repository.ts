@@ -99,6 +99,12 @@ export class MeetingRepository extends Repository<Meeting> {
             queryBuilder.andWhere('meetings.endTime <= :currentDateTime ', {
                 currentDateTime: new Date(),
             })
+            queryBuilder.leftJoin('meetings.transaction', 'transaction')
+            queryBuilder.addSelect([
+                'transaction.keyQuery',
+                'transaction.contractAddress',
+            ])
+            console.log('Meeting Pass')
         }
 
         return paginateRaw(queryBuilder, options)
