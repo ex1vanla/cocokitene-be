@@ -793,6 +793,8 @@ export class MeetingService {
                     meetingFileId: meetingFile.id,
                     url: meetingFile.url,
                     type: meetingFile.fileType,
+                    createAt: meetingFile.createdAt,
+                    deletedAt: meetingFile.deletedAt,
                 }
             },
         )
@@ -845,6 +847,8 @@ export class MeetingService {
                 meetingLink: meeting.meetingLink,
                 startTimeMeeting: dateTimeToEpochTime(meeting.startTime),
                 endTimeMeeting: dateTimeToEpochTime(meeting.endTime),
+                endVotingTime: dateTimeToEpochTime(meeting.endVotingTime),
+                status: meeting.status,
                 voterTotal: voteInformation.voterTotal,
                 voterJoined: voteInformation.voterJoined,
                 totalMeetingVote: voteInformation.totalMeetingVote,
@@ -872,6 +876,8 @@ export class MeetingService {
                 meetingLink: meeting.meetingLink,
                 startTimeMeeting: dateTimeToEpochTime(meeting.startTime),
                 endTimeMeeting: dateTimeToEpochTime(meeting.endTime),
+                endVotingTime: dateTimeToEpochTime(meeting.endVotingTime),
+                status: meeting.status,
                 voterTotal: voteInformation.voterTotal,
                 voterJoined: voteInformation.voterJoined,
                 totalMeetingVote: voteInformation.totalMeetingVote,
