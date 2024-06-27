@@ -132,6 +132,15 @@ export class TransactionService {
                         meeting.id,
                     )
 
+                listMeetingFile.sort(
+                    (a, b) => a.meetingFileId - b.meetingFileId,
+                )
+                listMeetingProposals.sort((a, b) => a.id - b.id)
+                listVoteProposals.sort((a, b) => a.id - b.id)
+                listMeetingCandidates.sort((a, b) => a.id - b.id)
+                listVoteCandidate.sort((a, b) => a.id - b.id)
+                listParticipantOfMeeting.sort((a, b) => a.id - b.id)
+
                 const voteInformation = await this.calculateVoter(
                     meeting.id,
                     companyId,
