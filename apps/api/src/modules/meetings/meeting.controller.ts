@@ -215,7 +215,7 @@ export class MeetingController {
 
         return permissionChat
     }
-    
+
     @Get('/:id/dataHash')
     @UseGuards(JwtAuthGuard)
     @Permission(PermissionEnum.CHECK_DATA_MEETING)
