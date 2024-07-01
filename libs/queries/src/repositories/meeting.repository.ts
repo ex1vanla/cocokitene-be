@@ -104,7 +104,6 @@ export class MeetingRepository extends Repository<Meeting> {
                 'transaction.keyQuery',
                 'transaction.contractAddress',
             ])
-            console.log('Meeting Pass')
         }
 
         return paginateRaw(queryBuilder, options)
