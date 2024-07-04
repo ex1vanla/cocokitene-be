@@ -79,7 +79,13 @@ export class VotingService {
             )
         }
 
-        const existedUser = await this.userService.getActiveUserById(userId)
+        // const existedUser = await this.userService.getActiveUserById(userId)
+        const existedUser =
+            await this.userMeetingService.getParticipantInMeeting(
+                proposal.meetingId,
+                userId,
+                roleMtgShareholder.id,
+            )
         if (!existedUser) {
             throw new HttpException(
                 httpErrors.USER_NOT_FOUND,
@@ -125,7 +131,7 @@ export class VotingService {
                 HttpStatus.BAD_REQUEST,
             )
         }
-        const shareOfUser = existedUser.shareQuantity
+        const shareOfUser = existedUser.quantityShare
 
         const existedProposal = await this.proposalRepository.getProposalById(
             proposalId,

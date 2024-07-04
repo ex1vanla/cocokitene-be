@@ -299,11 +299,32 @@ export class MeetingService {
                 ...participants.map(async (item) => {
                     await Promise.all([
                         ...item.userIds.map(async (userId) => {
-                            await this.userMeetingService.createUserMeeting({
-                                userId: userId,
-                                meetingId: createdMeeting.id,
-                                roleMtgId: item.roleMtgId,
-                            })
+                            if (
+                                item.roleName.toLocaleUpperCase() ===
+                                RoleMtgEnum.SHAREHOLDER.toLocaleUpperCase()
+                            ) {
+                                const quantityOfShareholder =
+                                    await this.userService.getQuantityShareByShareholderId(
+                                        userId,
+                                    )
+
+                                await this.userMeetingService.createUserMeeting(
+                                    {
+                                        userId: userId,
+                                        meetingId: createdMeeting.id,
+                                        roleMtgId: item.roleMtgId,
+                                        quantityShare: quantityOfShareholder,
+                                    },
+                                )
+                            } else {
+                                await this.userMeetingService.createUserMeeting(
+                                    {
+                                        userId: userId,
+                                        meetingId: createdMeeting.id,
+                                        roleMtgId: item.roleMtgId,
+                                    },
+                                )
+                            }
                         }),
                     ])
                 }),
@@ -374,7 +395,7 @@ export class MeetingService {
                     userJoined:
                         userMeeting.status ===
                         UserMeetingStatusEnum.PARTICIPATE,
-                    userShareQuantity: userMeeting.user.shareQuantity,
+                    userShareQuantity: userMeeting.quantityShare,
                 }
             })
 
@@ -579,10 +600,36 @@ export class MeetingService {
             .map((participant) => participant.roleMtgId)
             .find((id) => true)
 
-        const totalShares =
-            await this.userService.getTotalSharesHolderByShareholderIds(
-                shareholders,
+        const participantShareholderIdCurrent =
+            await this.userMeetingRepository.getListUserIdPaticipantsByMeetingIdAndMeetingRole(
+                meetingId,
+                roleMtgShareholderId,
             )
+
+        const shareholderIdOld: number[] = []
+        const shareholderIdNew: number[] = []
+
+        shareholders.forEach((shareholder) => {
+            if (participantShareholderIdCurrent.includes(shareholder)) {
+                shareholderIdOld.push(shareholder)
+            } else {
+                shareholderIdNew.push(shareholder)
+            }
+        })
+
+        const totalShareOld =
+            await this.userMeetingService.getTotalQuantityShareByParticipantId(
+                meetingId,
+                shareholderIdOld,
+                roleMtgShareholderId,
+            )
+
+        const totalShareAdd =
+            await this.userService.getTotalSharesHolderByShareholderIds(
+                shareholderIdNew,
+            )
+
+        const totalShares: number = totalShareOld + totalShareAdd
 
         const listMeetingFiles = [...meetingMinutes, ...meetingInvitations]
         const listProposals = [...resolutions, ...amendmentResolutions]
@@ -619,6 +666,7 @@ export class MeetingService {
                         meetingId,
                         item.roleMtgId,
                         item.userIds,
+                        roleMtgShareholderId,
                     ),
                 ),
 
