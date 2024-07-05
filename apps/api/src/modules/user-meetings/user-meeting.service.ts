@@ -109,12 +109,26 @@ export class UserMeetingService {
                         UserMeetingStatusEnum.PARTICIPATE,
                     )
                 if (isUserParticipateMeeting) {
-                    await this.createUserMeeting({
-                        userId: usersToAdd,
-                        meetingId: meetingId,
-                        roleMtgId: roleMtgId,
-                        status: UserMeetingStatusEnum.PARTICIPATE,
-                    })
+                    if (roleMtgId === roleMtgShareholderId) {
+                        const quantityOfShareholder =
+                            await this.userService.getQuantityShareByShareholderId(
+                                usersToAdd,
+                            )
+                        await this.createUserMeeting({
+                            userId: usersToAdd,
+                            meetingId: meetingId,
+                            roleMtgId: roleMtgId,
+                            quantityShare: quantityOfShareholder,
+                            status: UserMeetingStatusEnum.PARTICIPATE,
+                        })
+                    } else {
+                        await this.createUserMeeting({
+                            userId: usersToAdd,
+                            meetingId: meetingId,
+                            roleMtgId: roleMtgId,
+                            status: UserMeetingStatusEnum.PARTICIPATE,
+                        })
+                    }
                 } else {
                     if (roleMtgId === roleMtgShareholderId) {
                         const quantityOfShareholder =
