@@ -119,6 +119,7 @@ export class UserMeetingService {
                             meetingId: meetingId,
                             roleMtgId: roleMtgId,
                             quantityShare: quantityOfShareholder,
+                            status: UserMeetingStatusEnum.PARTICIPATE,
                         })
                     } else {
                         await this.createUserMeeting({
