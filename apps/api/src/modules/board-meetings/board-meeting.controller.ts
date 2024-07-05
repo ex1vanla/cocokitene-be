@@ -91,6 +91,7 @@ export class BoardMeetingController {
             meetingId,
             companyId,
             userId,
+            user,
         )
 
         return boardMeeting

@@ -350,6 +350,7 @@ export class MeetingService {
         meetingId: number,
         companyId: number,
         userId: number,
+        user: User,
     ): Promise<DetailMeetingResponse> {
         const meeting = await this.meetingRepository.getMeetingByIdAndCompanyId(
             meetingId,
@@ -406,7 +407,25 @@ export class MeetingService {
             }
         })
 
+        const permissionKeys: string[] = (user as any).permissionKeys || []
+        const canUserCreateMeeting = permissionKeys.includes(
+            PermissionEnum.CREATE_MEETING,
+        )
+
         const participants = await Promise.all(participantsPromises)
+
+        const isParticipant = participants
+            .flatMap((participant) => participant.userParticipants)
+            .some((parti) => parti.userId == userId)
+        console.log('canUserCreateMeeting: ', canUserCreateMeeting)
+        console.log('Is Participants: ', isParticipant)
+
+        if (!isParticipant && !canUserCreateMeeting) {
+            throw new HttpException(
+                httpErrors.MEETING_NOT_FOUND,
+                HttpStatus.NOT_FOUND,
+            )
+        }
 
         const roleMtgShareholderId =
             await this.roleMtgService.getRoleMtgByNameAndCompanyId(
