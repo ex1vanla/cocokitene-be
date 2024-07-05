@@ -151,6 +151,7 @@ export class MeetingController {
             meetingId,
             companyId,
             userId,
+            user,
         )
         return meeting
     }
