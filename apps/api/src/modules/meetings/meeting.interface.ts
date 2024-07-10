@@ -1,5 +1,5 @@
 import { Meeting } from '@entities/meeting.entity'
-import { Proposal } from '@entities/proposal.entity'
+import { Proposal } from '@entities/meeting-proposal.entity'
 import { VoteProposalResult } from '@shares/constants/proposal.const'
 import {
     FileTypes,

@@ -1,18 +1,20 @@
 import {
     BaseEntity,
     Column,
+    CreateDateColumn,
     DeleteDateColumn,
     Entity,
     JoinColumn,
     ManyToOne,
     PrimaryGeneratedColumn,
     Unique,
+    UpdateDateColumn,
 } from 'typeorm'
 import { User } from '@entities/user.entity'
-import { Candidate } from './candidate.entity'
+import { Candidate } from './board-members.entity'
 import { VoteProposalResult } from '@shares/constants/proposal.const'
 
-@Entity('voting_candidate')
+@Entity('voting_board_members')
 @Unique(['userId', 'votedForCandidateId'])
 export class VotingCandidate extends BaseEntity {
     @PrimaryGeneratedColumn()
@@ -23,7 +25,7 @@ export class VotingCandidate extends BaseEntity {
 
     @Column({
         nullable: false,
-        name: 'voted_for_candidate_id',
+        name: 'board_member_id',
         type: 'integer',
         width: 11,
     })
@@ -36,6 +38,12 @@ export class VotingCandidate extends BaseEntity {
         enum: VoteProposalResult,
     })
     result: VoteProposalResult
+
+    @CreateDateColumn({ name: 'created_at' })
+    createdAt: Date
+
+    @UpdateDateColumn({ name: 'updated_at' })
+    updatedAt: Date
 
     @DeleteDateColumn()
     deletedAt: Date

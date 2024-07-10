@@ -1,5 +1,5 @@
 import { Repository } from 'typeorm'
-import { VotingCandidate } from '@entities/voting-candidate.entity'
+import { VotingCandidate } from '@entities/voting-board-members.entity'
 import { CustomRepository } from '@shares/decorators'
 import { CreateVoteCandidateDto } from '@dtos/voting-candidate.dto'
 
