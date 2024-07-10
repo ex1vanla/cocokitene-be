@@ -1,6 +1,6 @@
 import { VoteCandidateDto } from '@dtos/voting-candidate.dto'
-import { Candidate } from '@entities/candidate.entity'
-import { VotingCandidate } from '@entities/voting-candidate.entity'
+import { Candidate } from '@entities/board-members.entity'
+import { VotingCandidate } from '@entities/voting-board-members.entity'
 import {
     HttpException,
     HttpStatus,
@@ -8,9 +8,9 @@ import {
     Injectable,
     forwardRef,
 } from '@nestjs/common'
-import { VotingCandidateRepository } from '@repositories/voting-candidate.repository'
+import { VotingCandidateRepository } from '@repositories/voting-board-members.repository'
 import { MeetingRoleMtgService } from '../meeting-role-mtgs/meeting-role-mtg.service'
-import { CandidateRepository } from '@repositories/candidate.repository'
+import { CandidateRepository } from '@repositories/board-members.repository'
 import { RoleMtgEnum } from '@shares/constants'
 import { httpErrors, messageLog } from '@shares/exception-filter'
 import { UserService } from '../users/user.service'

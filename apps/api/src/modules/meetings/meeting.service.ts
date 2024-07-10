@@ -20,8 +20,8 @@ import {
 import { ProposalService } from '@api/modules/proposals/proposal.service'
 import { UserMeetingService } from '@api/modules/user-meetings/user-meeting.service'
 import { Meeting } from '@entities/meeting.entity'
-import { UserMeeting } from '@entities/user-meeting.entity'
-import { UserMeetingRepository } from '@repositories/user-meeting.repository'
+import { UserMeeting } from '@entities/meeting-participant.entity'
+import { UserMeetingRepository } from '@repositories/meeting-participant.repository'
 import {
     MeetingHash,
     MeetingType,
@@ -51,8 +51,8 @@ import { Logger } from 'winston'
 import { MeetingRoleMtgService } from '@api/modules/meeting-role-mtgs/meeting-role-mtg.service'
 import { RoleMtgService } from '@api/modules/role-mtgs/role-mtg.service'
 import { ChatPermissionService } from '@api/modules/chat-permission/chat-permission.service'
-import { CandidateRepository } from '@repositories/candidate.repository'
-import { ProposalRepository } from '@repositories/proposal.repository'
+import { CandidateRepository } from '@repositories/board-members.repository'
+import { ProposalRepository } from '@repositories/meeting-proposal.repository'
 import { VotingCandidateService } from '../voting-candidate/voting-candidate.service'
 import { hashMd5 } from '@shares/utils/md5'
 import { dateTimeToEpochTime } from '@shares/utils'
@@ -417,8 +417,6 @@ export class MeetingService {
         const isParticipant = participants
             .flatMap((participant) => participant.userParticipants)
             .some((parti) => parti.userId == userId)
-        console.log('canUserCreateMeeting: ', canUserCreateMeeting)
-        console.log('Is Participants: ', isParticipant)
 
         if (!isParticipant && !canUserCreateMeeting) {
             throw new HttpException(

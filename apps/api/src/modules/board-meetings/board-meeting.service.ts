@@ -348,8 +348,6 @@ export class BoardMeetingService {
         const isParticipant = participants
             .flatMap((participant) => participant.userParticipants)
             .some((parti) => parti.userId == userId)
-        console.log('canUserCreateMeeting: ', canUserCreateBoardMeeting)
-        console.log('Is Participants: ', isParticipant)
 
         if (!isParticipant && !canUserCreateBoardMeeting) {
             throw new HttpException(

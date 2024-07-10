@@ -1,17 +1,19 @@
 import {
     BaseEntity,
     Column,
+    CreateDateColumn,
     DeleteDateColumn,
     Entity,
     JoinColumn,
     ManyToOne,
     PrimaryGeneratedColumn,
+    UpdateDateColumn,
 } from 'typeorm'
 import { Meeting } from '@entities/meeting.entity'
 import { User } from '@entities/user.entity'
 import { Election } from './election.entity'
 
-@Entity('candidate')
+@Entity('board_members')
 export class Candidate extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number
@@ -26,7 +28,7 @@ export class Candidate extends BaseEntity {
 
     @Column({
         nullable: false,
-        name: 'candidate_name',
+        name: 'name',
         type: 'varchar',
         length: 255,
     })
@@ -87,6 +89,12 @@ export class Candidate extends BaseEntity {
         name: 'creator_id',
     })
     creator: User
+
+    @CreateDateColumn({ name: 'created_at' })
+    createdAt: Date
+
+    @UpdateDateColumn({ name: 'updated_at' })
+    updatedAt: Date
 
     @DeleteDateColumn()
     deletedAt: Date

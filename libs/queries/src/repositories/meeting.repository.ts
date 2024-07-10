@@ -43,14 +43,14 @@ export class MeetingRepository extends Repository<Meeting> {
             .distinct(true)
         if (canUserCreateMeeting) {
             queryBuilder.leftJoin(
-                'user_meetings',
+                'meeting_participant',
                 'userMeeting',
                 'userMeeting.meetingId = meetings.id AND userMeeting.userId = :userId',
                 { userId },
             )
         } else {
             queryBuilder.innerJoin(
-                'user_meetings',
+                'meeting_participant',
                 'userMeeting',
                 'userMeeting.meetingId = meetings.id AND userMeeting.userId = :userId',
                 { userId },

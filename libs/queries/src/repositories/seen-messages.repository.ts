@@ -1,4 +1,4 @@
-import { UserSeenMessage } from '@entities/user_seen_message.entity'
+import { UserSeenMessage } from '@entities/seen-messages.entity'
 import { CustomRepository } from '@shares/decorators'
 import { Repository } from 'typeorm'
 

@@ -3,7 +3,7 @@ import {
     ParticipantDetailMeeting,
     ProposalItemDetailMeeting,
 } from '../meetings/meeting.interface'
-import { Candidate } from '@entities/candidate.entity'
+import { Candidate } from '@entities/board-members.entity'
 import { VoteProposalResult } from '@shares/constants/proposal.const'
 
 export interface CandidateItemDetailMeeting extends Candidate {

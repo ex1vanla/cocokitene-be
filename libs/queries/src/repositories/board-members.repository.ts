@@ -1,5 +1,5 @@
 import { Repository } from 'typeorm'
-import { Candidate } from '@entities/candidate.entity'
+import { Candidate } from '@entities/board-members.entity'
 import { CustomRepository } from '@shares/decorators'
 import { CandidateUpdateDto, CreateCandidateDto } from '@dtos/candidate.dto'
 @CustomRepository(Candidate)
@@ -51,7 +51,7 @@ export class CandidateRepository extends Repository<Candidate> {
             notVoteYetQuantity,
         } = candidateUpdateDto
 
-        await this.createQueryBuilder('candidate')
+        await this.createQueryBuilder('board_members')
             .update(Candidate)
             .set({
                 title: title,
@@ -62,7 +62,7 @@ export class CandidateRepository extends Repository<Candidate> {
                 votedQuantity: votedQuantity,
                 notVoteYetQuantity: notVoteYetQuantity,
             })
-            .where('candidate.id = :candidateId', { candidateId })
+            .where('board_members.id = :boardId', { boardId: candidateId })
             .execute()
         const candidate = await this.getCandidateById(candidateId)
         return candidate
