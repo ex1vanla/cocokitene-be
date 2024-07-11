@@ -77,7 +77,10 @@ export class BoardMeetingController {
 
     @Get('/:id')
     @UseGuards(JwtAuthGuard)
-    @Permission(PermissionEnum.DETAIL_BOARD_MEETING)
+    @Permission(
+        PermissionEnum.DETAIL_BOARD_MEETING,
+        PermissionEnum.EDIT_BOARD_MEETING,
+    )
     @HttpCode(HttpStatus.OK)
     @ApiBearerAuth()
     async getBoardMeetingById(
@@ -137,7 +140,7 @@ export class BoardMeetingController {
     }
     @Get('/:id/dataHash')
     @UseGuards(JwtAuthGuard)
-    @Permission(PermissionEnum.CHECK_DATA_BOARD_MEETING)
+    @Permission(PermissionEnum.BOARD_MEETING)
     @ApiBearerAuth()
     @HttpCode(HttpStatus.OK)
     async getDataHashByMeetingId(

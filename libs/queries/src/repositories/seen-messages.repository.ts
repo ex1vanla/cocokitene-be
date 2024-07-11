@@ -41,13 +41,13 @@ export class UserSeenMessageRepository extends Repository<UserSeenMessage> {
         meetingId: number,
         lastMessageIdSeen: number,
     ): Promise<UserSeenMessage> {
-        await this.createQueryBuilder('user_seen_message')
+        await this.createQueryBuilder('seen_messages')
             .update(UserSeenMessage)
             .set({
                 lastMessageIdSeen: lastMessageIdSeen,
             })
-            .where('user_seen_message.user_id = :userId', { userId })
-            .andWhere('user_seen_message.meeting_id = :meetingId', {
+            .where('seen_messages.user_id = :userId', { userId })
+            .andWhere('seen_messages.meeting_id = :meetingId', {
                 meetingId,
             })
             .execute()
