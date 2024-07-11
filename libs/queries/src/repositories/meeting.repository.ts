@@ -70,6 +70,14 @@ export class MeetingRepository extends Repository<Meeting> {
                 companyId: companyId,
             })
 
+            .addSelect(
+                `(CASE 
+                WHEN userMeeting.status THEN true
+                ELSE false 
+            END)`,
+                'isParticipant',
+            )
+
         if (searchQuery) {
             queryBuilder.andWhere('(meetings.title like :searchQuery)', {
                 searchQuery: `%${searchQuery}%`,
