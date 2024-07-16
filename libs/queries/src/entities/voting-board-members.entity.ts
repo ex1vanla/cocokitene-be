@@ -56,7 +56,7 @@ export class VotingCandidate extends BaseEntity {
 
     @ManyToOne(() => Candidate)
     @JoinColumn({
-        name: 'voted_for_candidate_id',
+        name: 'board_member_id',
     })
     votedForCandidate: Candidate
 }
