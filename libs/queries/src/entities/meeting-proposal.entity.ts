@@ -13,7 +13,7 @@ import {
 import { User } from '@entities/user.entity'
 import { Meeting } from '@entities/meeting.entity'
 import { ProposalType } from '@shares/constants/proposal.const'
-import { ProposalFile } from '@entities/proposal-file'
+import { ProposalFile } from '@entities/proposal-file.entity'
 
 @Entity('meeting_proposal')
 export class Proposal extends BaseEntity {

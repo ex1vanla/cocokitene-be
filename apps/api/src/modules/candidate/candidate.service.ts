@@ -1,10 +1,9 @@
 import { VotingCandidateService } from './../voting-candidate/voting-candidate.service'
 import { CandidateDto, CreateCandidateDto } from '@dtos/candidate.dto'
-import { Candidate } from '@entities/board-members.entity'
+import { Candidate } from '@entities/nominees.entity'
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
-import { CandidateRepository } from '@repositories/board-members.repository'
+import { CandidateRepository } from '@repositories/nominees.repository'
 import { httpErrors } from '@shares/exception-filter'
-import { MeetingService } from '../meetings/meeting.service'
 import { CalculateProposal } from '../proposals/proposal.interface'
 import { VoteProposalResult } from '@shares/constants/proposal.const'
 import { MeetingRepository } from '@repositories/meeting.repository'
@@ -14,7 +13,7 @@ export class CandidateService {
     constructor(
         private readonly candidateRepository: CandidateRepository,
         private readonly boardMeetingRepository: MeetingRepository,
-        private readonly meetingService: MeetingService,
+        // private readonly meetingService: MeetingService,
         private readonly voteCandidateService: VotingCandidateService,
     ) {}
 
@@ -22,10 +21,8 @@ export class CandidateService {
         createCandidateDto: CreateCandidateDto,
     ): Promise<Candidate> {
         const {
-            title,
             candidateName,
-            type,
-            meetingId,
+            personnelVotingId,
             creatorId,
             notVoteYetQuantity,
         } = createCandidateDto
@@ -33,10 +30,8 @@ export class CandidateService {
         try {
             const createdCandidate =
                 await this.candidateRepository.createCandidate({
-                    title,
                     candidateName,
-                    type,
-                    meetingId,
+                    personnelVotingId,
                     creatorId,
                     notVoteYetQuantity,
                 })
@@ -62,18 +57,18 @@ export class CandidateService {
             )
         }
 
-        if (candidate.meeting.companyId !== companyId) {
-            throw new HttpException(
-                httpErrors.MEETING_NOT_IN_THIS_COMPANY,
-                HttpStatus.BAD_REQUEST,
-            )
-        }
+        // if (candidate.personnelVoting.meeting.companyId !== companyId) {
+        //     throw new HttpException(
+        //         httpErrors.MEETING_NOT_IN_THIS_COMPANY,
+        //         HttpStatus.BAD_REQUEST,
+        //     )
+        // }
 
         try {
             //deleteCandidate
-            const meetingId = candidate.meeting.id
+            // const meetingId = candidate.personnelVoting.meeting.id
             await this.candidateRepository.softDelete({
-                meetingId,
+                // meetingId,
                 id: candidateId,
             })
             //Select voting_candidate, delete voting for candidate_id
@@ -102,68 +97,80 @@ export class CandidateService {
                 companyId,
             )
 
-        const listCurrentCandidates = boardMeeting.candidates
-
-        //List Coming Candidate
-        const listCandidateEdited = candidates.filter(
-            (candidate) => !!candidate.id,
+        console.log(
+            candidates,
+            boardIdActiveRemoveMeeting,
+            totalVoter,
+            userId,
+            boardMeeting,
         )
-        const listCandidateEditedIds = listCandidateEdited.map(
-            (candidate) => candidate.id,
-        )
+        // const listCurrentCandidates = boardMeeting.personnelVoting
+        //     .map((voting) =>
+        //         voting.candidate.map((candidate) => ({
+        //             ...candidate,
+        //             personnelVotingId: voting.id,
+        //         })),
+        //     )
+        //     .flatMap((candidate) => candidate)
 
-        //List Candidate Deleted
-        const listCandidateDeleted = listCurrentCandidates.filter(
-            (candidate) => !listCandidateEditedIds.includes(candidate.id),
-        )
+        // //List Coming Candidate
+        // const listCandidateEdited = candidates.filter(
+        //     (candidate) => !!candidate.id,
+        // )
+        // const listCandidateEditedIds = listCandidateEdited.map(
+        //     (candidate) => candidate.id,
+        // )
 
-        //List Candidate Added
-        const listCandidateAdded = candidates.filter(
-            (candidate) => !candidate.id,
-        )
+        // //List Candidate Deleted
+        // const listCandidateDeleted = listCurrentCandidates.filter(
+        //     (candidate) => !listCandidateEditedIds.includes(candidate.id),
+        // )
 
-        try {
-            await Promise.all([
-                ...listCandidateEdited.map(async (candidate) => {
-                    const {
-                        votedQuantity,
-                        unVotedQuantity,
-                        notVoteYetQuantity,
-                    } = await this.reCalculateVoteBoardCandidate(
-                        candidate,
-                        boardIdActiveRemoveMeeting,
-                        totalVoter,
-                    )
-                    ;(candidate.votedQuantity = votedQuantity),
-                        (candidate.unVotedQuantity = unVotedQuantity),
-                        (candidate.notVoteYetQuantity = notVoteYetQuantity),
-                        await this.candidateRepository.updateCandidate(
-                            candidate.id,
-                            candidate,
-                        )
-                }),
+        // //List Candidate Added
+        // const listCandidateAdded = candidates.filter(
+        //     (candidate) => !candidate.id,
+        // )
 
-                ...listCandidateDeleted.map((candidate) =>
-                    this.deleteCandidate(boardMeeting.companyId, candidate.id),
-                ),
+        // try {
+        //     await Promise.all([
+        //         ...listCandidateEdited.map(async (candidate) => {
+        //             const {
+        //                 votedQuantity,
+        //                 unVotedQuantity,
+        //                 notVoteYetQuantity,
+        //             } = await this.reCalculateVoteBoardCandidate(
+        //                 candidate,
+        //                 boardIdActiveRemoveMeeting,
+        //                 totalVoter,
+        //             )
+        //             ;(candidate.votedQuantity = votedQuantity),
+        //                 (candidate.unVotedQuantity = unVotedQuantity),
+        //                 (candidate.notVoteYetQuantity = notVoteYetQuantity),
+        //                 await this.candidateRepository.updateCandidate(
+        //                     candidate.id,
+        //                     candidate,
+        //                 )
+        //         }),
 
-                ...listCandidateAdded.map((candidate) =>
-                    this.createCandidate({
-                        title: candidate.title,
-                        candidateName: candidate.candidateName,
-                        type: candidate.type,
-                        meetingId,
-                        creatorId: userId,
-                        notVoteYetQuantity: totalVoter,
-                    }),
-                ),
-            ])
-        } catch (error) {
-            throw new HttpException(
-                { message: error.message },
-                HttpStatus.BAD_REQUEST,
-            )
-        }
+        //         ...listCandidateDeleted.map((candidate) =>
+        //             this.deleteCandidate(boardMeeting.companyId, candidate.id),
+        //         ),
+
+        //         ...listCandidateAdded.map((candidate) =>
+        //             this.createCandidate({
+        //                 candidateName: candidate.candidateName,
+        //                 creatorId: userId,
+        //                 notVoteYetQuantity: totalVoter,
+        //                 personnelVotingId: candidate.
+        //             }),
+        //         ),
+        //     ])
+        // } catch (error) {
+        //     throw new HttpException(
+        //         { message: error.message },
+        //         HttpStatus.BAD_REQUEST,
+        //     )
+        // }
     }
 
     async reCalculateVoteBoardCandidate(

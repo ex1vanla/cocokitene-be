@@ -20,7 +20,7 @@ import { RolePermissionRepository } from '@repositories/role-permission.reposito
 import { TransactionRepository } from '@repositories/transaction.repository'
 import { VotingCandidateRepository } from '@repositories/voting-board-members.repository'
 import { ElectionRepository } from '@repositories/election.repository'
-import { CandidateRepository } from '@repositories/board-members.repository'
+import { CandidateRepository } from '@repositories/nominees.repository'
 import { MeetingRoleMtgRepository } from '@repositories/meeting-role-relations.repository'
 import { RoleMtgRepository } from '@repositories/meeting-role.repository'
 import { MessageRepository } from '@repositories/message.repository'
@@ -28,6 +28,7 @@ import { ChatPermissionRepository } from '@repositories/chat-permission.reposito
 import { ReactionMessagesRepository } from '@repositories/reaction-messages.repository'
 import { ReactionIconRepository } from '@repositories/reaction-icon.repository'
 import { UserSeenMessageRepository } from '@repositories/seen-messages.repository'
+import { PersonnelVotingRepository } from '@repositories/personnel-voting.repository'
 
 const commonRepositories = [
     UserRepository,
@@ -59,6 +60,7 @@ const commonRepositories = [
     ReactionMessagesRepository,
     ReactionIconRepository,
     UserSeenMessageRepository,
+    PersonnelVotingRepository,
 ]
 
 @Global()
