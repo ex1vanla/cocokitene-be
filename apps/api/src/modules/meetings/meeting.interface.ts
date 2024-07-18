@@ -5,9 +5,26 @@ import {
     FileTypes,
     UserMeetingStatusEnum,
 } from '@shares/constants/meeting.const'
+import { Candidate } from '@entities/nominees.entity'
 
 export interface ProposalItemDetailMeeting extends Proposal {
     voteResult: VoteProposalResult
+}
+
+export interface CandidateItemDetailMeeting extends Candidate {
+    voteResult: VoteProposalResult
+}
+
+// export interface PersonnelVotingDetailMeeting extends PersonnelVoting {
+//     candidate: CandidateItemDetailMeeting[]
+// }
+
+export interface personnelVotingDetailMeeting {
+    id: number
+    title: string
+    type: number
+    meetingId: number
+    candidate: CandidateItemDetailMeeting[]
 }
 
 export interface ParticipantView {

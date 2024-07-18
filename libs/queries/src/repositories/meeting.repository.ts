@@ -335,13 +335,15 @@ export class MeetingRepository extends Repository<Meeting> {
                 'creator.defaultAvatarHashColor',
             ])
             .leftJoinAndSelect('proposals.proposalFiles', 'proposalFiles')
-            .leftJoinAndSelect('meeting.candidates', 'candidate')
-            .leftJoin('candidate.typeElection', 'typeElection')
+            .leftJoinAndSelect('meeting.personnelVoting', 'personnelVoting')
+            .leftJoinAndSelect('personnelVoting.candidate', 'candidate')
+            .leftJoin('personnelVoting.typeElection', 'typeElection')
             .addSelect([
                 'typeElection.id',
                 'typeElection.status',
                 'typeElection.description',
             ])
+
             .getOne()
 
         return boardMeeting

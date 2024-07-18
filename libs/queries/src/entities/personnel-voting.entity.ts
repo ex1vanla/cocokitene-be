@@ -6,15 +6,17 @@ import {
     Entity,
     JoinColumn,
     ManyToOne,
+    OneToMany,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm'
-import { Meeting } from '@entities/meeting.entity'
-import { User } from '@entities/user.entity'
 import { Election } from './election.entity'
+import { Meeting } from './meeting.entity'
+import { User } from './user.entity'
+import { Candidate } from './nominees.entity'
 
-@Entity('board_members')
-export class Candidate extends BaseEntity {
+@Entity('personnel_voting')
+export class PersonnelVoting extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number
 
@@ -28,43 +30,11 @@ export class Candidate extends BaseEntity {
 
     @Column({
         nullable: false,
-        name: 'name',
-        type: 'varchar',
-        length: 255,
-    })
-    candidateName: string
-
-    @Column({
-        nullable: false,
         name: 'type',
         type: 'integer',
         width: 11,
     })
     type: number
-
-    @Column({
-        nullable: true,
-        name: 'voted_quantity',
-        type: 'integer',
-        width: 11,
-    })
-    votedQuantity: number
-
-    @Column({
-        nullable: true,
-        name: 'un_voted_quantity',
-        type: 'integer',
-        width: 11,
-    })
-    unVotedQuantity: number
-
-    @Column({
-        nullable: true,
-        name: 'not_vote_yet_quantity',
-        type: 'integer',
-        width: 11,
-    })
-    notVoteYetQuantity: number
 
     @Column({ nullable: false, name: 'meeting_id', type: 'integer', width: 11 })
     meetingId: number
@@ -81,14 +51,36 @@ export class Candidate extends BaseEntity {
     })
     meeting: Meeting
 
-    @Column({ nullable: false, name: 'creator_id', type: 'integer', width: 11 })
+    @OneToMany(() => Candidate, (candidate) => candidate.personnelVoting)
+    candidate: Candidate[]
+
+    @Column({
+        nullable: false,
+        name: 'created_user',
+        type: 'integer',
+        width: 11,
+    })
     creatorId: number
 
     @ManyToOne(() => User)
     @JoinColumn({
-        name: 'creator_id',
+        name: 'created_user',
     })
     creator: User
+
+    @Column({
+        nullable: true,
+        name: 'updated_user',
+        type: 'integer',
+        width: 11,
+    })
+    updateId?: number
+
+    @ManyToOne(() => User)
+    @JoinColumn({
+        name: 'updated_user',
+    })
+    updaterId: User
 
     @CreateDateColumn({ name: 'created_at' })
     createdAt: Date

@@ -1,5 +1,5 @@
 import { CreateProposalFileDto, ProposalFileDto } from '@dtos/proposal-file.dto'
-import { ProposalFile } from '@entities/proposal-file'
+import { ProposalFile } from '@entities/proposal-file.entity'
 import { CustomRepository } from '@shares/decorators'
 import { Repository } from 'typeorm'
 

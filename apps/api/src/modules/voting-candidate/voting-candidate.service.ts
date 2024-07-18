@@ -1,6 +1,6 @@
 import { VoteCandidateDto } from '@dtos/voting-candidate.dto'
-import { Candidate } from '@entities/board-members.entity'
-import { VotingCandidate } from '@entities/voting-board-members.entity'
+import { Candidate } from '@entities/nominees.entity'
+import { VotingCandidate } from '@entities/voted-for-nominee.entity'
 import {
     HttpException,
     HttpStatus,
@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common'
 import { VotingCandidateRepository } from '@repositories/voting-board-members.repository'
 import { MeetingRoleMtgService } from '../meeting-role-mtgs/meeting-role-mtg.service'
-import { CandidateRepository } from '@repositories/board-members.repository'
+import { CandidateRepository } from '@repositories/nominees.repository'
 import { RoleMtgEnum } from '@shares/constants'
 import { httpErrors, messageLog } from '@shares/exception-filter'
 import { UserService } from '../users/user.service'
@@ -75,15 +75,16 @@ export class VotingCandidateService {
                 HttpStatus.NOT_FOUND,
             )
         }
+        console.log('candidate: ', candidate)
 
-        if (candidate.meeting.companyId !== companyId) {
-            throw new HttpException(
-                httpErrors.MEETING_NOT_IN_THIS_COMPANY,
-                HttpStatus.BAD_REQUEST,
-            )
-        }
+        // if (candidate.personnelVoting.meeting.companyId !== companyId) {
+        //     throw new HttpException(
+        //         httpErrors.MEETING_NOT_IN_THIS_COMPANY,
+        //         HttpStatus.BAD_REQUEST,
+        //     )
+        // }
 
-        const meetingId = candidate.meetingId
+        const meetingId = candidate.personnelVoting.meetingId
 
         const listRoleBoardMtg =
             await this.meetingRoleMtgService.getMeetingRoleMtgByMeetingId(
@@ -164,6 +165,8 @@ export class VotingCandidateService {
             const checkExistedVoting =
                 await this.findVotingByUserIdAndCandidateId(userId, candidateId)
 
+            console.log('checkExistedVoting: ', checkExistedVoting)
+
             if (checkExistedVoting) {
                 const updateCountVoteExistedCandidate = await this.updateVote(
                     candidate,
@@ -183,8 +186,14 @@ export class VotingCandidateService {
                                 userId: userId,
                                 votedForCandidateId: candidateId,
                                 result: result,
+                                quantityShare: 1,
                             },
                         )
+                    console.log(
+                        'createVotingCandidate: ',
+                        createVotingCandidate,
+                    )
+
                     switch (result) {
                         case VoteProposalResult.VOTE:
                             candidate.votedQuantity += 1
@@ -203,6 +212,7 @@ export class VotingCandidateService {
 
                     return candidate
                 } catch (error) {
+                    console.log('error: ', error)
                     this.logger.error(
                         `${messageLog.VOTING_CANDIDATE_OF_MEETING_FAILED.code} [DAPP] User ID : ${userId} ${messageLog.VOTING_CANDIDATE_OF_MEETING_FAILED.message} ${candidate.id}`,
                     )

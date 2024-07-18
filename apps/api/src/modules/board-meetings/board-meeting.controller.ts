@@ -123,7 +123,7 @@ export class BoardMeetingController {
         return boardMeeting
     }
 
-    //Send Email to Board of Board Meeting
+    // Send Email to Board of Board Meeting
     @Post('/send-email/board-meeting/:id')
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.OK)
@@ -138,6 +138,7 @@ export class BoardMeetingController {
 
         return 'Email sent to Board successfully'
     }
+
     @Get('/:id/dataHash')
     @UseGuards(JwtAuthGuard)
     @Permission(PermissionEnum.BOARD_MEETING)
