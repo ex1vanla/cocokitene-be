@@ -26,11 +26,23 @@ export class PersonnelVotingRepository extends Repository<PersonnelVoting> {
     async getPersonnelVotingById(
         personnelVotingId: number,
     ): Promise<PersonnelVoting> {
-        const personnelVoting = await this.findOne({
-            where: {
-                id: personnelVotingId,
-            },
-        })
+        // const personnelVoting = await this.findOne({
+        //     where: {
+        //         id: personnelVotingId,
+        //     },
+        // })
+        // return personnelVoting
+
+        const personnelVoting = await this.createQueryBuilder(
+            'personnel_voting',
+        )
+            .select()
+            .where('personnel_voting.id = :personnelVotingId', {
+                personnelVotingId: personnelVotingId,
+            })
+            .leftJoinAndSelect('personnel_voting.candidate', 'candidate')
+            .getOne()
+
         return personnelVoting
     }
 

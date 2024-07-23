@@ -8,6 +8,7 @@ import {
     ValidateNested,
 } from 'class-validator'
 import { CandidateDto } from './candidate.dto'
+import { CreateVoteCandidateDto } from './voting-candidate.dto'
 
 export class CreatePersonnelVotingDto {
     @IsNotEmpty()
@@ -90,4 +91,28 @@ export class PersonnelVotingDtoUpdate {
         example: 1,
     })
     meetingId?: number
+}
+
+export class VoteCandidateInPersonnel extends OmitType(CreateVoteCandidateDto, [
+    'userId',
+    'votedForCandidateId',
+]) {
+    @IsNumber()
+    @ApiProperty({
+        required: true,
+        example: 1,
+    })
+    id: number
+}
+
+export class VotePersonnelDto {
+    @ApiProperty({
+        required: true,
+        type: [VoteCandidateInPersonnel],
+    })
+    @ValidateNested({
+        each: true,
+    })
+    @Type(() => VoteCandidateInPersonnel)
+    candidate: VoteCandidateInPersonnel[]
 }

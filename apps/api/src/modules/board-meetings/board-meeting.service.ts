@@ -605,7 +605,7 @@ export class BoardMeetingService {
                 totalVoter,
             ),
 
-            this.personnelVotingService.updateListPersonnelVoting(
+            this.personnelVotingService.updateListPersonnelVotingBoardMtg(
                 companyId,
                 meetingId,
                 userId,
