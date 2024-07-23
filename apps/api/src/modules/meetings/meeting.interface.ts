@@ -13,6 +13,7 @@ export interface ProposalItemDetailMeeting extends Proposal {
 
 export interface CandidateItemDetailMeeting extends Candidate {
     voteResult: VoteProposalResult
+    votedQuantityShare: number
 }
 
 // export interface PersonnelVotingDetailMeeting extends PersonnelVoting {
@@ -43,13 +44,15 @@ export interface ParticipantDetailMeeting {
     userParticipants: ParticipantView[]
 }
 
-export interface DetailMeetingResponse extends Partial<Meeting> {
+export interface DetailMeetingResponse
+    extends Omit<Partial<Meeting>, 'personnelVoting'> {
     participants: ParticipantDetailMeeting[]
     shareholdersTotal: number
     shareholdersJoined: number
     joinedMeetingShares: number
     totalMeetingShares: number
     proposals: ProposalItemDetailMeeting[]
+    personnelVoting: personnelVotingDetailMeeting[]
 }
 
 export interface ParticipantMeeting {

@@ -7,6 +7,7 @@ import { httpErrors } from '@shares/exception-filter'
 import { CalculateProposal } from '../proposals/proposal.interface'
 import { VoteProposalResult } from '@shares/constants/proposal.const'
 import { MeetingRepository } from '@repositories/meeting.repository'
+import { PersonnelVotingRepository } from '@repositories/personnel-voting.repository'
 
 @Injectable()
 export class CandidateService {
@@ -15,6 +16,7 @@ export class CandidateService {
         private readonly boardMeetingRepository: MeetingRepository,
         // private readonly meetingService: MeetingService,
         private readonly voteCandidateService: VotingCandidateService,
+        private readonly personnelVotingRepository: PersonnelVotingRepository,
     ) {}
 
     async createCandidate(
@@ -67,12 +69,17 @@ export class CandidateService {
         try {
             //deleteCandidate
             // const meetingId = candidate.personnelVoting.meeting.id
-            await this.candidateRepository.softDelete({
+            // await this.candidateRepository.softDelete({
+            //     // meetingId,
+            //     id: candidateId,
+            // })
+            //Select voting_candidate, delete voting for candidate_id
+            await this.voteCandidateService.deleteVoting(candidateId)
+
+            await this.candidateRepository.delete({
                 // meetingId,
                 id: candidateId,
             })
-            //Select voting_candidate, delete voting for candidate_id
-            await this.voteCandidateService.deleteVoting(candidateId)
 
             return `Candidate have Id: ${candidateId} deleted successfully!!!`
         } catch (error) {
@@ -83,27 +90,61 @@ export class CandidateService {
         }
     }
 
-    async updateListCandidateBoardMtg(
-        companyId,
-        meetingId: number,
-        userId: number,
-        candidates: CandidateDto[],
-        boardIdActiveRemoveMeeting: number[],
-        totalVoter: number,
+    async updateListCandidate(
+        companyId: number,
+        personnelVotingId: number,
+        listCandidate: CandidateDto[],
+        creatorId: number,
+        notVoteYetQuantity: number,
     ) {
-        const boardMeeting =
-            await this.boardMeetingRepository.getBoardMeetingByIdAndCompanyId(
-                meetingId,
-                companyId,
+        const personnelVoting =
+            await this.personnelVotingRepository.getPersonnelVotingById(
+                personnelVotingId,
             )
 
-        console.log(
-            candidates,
-            boardIdActiveRemoveMeeting,
-            totalVoter,
-            userId,
-            boardMeeting,
+        const listCurrentCandidate = personnelVoting.candidate
+
+        //list edited
+        const listEdited = listCandidate.filter((candidate) => !!candidate.id)
+        const listEditedIds = listEdited.map((candidate) => candidate.id)
+
+        //list Deleted
+        const listDelete = listCurrentCandidate.filter(
+            (candidate) => !listEditedIds.includes(candidate.id),
         )
+
+        //list Added
+        const listAdded = listCandidate.filter((candidate) => !candidate.id)
+
+        try {
+            await Promise.all([
+                ...listEdited.map((candidate) =>
+                    this.candidateRepository.updateCandidate(
+                        candidate.id,
+                        candidate,
+                    ),
+                ),
+
+                ...listDelete.map((candidate) =>
+                    this.deleteCandidate(companyId, candidate.id),
+                ),
+
+                ...listAdded.map((candidate) =>
+                    this.createCandidate({
+                        ...candidate,
+                        personnelVotingId,
+                        creatorId,
+                        notVoteYetQuantity,
+                    }),
+                ),
+            ])
+        } catch (error) {
+            throw new HttpException(
+                { message: error.message },
+                HttpStatus.BAD_REQUEST,
+            )
+        }
+
         // const listCurrentCandidates = boardMeeting.personnelVoting
         //     .map((voting) =>
         //         voting.candidate.map((candidate) => ({
@@ -171,6 +212,67 @@ export class CandidateService {
         //         HttpStatus.BAD_REQUEST,
         //     )
         // }
+    }
+
+    async reCalculateVoteShareholderCandidate(
+        candidate: CandidateDto,
+        shareholderIdActiveRemoveMeeting: number[],
+        totalVoter: number,
+    ): Promise<CalculateProposal> {
+        let votedQuantity = 0,
+            unVotedQuantity = 0,
+            notVoteYetQuantity = 0,
+            temporaryVoteQuantity = 0,
+            temporaryUnVoteQuantity = 0
+
+        const currentCandidate =
+            await this.candidateRepository.getCandidateById(candidate.id)
+
+        await Promise.all([
+            ...shareholderIdActiveRemoveMeeting.map(async (shareholderId) => {
+                //Check board is voted for CandidateID
+                const resultVoteCandidate =
+                    await this.voteCandidateService.findVotingByUserIdAndCandidateId(
+                        shareholderId,
+                        currentCandidate.id,
+                    )
+                if (!resultVoteCandidate) {
+                    return
+                } else {
+                    const resultVote = resultVoteCandidate.result
+                    switch (resultVote) {
+                        case VoteProposalResult.VOTE:
+                            temporaryVoteQuantity +=
+                                resultVoteCandidate.quantityShare
+                            break
+                        case VoteProposalResult.UNVOTE:
+                            temporaryUnVoteQuantity +=
+                                resultVoteCandidate.quantityShare
+                            break
+                    }
+                    await this.voteCandidateService.removeVoting(
+                        shareholderId,
+                        currentCandidate.id,
+                    )
+                }
+            }),
+        ])
+
+        votedQuantity =
+            currentCandidate.votedQuantity !== null
+                ? currentCandidate.votedQuantity - temporaryVoteQuantity
+                : 0
+        unVotedQuantity =
+            currentCandidate.notVoteYetQuantity !== null
+                ? currentCandidate.unVotedQuantity - temporaryUnVoteQuantity
+                : 0
+        notVoteYetQuantity = totalVoter - votedQuantity - unVotedQuantity
+
+        return {
+            votedQuantity,
+            unVotedQuantity,
+            notVoteYetQuantity,
+        }
     }
 
     async reCalculateVoteBoardCandidate(

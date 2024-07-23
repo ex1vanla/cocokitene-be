@@ -19,6 +19,7 @@ import { MeetingService } from '../meetings/meeting.service'
 import { UserMeetingStatusEnum } from '@shares/constants/meeting.const'
 import { VoteProposalResult } from '@shares/constants/proposal.const'
 import { Logger } from 'winston'
+import { VoteCandidateInPersonnel } from '@dtos/personnel-voting.dto'
 
 @Injectable()
 export class VotingCandidateService {
@@ -39,14 +40,23 @@ export class VotingCandidateService {
         userId: number,
         votedForCandidateId: number,
     ): Promise<VotingCandidate> {
-        const existedVotingCandidate =
-            await this.votingCandidateRepository.findOne({
-                where: {
-                    userId: userId,
-                    votedForCandidateId: votedForCandidateId,
-                },
-            })
-        return existedVotingCandidate
+        try {
+            console.log({ userId, votedForCandidateId })
+            const existedVotingCandidate =
+                await this.votingCandidateRepository.findOne({
+                    where: {
+                        userId: userId,
+                        votedForCandidateId: votedForCandidateId,
+                    },
+                })
+            console.log(
+                'existedVotingCandidate---------: ',
+                existedVotingCandidate,
+            )
+            return existedVotingCandidate
+        } catch (error) {
+            console.log('Error---:', error)
+        }
     }
 
     async voteCandidate(
@@ -234,7 +244,8 @@ export class VotingCandidateService {
     }
 
     async deleteVoting(votedForCandidateId: number) {
-        await this.votingCandidateRepository.softDelete({ votedForCandidateId })
+        // await this.votingCandidateRepository.softDelete({ votedForCandidateId })
+        await this.votingCandidateRepository.delete({ votedForCandidateId })
     }
 
     async updateVote(
@@ -308,5 +319,69 @@ export class VotingCandidateService {
             )
 
         return voteOfCandidate
+    }
+
+    async updateVoteCandidate(
+        candidate: Candidate,
+        checkExistedVoting: VotingCandidate,
+        voteCandidateDto: VoteCandidateInPersonnel,
+    ): Promise<Candidate> {
+        try {
+            const { result, quantityShare } = voteCandidateDto
+            const resultOld = checkExistedVoting.result
+
+            console.log('result---quantityShare: ', result, quantityShare)
+
+            if (
+                result !== resultOld ||
+                quantityShare !== checkExistedVoting.quantityShare
+            ) {
+                console.log('Update Voted for Nominee---------')
+                switch (resultOld) {
+                    case VoteProposalResult.UNVOTE:
+                        candidate.unVotedQuantity -=
+                            checkExistedVoting.quantityShare
+                        candidate.notVoteYetQuantity +=
+                            checkExistedVoting.quantityShare
+                        break
+                    case VoteProposalResult.VOTE:
+                        candidate.votedQuantity -=
+                            checkExistedVoting.quantityShare
+                        candidate.notVoteYetQuantity +=
+                            checkExistedVoting.quantityShare
+                        break
+                }
+
+                switch (result) {
+                    case VoteProposalResult.UNVOTE:
+                        candidate.unVotedQuantity += quantityShare
+                        candidate.notVoteYetQuantity -= quantityShare
+                        break
+                    case VoteProposalResult.VOTE:
+                        candidate.votedQuantity += quantityShare
+                        candidate.notVoteYetQuantity -= quantityShare
+                        break
+                }
+                if (
+                    result === VoteProposalResult.NO_IDEA ||
+                    quantityShare == 0 ||
+                    quantityShare == null
+                ) {
+                    candidate.notVoteYetQuantity +=
+                        checkExistedVoting.quantityShare
+                    await this.votingCandidateRepository.delete(
+                        checkExistedVoting.id,
+                    )
+                } else {
+                    checkExistedVoting.result = result
+                    checkExistedVoting.quantityShare = quantityShare
+                    await checkExistedVoting.save()
+                }
+                await candidate.save()
+                return candidate
+            }
+        } catch (error) {
+            console.log('error UpdateVoteCandidate: ', error)
+        }
     }
 }

@@ -180,14 +180,6 @@ export class MeetingRepository extends Repository<Meeting> {
         id: number,
         companyId: number,
     ): Promise<Meeting> {
-        // const meeting = await this.findOne({
-        //     where: {
-        //         id,
-        //         companyId,
-        //     },
-        //     relations: ['creator', 'meetingFiles', 'proposals'],
-        // })
-
         const meeting = await this.createQueryBuilder('meeting')
             .select()
             .where('meeting.id = :id', {
@@ -207,6 +199,15 @@ export class MeetingRepository extends Repository<Meeting> {
             ])
             .leftJoinAndSelect('proposals.proposalFiles', 'proposalFiles')
             // .addSelect(['proposalFiles.url', 'proposalFiles.id'])
+            .leftJoinAndSelect('meeting.personnelVoting', 'personnelVoting')
+            .leftJoinAndSelect('personnelVoting.candidate', 'candidate')
+            .leftJoin('personnelVoting.typeElection', 'typeElection')
+            .addSelect([
+                'typeElection.id',
+                'typeElection.status',
+                'typeElection.description',
+            ])
+
             .getOne()
 
         return meeting

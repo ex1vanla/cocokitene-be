@@ -6,11 +6,13 @@ import {
     Entity,
     JoinColumn,
     ManyToOne,
+    OneToMany,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm'
 import { User } from '@entities/user.entity'
 import { PersonnelVoting } from './personnel-voting.entity'
+import { VotingCandidate } from './voted-for-nominee.entity'
 
 @Entity('nominees')
 export class Candidate extends BaseEntity {
@@ -88,4 +90,10 @@ export class Candidate extends BaseEntity {
 
     @DeleteDateColumn()
     deletedAt: Date
+
+    @OneToMany(
+        () => VotingCandidate,
+        (votingCandidate) => votingCandidate.votedForCandidate,
+    )
+    votedForCandidate: VotingCandidate[]
 }
