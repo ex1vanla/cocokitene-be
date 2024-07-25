@@ -380,6 +380,8 @@ export class VotingCandidateService {
                 await candidate.save()
                 return candidate
             }
+
+            return candidate
         } catch (error) {
             console.log('error UpdateVoteCandidate: ', error)
         }

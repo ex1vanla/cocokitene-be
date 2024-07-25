@@ -414,7 +414,7 @@ export class PersonnelVotingService {
                                 candidate,
                             )
                         this.logger.info(
-                            `[DAPP] User ID : ${userId} ${messageLog.VOTING_CANDIDATE_OF_MEETING_SUCCESS.message} ${updateVoteCandidate.id}`,
+                            `[DAPP] User ID : ${userId} ${messageLog.VOTING_CANDIDATE_OF_MEETING_SUCCESS.message} ${updateVoteCandidate?.id}`,
                         )
                         // return updateVoteCandidate
                     } else {
@@ -448,7 +448,7 @@ export class PersonnelVotingService {
                             await createVotingCandidate.save()
                             await existedCandidate.save()
                             this.logger.info(
-                                `[DAPP] User ID : ${userId} ${messageLog.VOTING_CANDIDATE_OF_MEETING_SUCCESS.message} ${candidate.id}`,
+                                `[DAPP] User ID : ${userId} ${messageLog.VOTING_CANDIDATE_OF_MEETING_SUCCESS.message} ${candidate?.id}`,
                             )
 
                             // return createVotingCandidate
@@ -463,92 +463,6 @@ export class PersonnelVotingService {
                 HttpStatus.INTERNAL_SERVER_ERROR,
             )
         }
-
-        // try {
-        //     const listCandidate = votePersonnelDto.candidate.map(
-        //         async (candidate) => {
-        //             const existedCandidate =
-        //                 await this.candidateRepository.getCandidateById(
-        //                     candidate.id,
-        //                 )
-
-        //             const checkExistedVoting =
-        //                 await this.votingCandidateService.findVotingByUserIdAndCandidateId(
-        //                     userId,
-        //                     candidate.id,
-        //                 )
-
-        //             if (checkExistedVoting) {
-        //                 const updateVoteCandidate =
-        //                     await this.votingCandidateService.updateVoteCandidate(
-        //                         existedCandidate,
-        //                         checkExistedVoting,
-        //                         candidate,
-        //                     )
-        //                 this.logger.info(
-        //                     `[DAPP] User ID : ${userId} ${messageLog.VOTING_CANDIDATE_OF_MEETING_SUCCESS.message} ${candidate.id}`,
-        //                 )
-        //                 return updateVoteCandidate
-        //             } else {
-        //                 let createVotingCandidate: VotingCandidate
-
-        //                 try {
-        //                     if (candidate.quantityShare) {
-        //                         createVotingCandidate =
-        //                             await this.votingCandidateRepository.createVotingCandidate(
-        //                                 {
-        //                                     userId: userId,
-        //                                     votedForCandidateId: candidate.id,
-        //                                     result: candidate.result,
-        //                                     quantityShare:
-        //                                         candidate.quantityShare,
-        //                                 },
-        //                             )
-        //                         console.log(
-        //                             'createVotingCandidate: ',
-        //                             createVotingCandidate,
-        //                         )
-
-        //                         switch (candidate.result) {
-        //                             case VoteProposalResult.VOTE:
-        //                                 existedCandidate.votedQuantity +=
-        //                                     candidate.quantityShare
-        //                                 existedCandidate.notVoteYetQuantity -=
-        //                                     candidate.quantityShare
-        //                                 break
-        //                             case VoteProposalResult.UNVOTE:
-        //                                 existedCandidate.unVotedQuantity +=
-        //                                     candidate.quantityShare
-        //                                 existedCandidate.notVoteYetQuantity -=
-        //                                     candidate.quantityShare
-        //                                 break
-        //                         }
-        //                         await createVotingCandidate.save()
-        //                         await existedCandidate.save()
-        //                         this.logger.info(
-        //                             `[DAPP] User ID : ${userId} ${messageLog.VOTING_CANDIDATE_OF_MEETING_SUCCESS.message} ${candidate.id}`,
-        //                         )
-
-        //                         return createVotingCandidate
-        //                     }
-        //                 } catch (error) {
-        //                     console.log('error: ', error)
-        //                     this.logger.error(
-        //                         `${messageLog.VOTING_CANDIDATE_OF_MEETING_FAILED.code} [DAPP] User ID : ${userId} ${messageLog.VOTING_CANDIDATE_OF_MEETING_FAILED.message} ${candidate.id}`,
-        //                     )
-        //                     throw new HttpException(
-        //                         httpErrors.VOTING_CANDIDATE_FAILED,
-        //                         HttpStatus.INTERNAL_SERVER_ERROR,
-        //                     )
-        //                 }
-        //             }
-        //         },
-        //     )
-
-        //     console.log('listCandidate: ', listCandidate)
-        // } catch (error) {
-        //     console.log('error11111', error)
-        // }
 
         const personnelVotingEdited =
             await this.personnelVotingRepository.getPersonnelVotingById(
@@ -587,10 +501,10 @@ export class PersonnelVotingService {
             }
         }
 
-        console.log('personnelVotingEdited: ', {
-            ...personnelVotingEdited,
-            candidate: listCandidate,
-        })
+        // console.log('personnelVotingEdited: ', {
+        //     ...personnelVotingEdited,
+        //     candidate: listCandidate,
+        // })
         return {
             ...personnelVotingEdited,
             candidate: listCandidate,
