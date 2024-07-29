@@ -6,7 +6,12 @@ import {
     Pagination,
 } from 'nestjs-typeorm-paginate'
 import { Meeting } from '@entities/meeting.entity'
-import { CreateMeetingDto, GetAllMeetingDto, UpdateMeetingDto } from '../dtos'
+import {
+    CreateMeetingDto,
+    GetAllMeetingDto,
+    GetAllMeetingInDayDto,
+    UpdateMeetingDto,
+} from '../dtos'
 import {
     MeetingTime,
     MeetingType,
@@ -348,5 +353,70 @@ export class MeetingRepository extends Repository<Meeting> {
             .getOne()
 
         return boardMeeting
+    }
+
+    async getAllMeetingsInDay(
+        companyId: number,
+        userId: number,
+        options: IPaginationOptions & GetAllMeetingInDayDto,
+    ): Promise<Pagination<Meeting>> {
+        try {
+            const { date } = options
+            const startOfDay = new Date(date)
+            const endOfDay = new Date(date)
+            startOfDay.setUTCHours(0, 0, 0, 0)
+            endOfDay.setUTCHours(23, 59, 59, 999)
+
+            const queryBuilder = this.createQueryBuilder('meetings')
+                .select([
+                    'meetings.id',
+                    'meetings.title',
+                    'meetings.startTime',
+                    'meetings.endTime',
+                    'meetings.meetingLink',
+                    'meetings.status',
+                    'meetings.note',
+                    'meetings.companyId',
+                ])
+                .distinct(true)
+            queryBuilder.innerJoin(
+                'meeting_participant',
+                'userMeeting',
+                'userMeeting.meetingId = meetings.id AND userMeeting.userId = :userId',
+                { userId },
+            )
+
+            queryBuilder
+                .addSelect(
+                    `(CASE 
+                        WHEN userMeeting.status = '0' THEN true
+                        ELSE false 
+                    END)`,
+                    'isJoined',
+                )
+
+                .where('meetings.companyId= :companyId', {
+                    companyId: companyId,
+                })
+
+                .addSelect(
+                    `(CASE 
+                    WHEN userMeeting.status THEN true
+                    ELSE false 
+                END)`,
+                    'isParticipant',
+                )
+            queryBuilder.andWhere(
+                'meetings.startTime >= :startOfDay AND meetings.startTime <= :endOfDay',
+                {
+                    startOfDay: startOfDay,
+                    endOfDay: endOfDay,
+                },
+            )
+
+            return paginateRaw(queryBuilder, options)
+        } catch (error) {
+            console.log('Error Query: ', error)
+        }
     }
 }

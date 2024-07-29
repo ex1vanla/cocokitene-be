@@ -41,7 +41,6 @@ export class VotingCandidateService {
         votedForCandidateId: number,
     ): Promise<VotingCandidate> {
         try {
-            console.log({ userId, votedForCandidateId })
             const existedVotingCandidate =
                 await this.votingCandidateRepository.findOne({
                     where: {
@@ -49,10 +48,6 @@ export class VotingCandidateService {
                         votedForCandidateId: votedForCandidateId,
                     },
                 })
-            console.log(
-                'existedVotingCandidate---------: ',
-                existedVotingCandidate,
-            )
             return existedVotingCandidate
         } catch (error) {
             console.log('Error---:', error)
@@ -85,7 +80,6 @@ export class VotingCandidateService {
                 HttpStatus.NOT_FOUND,
             )
         }
-        console.log('candidate: ', candidate)
 
         // if (candidate.personnelVoting.meeting.companyId !== companyId) {
         //     throw new HttpException(
@@ -174,8 +168,6 @@ export class VotingCandidateService {
         try {
             const checkExistedVoting =
                 await this.findVotingByUserIdAndCandidateId(userId, candidateId)
-
-            console.log('checkExistedVoting: ', checkExistedVoting)
 
             if (checkExistedVoting) {
                 const updateCountVoteExistedCandidate = await this.updateVote(
@@ -330,13 +322,10 @@ export class VotingCandidateService {
             const { result, quantityShare } = voteCandidateDto
             const resultOld = checkExistedVoting.result
 
-            console.log('result---quantityShare: ', result, quantityShare)
-
             if (
                 result !== resultOld ||
                 quantityShare !== checkExistedVoting.quantityShare
             ) {
-                console.log('Update Voted for Nominee---------')
                 switch (resultOld) {
                     case VoteProposalResult.UNVOTE:
                         candidate.unVotedQuantity -=

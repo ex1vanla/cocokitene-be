@@ -240,7 +240,6 @@ export class PersonnelVotingService {
                         candidate.votedQuantity = votedQuantity
                         candidate.unVotedQuantity = unVotedQuantity
                         candidate.notVoteYetQuantity = notVoteYetQuantity
-                        // console.log('candidate: ', candidate)
                         await this.candidateRepository.updateCandidate(
                             candidate.id,
                             candidate,
