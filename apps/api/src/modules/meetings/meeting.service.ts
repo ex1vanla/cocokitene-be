@@ -35,6 +35,7 @@ import {
     AttendMeetingDto,
     CreateMeetingDto,
     GetAllMeetingDto,
+    GetAllMeetingInDayDto,
     UpdateMeetingDto,
 } from 'libs/queries/src/dtos/meeting.dto'
 import { Pagination } from 'nestjs-typeorm-paginate'
@@ -387,8 +388,6 @@ export class MeetingService {
             )
         }
 
-        // console.log('Meeting: ', meeting)
-
         const meetingRoleMtgs =
             await this.meetingRoleMtgService.getMeetingRoleMtgByMeetingId(
                 meetingId,
@@ -577,7 +576,6 @@ export class MeetingService {
                 ...personnelVoting,
                 candidate: listCandidate,
             })
-            console.log('listCandidate: ', listCandidate)
         }
 
         return {
@@ -1216,6 +1214,46 @@ export class MeetingService {
             voterJoined: voterJoined,
             totalMeetingVote: totalMeetingVote,
             joinedMeetingVote: joinedMeetingVote,
+        }
+    }
+
+    async getAllMeetingsInDay(
+        getAllMeetingInDayDto: GetAllMeetingInDayDto,
+        user: User,
+        companyId: number,
+    ): Promise<Pagination<Meeting>> {
+        const userId = user.id
+        try {
+            const listMeetings =
+                await this.meetingRepository.getAllMeetingsInDay(
+                    companyId,
+                    userId,
+                    getAllMeetingInDayDto,
+                )
+
+            const meetingIds = listMeetings.items.map(
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                (meeting) => meeting.meetings_id,
+            )
+
+            if (listMeetings.items.length) {
+                await Promise.all([
+                    ...meetingIds.map((meetingId) =>
+                        this.standardStatusMeeting(meetingId),
+                    ),
+                ])
+            }
+
+            const meetings = await this.meetingRepository.getAllMeetingsInDay(
+                companyId,
+                userId,
+                getAllMeetingInDayDto,
+            )
+
+            return meetings
+        } catch (error) {
+            console.log('Error: ', error)
         }
     }
 }
