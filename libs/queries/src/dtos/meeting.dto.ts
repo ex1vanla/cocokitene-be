@@ -345,3 +345,12 @@ export class GetAllMeetingInDayDto extends GetAllDto {
     })
     date: Date
 }
+
+export class StatisticMeetingInMonthDto {
+    @IsNotEmpty()
+    @ApiProperty({
+        required: true,
+        example: new Date(),
+    })
+    date: Date
+}

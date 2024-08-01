@@ -36,6 +36,7 @@ import {
     CreateMeetingDto,
     GetAllMeetingDto,
     GetAllMeetingInDayDto,
+    StatisticMeetingInMonthDto,
     UpdateMeetingDto,
 } from 'libs/queries/src/dtos/meeting.dto'
 import { Pagination } from 'nestjs-typeorm-paginate'
@@ -1221,6 +1222,7 @@ export class MeetingService {
         getAllMeetingInDayDto: GetAllMeetingInDayDto,
         user: User,
         companyId: number,
+        canUserCreateMeeting: boolean,
     ): Promise<Pagination<Meeting>> {
         const userId = user.id
         try {
@@ -1228,6 +1230,7 @@ export class MeetingService {
                 await this.meetingRepository.getAllMeetingsInDay(
                     companyId,
                     userId,
+                    canUserCreateMeeting,
                     getAllMeetingInDayDto,
                 )
 
@@ -1248,12 +1251,32 @@ export class MeetingService {
             const meetings = await this.meetingRepository.getAllMeetingsInDay(
                 companyId,
                 userId,
+                canUserCreateMeeting,
                 getAllMeetingInDayDto,
             )
 
             return meetings
         } catch (error) {
             console.log('Error: ', error)
+        }
+    }
+
+    async getMeetingInMonth(
+        statisticMeetingInMonthDto: StatisticMeetingInMonthDto,
+        user: User,
+        type: MeetingType,
+    ): Promise<Meeting[]> {
+        try {
+            const companyId = user.companyId
+            const meetings = await this.meetingRepository.getMeetingInMonth(
+                companyId,
+                type,
+                statisticMeetingInMonthDto,
+            )
+
+            return meetings
+        } catch (error) {
+            console.log('error-----:', error)
         }
     }
 }

@@ -19,10 +19,18 @@ export class DashBoardModule implements NestModule {
     configure(consumer: MiddlewareConsumer) {
         consumer
             .apply(MeetingStatusMiddleware)
-            .exclude({
-                path: '/api/dash-board/meeting-in-day',
-                method: RequestMethod.GET,
-            })
+            .exclude(
+                {
+                    path: '/api/dash-board/meeting-in-day',
+                    method: RequestMethod.GET,
+                },
+                {
+                    path: '/api/dash-board/meeting-in-month/statistics',
+                    method: RequestMethod.GET,
+                },
+            )
             .forRoutes(DashBoardController)
     }
 }
+
+// export class DashBoardModule{}

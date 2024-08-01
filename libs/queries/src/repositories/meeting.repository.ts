@@ -10,6 +10,7 @@ import {
     CreateMeetingDto,
     GetAllMeetingDto,
     GetAllMeetingInDayDto,
+    StatisticMeetingInMonthDto,
     UpdateMeetingDto,
 } from '../dtos'
 import {
@@ -358,6 +359,7 @@ export class MeetingRepository extends Repository<Meeting> {
     async getAllMeetingsInDay(
         companyId: number,
         userId: number,
+        canUserCreateMeeting: boolean,
         options: IPaginationOptions & GetAllMeetingInDayDto,
     ): Promise<Pagination<Meeting>> {
         try {
@@ -379,12 +381,21 @@ export class MeetingRepository extends Repository<Meeting> {
                     'meetings.companyId',
                 ])
                 .distinct(true)
-            queryBuilder.innerJoin(
-                'meeting_participant',
-                'userMeeting',
-                'userMeeting.meetingId = meetings.id AND userMeeting.userId = :userId',
-                { userId },
-            )
+            if (canUserCreateMeeting) {
+                queryBuilder.leftJoin(
+                    'meeting_participant',
+                    'userMeeting',
+                    'userMeeting.meetingId = meetings.id AND userMeeting.userId = :userId',
+                    { userId },
+                )
+            } else {
+                queryBuilder.innerJoin(
+                    'meeting_participant',
+                    'userMeeting',
+                    'userMeeting.meetingId = meetings.id AND userMeeting.userId = :userId',
+                    { userId },
+                )
+            }
 
             queryBuilder
                 .addSelect(
@@ -417,6 +428,58 @@ export class MeetingRepository extends Repository<Meeting> {
             return paginateRaw(queryBuilder, options)
         } catch (error) {
             console.log('Error Query: ', error)
+        }
+    }
+
+    async getMeetingInMonth(
+        companyId: number,
+        type: MeetingType,
+        options: StatisticMeetingInMonthDto,
+    ): Promise<Meeting[]> {
+        try {
+            const { date } = options
+            const startOfMonth = new Date(date)
+            startOfMonth.setUTCDate(1)
+            startOfMonth.setUTCHours(0, 0, 0, 0)
+
+            const dateTime = new Date(date)
+            const endOfMonth = new Date(
+                Date.UTC(
+                    dateTime.getUTCFullYear(),
+                    dateTime.getUTCMonth() + 1,
+                    0,
+                ),
+            )
+            endOfMonth.setUTCHours(23, 59, 59, 999)
+
+            const meeting = await this.createQueryBuilder('meetings')
+                .select([
+                    'meetings.id',
+                    'meetings.title',
+                    'meetings.startTime',
+                    'meetings.endTime',
+                    'meetings.companyId',
+                    'meetings.type',
+                ])
+                .where('meetings.companyId = :companyId ', {
+                    companyId: companyId,
+                })
+                .andWhere('meetings.type = :type', {
+                    type: type,
+                })
+                .andWhere(
+                    'meetings.startTime >= :startOfMonth AND meetings.startTime <= :endOfMonth',
+                    {
+                        startOfMonth: startOfMonth,
+                        endOfMonth: endOfMonth,
+                    },
+                )
+                .leftJoinAndSelect('meetings.participant', 'participant')
+                .getMany()
+
+            return meeting
+        } catch (error) {
+            console.log('Query Meeting in Month Failed: ', error)
         }
     }
 }

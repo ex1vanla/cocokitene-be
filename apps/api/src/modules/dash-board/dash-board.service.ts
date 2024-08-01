@@ -1,9 +1,17 @@
 import { Injectable } from '@nestjs/common'
 import { MeetingService } from '../meetings/meeting.service'
-import { GetAllMeetingInDayDto } from '@dtos/meeting.dto'
+import {
+    GetAllMeetingInDayDto,
+    StatisticMeetingInMonthDto,
+} from '@dtos/meeting.dto'
 import { User } from '@entities/user.entity'
 import { Pagination } from 'nestjs-typeorm-paginate'
 import { Meeting } from '@entities/meeting.entity'
+import {
+    MeetingType,
+    UserMeetingStatusEnum,
+} from '@shares/constants/meeting.const'
+import { PermissionEnum } from '@shares/constants'
 
 @Injectable()
 export class DashBoardService {
@@ -14,11 +22,112 @@ export class DashBoardService {
         user: User,
         companyId: number,
     ): Promise<Pagination<Meeting>> {
+        const permissionKeys: string[] = (user as any).permissionKeys || []
+        const canUserCreateMeeting = permissionKeys.includes(
+            PermissionEnum.CREATE_MEETING,
+        )
+
         const meetingInDay = await this.meetingService.getAllMeetingsInDay(
             getAllMeetingInDayDto,
             user,
             companyId,
+            canUserCreateMeeting,
         )
         return meetingInDay
+    }
+
+    async getStatisticMeetingInMonth(
+        statisticMeetingInDayQuery: StatisticMeetingInMonthDto,
+        user: User,
+    ) {
+        const shareholderMeetingInMonth =
+            await this.meetingService.getMeetingInMonth(
+                statisticMeetingInDayQuery,
+                user,
+                MeetingType.SHAREHOLDER_MEETING,
+            )
+
+        const filterUniqueParticipant = shareholderMeetingInMonth
+            .flatMap((meeting) => meeting.participant)
+            .reduce(
+                (acc, current) => {
+                    const checkExist = acc.participant.some(
+                        (participant) =>
+                            participant.userId === current.userId &&
+                            participant.meetingId == current.meetingId,
+                    )
+                    if (!checkExist) {
+                        if (
+                            current.status == UserMeetingStatusEnum.PARTICIPATE
+                        ) {
+                            return {
+                                participant: acc.participant.concat([current]),
+                                totalShareholderJoined:
+                                    acc.totalShareholderJoined + 1,
+                            }
+                        }
+                        return {
+                            ...acc,
+                            participant: acc.participant.concat([current]),
+                        }
+                    }
+                    return acc
+                },
+                {
+                    participant: [],
+                    totalShareholderJoined: 0,
+                },
+            )
+
+        const boardMeetingInMonth = await this.meetingService.getMeetingInMonth(
+            statisticMeetingInDayQuery,
+            user,
+            MeetingType.BOARD_MEETING,
+        )
+
+        const filterUniqueBoard = boardMeetingInMonth
+            .flatMap((meeting) => meeting.participant)
+            .reduce(
+                (acc, current) => {
+                    const checkExist = acc.participant.some(
+                        (participant) =>
+                            participant.userId === current.userId &&
+                            participant.meetingId == current.meetingId,
+                    )
+                    if (!checkExist) {
+                        if (
+                            current.status == UserMeetingStatusEnum.PARTICIPATE
+                        ) {
+                            return {
+                                participant: acc.participant.concat([current]),
+                                totalBoardJoined: acc.totalBoardJoined + 1,
+                            }
+                        }
+                        return {
+                            ...acc,
+                            participant: acc.participant.concat([current]),
+                        }
+                    }
+                    return acc
+                },
+                {
+                    participant: [],
+                    totalBoardJoined: 0,
+                },
+            )
+
+        return {
+            shareholderMeetingInMonth: {
+                totalMeeting: shareholderMeetingInMonth.length,
+                totalParticipant: filterUniqueParticipant.participant.length,
+                totalParticipantJoined:
+                    filterUniqueParticipant.totalShareholderJoined,
+            },
+            boardMeetingInMonth: {
+                totalMeeting: boardMeetingInMonth.length,
+                totalParticipant: filterUniqueBoard.participant.length,
+                totalParticipantJoined: filterUniqueBoard.totalBoardJoined,
+            },
+        }
     }
 }

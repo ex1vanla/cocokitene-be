@@ -8,7 +8,10 @@ import {
 } from '@nestjs/common'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import { PermissionEnum } from '@shares/constants'
-import { GetAllMeetingInDayDto } from '@dtos/meeting.dto'
+import {
+    GetAllMeetingInDayDto,
+    StatisticMeetingInMonthDto,
+} from '@dtos/meeting.dto'
 import { UserScope } from '@shares/decorators/user.decorator'
 import { User } from '@entities/user.entity'
 import { JwtAuthGuard } from '@shares/guards/jwt-auth.guard'
@@ -29,11 +32,30 @@ export class DashBoardController {
         @UserScope() user: User,
     ) {
         const companyId = user.companyId
+
         const meetings = await this.dashBoardService.getAllMeetingInDay(
             getAllMeetingInDayDto,
             user,
             companyId,
         )
         return meetings
+    }
+
+    @Get('/meeting-in-month/statistics')
+    @HttpCode(HttpStatus.OK)
+    @ApiBearerAuth()
+    @UseGuards(JwtAuthGuard)
+    @Permission(PermissionEnum.SETTING_PERMISSION_FOR_ROLES)
+    async statisticsMeetingInMonth(
+        @Query() statisticMeetingInDayQuery: StatisticMeetingInMonthDto,
+        @UserScope() user: User,
+    ) {
+        const statisticMeetingInMonth =
+            await this.dashBoardService.getStatisticMeetingInMonth(
+                statisticMeetingInDayQuery,
+                user,
+            )
+
+        return statisticMeetingInMonth
     }
 }
