@@ -205,4 +205,19 @@ export class SystemAdminService {
             await this.systemAdminRepository.getAllSystemAdmin()
         return systemAdmins
     }
+
+    async statisticalCompany() {
+        const companyStatuses =
+            await this.companyStatusService.getAllCompanyByStatusId()
+
+        const userStatuses = await this.userStatusService.getAllUserByStatusId()
+
+        const servicePlan = await this.planService.countCompanyUseServicePlan()
+
+        return {
+            companyStatuses: companyStatuses.items,
+            userStatuses: userStatuses.items,
+            servicePlan: servicePlan.items,
+        }
+    }
 }
