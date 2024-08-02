@@ -178,4 +178,14 @@ export class SystemAdminController {
         await this.emailService.sendEmailRegisterCompany(registerCompanyDto)
         return 'Emails  register information company send to system admin successfully'
     }
+
+    @Get('/statistical')
+    @HttpCode(HttpStatus.OK)
+    @ApiBearerAuth()
+    @UseGuards(SystemAdminGuard)
+    async statisticalCompany() {
+        const statistical = await this.systemAdminService.statisticalCompany()
+
+        return statistical
+    }
 }
