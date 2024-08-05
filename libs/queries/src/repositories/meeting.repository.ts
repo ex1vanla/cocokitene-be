@@ -364,10 +364,10 @@ export class MeetingRepository extends Repository<Meeting> {
     ): Promise<Pagination<Meeting>> {
         try {
             const { date } = options
-            const startOfDay = new Date(date)
-            const endOfDay = new Date(date)
-            startOfDay.setUTCHours(0, 0, 0, 0)
-            endOfDay.setUTCHours(23, 59, 59, 999)
+            const newDate = new Date(date)
+            // const endOfDay = new Date(date)
+            // startOfDay.setUTCHours(0, 0, 0, 0)
+            // endOfDay.setUTCHours(23, 59, 59, 999)
 
             const queryBuilder = this.createQueryBuilder('meetings')
                 .select([
@@ -418,10 +418,9 @@ export class MeetingRepository extends Repository<Meeting> {
                     'isParticipant',
                 )
             queryBuilder.andWhere(
-                'meetings.startTime >= :startOfDay AND meetings.startTime <= :endOfDay',
+                'DATE(meetings.startTime) <= :newDate AND DATE_ADD(DATE(meetings.endTime), INTERVAL 1 DAY) - INTERVAL 1 SECOND >= :newDate',
                 {
-                    startOfDay: startOfDay,
-                    endOfDay: endOfDay,
+                    newDate: newDate,
                 },
             )
 
