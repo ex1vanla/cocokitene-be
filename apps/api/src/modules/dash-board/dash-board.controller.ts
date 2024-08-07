@@ -17,6 +17,7 @@ import { User } from '@entities/user.entity'
 import { JwtAuthGuard } from '@shares/guards/jwt-auth.guard'
 import { Permission } from '@shares/decorators/permission.decorator'
 import { DashBoardService } from './dash-board.service'
+import { getAllSysNotificationDto } from '@dtos/system-notification.dto'
 
 @Controller('dash-board')
 @ApiTags('dash-board')
@@ -57,5 +58,20 @@ export class DashBoardController {
             )
 
         return statisticMeetingInMonth
+    }
+
+    @Get('/system-notification')
+    @HttpCode(HttpStatus.OK)
+    @ApiBearerAuth()
+    @UseGuards(JwtAuthGuard)
+    @Permission(PermissionEnum.BASIC_PERMISSION)
+    async getAllSysNotification(
+        @Query() getAllSysNotification: getAllSysNotificationDto,
+    ) {
+        const sysNotification = this.dashBoardService.getAllSysNotification(
+            getAllSysNotification,
+        )
+
+        return sysNotification
     }
 }

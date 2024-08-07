@@ -416,4 +416,10 @@ export const httpErrors = {
         message: 'Quantity share voted is greater than allow',
         code: 'VOTING_CANDIDATE_PERSONNEL_00000',
     },
+
+    //Create System Notification Failed\
+    CREATE_SYS_NOTIFICATION_FAILED: {
+        message: 'Create System notification failed',
+        code: 'SYSTEM_NOTIFICATION_00000',
+    },
 }

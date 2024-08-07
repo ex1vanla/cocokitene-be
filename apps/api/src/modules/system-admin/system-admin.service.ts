@@ -28,6 +28,14 @@ import { SystemAdminRepository } from '@repositories/system-admin.repository'
 import { Plan } from '@entities/plan.entity'
 import { SystemAdmin } from '@entities/system-admin.entity'
 import { Logger } from 'winston'
+import { SystemNotification } from '@entities/system-notification.entity'
+import {
+    createSystemNotificationDto,
+    getAllSysNotificationDto,
+    updateSystemNotificationDto,
+} from '@dtos/system-notification.dto'
+import { SystemNotificationService } from '../system-notification/system-notification.service'
+import { Pagination } from 'nestjs-typeorm-paginate'
 
 @Injectable()
 export class SystemAdminService {
@@ -41,6 +49,7 @@ export class SystemAdminService {
         private readonly roleService: RoleService,
         private readonly userStatusService: UserStatusService,
         private readonly systemAdminRepository: SystemAdminRepository,
+        private readonly systemNotificationService: SystemNotificationService,
         @Inject('winston')
         private readonly logger: Logger,
     ) {}
@@ -219,5 +228,44 @@ export class SystemAdminService {
             userStatuses: userStatuses.items,
             servicePlan: servicePlan.items,
         }
+    }
+
+    async createSysNotification(
+        createSysNotificationDto: createSystemNotificationDto,
+        systemId: number,
+    ): Promise<SystemNotification> {
+        const createSysNotification =
+            this.systemNotificationService.createSystemNotification(
+                createSysNotificationDto,
+                systemId,
+            )
+
+        return createSysNotification
+    }
+
+    async getAllSysNotification(
+        getAllSysNotificationDto: getAllSysNotificationDto,
+    ): Promise<Pagination<SystemNotification>> {
+        const sysNotification =
+            this.systemNotificationService.getAllSystemNotification(
+                getAllSysNotificationDto,
+            )
+
+        return sysNotification
+    }
+
+    async updateSysNotification(
+        sysNotificationId: number,
+        updateSysNotification: updateSystemNotificationDto,
+        systemAdminId: number,
+    ): Promise<SystemNotification> {
+        const updatedSysNotification =
+            await this.systemNotificationService.updateSystemNotification(
+                sysNotificationId,
+                updateSysNotification,
+                systemAdminId,
+            )
+
+        return updatedSysNotification
     }
 }
