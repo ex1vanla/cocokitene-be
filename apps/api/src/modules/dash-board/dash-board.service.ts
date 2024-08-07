@@ -1,3 +1,4 @@
+import { getAllSysNotificationDto } from './../../../../../libs/queries/src/dtos/system-notification.dto'
 import { Injectable } from '@nestjs/common'
 import { MeetingService } from '../meetings/meeting.service'
 import {
@@ -12,10 +13,15 @@ import {
     UserMeetingStatusEnum,
 } from '@shares/constants/meeting.const'
 import { PermissionEnum } from '@shares/constants'
+import { SystemNotification } from '@entities/system-notification.entity'
+import { SystemNotificationService } from '../system-notification/system-notification.service'
 
 @Injectable()
 export class DashBoardService {
-    constructor(private readonly meetingService: MeetingService) {}
+    constructor(
+        private readonly meetingService: MeetingService,
+        private readonly systemNotificationService: SystemNotificationService,
+    ) {}
 
     async getAllMeetingInDay(
         getAllMeetingInDayDto: GetAllMeetingInDayDto,
@@ -129,5 +135,16 @@ export class DashBoardService {
                 totalParticipantJoined: filterUniqueBoard.totalBoardJoined,
             },
         }
+    }
+
+    async getAllSysNotification(
+        getAllSysNotificationDto: getAllSysNotificationDto,
+    ): Promise<Pagination<SystemNotification>> {
+        const sysNotification =
+            this.systemNotificationService.getAllSystemNotification(
+                getAllSysNotificationDto,
+            )
+
+        return sysNotification
     }
 }
