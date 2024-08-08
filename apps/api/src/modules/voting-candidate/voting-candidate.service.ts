@@ -20,6 +20,7 @@ import { UserMeetingStatusEnum } from '@shares/constants/meeting.const'
 import { VoteProposalResult } from '@shares/constants/proposal.const'
 import { Logger } from 'winston'
 import { VoteCandidateInPersonnel } from '@dtos/personnel-voting.dto'
+import { RoleMtgService } from '../role-mtgs/role-mtg.service'
 
 @Injectable()
 export class VotingCandidateService {
@@ -32,6 +33,8 @@ export class VotingCandidateService {
         private readonly meetingRoleMtgService: MeetingRoleMtgService,
         @Inject(forwardRef(() => MeetingService))
         private readonly meetingService: MeetingService,
+        private readonly roleMtgService: RoleMtgService,
+
         @Inject('winston')
         private readonly logger: Logger,
     ) {}
@@ -174,6 +177,7 @@ export class VotingCandidateService {
                     candidate,
                     checkExistedVoting,
                     voteCandidateDto,
+                    1,
                 )
                 this.logger.info(
                     `[DAPP] User ID : ${userId} ${messageLog.VOTING_CANDIDATE_OF_MEETING_SUCCESS.message} ${candidate.id}`,
@@ -191,10 +195,6 @@ export class VotingCandidateService {
                                 quantityShare: 1,
                             },
                         )
-                    console.log(
-                        'createVotingCandidate: ',
-                        createVotingCandidate,
-                    )
 
                     switch (result) {
                         case VoteProposalResult.VOTE:
@@ -235,6 +235,138 @@ export class VotingCandidateService {
         }
     }
 
+    async voteCandidateInShareholderMtg(
+        companyId: number,
+        userId: number,
+        candidateId: number,
+        voteCandidateDto: VoteCandidateDto,
+    ): Promise<Candidate> {
+        const { result } = voteCandidateDto
+
+        const existedUser = await this.userService.getActiveUserById(userId)
+        if (!existedUser) {
+            throw new HttpException(
+                httpErrors.USER_NOT_FOUND,
+                HttpStatus.BAD_REQUEST,
+            )
+        }
+
+        const candidate = await this.candidateRepository.getCandidateById(
+            candidateId,
+        )
+
+        if (!candidate) {
+            throw new HttpException(
+                httpErrors.CANDIDATE_NOT_FOUND,
+                HttpStatus.NOT_FOUND,
+            )
+        }
+
+        const roleMtgShareholder =
+            await this.roleMtgService.getRoleMtgByNameAndCompanyId(
+                RoleMtgEnum.SHAREHOLDER,
+                companyId,
+            )
+
+        const meetingId: number = candidate.personnelVoting.meetingId
+
+        const existedShareholder =
+            await this.userMeetingService.getParticipantInMeeting(
+                meetingId,
+                userId,
+                roleMtgShareholder.id,
+            )
+
+        if (
+            !(existedShareholder.status === UserMeetingStatusEnum.PARTICIPATE)
+        ) {
+            throw new HttpException(
+                httpErrors.USER_NOT_YET_ATTENDANCE,
+                HttpStatus.BAD_REQUEST,
+            )
+        }
+
+        const meeting = await this.meetingService.getInternalMeetingById(
+            meetingId,
+        )
+
+        const currentDate = new Date()
+        const endVotingTime = new Date(meeting.endVotingTime)
+        if (currentDate > endVotingTime) {
+            throw new HttpException(
+                httpErrors.VOTING_WHEN_MEETING_ENDED,
+                HttpStatus.BAD_REQUEST,
+            )
+        }
+        const shareOfUser: number = existedShareholder.quantityShare
+
+        try {
+            const checkExistedVoting =
+                await this.findVotingByUserIdAndCandidateId(userId, candidateId)
+
+            if (checkExistedVoting) {
+                const updateCountVoteExistedCandidate = await this.updateVote(
+                    candidate,
+                    checkExistedVoting,
+                    voteCandidateDto,
+                    shareOfUser,
+                )
+                this.logger.info(
+                    `[DAPP] User ID : ${userId} ${messageLog.VOTING_CANDIDATE_OF_MEETING_SUCCESS.message} ${candidate.id}`,
+                )
+                return updateCountVoteExistedCandidate
+            } else {
+                let createVotingCandidate: VotingCandidate
+                try {
+                    createVotingCandidate =
+                        await this.votingCandidateRepository.createVotingCandidate(
+                            {
+                                userId: userId,
+                                votedForCandidateId: candidateId,
+                                result: result,
+                                quantityShare: shareOfUser,
+                            },
+                        )
+
+                    switch (result) {
+                        case VoteProposalResult.VOTE:
+                            candidate.votedQuantity += shareOfUser
+                            candidate.notVoteYetQuantity -= shareOfUser
+                            break
+                        case VoteProposalResult.UNVOTE:
+                            candidate.unVotedQuantity += shareOfUser
+                            candidate.notVoteYetQuantity -= shareOfUser
+                            break
+                    }
+                    await createVotingCandidate.save()
+                    await candidate.save()
+                    this.logger.info(
+                        `[DAPP] User ID : ${userId} ${messageLog.VOTING_CANDIDATE_OF_MEETING_SUCCESS.message} ${candidate.id}`,
+                    )
+
+                    return candidate
+                } catch (error) {
+                    console.log('error: ', error)
+                    this.logger.error(
+                        `${messageLog.VOTING_CANDIDATE_OF_MEETING_FAILED.code} [DAPP] User ID : ${userId} ${messageLog.VOTING_CANDIDATE_OF_MEETING_FAILED.message} ${candidate.id}`,
+                    )
+                    throw new HttpException(
+                        httpErrors.VOTING_CANDIDATE_FAILED,
+                        HttpStatus.INTERNAL_SERVER_ERROR,
+                    )
+                }
+            }
+        } catch (error) {
+            this.logger.error(
+                `${messageLog.VOTING_CANDIDATE_OF_MEETING_FAILED.code} [DAPP] User ID : ${userId} ${messageLog.VOTING_CANDIDATE_OF_MEETING_FAILED.message} ${candidate.id}`,
+            )
+            throw new HttpException(
+                { message: error.message },
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            )
+        }
+    }
+
     async deleteVoting(votedForCandidateId: number) {
         // await this.votingCandidateRepository.softDelete({ votedForCandidateId })
         await this.votingCandidateRepository.delete({ votedForCandidateId })
@@ -244,6 +376,7 @@ export class VotingCandidateService {
         existedCandidate: Candidate,
         checkExistedVoting: VotingCandidate,
         voteCandidateDto: VoteCandidateDto,
+        votingValue: number,
     ): Promise<Candidate> {
         const { result } = voteCandidateDto
         const resultOld = checkExistedVoting.result
@@ -251,23 +384,23 @@ export class VotingCandidateService {
         if (result !== resultOld) {
             switch (resultOld) {
                 case VoteProposalResult.UNVOTE:
-                    existedCandidate.unVotedQuantity -= 1
+                    existedCandidate.unVotedQuantity -= votingValue
                     break
                 case VoteProposalResult.VOTE:
-                    existedCandidate.votedQuantity -= 1
+                    existedCandidate.votedQuantity -= votingValue
                     break
             }
 
             switch (result) {
                 case VoteProposalResult.UNVOTE:
-                    existedCandidate.unVotedQuantity += 1
+                    existedCandidate.unVotedQuantity += votingValue
                     break
                 case VoteProposalResult.VOTE:
-                    existedCandidate.votedQuantity += 1
+                    existedCandidate.votedQuantity += votingValue
                     break
             }
             if (result === VoteProposalResult.NO_IDEA) {
-                existedCandidate.notVoteYetQuantity += 1
+                existedCandidate.notVoteYetQuantity += votingValue
                 await this.votingCandidateRepository.delete(
                     checkExistedVoting.id,
                 )
