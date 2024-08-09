@@ -10,6 +10,7 @@ import {
     SystemAdminLoginResponseData,
 } from '@api/modules/auths/auth.interface'
 import {
+    CompanyStatusEnum,
     TOKEN_VERIFY_EMAIL_EXPIRE_IN_MILISECOND,
     UserStatusEnum,
 } from '@shares/constants'
@@ -81,6 +82,13 @@ export class AuthService {
             throw new HttpException(
                 httpErrors.USER_NOT_FOUND,
                 HttpStatus.NOT_FOUND,
+            )
+        }
+
+        if (user.company.companyStatus.status !== CompanyStatusEnum.ACTIVE) {
+            throw new HttpException(
+                httpErrors.COMPANY_STATUS_INACTIVE,
+                HttpStatus.FORBIDDEN,
             )
         }
 
@@ -407,11 +415,19 @@ export class AuthService {
             email,
             companyId: company.id,
         })
+
         if (!user) {
             // this.logger.error('[DAPP] Login false. Please check (email or WallerAddress)',)
             throw new HttpException(
                 httpErrors.USER_WRONG_LOGIN,
                 HttpStatus.NOT_FOUND,
+            )
+        }
+
+        if (user.company.companyStatus.status !== CompanyStatusEnum.ACTIVE) {
+            throw new HttpException(
+                httpErrors.COMPANY_STATUS_INACTIVE,
+                HttpStatus.FORBIDDEN,
             )
         }
 
