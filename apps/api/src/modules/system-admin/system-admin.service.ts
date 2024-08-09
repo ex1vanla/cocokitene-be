@@ -118,9 +118,10 @@ export class SystemAdminService {
 
         let superAdminExited: User
         if (superAdminDto.walletAddress) {
-            superAdminExited = await this.userService.getUserByWalletAddress(
-                superAdminDto.walletAddress,
-            )
+            superAdminExited =
+                await this.userService.getUserByWalletAddressExactly(
+                    superAdminDto.walletAddress,
+                )
             if (
                 superAdminExited &&
                 superAdminExited.walletAddress !== superAdmin.walletAddress
@@ -132,7 +133,7 @@ export class SystemAdminService {
             }
         }
 
-        superAdminExited = await this.userService.getUserByEmail(
+        superAdminExited = await this.userService.getUserByEmailExactly(
             superAdminDto.email,
         )
         if (superAdminExited && superAdminExited.email !== superAdmin.email) {
