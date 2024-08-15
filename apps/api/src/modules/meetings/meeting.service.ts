@@ -1261,22 +1261,41 @@ export class MeetingService {
         }
     }
 
-    async getMeetingInMonth(
+    async getMeetingCreatedInMonth(
         statisticMeetingInMonthDto: StatisticMeetingInMonthDto,
         user: User,
         type: MeetingType,
     ): Promise<Meeting[]> {
         try {
             const companyId = user.companyId
-            const meetings = await this.meetingRepository.getMeetingInMonth(
-                companyId,
-                type,
-                statisticMeetingInMonthDto,
-            )
+            const meetings =
+                await this.meetingRepository.getMeetingCreatedInMonth(
+                    companyId,
+                    type,
+                    statisticMeetingInMonthDto,
+                )
 
             return meetings
         } catch (error) {
             console.log('error-----:', error)
         }
+    }
+
+    async getMeetingInMonth(
+        month: number,
+        year: number,
+        userId: number,
+        companyId: number,
+        canUserCreateMeeting: boolean,
+    ): Promise<Meeting[]> {
+        const meetingInMonth = await this.meetingRepository.getMeetingInMonth(
+            month,
+            year,
+            userId,
+            companyId,
+            canUserCreateMeeting,
+        )
+
+        return meetingInMonth.items
     }
 }
