@@ -155,6 +155,7 @@ export class AuthService {
                 avatar: user.avatar,
                 permissionKeys,
                 status: user.userStatus,
+                defaultAvatarHashColor: user.defaultAvatarHashColor,
             }
 
             accessToken = generateAccessJWT(userData, {
