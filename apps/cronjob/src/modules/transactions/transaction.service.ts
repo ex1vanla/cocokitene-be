@@ -28,11 +28,12 @@ import { VotingRepository } from '@repositories/voting.repository'
 import { MeetingFileRepository } from '@repositories/meeting-file.repository'
 import { Logger } from 'winston'
 import { messageBLCLog } from '@shares/exception-filter/message-log-blc-const'
-import { CandidateRepository } from '@repositories/board-members.repository'
+import { CandidateRepository } from '@repositories/nominees.repository'
 import { VotingCandidateRepository } from '@repositories/voting-board-members.repository'
 import { hashMd5 } from '@shares/utils/md5'
 import { MeetingRoleMtgRepository } from '@repositories/meeting-role-relations.repository'
 import { RoleMtgRepository } from '@repositories/meeting-role.repository'
+import { PersonnelVotingRepository } from '@repositories/personnel-voting.repository'
 
 @Injectable()
 export class TransactionService {
@@ -47,6 +48,7 @@ export class TransactionService {
         private readonly votingCandidateRepository: VotingCandidateRepository,
         private readonly meetingRoleMtgRepository: MeetingRoleMtgRepository,
         private readonly roleMtgRepository: RoleMtgRepository,
+        private readonly personnelVotingRepository: PersonnelVotingRepository,
 
         @Inject('winston')
         private readonly logger: Logger, // private readonly myLoggerService: MyLoggerService,
@@ -57,15 +59,11 @@ export class TransactionService {
         const meetingIdsAppearedInTransaction =
             await this.transactionRepository.getMeetingIdsWithTransactions()
 
-        // console.log('meetingIdsAppearedInTransaction',meetingIdsAppearedInTransaction)
-
         const listMeetingHappened =
             await this.meetingRepository.findMeetingByStatusAndEndTimeVoting(
                 StatusMeeting.HAPPENED,
                 meetingIdsAppearedInTransaction,
             )
-
-        // console.log('listMeetingHappened',listMeetingHappened)
 
         if (!listMeetingHappened || listMeetingHappened.length == 0) {
             // not find meeting have status happened and no appeared in Transaction table
@@ -98,10 +96,14 @@ export class TransactionService {
                     await this.proposalRepository.getAllProposalByMtgId(
                         meeting.id,
                     )
-                const listMeetingCandidates =
-                    await this.candidateRepository.getAllCandidateByMeetingId(
+                const listMeetingPersonnelVoting =
+                    await this.personnelVotingRepository.getAllPersonnelVotingByMtgId(
                         meeting.id,
                     )
+
+                const listMeetingCandidates = listMeetingPersonnelVoting
+                    .flatMap((personnelVoting) => personnelVoting.candidate)
+                    .sort((a, b) => a.id - b.id)
 
                 const listVoteProposals = []
                 const listVoteCandidate = []
@@ -112,18 +114,14 @@ export class TransactionService {
                             await this.votingRepository.getInternalListVotingByProposalId(
                                 proposal.id,
                             )
-                        listVoteOfProposal.map((vote) => {
-                            listVoteProposals.push(vote)
-                        })
+                        listVoteProposals.push(...listVoteOfProposal)
                     }),
                     ...listMeetingCandidates.map(async (candidate) => {
                         const listVoteOfCandidate =
                             await this.votingCandidateRepository.getListVotedByCandidateId(
                                 candidate.id,
                             )
-                        listVoteOfCandidate.map((voteCandidate) => {
-                            listVoteCandidate.push(voteCandidate)
-                        })
+                        listVoteCandidate.push(...listVoteOfCandidate)
                     }),
                 ])
 
@@ -137,7 +135,7 @@ export class TransactionService {
                 )
                 listMeetingProposals.sort((a, b) => a.id - b.id)
                 listVoteProposals.sort((a, b) => a.id - b.id)
-                listMeetingCandidates.sort((a, b) => a.id - b.id)
+                listMeetingPersonnelVoting.sort((a, b) => a.id - b.id)
                 listVoteCandidate.sort((a, b) => a.id - b.id)
                 listParticipantOfMeeting.sort((a, b) => a.id - b.id)
 
@@ -180,7 +178,7 @@ export class TransactionService {
                     JSON.stringify(listVoteProposals),
                 )
                 const hash_candidateMeeting = hashMd5(
-                    JSON.stringify(listMeetingCandidates),
+                    JSON.stringify(listMeetingPersonnelVoting),
                 )
                 const hash_candidateVote = hashMd5(
                     JSON.stringify(listVoteCandidate),
@@ -209,7 +207,7 @@ export class TransactionService {
                         fileMeeting: listMeetingFile,
                         proposalMeeting: listMeetingProposals,
                         proposalVote: listVoteProposals,
-                        candidateMeeting: listMeetingCandidates,
+                        personnelVoting: listMeetingPersonnelVoting,
                         candidateVote: listVoteCandidate,
                         participantMeeting: listParticipantOfMeeting,
                     }),
