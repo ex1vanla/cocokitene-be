@@ -10,7 +10,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import { PermissionEnum } from '@shares/constants'
 import {
     GetAllMeetingInDayDto,
-    GetAllMeetingInMonthDto,
+    GetStaticInMonthDto,
     StatisticMeetingInMonthDto,
 } from '@dtos/meeting.dto'
 import { UserScope } from '@shares/decorators/user.decorator'
@@ -82,7 +82,7 @@ export class DashBoardController {
     @UseGuards(JwtAuthGuard)
     @Permission(PermissionEnum.BASIC_PERMISSION)
     async getAllMeetingInMonth(
-        @Query() getAllMeetingInMonth: GetAllMeetingInMonthDto,
+        @Query() getAllMeetingInMonth: GetStaticInMonthDto,
         @UserScope() user: User,
     ) {
         const { month, year } = getAllMeetingInMonth
