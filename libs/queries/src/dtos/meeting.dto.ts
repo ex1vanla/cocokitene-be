@@ -355,7 +355,7 @@ export class StatisticMeetingInMonthDto {
     date: Date
 }
 
-export class GetAllMeetingInMonthDto {
+export class GetStaticInMonthDto {
     @IsNotEmpty()
     @ApiProperty({
         required: true,
