@@ -34,6 +34,11 @@ import { hashMd5 } from '@shares/utils/md5'
 import { MeetingRoleMtgRepository } from '@repositories/meeting-role-relations.repository'
 import { RoleMtgRepository } from '@repositories/meeting-role.repository'
 import { PersonnelVotingRepository } from '@repositories/personnel-voting.repository'
+import { S3Service } from '@api/modules/s3/s3.service'
+
+import { join } from 'path'
+import * as fs from 'fs'
+import configuration from '@shares/config/configuration'
 
 @Injectable()
 export class TransactionService {
@@ -50,6 +55,8 @@ export class TransactionService {
         private readonly roleMtgRepository: RoleMtgRepository,
         private readonly personnelVotingRepository: PersonnelVotingRepository,
 
+        //Import s3 Service Backup Aws S3
+        private readonly s3Service: S3Service,
         @Inject('winston')
         private readonly logger: Logger, // private readonly myLoggerService: MyLoggerService,
     ) {}
@@ -477,6 +484,30 @@ export class TransactionService {
             voterJoined: voterJoined,
             totalMeetingVote: totalMeetingVote,
             joinedMeetingVote: joinedMeetingVote,
+        }
+    }
+
+    //Back up S3 to local
+    async handleBackupS3toLocal(): Promise<void> {
+        console.log('Run backup S3------')
+        //Backup S3 into local folder
+        const localFolderBackup = configuration().backup.folderBackup
+        const date = new Date()
+        const folderName = `${date.getFullYear()}${
+            date.getMonth() + 1
+        }${date.getDate()}`
+
+        const folderPath = join(localFolderBackup, folderName)
+
+        //Create localFolder
+        if (!fs.existsSync(folderPath)) {
+            this.s3Service.backupBucketToLocal()
+            // console.log('create folder success!!!')
+        } else {
+            // console.log('folder is existed!!!!')
+            console.log(
+                'The Bucket S3 has been downloaded today. Please try again on another day.',
+            )
         }
     }
 }
