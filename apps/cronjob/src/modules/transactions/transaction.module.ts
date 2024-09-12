@@ -14,6 +14,7 @@ import { VotingCandidateRepository } from '@repositories/voting-board-members.re
 import { MeetingRoleMtgRepository } from '@repositories/meeting-role-relations.repository'
 import { RoleMtgRepository } from '@repositories/meeting-role.repository'
 import { PersonnelVotingRepository } from '@repositories/personnel-voting.repository'
+import { S3Module } from '@api/modules/s3/s3.module'
 
 const Repositories = TypeOrmExModule.forCustomRepository([
     UserMeetingRepository,
@@ -31,7 +32,7 @@ const Repositories = TypeOrmExModule.forCustomRepository([
 ])
 
 @Module({
-    imports: [Repositories, MyLoggerModule],
+    imports: [Repositories, MyLoggerModule, S3Module],
     providers: [TransactionService],
     exports: [TransactionService],
 })

@@ -76,7 +76,7 @@ export class VotingService {
                 HttpStatus.NOT_FOUND,
             )
         }
-        console.log(proposal.type)
+        // console.log(proposal.type)
 
         if (proposal.meeting.companyId !== companyId) {
             throw new HttpException(
