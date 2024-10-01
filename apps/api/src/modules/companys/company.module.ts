@@ -10,6 +10,7 @@ import { RolePermissionModule } from '@api/modules/role-permissions/role-permiss
 import { PermissionModule } from '@api/modules/permissions/permission.module'
 import { EmailModule } from '@api/modules/emails/email.module'
 import { RoleMtgModule } from '@api/modules/role-mtgs/role-mtg.module'
+import { CompanyServicePlanModule } from '../company-service/company-service.module'
 
 @Module({
     imports: [
@@ -22,6 +23,7 @@ import { RoleMtgModule } from '@api/modules/role-mtgs/role-mtg.module'
         PermissionModule,
         EmailModule,
         RoleMtgModule,
+        forwardRef(() => CompanyServicePlanModule),
     ],
     controllers: [CompanyController],
     providers: [CompanyService],

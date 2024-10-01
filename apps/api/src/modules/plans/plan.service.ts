@@ -142,4 +142,20 @@ export class PlanService {
 
         return servicePlan
     }
+
+    async getAllOptionServicePlan(): Promise<Plan[]> {
+        const optionServicePlan =
+            await this.planRepository.getAllOptionServicePlan()
+
+        return optionServicePlan
+    }
+
+    async getServicePlanFreeTrial(): Promise<Plan> {
+        const servicePlanFreeTrial = await this.planRepository.findOne({
+            where: {
+                price: 0,
+            },
+        })
+        return servicePlanFreeTrial
+    }
 }

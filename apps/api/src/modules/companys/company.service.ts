@@ -34,6 +34,7 @@ import {
 import { uuid } from '@shares/utils/uuid'
 import { Logger } from 'winston'
 import { RoleMtgService } from '@api/modules/role-mtgs/role-mtg.service'
+import { ServicePlanOfCompanyService } from '../company-service/company-service.service'
 
 @Injectable()
 export class CompanyService {
@@ -51,6 +52,9 @@ export class CompanyService {
         private readonly rolePermissionService: RolePermissionService,
         private readonly emailService: EmailService,
         private readonly roleMtgService: RoleMtgService,
+        @Inject(forwardRef(() => ServicePlanOfCompanyService))
+        private readonly servicePlanOfCompanyService: ServicePlanOfCompanyService,
+
         @Inject('winston')
         private readonly logger: Logger,
     ) {}
@@ -139,7 +143,10 @@ export class CompanyService {
         return existedCompany
     }
 
-    async createCompany(createCompanyDto: CreateCompanyDto): Promise<Company> {
+    async createCompany(
+        createCompanyDto: CreateCompanyDto,
+        systemAdminId: number,
+    ): Promise<Company> {
         // check email and wallet address existed super admin
         const superAdminEmail = createCompanyDto.superAdminCompany.email
         const superAdminWalletAddress =
@@ -238,6 +245,43 @@ export class CompanyService {
         createdSuperAdminCompany.defaultAvatarHashColor =
             generateRandomHexColor()
         await createdSuperAdminCompany.save()
+
+        // Set servicePlan free trial for created company
+        try {
+            //get servicePlan free trial
+            const servicePlanFreeTrial =
+                await this.planService.getServicePlanFreeTrial()
+
+            const today = new Date()
+            today.setMonth(today.getMonth() + 1)
+
+            const day = today.getDate().toString().padStart(2, '0')
+            const month = (today.getMonth() + 1).toString().padStart(2, '0')
+            const year = today.getFullYear()
+
+            // console.log('systemAdminId: ', systemAdminId)
+            // console.log('servicePlanFreeTrial:', {
+            //     companyId: createdCompany.id,
+            //     planId: servicePlanFreeTrial.id,
+            //     meetingLimit: servicePlanFreeTrial.maxMeeting,
+            //     accountLimit: servicePlanFreeTrial.maxShareholderAccount,
+            //     storageLimit: servicePlanFreeTrial.maxStorage,
+            //     expirationDate: `${year}-${month}-${day}`,
+            // })
+
+            await this.servicePlanOfCompanyService.createServicePlanOfCompany(
+                {
+                    companyId: createdCompany.id,
+                    planId: servicePlanFreeTrial.id,
+                    meetingLimit: servicePlanFreeTrial.maxMeeting,
+                    accountLimit: servicePlanFreeTrial.maxShareholderAccount,
+                    storageLimit: servicePlanFreeTrial.maxStorage,
+                    expirationDate: `${year}-${month}-${day}`,
+                },
+                systemAdminId,
+            )
+        } catch (error) {}
+
         await Promise.all([
             ...enumToArray(RoleEnum).map((role) =>
                 this.roleService.createCompanyRole(role, createdCompany.id),
@@ -363,5 +407,11 @@ export class CompanyService {
         }
 
         return createdCompany
+    }
+
+    async getOptionCompany(): Promise<Company[]> {
+        const optionCompany = this.companyRepository.getAllOptionCompany()
+
+        return optionCompany
     }
 }

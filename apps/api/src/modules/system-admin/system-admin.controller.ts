@@ -33,6 +33,11 @@ import {
 import { UserScope } from '@shares/decorators/user.decorator'
 import { SystemAdmin } from '@entities/system-admin.entity'
 import { GetStaticInMonthDto } from '@dtos/meeting.dto'
+import {
+    CreateServiceSubscriptionDto,
+    GetAllServiceSubscription,
+    UpdateStatusServiceSubscriptionDto,
+} from '@dtos/service-subscription.dto'
 
 @Controller('system-admin')
 @ApiTags('system-admin')
@@ -122,9 +127,15 @@ export class SystemAdminController {
     @UseGuards(SystemAdminGuard)
     @ApiBearerAuth()
     @HttpCode(HttpStatus.OK)
-    async createCompany(@Body() createCompanyDto: CreateCompanyDto) {
+    async createCompany(
+        @Body() createCompanyDto: CreateCompanyDto,
+        @UserScope() system: SystemAdmin,
+    ) {
+        const systemAdminId = system.id
+
         const company = await this.systemAdminService.createCompany(
             createCompanyDto,
+            systemAdminId,
         )
         return company
     }
@@ -250,5 +261,146 @@ export class SystemAdminController {
             systemId,
         )
         return updatedPlan
+    }
+
+    @Get('/get-all-option-company')
+    @HttpCode(HttpStatus.OK)
+    @ApiBearerAuth()
+    @UseGuards(SystemAdminGuard)
+    async getAllOptionCompany() {
+        const optionCompany =
+            await this.systemAdminService.getAllOptionCompany()
+
+        return optionCompany
+    }
+
+    @Get('/get-all-option-plan')
+    @HttpCode(HttpStatus.OK)
+    @ApiBearerAuth()
+    @UseGuards(SystemAdminGuard)
+    async getAllOptionPlan() {
+        const optionCompany =
+            await this.systemAdminService.getAllOptionServicePlan()
+
+        return optionCompany
+    }
+
+    @Get('/service-subscription')
+    @UseGuards(SystemAdmin)
+    @ApiBearerAuth()
+    @HttpCode(HttpStatus.OK)
+    async getAllServiceSubscription(
+        @Query() getAllServiceSubDto: GetAllServiceSubscription,
+    ) {
+        const serviceSubscription =
+            await this.systemAdminService.getAllServiceSub(getAllServiceSubDto)
+
+        return serviceSubscription
+    }
+
+    @Post('/service-subscription')
+    @UseGuards(SystemAdminGuard)
+    @ApiBearerAuth()
+    @HttpCode(HttpStatus.OK)
+    async createServiceSubscription(
+        @Body() createServiceSubscriptionDto: CreateServiceSubscriptionDto,
+        @UserScope() system: SystemAdmin,
+    ) {
+        const systemId = system.id
+
+        const serviceSubscriptionCreated =
+            await this.systemAdminService.createServiceSubscription(
+                createServiceSubscriptionDto,
+                systemId,
+            )
+
+        return serviceSubscriptionCreated
+    }
+
+    @Get('/service-subscription/:id')
+    @UseGuards(SystemAdminGuard)
+    @ApiBearerAuth()
+    @HttpCode(HttpStatus.OK)
+    async getDetailServiceSubscription(
+        @Param('id') serviceSubscriptionId: number,
+    ) {
+        const serviceSubscription =
+            await this.systemAdminService.getDetailServiceSubscriptionById(
+                serviceSubscriptionId,
+            )
+        return serviceSubscription
+    }
+
+    @Patch('/service-subscription/:id')
+    @UseGuards(SystemAdminGuard)
+    @ApiBearerAuth()
+    @HttpCode(HttpStatus.OK)
+    async updateStatusServiceSubscription(
+        @Param('id') ServiceSubscriptionId: number,
+        @Body() updatePlanDto: UpdateStatusServiceSubscriptionDto,
+        @UserScope() system: SystemAdmin,
+    ) {
+        const { status } = updatePlanDto
+        const systemAdminId = system.id
+
+        const updatedPlan =
+            await this.systemAdminService.updateStatusOfServiceSubscription(
+                ServiceSubscriptionId,
+                status,
+                systemAdminId,
+            )
+        return updatedPlan
+    }
+
+    @Patch('/service-subscription/:id/apply-now')
+    @UseGuards(SystemAdminGuard)
+    @ApiBearerAuth()
+    @HttpCode(HttpStatus.OK)
+    async applyServiceSubscriptionForCompanyNow(
+        @Param('id') ServiceSubscriptionId: number,
+        @Body() updatePlanDto: UpdateStatusServiceSubscriptionDto,
+        @UserScope() system: SystemAdmin,
+    ) {
+        const { status } = updatePlanDto
+        const systemAdminId = system.id
+
+        const updatedPlan =
+            await this.systemAdminService.applyServiceSubscriptionForCompanyNow(
+                ServiceSubscriptionId,
+                status,
+                systemAdminId,
+            )
+        return updatedPlan
+    }
+
+    @Get('/company/:id/service-plan')
+    @UseGuards(SystemAdminGuard)
+    @ApiBearerAuth()
+    @HttpCode(HttpStatus.OK)
+    async getServicePlanOfCompany(@Param('id') companyId: number) {
+        const servicePlanOfCompany =
+            await this.systemAdminService.getDetailServicePlanOfCompany(
+                companyId,
+            )
+
+        return servicePlanOfCompany
+    }
+
+    @Get('/company/:id/service-plan/subscription')
+    @UseGuards(SystemAdminGuard)
+    @ApiBearerAuth()
+    @HttpCode(HttpStatus.OK)
+    async getAllServicePlanSubscription(
+        @Param('id') companyId: number,
+        @Query()
+        getAllServiceSubscriptionOfCompanyDto: GetAllServiceSubscription,
+    ) {
+        const serviceSubscriptionOfCompany =
+            await this.systemAdminService.getAllServicePlanSubscriptionOfCompany(
+                getAllServiceSubscriptionOfCompanyDto,
+                companyId,
+            )
+
+        return serviceSubscriptionOfCompany
     }
 }

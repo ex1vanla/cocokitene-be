@@ -1,0 +1,125 @@
+import { CompanyServicePlan } from '@entities/company-service.entity'
+import {
+    forwardRef,
+    HttpException,
+    HttpStatus,
+    Inject,
+    Injectable,
+} from '@nestjs/common'
+import { httpErrors } from '@shares/exception-filter'
+import { CompanyService } from '../companys/company.service'
+import { CompanyServicePlanRepository } from '@repositories/company-service.repository'
+import { ServiceSubscriptionService } from '../service-subscription/service-subscription.service'
+import { SubscriptionServiceDto } from '@dtos/service-subscription.dto'
+import { FlagResolve, StatusSubscription } from '@shares/constants'
+import {
+    ServicePlanForCompanyDto,
+    UpdateServicePlanForCompanyDto,
+} from '@dtos/company-service.dto'
+import { PlanService } from '../plans/plan.service'
+
+@Injectable()
+export class ServicePlanOfCompanyService {
+    constructor(
+        @Inject(forwardRef(() => CompanyService))
+        private readonly companyService: CompanyService,
+        private readonly companyServicePlanRepository: CompanyServicePlanRepository,
+        @Inject(forwardRef(() => ServiceSubscriptionService))
+        private readonly serviceSubscriptionService: ServiceSubscriptionService,
+        private readonly servicePlan: PlanService,
+    ) {}
+
+    async getServicePlanOfCompany(
+        companyId: number,
+    ): Promise<CompanyServicePlan> {
+        const existedCompany = await this.companyService.getCompanyById(
+            companyId,
+        )
+        if (!existedCompany) {
+            throw new HttpException(
+                httpErrors.COMPANY_NOT_FOUND,
+                HttpStatus.NOT_FOUND,
+            )
+        }
+
+        const servicePlanOfCompany =
+            await this.companyServicePlanRepository.getCompanyServicePlanByCompanyId(
+                companyId,
+            )
+
+        return servicePlanOfCompany
+    }
+
+    async createServicePlanOfCompany(
+        createServicePlanForCompanyDto: ServicePlanForCompanyDto,
+        systemAdminId: number,
+    ): Promise<CompanyServicePlan> {
+        const createdServicePlanForCompany =
+            await this.companyServicePlanRepository.createServicePlanForCompany(
+                createServicePlanForCompanyDto,
+                systemAdminId,
+            )
+
+        return createdServicePlanForCompany
+    }
+
+    async subscriptionServicePlanForCompany(
+        subscriptionServicePlanDto: SubscriptionServiceDto,
+    ) {
+        const serviceSubscription =
+            await this.serviceSubscriptionService.createServiceSubscription({
+                ...subscriptionServicePlanDto,
+                status: StatusSubscription.PENDING,
+            })
+
+        return serviceSubscription
+    }
+
+    async updateServicePlanForCompany(
+        subscriptionServicePlanId: number,
+        updateServicePlanForCompanyDto: UpdateServicePlanForCompanyDto,
+    ) {
+        const servicePlanOfCompanyByCompanyId =
+            await this.getServicePlanOfCompany(
+                updateServicePlanForCompanyDto.companyId,
+            )
+
+        if (!servicePlanOfCompanyByCompanyId) {
+            throw new HttpException(
+                httpErrors.SERVICE_PLAN_OF_COMPANY_NOT_POUND,
+                HttpStatus.NOT_FOUND,
+            )
+        }
+
+        const getServicePlanSubscription = await this.servicePlan.getPlanById(
+            updateServicePlanForCompanyDto.planId,
+        )
+
+        if (!getServicePlanSubscription) {
+            throw new HttpException(
+                httpErrors.PLAN_NOT_FOUND,
+                HttpStatus.NOT_FOUND,
+            )
+        }
+
+        const servicePlanOfCompany =
+            await this.companyServicePlanRepository.updateServicePlanOfCompany(
+                servicePlanOfCompanyByCompanyId.id,
+                {
+                    ...updateServicePlanForCompanyDto,
+                    meetingLimit: getServicePlanSubscription.maxMeeting,
+                    accountLimit:
+                        getServicePlanSubscription.maxShareholderAccount,
+                    storageLimit: getServicePlanSubscription.maxStorage,
+                },
+            )
+
+        // Update Resolve Flag when apply service subscription for company
+        await this.serviceSubscriptionService.updateResolveFlagForSubscriptionService(
+            subscriptionServicePlanId,
+            FlagResolve.RESOLVE,
+        )
+
+        return servicePlanOfCompany
+    }
+}

@@ -36,6 +36,15 @@ import {
 } from '@dtos/system-notification.dto'
 import { SystemNotificationService } from '../system-notification/system-notification.service'
 import { Pagination } from 'nestjs-typeorm-paginate'
+import {
+    CreateServiceSubscriptionDto,
+    GetAllServiceSubscription,
+} from '@dtos/service-subscription.dto'
+import { ServiceSubscription } from '@entities/service_subscription.entity'
+import { ServiceSubscriptionService } from '../service-subscription/service-subscription.service'
+import { StatusSubscription } from '@shares/constants'
+import { ServicePlanOfCompanyService } from '../company-service/company-service.service'
+import { CompanyServicePlan } from '@entities/company-service.entity'
 
 @Injectable()
 export class SystemAdminService {
@@ -50,6 +59,10 @@ export class SystemAdminService {
         private readonly userStatusService: UserStatusService,
         private readonly systemAdminRepository: SystemAdminRepository,
         private readonly systemNotificationService: SystemNotificationService,
+        private readonly serviceSubscriptionService: ServiceSubscriptionService,
+        @Inject(forwardRef(() => ServicePlanOfCompanyService))
+        private readonly servicePlanOfCompanyService: ServicePlanOfCompanyService,
+
         @Inject('winston')
         private readonly logger: Logger,
     ) {}
@@ -165,9 +178,13 @@ export class SystemAdminService {
         return companyStatuses
     }
 
-    async createCompany(createCompanyDto: CreateCompanyDto) {
+    async createCompany(
+        createCompanyDto: CreateCompanyDto,
+        systemAdminId: number,
+    ) {
         const company = await this.companyService.createCompany(
             createCompanyDto,
+            systemAdminId,
         )
         return company
     }
@@ -274,5 +291,182 @@ export class SystemAdminService {
             )
 
         return updatedSysNotification
+    }
+
+    async getAllServiceSub(
+        getAllServiceSubDto: GetAllServiceSubscription,
+    ): Promise<Pagination<ServiceSubscription>> {
+        const serviceSubscription =
+            await this.serviceSubscriptionService.getAllServiceSubscription(
+                getAllServiceSubDto,
+            )
+
+        return serviceSubscription
+    }
+
+    async createServiceSubscription(
+        createServiceSubscriptionDto: CreateServiceSubscriptionDto,
+        systemId: number,
+    ): Promise<ServiceSubscription> {
+        const serviceSubscription =
+            await this.serviceSubscriptionService.createServiceSubscription(
+                createServiceSubscriptionDto,
+                systemId,
+            )
+
+        return serviceSubscription
+    }
+
+    async getAllOptionCompany(): Promise<Company[]> {
+        const optionCompany = await this.companyService.getOptionCompany()
+
+        return optionCompany
+    }
+
+    async getAllOptionServicePlan(): Promise<Plan[]> {
+        const optionCompany = await this.planService.getAllOptionServicePlan()
+
+        return optionCompany
+    }
+
+    async getDetailServiceSubscriptionById(
+        serviceSubscriptionId: number,
+    ): Promise<ServiceSubscription> {
+        const serviceSubscription =
+            await this.serviceSubscriptionService.getDetailServiceSubscriptionById(
+                serviceSubscriptionId,
+            )
+
+        return serviceSubscription
+    }
+
+    async updateStatusOfServiceSubscription(
+        id: number,
+        status: StatusSubscription,
+        systemAdminId: number,
+    ) {
+        const serviceSubscriptionById =
+            await this.serviceSubscriptionService.getSubscriptionServicePlanById(
+                id,
+            )
+
+        if (!serviceSubscriptionById) {
+            throw new HttpException(
+                httpErrors.SUBSCRIPTION_SERVICE_PLAN_NOT_FOUND,
+                HttpStatus.NOT_FOUND,
+            )
+        }
+
+        const serviceSubscription =
+            await this.serviceSubscriptionService.changeStatusServiceSubscription(
+                id,
+                status,
+                systemAdminId,
+            )
+
+        const activationDate = new Date(serviceSubscription.activationDate) // Create ActiveDate of Subscription
+        const currentDate = new Date() // CurrentDate
+
+        // If the approval date is greater than or equal to the registration service plan date
+        if (
+            currentDate >= activationDate &&
+            status == StatusSubscription.CONFIRMED
+        ) {
+            // console.log('Approved subscription now!!!')
+            const servicePlanOfCompany =
+                await this.servicePlanOfCompanyService.updateServicePlanForCompany(
+                    serviceSubscription.id,
+                    {
+                        companyId: serviceSubscription.companyId,
+                        planId: serviceSubscription.planId,
+                        expirationDate: `${serviceSubscription.expirationDate.getFullYear()}-${(
+                            serviceSubscription.expirationDate.getMonth() + 1
+                        )
+                            .toString()
+                            .padStart(
+                                2,
+                                '0',
+                            )}-${serviceSubscription.expirationDate
+                            .getDate()
+                            .toString()
+                            .padStart(2, '0')}`,
+                    },
+                )
+
+            return servicePlanOfCompany
+        }
+
+        return serviceSubscription
+    }
+
+    async applyServiceSubscriptionForCompanyNow(
+        id: number,
+        status: StatusSubscription,
+        systemAdminId: number,
+    ) {
+        // console.log('Approved subscription now!!!')
+        const serviceSubscriptionById =
+            await this.serviceSubscriptionService.getSubscriptionServicePlanById(
+                id,
+            )
+
+        if (!serviceSubscriptionById) {
+            throw new HttpException(
+                httpErrors.SUBSCRIPTION_SERVICE_PLAN_NOT_FOUND,
+                HttpStatus.NOT_FOUND,
+            )
+        }
+
+        try {
+            const serviceSubscription =
+                await this.serviceSubscriptionService.changeStatusServiceSubscription(
+                    id,
+                    status,
+                    systemAdminId,
+                )
+
+            const servicePlanOfCompany =
+                await this.servicePlanOfCompanyService.updateServicePlanForCompany(
+                    serviceSubscription.id,
+                    {
+                        companyId: serviceSubscription.companyId,
+                        planId: serviceSubscription.planId,
+                        expirationDate: String(
+                            serviceSubscription.expirationDate,
+                        ),
+                    },
+                )
+
+            return servicePlanOfCompany
+        } catch (error) {
+            throw new HttpException(
+                httpErrors.APPLY_SERVICE_SUBSCRIPTION_FAILED,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            )
+        }
+    }
+
+    async getDetailServicePlanOfCompany(
+        companyId: number,
+    ): Promise<CompanyServicePlan> {
+        const servicePlanOfCompany =
+            await this.servicePlanOfCompanyService.getServicePlanOfCompany(
+                companyId,
+            )
+
+        return servicePlanOfCompany
+    }
+
+    async getAllServicePlanSubscriptionOfCompany(
+        getAllServiceSubscriptionDto: GetAllServiceSubscription,
+        companyId: number,
+    ): Promise<Pagination<ServiceSubscription>> {
+        const serviceSubscriptionOfCompany =
+            this.serviceSubscriptionService.getAllServiceSubscriptionByCompanyId(
+                getAllServiceSubscriptionDto,
+                companyId,
+            )
+
+        return serviceSubscriptionOfCompany
     }
 }
