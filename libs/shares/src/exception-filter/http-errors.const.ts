@@ -425,4 +425,21 @@ export const httpErrors = {
         message: 'Create System notification failed',
         code: 'SYSTEM_NOTIFICATION_00000',
     },
+
+    //Subscription ServicePlan
+    SUBSCRIPTION_SERVICE_PLAN_NOT_FOUND: {
+        message: 'Subscription service plan not found',
+        code: 'SUBSCRIPTION_SERVICE_PLAN_00000',
+    },
+
+    APPLY_SERVICE_SUBSCRIPTION_FAILED: {
+        message: 'Apply service subscription failed',
+        code: 'SUBSCRIPTION_SERVICE_PLAN_00001',
+    },
+
+    //servicePlan of Company
+    SERVICE_PLAN_OF_COMPANY_NOT_POUND: {
+        message: 'Service plan of company not found',
+        code: 'SERVICE_PLAN_OF_COMPANY_00000',
+    },
 }

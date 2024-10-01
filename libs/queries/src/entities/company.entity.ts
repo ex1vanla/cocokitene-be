@@ -24,6 +24,7 @@ export class Company extends BaseEntity {
         name: 'company_name',
         type: 'varchar',
         length: 255,
+        unique: true,
     })
     companyName: string
 

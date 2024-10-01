@@ -12,6 +12,7 @@ import { ProposalRepository } from '@repositories/meeting-proposal.repository'
 import { TransactionRepository } from '@repositories/transaction.repository'
 import {
     CONTRACT_TYPE,
+    FlagResolve,
     RoleBoardMtgEnum,
     RoleMtgEnum,
     TRANSACTION_STATUS,
@@ -39,6 +40,9 @@ import { S3Service } from '@api/modules/s3/s3.service'
 import { join } from 'path'
 import * as fs from 'fs'
 import configuration from '@shares/config/configuration'
+import { ServiceSubscriptionRepository } from '@repositories/service-subscription.repository'
+import { CompanyServicePlanRepository } from '@repositories/company-service.repository'
+import { PlanRepository } from '@repositories/plan.repository'
 
 @Injectable()
 export class TransactionService {
@@ -54,6 +58,9 @@ export class TransactionService {
         private readonly meetingRoleMtgRepository: MeetingRoleMtgRepository,
         private readonly roleMtgRepository: RoleMtgRepository,
         private readonly personnelVotingRepository: PersonnelVotingRepository,
+        private readonly serviceSubscriptionRepository: ServiceSubscriptionRepository,
+        private readonly companyServicePlanRepository: CompanyServicePlanRepository,
+        private readonly planRepository: PlanRepository,
 
         //Import s3 Service Backup Aws S3
         private readonly s3Service: S3Service,
@@ -509,5 +516,73 @@ export class TransactionService {
                 'The Bucket S3 has been downloaded today. Please try again on another day.',
             )
         }
+    }
+
+    //Apply servicePlan for company when system admin approved  , active date
+    async handleApplyServiceApprovedForCompany(): Promise<void> {
+        console.log(
+            'Run apply servicePlan approved by SystemAdmin when active date!!!',
+        )
+
+        //Get all subscription approved by systemAdmin, not apply and to active date
+        const serviceSubscriptionApply =
+            await this.serviceSubscriptionRepository.getAllServiceSubscriptionApply()
+
+        // Apply service plan approved by systemAdmin for company
+        await Promise.all([
+            ...serviceSubscriptionApply.map(async (serviceSubscription) => {
+                //Get servicePlan of company
+                const servicePlanOfCompany =
+                    await this.companyServicePlanRepository.getCompanyServicePlanByCompanyId(
+                        serviceSubscription.companyId,
+                    )
+
+                //Get service plan company subscription
+                const getServicePlanSubscription =
+                    await this.planRepository.findOne({
+                        where: {
+                            id: serviceSubscription.planId,
+                        },
+                    })
+                if (!getServicePlanSubscription) {
+                    throw new HttpException(
+                        httpErrors.PLAN_NOT_FOUND,
+                        HttpStatus.NOT_FOUND,
+                    )
+                }
+
+                // Apply service plan company subscription
+                const servicePlanOfCompanyApply =
+                    await this.companyServicePlanRepository.updateServicePlanOfCompany(
+                        servicePlanOfCompany.id,
+                        {
+                            companyId: serviceSubscription.companyId,
+                            planId: getServicePlanSubscription.id,
+                            expirationDate: String(
+                                serviceSubscription.expirationDate,
+                            ),
+                            meetingLimit: getServicePlanSubscription.maxMeeting,
+                            accountLimit:
+                                getServicePlanSubscription.maxShareholderAccount,
+                            storageLimit: getServicePlanSubscription.maxStorage,
+                        },
+                    )
+
+                // Change Resolve Flag when apply servicePlan for company
+                await this.serviceSubscriptionRepository.updateResolveFlag(
+                    serviceSubscription.id,
+                    FlagResolve.RESOLVE,
+                )
+
+                console.log(
+                    'Apply Service Subscription for company successfully!!!',
+                    servicePlanOfCompanyApply.companyId,
+                )
+            }),
+        ])
+
+        console.log(
+            'apply servicePlan approved by SystemAdmin when active date--------Done',
+        )
     }
 }

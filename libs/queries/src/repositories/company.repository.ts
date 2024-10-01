@@ -5,6 +5,7 @@ import { paginateRaw, Pagination } from 'nestjs-typeorm-paginate'
 import { CreateCompanyDto, GetAllCompanyDto } from '@dtos/company.dto'
 import { UpdateCompanyDto } from '@dtos/company.dto'
 import { HttpException, HttpStatus } from '@nestjs/common'
+import { CompanyStatusEnum } from '@shares/constants'
 @CustomRepository(Company)
 export class CompanyRepository extends Repository<Company> {
     async getCompanyByTaxCompany(tax): Promise<Company> {
@@ -117,5 +118,21 @@ export class CompanyRepository extends Repository<Company> {
             .getRawOne()
 
         return company
+    }
+
+    async getAllOptionCompany() {
+        const optionCompany = await this.createQueryBuilder('company')
+            .select(['company.id', 'company.companyName'])
+            .leftJoin(
+                'company_status_mst',
+                'companyStatus',
+                'companyStatus.id = company.statusId',
+            )
+            .where('companyStatus.status = :active', {
+                active: CompanyStatusEnum.ACTIVE,
+            })
+            .getMany()
+
+        return optionCompany
     }
 }

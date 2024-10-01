@@ -86,4 +86,13 @@ export class PlanRepository extends Repository<Plan> {
 
         return paginateRaw(queryBuilder, { page, limit })
     }
+
+    async getAllOptionServicePlan(): Promise<Plan[]> {
+        const listOption = await this.createQueryBuilder('plan_mst')
+            .select(['plan_mst.id', 'plan_mst.planName', 'plan_mst.price'])
+            .where('plan_mst.price > 0')
+            .getMany()
+
+        return listOption
+    }
 }
