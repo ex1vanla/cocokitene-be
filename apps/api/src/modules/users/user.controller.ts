@@ -121,6 +121,7 @@ export class UserController {
         @UserScope() user: User,
     ) {
         const companyId = user?.companyId
+
         const createdUser = await this.userService.createUser(
             companyId,
             createUserDto,

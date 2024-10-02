@@ -73,11 +73,18 @@ export class CompanyServicePlan extends BaseEntity {
     })
     storageLimit: number
 
+    // @Column({
+    //     nullable: false,
+    //     name: 'storage_used',
+    //     type: 'integer',
+    //     width: 7,
+    // })
+    // storageUsed: number
+
     @Column({
         nullable: false,
         name: 'storage_used',
-        type: 'integer',
-        width: 7,
+        type: 'float',
     })
     storageUsed: number
 

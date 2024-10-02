@@ -414,4 +414,22 @@ export class CompanyService {
 
         return optionCompany
     }
+
+    async updateServicePlanForCompany(
+        companyId: number,
+        servicePlanId: number,
+    ) {
+        const existedCompany = await this.getCompanyById(companyId)
+        if (!existedCompany) {
+            throw new HttpException(
+                httpErrors.COMPANY_NOT_FOUND,
+                HttpStatus.NOT_FOUND,
+            )
+        }
+
+        await this.companyRepository.updateServicePlanForCompany(
+            companyId,
+            servicePlanId,
+        )
+    }
 }

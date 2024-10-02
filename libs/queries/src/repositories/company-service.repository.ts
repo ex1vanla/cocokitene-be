@@ -1,4 +1,7 @@
-import { ServicePlanForCompanyDto } from '@dtos/company-service.dto'
+import {
+    ServicePlanForCompanyDto,
+    UpdateCreatedServicePlanForCompanyDto,
+} from '@dtos/company-service.dto'
 import { CompanyServicePlan } from '@entities/company-service.entity'
 import { CustomRepository } from '@shares/decorators'
 import { Repository } from 'typeorm'
@@ -49,6 +52,31 @@ export class CompanyServicePlanRepository extends Repository<CompanyServicePlan>
                 accountCreated: 0,
                 storageLimit: updateServicePlanForCompanyDto.storageLimit,
                 expirationDate: updateServicePlanForCompanyDto.expirationDate,
+            })
+            .where('company_service.id = :id', { id: id })
+            .execute()
+
+        const servicePlanCompanyById = await this.findOne({
+            where: {
+                id: id,
+            },
+        })
+
+        return servicePlanCompanyById
+    }
+
+    async updateCreatedOfServicePlanOfCompany(
+        id: number,
+        updateCreatedServicePlanForCompanyDto: UpdateCreatedServicePlanForCompanyDto,
+    ): Promise<CompanyServicePlan> {
+        await this.createQueryBuilder('company_service')
+            .update(CompanyServicePlan)
+            .set({
+                meetingCreated:
+                    updateCreatedServicePlanForCompanyDto.meetingCreated,
+                accountCreated:
+                    updateCreatedServicePlanForCompanyDto.accountCreated,
+                storageUsed: updateCreatedServicePlanForCompanyDto.storageUsed,
             })
             .where('company_service.id = :id', { id: id })
             .execute()

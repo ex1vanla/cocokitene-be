@@ -5,6 +5,7 @@ import {
     Get,
     HttpCode,
     HttpStatus,
+    Patch,
     Post,
     UseGuards,
 } from '@nestjs/common'
@@ -15,6 +16,7 @@ import { UserScope } from '@shares/decorators/user.decorator'
 import { JwtAuthGuard } from '@shares/guards/jwt-auth.guard'
 import { ServicePlanOfCompanyService } from './company-service.service'
 import { SubscriptionServiceDto } from '@dtos/service-subscription.dto'
+import { UpdateStorageUsedDto } from '@dtos/company-service.dto'
 
 @Controller('company-service')
 @ApiTags('company-service')
@@ -50,6 +52,39 @@ export class CompanyServiceController {
         const subscriptionServicePlan =
             await this.servicePlanOfCompanyService.subscriptionServicePlanForCompany(
                 subscriptionServicePlanDto,
+            )
+
+        return subscriptionServicePlan
+    }
+
+    @Get('/allowUploadFile')
+    @HttpCode(HttpStatus.OK)
+    @ApiBearerAuth()
+    @UseGuards(JwtAuthGuard)
+    @Permission(PermissionEnum.BASIC_PERMISSION)
+    async getAllowUploadFile(@UserScope() user: User) {
+        const companyId = user.companyId
+        const allowUploadFile =
+            await this.servicePlanOfCompanyService.getAllowUploadFile(companyId)
+
+        return allowUploadFile
+    }
+
+    @Patch('/updateStorage')
+    @HttpCode(HttpStatus.OK)
+    @ApiBearerAuth()
+    @UseGuards(JwtAuthGuard)
+    @Permission(PermissionEnum.BASIC_PERMISSION)
+    async updateStorageUsedOfServicePlanForCompany(
+        @Body() updateStorageUsed: UpdateStorageUsedDto,
+        @UserScope() user: User,
+    ) {
+        const companyId = user.companyId
+
+        const subscriptionServicePlan =
+            await this.servicePlanOfCompanyService.updateStorageUsed(
+                companyId,
+                updateStorageUsed.storageUsed,
             )
 
         return subscriptionServicePlan

@@ -442,4 +442,9 @@ export const httpErrors = {
         message: 'Service plan of company not found',
         code: 'SERVICE_PLAN_OF_COMPANY_00000',
     },
+
+    SERVICE_PLAN_LIMIT: {
+        message: 'UNABLE_TO_CREATE_MORE',
+        code: 'SERVICE_PLAN_OF_COMPANY_00001',
+    },
 }

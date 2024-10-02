@@ -76,3 +76,47 @@ export class ServicePlanForCompanyDto {
     })
     expirationDate: string
 }
+
+export class UpdateCreatedServicePlanForCompanyDto {
+    @IsNotEmpty()
+    @IsNumber()
+    @ApiProperty({
+        example: '1',
+        required: true,
+    })
+    companyId: number
+
+    @IsNotEmpty()
+    @IsNumber()
+    @ApiProperty({
+        example: '100',
+        required: true,
+    })
+    meetingCreated: number
+
+    @IsNotEmpty()
+    @IsNumber()
+    @ApiProperty({
+        example: '100',
+        required: true,
+    })
+    accountCreated: number
+
+    @IsNotEmpty()
+    @IsNumber()
+    @ApiProperty({
+        example: '10',
+        required: true,
+    })
+    storageUsed: number
+}
+
+export class UpdateStorageUsedDto {
+    @IsNotEmpty()
+    @IsNumber()
+    @ApiProperty({
+        example: '0.5',
+        required: true,
+    })
+    storageUsed: number
+}

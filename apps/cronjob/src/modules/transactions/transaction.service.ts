@@ -43,6 +43,7 @@ import configuration from '@shares/config/configuration'
 import { ServiceSubscriptionRepository } from '@repositories/service-subscription.repository'
 import { CompanyServicePlanRepository } from '@repositories/company-service.repository'
 import { PlanRepository } from '@repositories/plan.repository'
+import { CompanyRepository } from '@repositories/company.repository'
 
 @Injectable()
 export class TransactionService {
@@ -61,6 +62,7 @@ export class TransactionService {
         private readonly serviceSubscriptionRepository: ServiceSubscriptionRepository,
         private readonly companyServicePlanRepository: CompanyServicePlanRepository,
         private readonly planRepository: PlanRepository,
+        private readonly companyRepository: CompanyRepository,
 
         //Import s3 Service Backup Aws S3
         private readonly s3Service: S3Service,
@@ -567,6 +569,12 @@ export class TransactionService {
                             storageLimit: getServicePlanSubscription.maxStorage,
                         },
                     )
+
+                // Update servicePlan id in company table
+                await this.companyRepository.updateServicePlanForCompany(
+                    serviceSubscription.companyId,
+                    getServicePlanSubscription.id,
+                )
 
                 // Change Resolve Flag when apply servicePlan for company
                 await this.serviceSubscriptionRepository.updateResolveFlag(
