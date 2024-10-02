@@ -135,4 +135,24 @@ export class CompanyRepository extends Repository<Company> {
 
         return optionCompany
     }
+
+    async updateServicePlanForCompany(
+        companyId: number,
+        servicePlanId: number,
+    ) {
+        try {
+            await this.createQueryBuilder('company')
+                .update(Company)
+                .set({
+                    planId: servicePlanId,
+                })
+                .where('company.id = :companyId', { companyId })
+                .execute()
+        } catch (error) {
+            throw new HttpException(
+                { message: error.message },
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            )
+        }
+    }
 }

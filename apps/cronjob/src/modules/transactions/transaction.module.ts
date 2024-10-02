@@ -18,6 +18,7 @@ import { S3Module } from '@api/modules/s3/s3.module'
 import { ServiceSubscriptionRepository } from '@repositories/service-subscription.repository'
 import { CompanyServicePlanRepository } from '@repositories/company-service.repository'
 import { PlanRepository } from '@repositories/plan.repository'
+import { CompanyRepository } from '@repositories/company.repository'
 
 const Repositories = TypeOrmExModule.forCustomRepository([
     UserMeetingRepository,
@@ -35,6 +36,7 @@ const Repositories = TypeOrmExModule.forCustomRepository([
     ServiceSubscriptionRepository,
     CompanyServicePlanRepository,
     PlanRepository,
+    CompanyRepository,
 ])
 
 @Module({

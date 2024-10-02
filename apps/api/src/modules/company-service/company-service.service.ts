@@ -14,6 +14,7 @@ import { SubscriptionServiceDto } from '@dtos/service-subscription.dto'
 import { FlagResolve, StatusSubscription } from '@shares/constants'
 import {
     ServicePlanForCompanyDto,
+    UpdateCreatedServicePlanForCompanyDto,
     UpdateServicePlanForCompanyDto,
 } from '@dtos/company-service.dto'
 import { PlanService } from '../plans/plan.service'
@@ -114,6 +115,12 @@ export class ServicePlanOfCompanyService {
                 },
             )
 
+        // Update servicePlan id in company table
+        await this.companyService.updateServicePlanForCompany(
+            updateServicePlanForCompanyDto.companyId,
+            updateServicePlanForCompanyDto.planId,
+        )
+
         // Update Resolve Flag when apply service subscription for company
         await this.serviceSubscriptionService.updateResolveFlagForSubscriptionService(
             subscriptionServicePlanId,
@@ -121,5 +128,57 @@ export class ServicePlanOfCompanyService {
         )
 
         return servicePlanOfCompany
+    }
+
+    async updateCreatedOfServicePlanOfCompany(
+        id: number,
+        updateCreatedServicePlanForCompanyDto: UpdateCreatedServicePlanForCompanyDto,
+    ): Promise<CompanyServicePlan> {
+        const servicePlanOfCompany =
+            await this.companyServicePlanRepository.updateCreatedOfServicePlanOfCompany(
+                id,
+                updateCreatedServicePlanForCompanyDto,
+            )
+
+        return servicePlanOfCompany
+    }
+
+    async getAllowUploadFile(companyId: number): Promise<boolean> {
+        //Check limit service Plan
+        const servicePlanOfCompany = await this.getServicePlanOfCompany(
+            companyId,
+        )
+
+        const currentDate = new Date() // CurrentDate
+        const expiredDate = new Date(servicePlanOfCompany.expirationDate)
+        expiredDate.setDate(expiredDate.getDate() + 1)
+
+        if (
+            servicePlanOfCompany.storageUsed >=
+                servicePlanOfCompany.storageLimit ||
+            currentDate > expiredDate
+        ) {
+            return false
+        }
+        return true
+    }
+
+    async updateStorageUsed(companyId: number, storageUsed: number) {
+        const servicePlanOfCompany = await this.getServicePlanOfCompany(
+            companyId,
+        )
+
+        const servicePlanCompanyById =
+            await this.companyServicePlanRepository.updateCreatedOfServicePlanOfCompany(
+                servicePlanOfCompany.id,
+                {
+                    companyId: servicePlanOfCompany.companyId,
+                    meetingCreated: servicePlanOfCompany.meetingCreated,
+                    accountCreated: servicePlanOfCompany.accountCreated,
+                    storageUsed: servicePlanOfCompany.storageUsed + storageUsed,
+                },
+            )
+
+        return servicePlanCompanyById
     }
 }

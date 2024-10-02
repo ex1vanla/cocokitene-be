@@ -32,6 +32,7 @@ import { Like } from 'typeorm'
 import { EmailService } from '@api/modules/emails/email.service'
 import { Logger } from 'winston'
 import { RoleService } from '../roles/role.service'
+import { ServicePlanOfCompanyService } from '../company-service/company-service.service'
 @Injectable()
 export class UserService {
     constructor(
@@ -41,6 +42,7 @@ export class UserService {
         private readonly userRoleService: UserRoleService,
         private readonly emailService: EmailService,
         private readonly roleService: RoleService,
+        private readonly servicePlanOfCompanyService: ServicePlanOfCompanyService,
         @Inject('winston')
         private readonly logger: Logger,
     ) {}
@@ -67,13 +69,33 @@ export class UserService {
     async getAllUsersCompany(
         getAllUsersDto: GetAllUsersDto,
         companyId: number,
-    ): Promise<Pagination<User>> {
+    ): Promise<{ users: Pagination<User>; allowCreate: boolean }> {
         const users = await this.userRepository.getAllUsersCompany(
             getAllUsersDto,
             companyId,
         )
 
-        return users
+        const servicePlanOfCompany =
+            await this.servicePlanOfCompanyService.getServicePlanOfCompany(
+                companyId,
+            )
+
+        const currentDate = new Date() // CurrentDate
+        const expiredDate = new Date(servicePlanOfCompany.expirationDate)
+        expiredDate.setDate(expiredDate.getDate() + 1)
+
+        // console.log('currentDate: ', currentDate)
+        // console.log('servicePlanOfCompany.expiredDate: ', expiredDate)
+
+        // console.log('compare Date:', expiredDate > currentDate)
+
+        return {
+            users: users,
+            allowCreate:
+                servicePlanOfCompany.accountLimit >
+                    servicePlanOfCompany.accountCreated &&
+                expiredDate > currentDate,
+        }
     }
 
     async getAllUserInCompanyByRoleName(
@@ -344,6 +366,27 @@ export class UserService {
                 HttpStatus.NOT_FOUND,
             )
         }
+
+        const servicePlanOfCompany =
+            await this.servicePlanOfCompanyService.getServicePlanOfCompany(
+                companyId,
+            )
+
+        const currentDate = new Date() // CurrentDate
+        const expiredDate = new Date(servicePlanOfCompany.expirationDate)
+        expiredDate.setDate(expiredDate.getDate() + 1)
+
+        if (
+            servicePlanOfCompany.accountCreated >=
+                servicePlanOfCompany.accountLimit ||
+            currentDate > expiredDate
+        ) {
+            throw new HttpException(
+                httpErrors.SERVICE_PLAN_LIMIT,
+                HttpStatus.BAD_REQUEST,
+            )
+        }
+
         //createUser
         let createdUser: User
         let defaultPassword = ''
@@ -414,6 +457,25 @@ export class UserService {
                 HttpStatus.INTERNAL_SERVER_ERROR,
             )
         }
+
+        try {
+            // Update account created for company
+            await this.servicePlanOfCompanyService.updateCreatedOfServicePlanOfCompany(
+                servicePlanOfCompany.id,
+                {
+                    companyId: servicePlanOfCompany.companyId,
+                    meetingCreated: servicePlanOfCompany.meetingCreated,
+                    accountCreated: servicePlanOfCompany.accountCreated + 1,
+                    storageUsed: servicePlanOfCompany.storageUsed,
+                },
+            )
+        } catch (error) {
+            throw new HttpException(
+                { message: error.message },
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            )
+        }
+
         try {
             await this.emailService.sendEmailWhenCreateUserSuccessfully(
                 createdUser,
