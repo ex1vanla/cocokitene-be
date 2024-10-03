@@ -19,6 +19,11 @@ import { ServiceSubscriptionRepository } from '@repositories/service-subscriptio
 import { CompanyServicePlanRepository } from '@repositories/company-service.repository'
 import { PlanRepository } from '@repositories/plan.repository'
 import { CompanyRepository } from '@repositories/company.repository'
+import { ConfigService } from '@nestjs/config'
+import { MailerModule } from '@nestjs-modules/mailer'
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter'
+import { join } from 'path'
+import { UserRepository } from '@repositories/user.repository'
 
 const Repositories = TypeOrmExModule.forCustomRepository([
     UserMeetingRepository,
@@ -37,10 +42,39 @@ const Repositories = TypeOrmExModule.forCustomRepository([
     CompanyServicePlanRepository,
     PlanRepository,
     CompanyRepository,
+    UserRepository,
 ])
 
 @Module({
-    imports: [Repositories, MyLoggerModule, S3Module],
+    imports: [
+        Repositories,
+        MyLoggerModule,
+        S3Module,
+        MailerModule.forRootAsync({
+            useFactory: async (configService: ConfigService) => ({
+                transport: {
+                    host: configService.get('email.host'),
+                    port: configService.get('email.port'),
+                    secure: configService.get('email.secure'),
+                    auth: {
+                        user: configService.get('email.auth.user'),
+                        pass: configService.get('email.auth.password'),
+                    },
+                },
+                defaults: {
+                    from: configService.get('email.auth.user'),
+                },
+                template: {
+                    dir: join(__dirname, 'modules/emails/templates'),
+                    adapter: new HandlebarsAdapter(),
+                    options: {
+                        strict: true,
+                    },
+                },
+            }),
+            inject: [ConfigService],
+        }),
+    ],
     providers: [TransactionService],
     exports: [TransactionService],
 })

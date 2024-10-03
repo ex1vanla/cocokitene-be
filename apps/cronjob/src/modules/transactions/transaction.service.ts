@@ -44,6 +44,8 @@ import { ServiceSubscriptionRepository } from '@repositories/service-subscriptio
 import { CompanyServicePlanRepository } from '@repositories/company-service.repository'
 import { PlanRepository } from '@repositories/plan.repository'
 import { CompanyRepository } from '@repositories/company.repository'
+import { MailerService } from '@nestjs-modules/mailer'
+import { UserRepository } from '@repositories/user.repository'
 
 @Injectable()
 export class TransactionService {
@@ -63,6 +65,10 @@ export class TransactionService {
         private readonly companyServicePlanRepository: CompanyServicePlanRepository,
         private readonly planRepository: PlanRepository,
         private readonly companyRepository: CompanyRepository,
+        private readonly userRepository: UserRepository,
+
+        // @Inject(forwardRef(() => EmailService))
+        private readonly mailerService: MailerService,
 
         //Import s3 Service Backup Aws S3
         private readonly s3Service: S3Service,
@@ -592,5 +598,62 @@ export class TransactionService {
         console.log(
             'apply servicePlan approved by SystemAdmin when active date--------Done',
         )
+    }
+
+    // Reminder Renewal ServicePlan nearing expiration
+    async handleReminderRenewalServicePlan() {
+        //Get servicePlan of Company nearing expiration
+        const companyNearingExpirationService =
+            await this.companyServicePlanRepository.getServicePlanNearingExpiration()
+
+        companyNearingExpirationService.map(async (companyService) => {
+            const getAllSubscription =
+                await this.serviceSubscriptionRepository.getSubscriptionOfCompanyExtend(
+                    companyService.companyId,
+                    String(companyService.expirationDate),
+                )
+
+            if (!getAllSubscription) {
+                // Send Email to SupperAdmin Notice extend servicePlan for company
+
+                //Get current ServicePlan company using
+                const getServicePlanSubscription =
+                    await this.planRepository.findOne({
+                        where: {
+                            id: companyService.planId,
+                        },
+                    })
+                if (!getServicePlanSubscription) {
+                    throw new HttpException(
+                        httpErrors.PLAN_NOT_FOUND,
+                        HttpStatus.NOT_FOUND,
+                    )
+                }
+
+                const cc_emails = configuration().email.cc_emails
+                const superAdminOfCompany =
+                    await this.userRepository.getSuperAdminCompany(
+                        companyService.companyId,
+                    )
+
+                try {
+                    await this.mailerService.sendMail({
+                        to: superAdminOfCompany?.email ?? '',
+                        cc: cc_emails,
+                        subject: '【重要】有効期限切れのお知らせ',
+                        template: './send-email-reminder-renewal',
+                        context: {
+                            customerName: superAdminOfCompany.username ?? '',
+                            expiredDate: companyService.expirationDate,
+                            planName: getServicePlanSubscription.planName,
+                        },
+                    })
+
+                    console.log('Send Mail Successfully')
+                } catch (error) {
+                    console.log('error:', error)
+                }
+            }
+        })
     }
 }

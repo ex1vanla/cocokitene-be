@@ -335,6 +335,95 @@ export class EmailService {
             },
         })
     }
+
+    //Send a renewal reminder mail
+    // async sendEmailReminderRenewal(
+    //     companyId: number,
+    //     servicePlanId: number,
+    //     servicePlanName: string,
+    //     expiredTimeService: string,
+    // ) {
+    //     const cc_emails = configuration().email.cc_emails
+    //     const superAdminOfCompany = await this.userService.getSuperAdminCompany(
+    //         companyId,
+    //     )
+
+    //     await this.mailerService.sendMail({
+    //         to: superAdminOfCompany?.email ?? '',
+    //         cc: cc_emails,
+    //         subject: '【重要】有効期限切れのお知らせ',
+    //         template: './send-email-reminder-renewal',
+    //         context: {
+    //             customerName: '',
+    //             expiredDate: expiredTimeService,
+    //             planName: servicePlanName,
+    //         },
+    //     })
+    // }
+
+    //Send email notification to system notice about SupperAdmin subscription servicePlan
+    async sendEmailToSystemNoticeSubscriptionService(
+        systemAdmin: SystemAdmin[],
+        companyId: number,
+        currentServicePlan: string,
+        newServicePlanSubscription: string,
+        activeDate: string,
+        expiredDate: string,
+    ) {
+        const cc_emails = configuration().email.cc_emails
+        const superAdminOfCompany = await this.userService.getSuperAdminCompany(
+            companyId,
+        )
+
+        const systemAdminMail = systemAdmin.map((system) => system.email)
+        const systemAdminName = systemAdmin.map((system) => system.username)
+
+        await this.mailerService.sendMail({
+            to: systemAdminMail,
+            cc: [cc_emails, superAdminOfCompany?.email ?? ''],
+            subject: 'プラン更新リクエストの受け付け',
+            template: './send-email-subscription-service-plan',
+            context: {
+                customerName: systemAdminName.join(),
+                currentPlan: currentServicePlan,
+                newServicePlanSubscription: newServicePlanSubscription,
+                activeDate: activeDate,
+                expiredDate: expiredDate,
+            },
+        })
+    }
+
+    //Email notification to SuperAdmin notice subscription servicePlan is approved
+    async sendEmailNoticeSuperSubscriptionIsApproved(
+        companyId: number,
+        currentServicePlan: string,
+        expireDateCurrentServicePlan: string,
+        newServicePlanSubscription: string,
+        activeDate: string,
+        expiredDate: string,
+        totalFree: number,
+    ) {
+        const cc_emails = configuration().email.cc_emails
+        const superAdminOfCompany = await this.userService.getSuperAdminCompany(
+            companyId,
+        )
+
+        await this.mailerService.sendMail({
+            to: superAdminOfCompany?.email ?? '',
+            cc: [cc_emails],
+            subject: 'プラン更新完了のお知らせ',
+            template: './send-email-notice-subscription-approved',
+            context: {
+                customerName: superAdminOfCompany.username ?? '',
+                currentServicePlan: currentServicePlan,
+                expireDateCurrentServicePlan: expireDateCurrentServicePlan,
+                newServicePlanSubscription: newServicePlanSubscription,
+                activeDate: activeDate,
+                expiredDate: expiredDate,
+                totalFree: totalFree,
+            },
+        })
+    }
 }
 
 //Add increase @index in .hbs file

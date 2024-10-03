@@ -45,6 +45,7 @@ import { ServiceSubscriptionService } from '../service-subscription/service-subs
 import { StatusSubscription } from '@shares/constants'
 import { ServicePlanOfCompanyService } from '../company-service/company-service.service'
 import { CompanyServicePlan } from '@entities/company-service.entity'
+import { EmailService } from '../emails/email.service'
 
 @Injectable()
 export class SystemAdminService {
@@ -62,6 +63,8 @@ export class SystemAdminService {
         private readonly serviceSubscriptionService: ServiceSubscriptionService,
         @Inject(forwardRef(() => ServicePlanOfCompanyService))
         private readonly servicePlanOfCompanyService: ServicePlanOfCompanyService,
+        @Inject(forwardRef(() => EmailService))
+        private readonly emailService: EmailService,
 
         @Inject('winston')
         private readonly logger: Logger,
@@ -364,6 +367,29 @@ export class SystemAdminService {
                 systemAdminId,
             )
 
+        if (status == StatusSubscription.CONFIRMED) {
+            //Send email to SupperAdmin of Company notice subscription ServicePlan is Approved by SystemAdmin
+            const currentServicePlanOfCompany =
+                await this.servicePlanOfCompanyService.getServicePlanOfCompany(
+                    serviceSubscription.companyId,
+                )
+
+            //Get plan subscription
+            const subscriptionServicePlan = await this.planService.getPlanById(
+                serviceSubscriptionById.planId,
+            )
+
+            await this.emailService.sendEmailNoticeSuperSubscriptionIsApproved(
+                serviceSubscriptionById.companyId,
+                currentServicePlanOfCompany.plan.planName,
+                String(currentServicePlanOfCompany.expirationDate),
+                subscriptionServicePlan.planName,
+                String(serviceSubscriptionById.activationDate),
+                String(serviceSubscriptionById.expirationDate),
+                serviceSubscriptionById.amount,
+            )
+        }
+
         const activationDate = new Date(serviceSubscription.activationDate) // Create ActiveDate of Subscription
         const currentDate = new Date() // CurrentDate
 
@@ -424,6 +450,30 @@ export class SystemAdminService {
                     status,
                     systemAdminId,
                 )
+
+            if (status == StatusSubscription.CONFIRMED) {
+                //Send email to SupperAdmin of Company notice subscription ServicePlan is Approved by SystemAdmin
+                const currentServicePlanOfCompany =
+                    await this.servicePlanOfCompanyService.getServicePlanOfCompany(
+                        serviceSubscription.companyId,
+                    )
+
+                //Get plan subscription
+                const subscriptionServicePlan =
+                    await this.planService.getPlanById(
+                        serviceSubscriptionById.planId,
+                    )
+
+                await this.emailService.sendEmailNoticeSuperSubscriptionIsApproved(
+                    serviceSubscriptionById.companyId,
+                    currentServicePlanOfCompany.plan.planName,
+                    String(currentServicePlanOfCompany.expirationDate),
+                    subscriptionServicePlan.planName,
+                    String(serviceSubscriptionById.activationDate),
+                    String(serviceSubscriptionById.expirationDate),
+                    serviceSubscriptionById.amount,
+                )
+            }
 
             const servicePlanOfCompany =
                 await this.servicePlanOfCompanyService.updateServicePlanForCompany(

@@ -18,6 +18,8 @@ import {
     UpdateServicePlanForCompanyDto,
 } from '@dtos/company-service.dto'
 import { PlanService } from '../plans/plan.service'
+import { EmailService } from '../emails/email.service'
+import { SystemAdminRepository } from '@repositories/system-admin.repository'
 
 @Injectable()
 export class ServicePlanOfCompanyService {
@@ -28,6 +30,9 @@ export class ServicePlanOfCompanyService {
         @Inject(forwardRef(() => ServiceSubscriptionService))
         private readonly serviceSubscriptionService: ServiceSubscriptionService,
         private readonly servicePlan: PlanService,
+        @Inject(forwardRef(() => EmailService))
+        private readonly emailService: EmailService,
+        private readonly systemAdminRepository: SystemAdminRepository,
     ) {}
 
     async getServicePlanOfCompany(
@@ -72,6 +77,25 @@ export class ServicePlanOfCompanyService {
                 ...subscriptionServicePlanDto,
                 status: StatusSubscription.PENDING,
             })
+
+        const currentServicePlanOfCompany = await this.getServicePlanOfCompany(
+            serviceSubscription.companyId,
+        )
+
+        const servicePlanSubscription = await this.servicePlan.getPlanById(
+            serviceSubscription.planId,
+        )
+        const systemAdmins =
+            await this.systemAdminRepository.getAllSystemAdmin()
+
+        await this.emailService.sendEmailToSystemNoticeSubscriptionService(
+            systemAdmins,
+            serviceSubscription.companyId,
+            currentServicePlanOfCompany.plan.planName,
+            servicePlanSubscription.planName,
+            String(serviceSubscription.activationDate),
+            String(serviceSubscription.expirationDate),
+        )
 
         return serviceSubscription
     }

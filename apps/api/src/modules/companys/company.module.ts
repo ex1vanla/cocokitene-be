@@ -21,7 +21,7 @@ import { CompanyServicePlanModule } from '../company-service/company-service.mod
         PlanModule,
         forwardRef(() => RolePermissionModule),
         PermissionModule,
-        EmailModule,
+        forwardRef(() => EmailModule),
         RoleMtgModule,
         forwardRef(() => CompanyServicePlanModule),
     ],
