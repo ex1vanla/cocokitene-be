@@ -221,4 +221,46 @@ export class ServiceSubscriptionRepository extends Repository<ServiceSubscriptio
 
         return serviceSubscription
     }
+
+    async getSubscriptionOfCompanyExtend(
+        companyId: number,
+        expiredDateOfCurrentService: string,
+    ): Promise<ServiceSubscription[]> {
+        const expiredTimeOfCurrentService = new Date(
+            expiredDateOfCurrentService,
+        )
+
+        const queryBuilder = await this.createQueryBuilder(
+            'service_subscription',
+        )
+            .select([
+                'service_subscription.id',
+                'service_subscription.companyId',
+                'service_subscription.planId',
+                'service_subscription.type',
+                'service_subscription.paymentMethod',
+                'service_subscription.activationDate',
+                'service_subscription.expirationDate',
+                'service_subscription.status',
+            ])
+            .where(
+                'service_subscription.status= :statusConfirmed OR service_subscription.status= :statusPending',
+                {
+                    statusConfirmed: StatusSubscription.CONFIRMED,
+                    statusPending: StatusSubscription.PENDING,
+                },
+            )
+            .andWhere('service_subscription.companyId = :companyId', {
+                companyId: companyId,
+            })
+            .andWhere(
+                'DATE_FORMAT(service_subscription.activation_date,"%Y-%m-%d 00:00:00") >= :currentDate',
+                {
+                    currentDate: expiredTimeOfCurrentService,
+                },
+            )
+            .getMany()
+
+        return queryBuilder
+    }
 }

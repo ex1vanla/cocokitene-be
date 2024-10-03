@@ -89,4 +89,44 @@ export class CompanyServicePlanRepository extends Repository<CompanyServicePlan>
 
         return servicePlanCompanyById
     }
+
+    async getServicePlanNearingExpiration(): Promise<CompanyServicePlan[]> {
+        const beforeExpired7daysAgo = new Date()
+        beforeExpired7daysAgo.setUTCHours(0, 0, 0, 0)
+        // subtract 7 days
+        beforeExpired7daysAgo.setDate(beforeExpired7daysAgo.getDate() - 7)
+
+        const beforeExpired14daysAgo = new Date()
+        beforeExpired14daysAgo.setUTCHours(0, 0, 0, 0)
+        // subtract 14 days
+        beforeExpired14daysAgo.setDate(beforeExpired14daysAgo.getDate() - 14)
+
+        const queryBuilder = this.createQueryBuilder('company_service')
+            .select([
+                'company_service.id',
+                'company_service.companyId',
+                'company_service.planId',
+                'company_service.meetingLimit',
+                'company_service.meetingCreated',
+                'company_service.accountLimit',
+                'company_service.accountCreated',
+                'company_service.storageLimit',
+                'company_service.storageUsed',
+                'company_service.expirationDate',
+            ])
+            .where(
+                '(DAY(company_service.expirationDate) = :day7 AND MONTH(company_service.expirationDate) = :month7 AND YEAR(company_service.expirationDate) = :year7) OR (DAY(company_service.expirationDate) = :day14 AND MONTH(company_service.expirationDate) = :month14 AND YEAR(company_service.expirationDate) = :year14)',
+                {
+                    day7: beforeExpired7daysAgo.getDate(),
+                    month7: beforeExpired7daysAgo.getMonth() + 1,
+                    year7: beforeExpired7daysAgo.getFullYear(),
+                    day14: beforeExpired14daysAgo.getDate(),
+                    month14: beforeExpired14daysAgo.getMonth() + 1,
+                    year14: beforeExpired14daysAgo.getFullYear(),
+                },
+            )
+            .getMany()
+
+        return queryBuilder
+    }
 }

@@ -40,6 +40,7 @@ export class UserService {
         @Inject(forwardRef(() => CompanyService))
         private readonly companyService: CompanyService,
         private readonly userRoleService: UserRoleService,
+        @Inject(forwardRef(() => EmailService))
         private readonly emailService: EmailService,
         private readonly roleService: RoleService,
         private readonly servicePlanOfCompanyService: ServicePlanOfCompanyService,

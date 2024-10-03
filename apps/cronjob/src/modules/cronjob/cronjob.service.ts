@@ -69,4 +69,10 @@ export class CronjobService {
     async handleApplyServicePlanApprovedBySystem() {
         await this.transactionService.handleApplyServiceApprovedForCompany()
     }
+
+    // @Cron(CronExpression.EVERY_10_SECONDS)
+    @Cron(configuration().service.cronJobHandleReminderRenewalServicePlan)
+    async handleReminderRenewalServicePlan() {
+        await this.transactionService.handleReminderRenewalServicePlan()
+    }
 }

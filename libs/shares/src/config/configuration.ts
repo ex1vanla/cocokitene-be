@@ -89,6 +89,7 @@ interface Configuration {
     }
     service: {
         cronJobHandleApplyServiceApprovedBySys: string
+        cronJobHandleReminderRenewalServicePlan: string
     }
 }
 
@@ -202,5 +203,7 @@ export default (): Configuration => ({
     service: {
         cronJobHandleApplyServiceApprovedBySys:
             process.env.CRON_JOB_HANDLE_APPLY_SERVICE_APPROVED_BY_SYS,
+        cronJobHandleReminderRenewalServicePlan:
+            process.env.CRON_JOB_HANDLE_REMINDER_RENEWAL_SERVICE_PLAN,
     },
 })
