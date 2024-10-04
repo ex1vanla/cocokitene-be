@@ -131,7 +131,14 @@ export class CompanyRepository extends Repository<Company> {
             .where('companyStatus.status = :active', {
                 active: CompanyStatusEnum.ACTIVE,
             })
-            .getMany()
+            .leftJoin(
+                'company_service',
+                'companyService',
+                'companyService.companyId = company.id',
+            )
+            .addSelect('companyService.planId', 'servicePlanId')
+            .addSelect('companyService.expirationDate', 'expirationDate')
+            .getRawMany()
 
         return optionCompany
     }

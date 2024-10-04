@@ -39,6 +39,7 @@ import { Pagination } from 'nestjs-typeorm-paginate'
 import {
     CreateServiceSubscriptionDto,
     GetAllServiceSubscription,
+    UpdateServiceSubscriptionDto,
 } from '@dtos/service-subscription.dto'
 import { ServiceSubscription } from '@entities/service_subscription.entity'
 import { ServiceSubscriptionService } from '../service-subscription/service-subscription.service'
@@ -343,6 +344,75 @@ export class SystemAdminService {
         return serviceSubscription
     }
 
+    async updateServicePlanSubscription(
+        id: number,
+        updateServiceSubscriptionDto: UpdateServiceSubscriptionDto,
+        systemAdminId: number,
+    ): Promise<ServiceSubscription> {
+        const serviceSubscriptionById =
+            await this.serviceSubscriptionService.getSubscriptionServicePlanById(
+                id,
+            )
+
+        if (!serviceSubscriptionById) {
+            throw new HttpException(
+                httpErrors.SUBSCRIPTION_SERVICE_PLAN_NOT_FOUND,
+                HttpStatus.NOT_FOUND,
+            )
+        }
+
+        //Update serviceSubscription
+        const serviceSubscription =
+            await this.serviceSubscriptionService.updateServiceSubscription(
+                id,
+                updateServiceSubscriptionDto,
+                systemAdminId,
+            )
+
+        if (
+            updateServiceSubscriptionDto.status == StatusSubscription.CONFIRMED
+        ) {
+            //Send email to SupperAdmin of Company notice subscription ServicePlan is Approved by SystemAdmin
+            const currentServicePlanOfCompany =
+                await this.servicePlanOfCompanyService.getServicePlanOfCompany(
+                    serviceSubscription.companyId,
+                )
+
+            //Get plan subscription
+            const subscriptionServicePlan = await this.planService.getPlanById(
+                serviceSubscriptionById.planId,
+            )
+
+            await this.emailService.sendEmailNoticeSuperSubscriptionIsApproved(
+                serviceSubscriptionById.companyId,
+                currentServicePlanOfCompany.plan.planName,
+                String(currentServicePlanOfCompany.expirationDate),
+                subscriptionServicePlan.planName,
+                String(serviceSubscriptionById.activationDate),
+                String(serviceSubscriptionById.expirationDate),
+                serviceSubscriptionById.amount,
+            )
+
+            const activationDate = new Date(serviceSubscription.activationDate) // Create ActiveDate of Subscription
+            const currentDate = new Date() // CurrentDate
+
+            if (currentDate >= activationDate) {
+                //Apply service subscription for company
+                await this.servicePlanOfCompanyService.updateServicePlanForCompany(
+                    serviceSubscription.id,
+                    {
+                        companyId: serviceSubscription.companyId,
+                        planId: serviceSubscription.planId,
+                        expirationDate: String(
+                            serviceSubscription.expirationDate,
+                        ),
+                    },
+                )
+            }
+        }
+        return serviceSubscription
+    }
+
     async updateStatusOfServiceSubscription(
         id: number,
         status: StatusSubscription,
@@ -405,17 +475,9 @@ export class SystemAdminService {
                     {
                         companyId: serviceSubscription.companyId,
                         planId: serviceSubscription.planId,
-                        expirationDate: `${serviceSubscription.expirationDate.getFullYear()}-${(
-                            serviceSubscription.expirationDate.getMonth() + 1
-                        )
-                            .toString()
-                            .padStart(
-                                2,
-                                '0',
-                            )}-${serviceSubscription.expirationDate
-                            .getDate()
-                            .toString()
-                            .padStart(2, '0')}`,
+                        expirationDate: String(
+                            serviceSubscription.expirationDate,
+                        ),
                     },
                 )
 

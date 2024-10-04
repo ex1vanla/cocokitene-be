@@ -1,6 +1,7 @@
 import {
     CreateServiceSubscriptionDto,
     GetAllServiceSubscription,
+    UpdateServiceSubscriptionDto,
 } from '@dtos/service-subscription.dto'
 import { ServiceSubscription } from '@entities/service_subscription.entity'
 import { Injectable } from '@nestjs/common'
@@ -77,6 +78,21 @@ export class ServiceSubscriptionService {
         //Send Email to SupperAdmin notification request signup ServicePlan
 
         //
+
+        return serviceSubScription
+    }
+
+    async updateServiceSubscription(
+        id: number,
+        updateServiceSubscriptionDto: UpdateServiceSubscriptionDto,
+        systemAdminId: number,
+    ): Promise<ServiceSubscription> {
+        const serviceSubScription =
+            await this.serviceSubscriptionRepository.updateServiceSubscription(
+                id,
+                updateServiceSubscriptionDto,
+                systemAdminId,
+            )
 
         return serviceSubScription
     }

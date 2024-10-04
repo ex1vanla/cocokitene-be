@@ -36,6 +36,7 @@ import { GetStaticInMonthDto } from '@dtos/meeting.dto'
 import {
     CreateServiceSubscriptionDto,
     GetAllServiceSubscription,
+    UpdateServiceSubscriptionDto,
     UpdateStatusServiceSubscriptionDto,
 } from '@dtos/service-subscription.dto'
 
@@ -332,6 +333,26 @@ export class SystemAdminController {
     }
 
     @Patch('/service-subscription/:id')
+    @UseGuards(SystemAdminGuard)
+    @ApiBearerAuth()
+    @HttpCode(HttpStatus.OK)
+    async updateServiceSubscription(
+        @Param('id') ServiceSubscriptionId: number,
+        @Body() updateServiceSubscriptionDto: UpdateServiceSubscriptionDto,
+        @UserScope() system: SystemAdmin,
+    ) {
+        const systemAdminId = system.id
+
+        const updatedServiceSubscription =
+            await this.systemAdminService.updateServicePlanSubscription(
+                ServiceSubscriptionId,
+                updateServiceSubscriptionDto,
+                systemAdminId,
+            )
+        return updatedServiceSubscription
+    }
+
+    @Patch('/service-subscription/:id/change-status')
     @UseGuards(SystemAdminGuard)
     @ApiBearerAuth()
     @HttpCode(HttpStatus.OK)

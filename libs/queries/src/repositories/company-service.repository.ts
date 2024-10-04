@@ -28,7 +28,7 @@ export class CompanyServicePlanRepository extends Repository<CompanyServicePlan>
         const servicePlanCreated = await this.create({
             ...createServicePlanForCompanyDto,
             meetingCreated: 0,
-            accountCreated: 0,
+            accountCreated: 1,
             storageUsed: 0,
             createdSystemId: systemAdminId,
         })

@@ -165,19 +165,19 @@ export class SubscriptionServiceDto {
     })
     paymentMethod: PaymentMethod
 
-    @IsOptional()
+    @IsNotEmpty()
     @IsString()
     @ApiProperty({
-        required: false,
+        required: true,
         example: '2023-12-20',
     })
     activationDate: string
 
-    @IsOptional()
+    @IsNotEmpty()
     @IsString()
     @ApiProperty({
-        required: false,
-        example: '2023-12-20',
+        required: true,
+        example: '2024-12-20',
     })
     expirationDate: string
 
@@ -188,4 +188,14 @@ export class SubscriptionServiceDto {
         example: 'https://www.africau.edu/images/default/sample.pdf',
     })
     transferReceipt: string
+}
+
+export class UpdateServiceSubscriptionDto extends SubscriptionServiceDto {
+    @IsNotEmpty()
+    @IsEnum(StatusSubscription)
+    @ApiProperty({
+        required: true,
+        enum: StatusSubscription,
+    })
+    status: StatusSubscription
 }

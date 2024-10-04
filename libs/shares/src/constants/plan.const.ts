@@ -9,6 +9,7 @@ export enum SubscriptionEnum {
     // UPGRADE = 'upgrade',
     EXTEND = '0',
     UPGRADE = '1',
+    CHANGE_SERVICE = '2',
 }
 
 export enum PaymentMethod {

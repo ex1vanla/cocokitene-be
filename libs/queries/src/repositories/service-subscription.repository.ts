@@ -1,6 +1,7 @@
 import {
     CreateServiceSubscriptionDto,
     GetAllServiceSubscription,
+    UpdateServiceSubscriptionDto,
 } from '@dtos/service-subscription.dto'
 import { ServiceSubscription } from '@entities/service_subscription.entity'
 import { HttpException, HttpStatus } from '@nestjs/common'
@@ -165,6 +166,43 @@ export class ServiceSubscriptionRepository extends Repository<ServiceSubscriptio
                 .update(ServiceSubscription)
                 .set({
                     status: status,
+                    updatedSystemId: systemAdminId,
+                })
+                .where('service_subscription.id = :id', { id: id })
+                .execute()
+
+            const serviceSubscription = await this.findOne({
+                where: {
+                    id: id,
+                },
+            })
+
+            return serviceSubscription
+        } catch (error) {
+            throw new HttpException(
+                { message: error.message },
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            )
+        }
+    }
+
+    async updateServiceSubscription(
+        id: number,
+        updateServiceSubscriptionDto: UpdateServiceSubscriptionDto,
+        systemAdminId: number,
+    ): Promise<ServiceSubscription> {
+        try {
+            await this.createQueryBuilder('service_subscription')
+                .update(ServiceSubscription)
+                .set({
+                    companyId: updateServiceSubscriptionDto.companyId,
+                    planId: updateServiceSubscriptionDto.planId,
+                    type: updateServiceSubscriptionDto.type,
+                    amount: updateServiceSubscriptionDto.amount,
+                    paymentMethod: updateServiceSubscriptionDto.paymentMethod,
+                    activationDate: updateServiceSubscriptionDto.activationDate,
+                    expirationDate: updateServiceSubscriptionDto.expirationDate,
+                    status: updateServiceSubscriptionDto.status,
                     updatedSystemId: systemAdminId,
                 })
                 .where('service_subscription.id = :id', { id: id })
