@@ -200,6 +200,7 @@ export class UserService {
         companyId: number,
         userId: number,
         updateUserDto: UpdateUserDto,
+        updaterId: number,
     ): Promise<User> {
         const existedCompany = await this.companyService.getCompanyById(
             companyId,
@@ -210,6 +211,23 @@ export class UserService {
                 HttpStatus.NOT_FOUND,
             )
         }
+
+        const servicePlanOfCompany =
+            await this.servicePlanOfCompanyService.getServicePlanOfCompany(
+                companyId,
+            )
+
+        const currentDate = new Date() // CurrentDate
+        const expiredDate = new Date(servicePlanOfCompany.expirationDate)
+        expiredDate.setDate(expiredDate.getDate() + 1)
+
+        if (currentDate > expiredDate) {
+            throw new HttpException(
+                httpErrors.SERVICE_PLAN_EXPIRED,
+                HttpStatus.BAD_REQUEST,
+            )
+        }
+
         let existedUser = await this.userRepository.findOne({
             where: {
                 id: userId,
@@ -252,6 +270,7 @@ export class UserService {
                 userId,
                 companyId,
                 updateUserDto,
+                updaterId,
             )
             this.logger.info(
                 `${messageLog.UPDATE_ACCOUNT_SUCCESS.message} ${existedUser.id}`,
@@ -357,6 +376,7 @@ export class UserService {
         companyId: number,
         createUserDto: CreateUserDto,
         emailSuperAdmin: string,
+        creatorId: number,
     ) {
         const existedCompany = await this.companyService.getCompanyById(
             companyId,
@@ -392,6 +412,18 @@ export class UserService {
         let createdUser: User
         let defaultPassword = ''
         let exitedUser: User
+
+        exitedUser = await this.getUserByEmailExactly(createUserDto.email)
+        if (exitedUser) {
+            this.logger.error(
+                `${messageLog.CREATE_ACCOUNT_FAILED_DUPLICATE.code} ${messageLog.CREATE_ACCOUNT_FAILED_DUPLICATE.message} ${createUserDto.email}`,
+            )
+            throw new HttpException(
+                httpErrors.DUPLICATE_EMAIL_USER,
+                HttpStatus.BAD_REQUEST,
+            )
+        }
+
         if (createUserDto.walletAddress) {
             exitedUser = await this.getUserByWalletAddressExactly(
                 createUserDto.walletAddress,
@@ -406,21 +438,12 @@ export class UserService {
                 )
             }
         }
-        exitedUser = await this.getUserByEmailExactly(createUserDto.email)
-        if (exitedUser) {
-            this.logger.error(
-                `${messageLog.CREATE_ACCOUNT_FAILED_DUPLICATE.code} ${messageLog.CREATE_ACCOUNT_FAILED_DUPLICATE.message} ${createUserDto.email}`,
-            )
-            throw new HttpException(
-                httpErrors.DUPLICATE_EMAIL_USER,
-                HttpStatus.BAD_REQUEST,
-            )
-        }
 
         try {
             createdUser = await this.userRepository.createUser(
                 companyId,
                 createUserDto,
+                creatorId,
             )
             defaultPassword = createRandomPassword(8)
             const hashedDefaultPassword = await hashPasswordUser(
@@ -511,6 +534,7 @@ export class UserService {
             await createdSuperAdmin.save()
             return createdSuperAdmin
         } catch (error) {
+            console.log('error: ', error)
             throw new HttpException(
                 httpErrors.SUPER_ADMIN_CREATE_FAILED,
                 HttpStatus.INTERNAL_SERVER_ERROR,

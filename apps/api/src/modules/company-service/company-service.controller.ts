@@ -70,6 +70,21 @@ export class CompanyServiceController {
         return allowUploadFile
     }
 
+    @Get('/checkServiceExpired')
+    @HttpCode(HttpStatus.OK)
+    @ApiBearerAuth()
+    @UseGuards(JwtAuthGuard)
+    @Permission(PermissionEnum.BASIC_PERMISSION)
+    async checkServiceExpired(@UserScope() user: User) {
+        const companyId = user.companyId
+        const serviceIsExpired =
+            await this.servicePlanOfCompanyService.checkServiceExpired(
+                companyId,
+            )
+
+        return serviceIsExpired
+    }
+
     @Patch('/updateStorage')
     @HttpCode(HttpStatus.OK)
     @ApiBearerAuth()

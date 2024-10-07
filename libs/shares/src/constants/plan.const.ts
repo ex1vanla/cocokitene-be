@@ -26,6 +26,7 @@ export enum StatusSubscription {
     PENDING = '0',
     CONFIRMED = '1',
     CANCEL = '2',
+    APPLIED = '3',
 }
 
 export enum FlagResolve {

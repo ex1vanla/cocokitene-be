@@ -31,6 +31,7 @@ export class PlanRepository extends Repository<Plan> {
     async updatePlan(
         planId: number,
         updatePlanDto: UpdatePlanDto,
+        systemAdminId: number,
     ): Promise<Plan> {
         try {
             await this.createQueryBuilder('plan_mst')
@@ -42,6 +43,7 @@ export class PlanRepository extends Repository<Plan> {
                     maxMeeting: updatePlanDto.maxMeeting,
                     price: updatePlanDto.price,
                     maxShareholderAccount: updatePlanDto.maxShareholderAccount,
+                    updatedSystemId: systemAdminId,
                 })
                 .where('plan_mst.id = :planId', { planId })
                 .execute()
@@ -60,9 +62,13 @@ export class PlanRepository extends Repository<Plan> {
         }
     }
 
-    async createPlan(createPlanDto: CreatePlanDto): Promise<Plan> {
+    async createPlan(
+        createPlanDto: CreatePlanDto,
+        systemAdminId: number,
+    ): Promise<Plan> {
         const plan = await this.create({
             ...createPlanDto,
+            createdSystemId: systemAdminId,
         })
         await plan.save()
         return plan

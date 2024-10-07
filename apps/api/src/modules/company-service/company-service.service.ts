@@ -11,7 +11,7 @@ import { CompanyService } from '../companys/company.service'
 import { CompanyServicePlanRepository } from '@repositories/company-service.repository'
 import { ServiceSubscriptionService } from '../service-subscription/service-subscription.service'
 import { SubscriptionServiceDto } from '@dtos/service-subscription.dto'
-import { FlagResolve, StatusSubscription } from '@shares/constants'
+import { StatusSubscription } from '@shares/constants'
 import {
     ServicePlanForCompanyDto,
     UpdateCreatedServicePlanForCompanyDto,
@@ -88,9 +88,14 @@ export class ServicePlanOfCompanyService {
         const systemAdmins =
             await this.systemAdminRepository.getAllSystemAdmin()
 
+        const companyInfo = await this.companyService.getCompanyById(
+            serviceSubscription.companyId,
+        )
+
         await this.emailService.sendEmailToSystemNoticeSubscriptionService(
             systemAdmins,
             serviceSubscription.companyId,
+            companyInfo.companyName,
             currentServicePlanOfCompany.plan.planName,
             servicePlanSubscription.planName,
             String(serviceSubscription.activationDate),
@@ -144,11 +149,10 @@ export class ServicePlanOfCompanyService {
             updateServicePlanForCompanyDto.companyId,
             updateServicePlanForCompanyDto.planId,
         )
-
-        // Update Resolve Flag when apply service subscription for company
-        await this.serviceSubscriptionService.updateResolveFlagForSubscriptionService(
+        // Update Status Applied when apply service subscription for company
+        await this.serviceSubscriptionService.updateStatusAppliedForSubscriptionService(
             subscriptionServicePlanId,
-            FlagResolve.RESOLVE,
+            StatusSubscription.APPLIED,
         )
 
         return servicePlanOfCompany
@@ -185,6 +189,22 @@ export class ServicePlanOfCompanyService {
             return false
         }
         return true
+    }
+
+    async checkServiceExpired(companyId: number): Promise<boolean> {
+        //Check limit service Plan
+        const servicePlanOfCompany = await this.getServicePlanOfCompany(
+            companyId,
+        )
+
+        const currentDate = new Date() // CurrentDate
+        const expiredDate = new Date(servicePlanOfCompany.expirationDate)
+        expiredDate.setDate(expiredDate.getDate() + 1)
+
+        if (currentDate > expiredDate) {
+            return true
+        }
+        return false
     }
 
     async updateStorageUsed(companyId: number, storageUsed: number) {

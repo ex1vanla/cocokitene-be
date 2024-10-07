@@ -48,15 +48,15 @@ export class SystemAdminController {
         @Inject(forwardRef(() => EmailService))
         private readonly emailService: EmailService,
     ) {}
-    @Get('/get-all-companys')
+    @Get('/get-all-company')
     @HttpCode(HttpStatus.OK)
     @ApiBearerAuth()
     @UseGuards(SystemAdminGuard)
-    async getAllCompanys(@Query() getAllCompanyDto: GetAllCompanyDto) {
-        const companys = await this.systemAdminService.getAllCompanys(
+    async getAllCompanies(@Query() getAllCompanyDto: GetAllCompanyDto) {
+        const companies = await this.systemAdminService.getAllCompanys(
             getAllCompanyDto,
         )
-        return companys
+        return companies
     }
 
     @Get('/company/:id')
@@ -75,15 +75,19 @@ export class SystemAdminController {
     async updateCompany(
         @Param('id') companyId: number,
         @Body() updateCompanyDto: UpdateCompanyDto,
+        @UserScope() system: SystemAdmin,
     ) {
+        const systemAdminId = system.id
+
         const updatedCompany = await this.systemAdminService.updateCompany(
             companyId,
             updateCompanyDto,
+            systemAdminId,
         )
         return updatedCompany
     }
 
-    @Get('/plans')
+    @Get('/plan')
     @HttpCode(HttpStatus.OK)
     @ApiBearerAuth()
     // @UseGuards(SystemAdminGuard)
@@ -124,7 +128,7 @@ export class SystemAdminController {
         return updatedSuperAdminCompany
     }
 
-    @Post('/companys')
+    @Post('/company')
     @UseGuards(SystemAdminGuard)
     @ApiBearerAuth()
     @HttpCode(HttpStatus.OK)
@@ -156,7 +160,7 @@ export class SystemAdminController {
     }
 
     //Plan
-    @Get('/plans/:id')
+    @Get('/plan/:id')
     @HttpCode(HttpStatus.OK)
     @ApiBearerAuth()
     @UseGuards(SystemAdminGuard)
@@ -172,10 +176,14 @@ export class SystemAdminController {
     async updatePlan(
         @Param('id') planId: number,
         @Body() updatePlanDto: UpdatePlanDto,
+        @UserScope() system: SystemAdmin,
     ) {
+        const systemAdminId = system.id
+
         const updatedPlan = await this.systemAdminService.updatePlan(
             planId,
             updatePlanDto,
+            systemAdminId,
         )
         return updatedPlan
     }
@@ -184,8 +192,16 @@ export class SystemAdminController {
     @UseGuards(SystemAdminGuard)
     @ApiBearerAuth()
     @UseGuards(SystemAdminGuard)
-    async createPlan(@Body() createPlanDto: CreatePlanDto) {
-        const plan = await this.systemAdminService.createPlan(createPlanDto)
+    async createPlan(
+        @Body() createPlanDto: CreatePlanDto,
+        @UserScope() system: SystemAdmin,
+    ) {
+        const systemAdminId = system.id
+
+        const plan = await this.systemAdminService.createPlan(
+            createPlanDto,
+            systemAdminId,
+        )
         return plan
     }
 
@@ -287,7 +303,7 @@ export class SystemAdminController {
     }
 
     @Get('/service-subscription')
-    @UseGuards(SystemAdmin)
+    @UseGuards(SystemAdminGuard)
     @ApiBearerAuth()
     @HttpCode(HttpStatus.OK)
     async getAllServiceSubscription(

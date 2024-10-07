@@ -1,5 +1,4 @@
 import {
-    FlagResolve,
     PaymentMethod,
     StatusSubscription,
     SubscriptionEnum,
@@ -94,20 +93,27 @@ export class ServiceSubscription extends BaseEntity {
     status: StatusSubscription
 
     @Column({
-        nullable: false,
-        name: 'resolve_flag',
-        type: 'enum',
-        enum: FlagResolve,
-        default: FlagResolve.PENDING,
-    })
-    resolveFlag: FlagResolve
-
-    @Column({
+        type: 'datetime',
         nullable: true,
-        name: 'transfer_receipt',
-        type: 'text',
+        name: 'approval_time',
     })
-    transferReceipt: string
+    approvalTime: Date
+
+    // @Column({
+    //     nullable: false,
+    //     name: 'resolve_flag',
+    //     type: 'enum',
+    //     enum: FlagResolve,
+    //     default: FlagResolve.PENDING,
+    // })
+    // resolveFlag: FlagResolve
+
+    // @Column({
+    //     nullable: true,
+    //     name: 'transfer_receipt',
+    //     type: 'text',
+    // })
+    // transferReceipt: string
 
     @CreateDateColumn({ name: 'created_at' })
     createdAt: Date

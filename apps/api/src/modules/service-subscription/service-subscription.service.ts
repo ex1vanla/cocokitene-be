@@ -6,7 +6,7 @@ import {
 import { ServiceSubscription } from '@entities/service_subscription.entity'
 import { Injectable } from '@nestjs/common'
 import { ServiceSubscriptionRepository } from '@repositories/service-subscription.repository'
-import { FlagResolve, StatusSubscription } from '@shares/constants'
+import { StatusSubscription } from '@shares/constants'
 import { Pagination } from 'nestjs-typeorm-paginate'
 
 @Injectable()
@@ -86,12 +86,14 @@ export class ServiceSubscriptionService {
         id: number,
         updateServiceSubscriptionDto: UpdateServiceSubscriptionDto,
         systemAdminId: number,
+        isChangeStatus: boolean,
     ): Promise<ServiceSubscription> {
         const serviceSubScription =
             await this.serviceSubscriptionRepository.updateServiceSubscription(
                 id,
                 updateServiceSubscriptionDto,
                 systemAdminId,
+                isChangeStatus,
             )
 
         return serviceSubScription
@@ -106,14 +108,14 @@ export class ServiceSubscriptionService {
         return serviceSubscription
     }
 
-    async updateResolveFlagForSubscriptionService(
+    async updateStatusAppliedForSubscriptionService(
         subscriptionServiceId: number,
-        flagValue: FlagResolve,
+        status: StatusSubscription,
     ) {
         const subscriptionService =
-            await this.serviceSubscriptionRepository.updateResolveFlag(
+            await this.serviceSubscriptionRepository.updateStatusApplied(
                 subscriptionServiceId,
-                flagValue,
+                status,
             )
 
         return subscriptionService

@@ -102,10 +102,12 @@ export class SystemAdminService {
     async updateCompany(
         companyId: number,
         updateCompanyDto: UpdateCompanyDto,
+        systemAdminId: number,
     ): Promise<Company> {
         const updatedCompany = await this.companyService.updateCompany(
             companyId,
             updateCompanyDto,
+            systemAdminId,
         )
         return updatedCompany
     }
@@ -208,15 +210,17 @@ export class SystemAdminService {
     async updatePlan(
         planId: number,
         updatePlanDto: UpdatePlanDto,
+        systemAdminId: number,
     ): Promise<Plan> {
         const updatePlan = await this.planService.updatePlan(
             planId,
             updatePlanDto,
+            systemAdminId,
         )
         return updatePlan
     }
 
-    async createPlan(createPlanDto: CreatePlanDto) {
+    async createPlan(createPlanDto: CreatePlanDto, systemAdminId: number) {
         const planExited = await this.planService.getPlanByPlanName(
             createPlanDto.planName,
         )
@@ -227,7 +231,10 @@ export class SystemAdminService {
             )
         }
 
-        const plan = await this.planService.createPlan(createPlanDto)
+        const plan = await this.planService.createPlan(
+            createPlanDto,
+            systemAdminId,
+        )
         return plan
     }
 
@@ -361,12 +368,17 @@ export class SystemAdminService {
             )
         }
 
+        const isChangeStatus: boolean =
+            updateServiceSubscriptionDto.status !==
+            serviceSubscriptionById.status
+
         //Update serviceSubscription
         const serviceSubscription =
             await this.serviceSubscriptionService.updateServiceSubscription(
                 id,
                 updateServiceSubscriptionDto,
                 systemAdminId,
+                isChangeStatus,
             )
 
         if (
@@ -383,8 +395,13 @@ export class SystemAdminService {
                 serviceSubscriptionById.planId,
             )
 
+            const existedCompany = await this.companyService.getCompanyById(
+                serviceSubscription.companyId,
+            )
+
             await this.emailService.sendEmailNoticeSuperSubscriptionIsApproved(
                 serviceSubscriptionById.companyId,
+                existedCompany.companyName,
                 currentServicePlanOfCompany.plan.planName,
                 String(currentServicePlanOfCompany.expirationDate),
                 subscriptionServicePlan.planName,
@@ -449,8 +466,13 @@ export class SystemAdminService {
                 serviceSubscriptionById.planId,
             )
 
+            const existedCompany = await this.companyService.getCompanyById(
+                serviceSubscription.companyId,
+            )
+
             await this.emailService.sendEmailNoticeSuperSubscriptionIsApproved(
                 serviceSubscriptionById.companyId,
+                existedCompany.companyName,
                 currentServicePlanOfCompany.plan.planName,
                 String(currentServicePlanOfCompany.expirationDate),
                 subscriptionServicePlan.planName,
@@ -468,6 +490,23 @@ export class SystemAdminService {
             currentDate >= activationDate &&
             status == StatusSubscription.CONFIRMED
         ) {
+            // console.log('Approved subscription now!!!')
+            const servicePlanOfCompany =
+                await this.servicePlanOfCompanyService.updateServicePlanForCompany(
+                    serviceSubscription.id,
+                    {
+                        companyId: serviceSubscription.companyId,
+                        planId: serviceSubscription.planId,
+                        expirationDate: String(
+                            serviceSubscription.expirationDate,
+                        ),
+                    },
+                )
+
+            return servicePlanOfCompany
+        }
+
+        if (status == StatusSubscription.APPLIED) {
             // console.log('Approved subscription now!!!')
             const servicePlanOfCompany =
                 await this.servicePlanOfCompanyService.updateServicePlanForCompany(
@@ -526,8 +565,13 @@ export class SystemAdminService {
                         serviceSubscriptionById.planId,
                     )
 
+                const existedCompany = await this.companyService.getCompanyById(
+                    serviceSubscription.companyId,
+                )
+
                 await this.emailService.sendEmailNoticeSuperSubscriptionIsApproved(
                     serviceSubscriptionById.companyId,
+                    existedCompany.companyName,
                     currentServicePlanOfCompany.plan.planName,
                     String(currentServicePlanOfCompany.expirationDate),
                     subscriptionServicePlan.planName,

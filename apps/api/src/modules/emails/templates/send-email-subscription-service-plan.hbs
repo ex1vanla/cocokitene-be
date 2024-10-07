@@ -8,26 +8,31 @@
         </style>
     </head>
     <body>
-        <h3>{{customerName}} 様</h3>
+        <h3>{{customerName}}</h3>
 
         <h3
-        >平素より、私たちのサービスをご利用いただき、誠にありがとうございます。</h3>
-        <h3
-        >お客様からのプラン更新リクエストを受け付けいたしました。以下の内容をご確認ください。</h3>
+        >{{companyName}}様からのプラン更新リクエストを受け付けいたしました。以下の内容をご確認ください。</h3>
 
         <ul>
-            <li><strong>現在のプラン: </strong> {{currentPlan}}</li>
+            <li><strong>現在のプラン: </strong>
+                <strong>{{currentPlan}}</strong></li>
             <li><strong>更新希望プラン: </strong>
-                {{newServicePlanSubscription}}</li>
-            <li><strong>リクエスト日: </strong>
-                {{activeDate}}
-                =&gt;
-                {{expiredDate}}</li>
-
+                <strong>{{newServicePlanSubscription}}</strong></li>
+            <li><strong>リクエスト日: </strong><strong
+                >{{requestTime}}</strong></li>
+            <li><strong>起動日: </strong><strong>{{activeDate}}</strong></li>
+            <li><strong>有効期限: </strong><strong>{{expiredDate}}</strong></li>
         </ul>
 
-        <h3
-        >ご依頼内容について、確認後、必要な手続きについての詳細をお知らせいたします。</h3>
+        <div><strong>{{companyName}}様へお知らせ：</strong></div>
+        <div><strong
+            >ご依頼内容について、確認後、必要な手続きについての詳細をお知らせいたします。</strong></div>
+        <div><strong
+            >リクエストの変更を完了するためにお支払いをお願いいたします。</strong></div>
+        <div><strong
+            >すでにお支払い済みの場合は、このメッセージを無視してください。</strong></div>
+        <br />
+
         <h3
         >ご不明点や追加のリクエストがございましたら、お気軽にご連絡ください。</h3>
         <h3>今後ともよろしくお願い申し上げます。</h3>

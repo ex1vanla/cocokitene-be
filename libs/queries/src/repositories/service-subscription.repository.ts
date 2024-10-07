@@ -5,11 +5,7 @@ import {
 } from '@dtos/service-subscription.dto'
 import { ServiceSubscription } from '@entities/service_subscription.entity'
 import { HttpException, HttpStatus } from '@nestjs/common'
-import {
-    FlagResolve,
-    Sort_By_Order,
-    StatusSubscription,
-} from '@shares/constants'
+import { Sort_By_Order, StatusSubscription } from '@shares/constants'
 import { CustomRepository } from '@shares/decorators'
 import { paginateRaw, Pagination } from 'nestjs-typeorm-paginate'
 import { Repository } from 'typeorm'
@@ -30,6 +26,7 @@ export class ServiceSubscriptionRepository extends Repository<ServiceSubscriptio
                 'service_subscription.amount',
                 'service_subscription.payment_method',
                 'service_subscription.status',
+                'service_subscription.approval_time',
             ])
             .leftJoin(
                 'plan_mst',
@@ -78,6 +75,7 @@ export class ServiceSubscriptionRepository extends Repository<ServiceSubscriptio
                 'service_subscription.status',
                 'service_subscription.activation_date',
                 'service_subscription.expiration_date',
+                'service_subscription.approval_time',
             ])
             .where('service_subscription.company_id = :companyId', {
                 companyId: companyId,
@@ -108,15 +106,11 @@ export class ServiceSubscriptionRepository extends Repository<ServiceSubscriptio
                 'service_subscription.amount',
                 'service_subscription.paymentMethod',
                 'service_subscription.status',
-                'service_subscription.resolveFlag',
                 'service_subscription.activationDate',
                 'service_subscription.expirationDate',
             ])
             .where('service_subscription.status= :status', {
                 status: StatusSubscription.CONFIRMED,
-            })
-            .andWhere('service_subscription.resolve_flag= :flag', {
-                flag: FlagResolve.PENDING,
             })
 
         queryBuilder.andWhere(
@@ -162,11 +156,13 @@ export class ServiceSubscriptionRepository extends Repository<ServiceSubscriptio
         systemAdminId: number,
     ) {
         try {
+            const currentTime = new Date()
             await this.createQueryBuilder('service_subscription')
                 .update(ServiceSubscription)
                 .set({
                     status: status,
                     updatedSystemId: systemAdminId,
+                    approvalTime: currentTime,
                 })
                 .where('service_subscription.id = :id', { id: id })
                 .execute()
@@ -190,6 +186,7 @@ export class ServiceSubscriptionRepository extends Repository<ServiceSubscriptio
         id: number,
         updateServiceSubscriptionDto: UpdateServiceSubscriptionDto,
         systemAdminId: number,
+        isChangeStatus?: boolean,
     ): Promise<ServiceSubscription> {
         try {
             await this.createQueryBuilder('service_subscription')
@@ -208,6 +205,17 @@ export class ServiceSubscriptionRepository extends Repository<ServiceSubscriptio
                 .where('service_subscription.id = :id', { id: id })
                 .execute()
 
+            if (isChangeStatus) {
+                const currentTime = new Date()
+                await this.createQueryBuilder('service_subscription')
+                    .update(ServiceSubscription)
+                    .set({
+                        approvalTime: currentTime,
+                    })
+                    .where('service_subscription.id = :id', { id: id })
+                    .execute()
+            }
+
             const serviceSubscription = await this.findOne({
                 where: {
                     id: id,
@@ -223,12 +231,12 @@ export class ServiceSubscriptionRepository extends Repository<ServiceSubscriptio
         }
     }
 
-    async updateResolveFlag(id: number, resolveFlag: FlagResolve) {
+    async updateStatusApplied(id: number, status: StatusSubscription) {
         try {
             await this.createQueryBuilder('service_subscription')
                 .update(ServiceSubscription)
                 .set({
-                    resolveFlag: resolveFlag,
+                    status: status,
                 })
                 .where('service_subscription.id = :id', { id: id })
                 .execute()
@@ -281,24 +289,26 @@ export class ServiceSubscriptionRepository extends Repository<ServiceSubscriptio
                 'service_subscription.expirationDate',
                 'service_subscription.status',
             ])
-            .where(
-                'service_subscription.status= :statusConfirmed OR service_subscription.status= :statusPending',
+            // .where('service_subscription.companyId = :companyId', {
+            //     companyId: 0,
+            // })
+            .where('service_subscription.companyId = :id', {
+                id: companyId,
+            })
+            .andWhere(
+                '(service_subscription.status= :statusConfirmed OR service_subscription.status= :statusPending)',
                 {
                     statusConfirmed: StatusSubscription.CONFIRMED,
                     statusPending: StatusSubscription.PENDING,
                 },
             )
-            .andWhere('service_subscription.companyId = :companyId', {
-                companyId: companyId,
-            })
             .andWhere(
                 'DATE_FORMAT(service_subscription.activation_date,"%Y-%m-%d 00:00:00") >= :currentDate',
                 {
                     currentDate: expiredTimeOfCurrentService,
                 },
             )
-            .getMany()
 
-        return queryBuilder
+        return queryBuilder.getMany()
     }
 }

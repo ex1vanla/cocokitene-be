@@ -79,7 +79,7 @@ export class PermissionService {
         const permissions = await Promise.all(
             [
                 PermissionEnum.LIST_ACCOUNT,
-                PermissionEnum.EDIT_ACCOUNT,
+                PermissionEnum.DETAIL_ACCOUNT,
                 PermissionEnum.LIST_SHAREHOLDERS,
                 PermissionEnum.BOARD_MEETING,
                 PermissionEnum.DETAIL_BOARD_MEETING,

@@ -98,13 +98,13 @@ export class CreateServiceSubscriptionDto {
     })
     status: StatusSubscription
 
-    @IsOptional()
-    @IsString()
-    @ApiProperty({
-        required: false,
-        example: 'https://www.africau.edu/images/default/sample.pdf',
-    })
-    transferReceipt: string
+    // @IsOptional()
+    // @IsString()
+    // @ApiProperty({
+    //     required: false,
+    //     example: 'https://www.africau.edu/images/default/sample.pdf',
+    // })
+    // transferReceipt: string
 }
 
 export class UpdateStatusServiceSubscriptionDto {
@@ -181,13 +181,13 @@ export class SubscriptionServiceDto {
     })
     expirationDate: string
 
-    @IsOptional()
-    @IsString()
-    @ApiProperty({
-        required: false,
-        example: 'https://www.africau.edu/images/default/sample.pdf',
-    })
-    transferReceipt: string
+    // @IsOptional()
+    // @IsString()
+    // @ApiProperty({
+    //     required: false,
+    //     example: 'https://www.africau.edu/images/default/sample.pdf',
+    // })
+    // transferReceipt: string
 }
 
 export class UpdateServiceSubscriptionDto extends SubscriptionServiceDto {

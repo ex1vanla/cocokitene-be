@@ -365,6 +365,7 @@ export class EmailService {
     async sendEmailToSystemNoticeSubscriptionService(
         systemAdmin: SystemAdmin[],
         companyId: number,
+        companyName: string,
         currentServicePlan: string,
         newServicePlanSubscription: string,
         activeDate: string,
@@ -376,7 +377,10 @@ export class EmailService {
         )
 
         const systemAdminMail = systemAdmin.map((system) => system.email)
-        const systemAdminName = systemAdmin.map((system) => system.username)
+        const systemAdminName = systemAdmin.map(
+            (system) => system.username + '様 ',
+        )
+        const currentTime = new Date().toLocaleDateString('en-CA')
 
         await this.mailerService.sendMail({
             to: systemAdminMail,
@@ -385,10 +389,12 @@ export class EmailService {
             template: './send-email-subscription-service-plan',
             context: {
                 customerName: systemAdminName.join(),
+                companyName: companyName,
                 currentPlan: currentServicePlan,
                 newServicePlanSubscription: newServicePlanSubscription,
                 activeDate: activeDate,
                 expiredDate: expiredDate,
+                requestTime: currentTime,
             },
         })
     }
@@ -396,6 +402,7 @@ export class EmailService {
     //Email notification to SuperAdmin notice subscription servicePlan is approved
     async sendEmailNoticeSuperSubscriptionIsApproved(
         companyId: number,
+        companyName: string,
         currentServicePlan: string,
         expireDateCurrentServicePlan: string,
         newServicePlanSubscription: string,
@@ -414,7 +421,7 @@ export class EmailService {
             subject: 'プラン更新完了のお知らせ',
             template: './send-email-notice-subscription-approved',
             context: {
-                customerName: superAdminOfCompany.username ?? '',
+                customerName: companyName ?? '',
                 currentServicePlan: currentServicePlan,
                 expireDateCurrentServicePlan: expireDateCurrentServicePlan,
                 newServicePlanSubscription: newServicePlanSubscription,

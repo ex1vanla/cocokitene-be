@@ -63,6 +63,7 @@ export class CompanyRepository extends Repository<Company> {
     async updateCompany(
         companyId: number,
         updateCompanyDto: UpdateCompanyDto,
+        systemAdminId: number,
     ): Promise<Company> {
         try {
             await this.createQueryBuilder('company')
@@ -81,6 +82,7 @@ export class CompanyRepository extends Repository<Company> {
                     statusId: updateCompanyDto.statusId,
                     planId: updateCompanyDto.planId,
                     representativeUser: updateCompanyDto.representativeUser,
+                    updatedSystemId: systemAdminId,
                 })
                 .where('company.id = :companyId', { companyId })
                 .execute()
@@ -99,12 +101,20 @@ export class CompanyRepository extends Repository<Company> {
         }
     }
 
-    async createCompany(createCompanyDto: CreateCompanyDto): Promise<Company> {
-        const company = await this.create({
-            ...createCompanyDto,
-        })
-        await company.save()
-        return company
+    async createCompany(
+        createCompanyDto: CreateCompanyDto,
+        systemAdminId: number,
+    ): Promise<Company> {
+        try {
+            const company = await this.create({
+                ...createCompanyDto,
+                createdSystemId: systemAdminId,
+            })
+            await company.save()
+            return company
+        } catch (error) {
+            console.log('error: ', error)
+        }
     }
 
     async countCreatedOfCompany(companyId: number) {
@@ -136,8 +146,14 @@ export class CompanyRepository extends Repository<Company> {
                 'companyService',
                 'companyService.companyId = company.id',
             )
+            .leftJoin(
+                'plan_mst',
+                'planService',
+                'planService.id = companyService.planId',
+            )
             .addSelect('companyService.planId', 'servicePlanId')
             .addSelect('companyService.expirationDate', 'expirationDate')
+            .addSelect('planService.price', 'servicePlanPrice')
             .getRawMany()
 
         return optionCompany

@@ -558,6 +558,23 @@ export class BoardMeetingService {
                 HttpStatus.BAD_GATEWAY,
             )
         }
+
+        const servicePlanOfCompany =
+            await this.servicePlanOfCompanyService.getServicePlanOfCompany(
+                companyId,
+            )
+
+        const currentDate = new Date() // CurrentDate
+        const expiredDate = new Date(servicePlanOfCompany.expirationDate)
+        expiredDate.setDate(expiredDate.getDate() + 1)
+
+        if (currentDate > expiredDate) {
+            throw new HttpException(
+                httpErrors.SERVICE_PLAN_EXPIRED,
+                HttpStatus.BAD_REQUEST,
+            )
+        }
+
         let existedBoardMeeting =
             await this.getBoardMeetingByMeetingIdAndCompanyId(
                 meetingId,

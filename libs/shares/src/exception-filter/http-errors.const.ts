@@ -447,4 +447,8 @@ export const httpErrors = {
         message: 'UNABLE_TO_CREATE_MORE',
         code: 'SERVICE_PLAN_OF_COMPANY_00001',
     },
+    SERVICE_PLAN_EXPIRED: {
+        message: 'UNABLE_TO_UPDATE',
+        code: 'SERVICE_PLAN_OF_COMPANY_00002',
+    },
 }

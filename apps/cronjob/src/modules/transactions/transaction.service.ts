@@ -12,9 +12,9 @@ import { ProposalRepository } from '@repositories/meeting-proposal.repository'
 import { TransactionRepository } from '@repositories/transaction.repository'
 import {
     CONTRACT_TYPE,
-    FlagResolve,
     RoleBoardMtgEnum,
     RoleMtgEnum,
+    StatusSubscription,
     TRANSACTION_STATUS,
 } from '@shares/constants'
 import { httpErrors } from '@shares/exception-filter'
@@ -583,9 +583,9 @@ export class TransactionService {
                 )
 
                 // Change Resolve Flag when apply servicePlan for company
-                await this.serviceSubscriptionRepository.updateResolveFlag(
+                await this.serviceSubscriptionRepository.updateStatusApplied(
                     serviceSubscription.id,
-                    FlagResolve.RESOLVE,
+                    StatusSubscription.APPLIED,
                 )
 
                 console.log(
@@ -606,6 +606,8 @@ export class TransactionService {
         const companyNearingExpirationService =
             await this.companyServicePlanRepository.getServicePlanNearingExpiration()
 
+        const cc_emails = configuration().email.cc_emails
+
         companyNearingExpirationService.map(async (companyService) => {
             const getAllSubscription =
                 await this.serviceSubscriptionRepository.getSubscriptionOfCompanyExtend(
@@ -613,9 +615,8 @@ export class TransactionService {
                     String(companyService.expirationDate),
                 )
 
-            if (!getAllSubscription) {
+            if (getAllSubscription.length == 0) {
                 // Send Email to SupperAdmin Notice extend servicePlan for company
-
                 //Get current ServicePlan company using
                 const getServicePlanSubscription =
                     await this.planRepository.findOne({
@@ -630,11 +631,16 @@ export class TransactionService {
                     )
                 }
 
-                const cc_emails = configuration().email.cc_emails
                 const superAdminOfCompany =
                     await this.userRepository.getSuperAdminCompany(
                         companyService.companyId,
                     )
+
+                const companyInfo = await this.companyRepository.findOne({
+                    where: {
+                        id: companyService.companyId,
+                    },
+                })
 
                 try {
                     await this.mailerService.sendMail({
@@ -643,12 +649,67 @@ export class TransactionService {
                         subject: '【重要】有効期限切れのお知らせ',
                         template: './send-email-reminder-renewal',
                         context: {
-                            customerName: superAdminOfCompany.username ?? '',
+                            customerName: companyInfo.companyName ?? '',
                             expiredDate: companyService.expirationDate,
                             planName: getServicePlanSubscription.planName,
                         },
                     })
 
+                    console.log('Send Mail Notice Renew Successfully')
+                } catch (error) {
+                    console.log('error:', error)
+                }
+            }
+        })
+
+        //Send email notice to company has expired servicePlan
+        const companyExpiredService =
+            await this.companyServicePlanRepository.getAllCompanyExpiredService()
+
+        companyExpiredService.map(async (companyExpired) => {
+            const getAllSubscriptionService =
+                await this.serviceSubscriptionRepository.getSubscriptionOfCompanyExtend(
+                    companyExpired.companyId,
+                    String(companyExpired.expirationDate),
+                )
+
+            if (getAllSubscriptionService.length == 0) {
+                // Send email to SupperAdmin notice company has expired servicePlan
+
+                const superAdminOfCompany =
+                    await this.userRepository.getSuperAdminCompany(
+                        companyExpired.companyId,
+                    )
+
+                const companyInfo = await this.companyRepository.findOne({
+                    where: {
+                        id: companyExpired.companyId,
+                    },
+                })
+
+                const expiredDateAfter30 = new Date(
+                    companyExpired.expirationDate,
+                )
+                expiredDateAfter30.setMonth(expiredDateAfter30.getMonth() + 1)
+
+                try {
+                    await this.mailerService.sendMail({
+                        to: superAdminOfCompany?.email ?? '',
+                        cc: cc_emails,
+                        subject: 'サービス停止のお知らせ',
+                        template: './send-email-reminder-expired',
+                        context: {
+                            customerName: companyInfo.companyName ?? '',
+                            expiredDate: companyExpired.expirationDate,
+                            deleteDate: `${expiredDateAfter30.getFullYear()}-${
+                                expiredDateAfter30.getMonth() + 1
+                            }-${expiredDateAfter30
+                                .getDate()
+                                .toString()
+                                .padStart(2, '0')}`,
+                            phoneNumberSystem: '03-5625-0900',
+                        },
+                    })
                     console.log('Send Mail Successfully')
                 } catch (error) {
                     console.log('error:', error)

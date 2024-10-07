@@ -92,14 +92,14 @@ export class CompanyServicePlanRepository extends Repository<CompanyServicePlan>
 
     async getServicePlanNearingExpiration(): Promise<CompanyServicePlan[]> {
         const beforeExpired7daysAgo = new Date()
-        beforeExpired7daysAgo.setUTCHours(0, 0, 0, 0)
+        // beforeExpired7daysAgo.setUTCHours(0, 0, 0, 0)
         // subtract 7 days
-        beforeExpired7daysAgo.setDate(beforeExpired7daysAgo.getDate() - 7)
+        beforeExpired7daysAgo.setDate(beforeExpired7daysAgo.getDate() + 14)
 
         const beforeExpired14daysAgo = new Date()
-        beforeExpired14daysAgo.setUTCHours(0, 0, 0, 0)
+        // beforeExpired14daysAgo.setUTCHours(0, 0, 0, 0)
         // subtract 14 days
-        beforeExpired14daysAgo.setDate(beforeExpired14daysAgo.getDate() - 14)
+        beforeExpired14daysAgo.setDate(beforeExpired14daysAgo.getDate() + 30)
 
         const queryBuilder = this.createQueryBuilder('company_service')
             .select([
@@ -128,5 +128,35 @@ export class CompanyServicePlanRepository extends Repository<CompanyServicePlan>
             .getMany()
 
         return queryBuilder
+    }
+
+    async getAllCompanyExpiredService(): Promise<CompanyServicePlan[]> {
+        const beforeCurrentDate = new Date()
+        beforeCurrentDate.setDate(beforeCurrentDate.getDate() - 1)
+
+        const companyExpiredService = this.createQueryBuilder('company_service')
+            .select([
+                'company_service.id',
+                'company_service.companyId',
+                'company_service.planId',
+                'company_service.meetingLimit',
+                'company_service.meetingCreated',
+                'company_service.accountLimit',
+                'company_service.accountCreated',
+                'company_service.storageLimit',
+                'company_service.storageUsed',
+                'company_service.expirationDate',
+            ])
+            .where(
+                'DAY(company_service.expirationDate) = :day AND MONTH(company_service.expirationDate) = :month AND YEAR(company_service.expirationDate) = :year',
+                {
+                    day: beforeCurrentDate.getDate(),
+                    month: beforeCurrentDate.getMonth() + 1,
+                    year: beforeCurrentDate.getFullYear(),
+                },
+            )
+            .getMany()
+
+        return companyExpiredService
     }
 }

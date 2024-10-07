@@ -89,6 +89,7 @@ export class CompanyService {
     async updateCompany(
         companyId: number,
         updateCompanyDto: UpdateCompanyDto,
+        systemAdminId: number,
     ): Promise<Company> {
         let existedCompany = await this.getCompanyById(companyId)
         if (!existedCompany) {
@@ -124,6 +125,7 @@ export class CompanyService {
             existedCompany = await this.companyRepository.updateCompany(
                 companyId,
                 updateCompanyDto,
+                systemAdminId,
             )
             this.logger.info(
                 `${messageLog.UPDATE_COMPANY_SUCCESS.message} ${existedCompany.id}`,
@@ -212,6 +214,7 @@ export class CompanyService {
         try {
             createdCompany = await this.companyRepository.createCompany(
                 createCompanyDto,
+                systemAdminId,
             )
             this.logger.info(
                 `${messageLog.CREATE_COMPANY_SUCCESS.message} ${createdCompany.id}`,
@@ -374,7 +377,8 @@ export class CompanyService {
             ...listPermissions.map((permission) => {
                 if (
                     permission.key !==
-                    PermissionEnum.SETTING_PERMISSION_FOR_ROLES
+                        PermissionEnum.SETTING_PERMISSION_FOR_ROLES &&
+                    permission.key !== PermissionEnum.SUPER_ADMIN_PERMISSION
                 ) {
                     this.rolePermissionService.createRolePermission({
                         permissionId: permission.id,
